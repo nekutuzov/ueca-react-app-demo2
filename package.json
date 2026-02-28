@@ -3,8 +3,16 @@
   "private": true,
   "version": "1.0.0",
   "description": "UECA-React Vite Application",
-  "author": "",
+  "author": "Aleksey Suvorov <cranesoft@protonmail.com>",
   "license": "ISC",
+  "homepage": "https://cranesoft.net",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nekutuzov/ueca-react-vite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nekutuzov/ueca-react-vite/issues"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

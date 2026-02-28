@@ -87,12 +87,6 @@ type MyComponentStruct = UIBaseStruct<{
     props: {
         value: string;
     };
-    children: {
-        // child components
-    };
-    methods: {
-        // component methods
-    };
     events: {
         onChange: (value: string) => void;
     };
