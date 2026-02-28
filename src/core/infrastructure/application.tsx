@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
+import { Block, Col, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
 import {
     AppBrowsingHistoryModel,
     useAppBrowsingHistory
@@ -49,11 +49,17 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
         },
 
         View: () => (
-            <div id={model.htmlId()}>
-                <h1>Welcome to {model.applicationName}</h1>
-                <p>Version: {model.appVersion}</p>
-                <p>Your UECA-React application is ready!</p>
-            </div>
+            <Col id={model.htmlId()}
+                backgroundColor="info.light"
+                verticalAlign="center"
+                horizontalAlign="center"
+            >
+                <Block backgroundColor="secondary.light">
+                    <h1>Welcome to {model.applicationName}</h1>
+                    <p>Version: {model.appVersion}</p>
+                    <p>Your UECA-React application is ready!</p>
+                </Block>
+            </Col>
         )
     }
 
