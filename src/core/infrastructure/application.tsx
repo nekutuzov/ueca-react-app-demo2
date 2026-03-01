@@ -1,8 +1,10 @@
 import * as UECA from "ueca-react";
-import { Block, Col, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
+import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
 import {
     AppBrowsingHistoryModel,
-    useAppBrowsingHistory
+    useAppBrowsingHistory,
+    AppUIModel,
+    useAppUI
 } from "@core";
 
 type ApplicationStruct = UIBaseStruct<{
@@ -13,6 +15,7 @@ type ApplicationStruct = UIBaseStruct<{
 
     children: {
         browsingHistory: AppBrowsingHistoryModel;
+        ui: AppUIModel;
     }
 }>;
 
@@ -29,6 +32,7 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
 
         children: {
             browsingHistory: useAppBrowsingHistory(),
+            ui: useAppUI(),
         },
 
         messages: {
@@ -41,27 +45,15 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
         },
 
         init: () => {
-            console.log(`UECA application "${model.applicationName}" initialized`);
+            console.log(`UECA application "${model.applicationName}" v${model.appVersion} initialized`);                  
         },
 
         deinit: () => {
             console.log(`UECA application "${model.applicationName}" deinitialized`);
         },
 
-        View: () => (
-            <Col id={model.htmlId()}
-                backgroundColor="info.light"
-                verticalAlign="center"
-                horizontalAlign="center"
-            >
-                <Block backgroundColor="secondary.light">
-                    <h1>Welcome to {model.applicationName}</h1>
-                    <p>Version: {model.appVersion}</p>
-                    <p>Your UECA-React application is ready!</p>
-                </Block>
-            </Col>
-        )
-    }
+        View: () => <model.ui.View />
+    };
 
     const model = useUIBase(struct, params);
     return model;
@@ -69,4 +61,4 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
 
 const Application = UECA.getFC(useApplication);
 
-export { ApplicationModel, useApplication, Application }
+export { ApplicationModel, useApplication, Application };

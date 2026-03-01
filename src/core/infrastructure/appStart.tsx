@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import * as UECA from "ueca-react";
+import { ErrorFallback } from "@components";
 
 function runApplication(AppView: () => UECA.ReactElement, rootElementId: string, onExcept?: UECA.ErrorHandler) {
     try {
@@ -9,7 +10,12 @@ function runApplication(AppView: () => UECA.ReactElement, rootElementId: string,
             // Don't wrap in React.StrictMode!
             // StrictMode causes double execution of UECA life-cycle hooks that leads to many issues.
             // UECA abstracts away React from the developer, so React.StrictMode is not needed.
-            <AppView />
+            <ErrorFallback onError={(error, info) => {
+                console.error("React Error Boundary caught an error:", error, info);
+                onExcept?.(error);
+            }}>
+                <AppView />
+            </ErrorFallback>
         );
     } catch (e) {
         displayCrashError((e as Error).message, rootElementId);
