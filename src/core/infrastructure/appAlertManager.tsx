@@ -1,23 +1,26 @@
 import * as UECA from "ueca-react";
-import { Alert, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
+import { AlertToast, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
 import { Intent } from "@core";
-
-type AlertItem = {
-    id: number;
-    message: React.ReactNode;
-    intent: Intent;
-};
 
 // AppAlertManager - Global toast notification manager
 type AppAlertManagerStruct = UIBaseStruct<{
     props: {
-        alerts: AlertItem[];
-        nextAlertId: number;
+        _alerts: {
+            message: React.ReactNode;
+            intent: Intent;
+            position: number;
+            new: boolean;
+        }[];
     };
 
     methods: {
         addAlert: (message: React.ReactNode, intent: Intent) => void;
-        removeAlert: (id: number) => void;
+        _alertView: () => UECA.ReactElement;
+    };
+
+    events: {
+        onOpen: (source: AppAlertManagerModel) => UECA.MaybePromise;
+        onClose: (source: AppAlertManagerModel) => UECA.MaybePromise;
     };
 }>;
 
@@ -28,8 +31,7 @@ function useAppAlertManager(params?: AppAlertManagerParams): AppAlertManagerMode
     const struct: AppAlertManagerStruct = {
         props: {
             id: useAppAlertManager.name,
-            alerts: [],
-            nextAlertId: 1
+            _alerts: []
         },
 
         messages: {
@@ -41,17 +43,34 @@ function useAppAlertManager(params?: AppAlertManagerParams): AppAlertManagerMode
 
         methods: {
             addAlert: (message, intent) => {
-                const id = model.nextAlertId++;
-                model.alerts.push({ id, message, intent });
-                
-                // Auto-remove after 4 seconds
-                setTimeout(() => {
-                    model.removeAlert(id);
-                }, 4000);
+                const lastAlert = model._alerts[model._alerts.length - 1];
+                model._alerts.push({
+                    message: message,
+                    intent: intent,
+                    position: lastAlert ? (lastAlert.position + 1) : 1,
+                    new: true
+                });
             },
 
-            removeAlert: (id) => {
-                model.alerts = model.alerts.filter(a => a.id !== id);
+            _alertView: () => {
+                return <>
+                    {
+                        model._alerts.map((alert) => {
+                            return <AlertToast
+                                id={`alert${alert.position}`}
+                                key={alert.position}
+                                contentView={alert.message}
+                                color={alert.intent}
+                                severity={alert.intent}
+                                open
+                                transition={alert.new}
+                                disablePortal={true}
+                                onOpen={() => { alert.new = false; }}
+                                onClose={(m) => { model._alerts = model._alerts.filter(a => m.id != `alert${a.position}`); }}
+                            />
+                        })
+                    }
+                </>
             }
         },
 
@@ -60,48 +79,16 @@ function useAppAlertManager(params?: AppAlertManagerParams): AppAlertManagerMode
                 id={model.htmlId()}
                 style={{
                     position: "fixed",
-                    top: "24px",
                     right: "24px",
+                    top: "24px",
                     display: "flex",
                     flexDirection: "column",
+                    alignItems: "flex-end",
                     gap: "8px",
-                    zIndex: 1400,
-                    pointerEvents: "none",
-                    maxWidth: "400px"
+                    zIndex: 1400
                 }}
             >
-                <style>{`
-                    @keyframes alertSlideIn {
-                        from {
-                            transform: translateX(100%);
-                            opacity: 0;
-                        }
-                        to {
-                            transform: translateX(0);
-                            opacity: 1;
-                        }
-                    }
-                `}</style>
-                
-                {model.alerts.map(alert => (
-                    <div
-                        key={alert.id}
-                        style={{
-                            width: "100%",
-                            animation: "alertSlideIn 0.3s ease",
-                            pointerEvents: "auto"
-                        }}
-                    >
-                        <Alert
-                            variant="filled"
-                            severity={alert.intent}
-                            color={alert.intent}
-                            onClose={() => model.removeAlert(alert.id)}
-                        >
-                            {alert.message}
-                        </Alert>
-                    </div>
-                ))}
+                <model._alertView />
             </div>
         )
     };
