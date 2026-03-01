@@ -1,7 +1,6 @@
 import * as UECA from "ueca-react";
-import { BaseModel, BaseParams, BaseStruct, useBase } from "@components";
+import { BaseModel, BaseParams, BaseStruct, useBase, AnyRoute } from "@components";
 import { asyncSafe, runAsync } from "./appUtils";
-import { AnyRoute } from "./appRoutes";
 
 type AppBrowsingHistoryStruct = BaseStruct<{
     props: {

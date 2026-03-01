@@ -109,3 +109,8 @@
 .button-end-icon {
     margin-right: -4px;
 }
+
+/* Full width */
+.ueca-button-fullwidth {
+    width: 100%;
+}

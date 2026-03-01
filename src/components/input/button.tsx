@@ -12,6 +12,7 @@ type ButtonStruct = UIBaseStruct<{
         size: "small" | "medium" | "large";
         startIconView: React.ReactNode;
         variant: "text" | "outlined" | "contained";
+        fullWidth: boolean;
     };
 
     events: {
@@ -37,6 +38,7 @@ function useButton(params?: ButtonParams): ButtonModel {
             startIconView: undefined,
             contentView: undefined,
             variant: "text",
+            fullWidth: false,
         },
 
         methods: {
@@ -52,7 +54,7 @@ function useButton(params?: ButtonParams): ButtonModel {
             return (
                 <button
                     id={model.htmlId()}
-                    className={`ueca-button ueca-button-${model.variant} ueca-button-${model.size}`}
+                    className={`ueca-button ueca-button-${model.variant} ueca-button-${model.size}${model.fullWidth ? " ueca-button-fullwidth" : ""}`}
                     disabled={model.disabled}
                     onClick={model.click}
                     style={{

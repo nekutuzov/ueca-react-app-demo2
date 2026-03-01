@@ -2,7 +2,8 @@ import * as UECA from "ueca-react";
 import { ErrorFallback, Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, FileSelectorModel, useFileSelector } from "@components";
 import {
     AbortExecutionException, AppBusyDisplayModel, useAppBusyDisplay, AppDialogManagerModel, useAppDialogManager,
-    AppAlertManagerModel, useAppAlertManager, AppRouter
+    AppAlertManagerModel, useAppAlertManager, AppRouter,
+    AppLoginForm
 } from "@core";
 
 type AppUIStruct = UIBaseStruct<{
@@ -29,7 +30,7 @@ function useAppUI(params?: AppUIParams): AppUIModel {
     const struct: AppUIStruct = {
         props: {
             id: useAppUI.name,
-            authorizedMode: true,
+            authorizedMode: false,
         },
 
         children: {
@@ -54,7 +55,7 @@ function useAppUI(params?: AppUIParams): AppUIModel {
                 if (model.authorizedMode) {
                     return <AppRouter id={"router"} />;
                 }
-                return <>Unauthorized Access</>;
+                return <AppLoginForm id={"loginForm"} />;
             },
         },
 

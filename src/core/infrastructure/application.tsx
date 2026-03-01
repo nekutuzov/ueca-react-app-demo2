@@ -4,7 +4,9 @@ import {
     AppBrowsingHistoryModel,
     useAppBrowsingHistory,
     AppUIModel,
-    useAppUI
+    useAppUI,
+    AppSecurityModel,
+    useAppSecurity
 } from "@core";
 
 type ApplicationStruct = UIBaseStruct<{
@@ -15,6 +17,7 @@ type ApplicationStruct = UIBaseStruct<{
 
     children: {
         browsingHistory: AppBrowsingHistoryModel;
+        security: AppSecurityModel;
         ui: AppUIModel;
     }
 }>;
@@ -32,7 +35,12 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
 
         children: {
             browsingHistory: useAppBrowsingHistory(),
-            ui: useAppUI(),
+
+            security: useAppSecurity(),
+
+            ui: useAppUI({
+                authorizedMode: () => model.security.isAuthorized()
+            }),
         },
 
         messages: {
@@ -45,7 +53,7 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
         },
 
         init: () => {
-            console.log(`UECA application "${model.applicationName}" v${model.appVersion} initialized`);                  
+            console.log(`UECA application "${model.applicationName}" v${model.appVersion} initialized`);
         },
 
         deinit: () => {

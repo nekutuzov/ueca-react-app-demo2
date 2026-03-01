@@ -8,6 +8,8 @@ export * from "./misc/spinner";
 export * from "./utility/errorFallback";
 export * from "./input/button";
 export * from "./input/iconButton";
+export * from "./input/textField";
+export * from "./input/checkbox";
 export * from "./dialog/dialog";
 export * from "./dialog/drawer";
 export * from "./dialog/snackbar";

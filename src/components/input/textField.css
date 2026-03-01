@@ -1,0 +1,137 @@
+/* TextField container */
+.ueca-textfield {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: inherit;
+    position: relative;
+}
+
+.ueca-textfield-fullwidth {
+    width: 100%;
+}
+
+/* Label */
+.textfield-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 4px;
+}
+
+.textfield-required {
+    color: #d32f2f;
+}
+
+/* Input field base */
+.textfield-input {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 12px 14px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    outline: none;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    color: rgba(0, 0, 0, 0.87);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.textfield-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.textfield-input::placeholder {
+    color: rgba(0, 0, 0, 0.38);
+}
+
+.textfield-input:hover:not(:disabled) {
+    border-color: rgba(0, 0, 0, 0.87);
+}
+
+.textfield-input:focus {
+    border-color: var(--textfield-color, #1976d2);
+    border-width: 2px;
+    padding: 11px 13px; /* Adjust padding to account for wider border */
+}
+
+.textfield-input:disabled {
+    background-color: rgba(0, 0, 0, 0.04);
+    cursor: not-allowed;
+    color: rgba(0, 0, 0, 0.38);
+}
+
+/* Outlined variant (default) */
+.ueca-textfield-outlined .textfield-input {
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    background-color: transparent;
+}
+
+/* Filled variant */
+.ueca-textfield-filled .textfield-input {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+    border-radius: 4px 4px 0 0;
+    background-color: rgba(0, 0, 0, 0.06);
+    padding: 16px 12px 8px;
+}
+
+.ueca-textfield-filled .textfield-input:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.09);
+}
+
+.ueca-textfield-filled .textfield-input:focus {
+    background-color: rgba(0, 0, 0, 0.09);
+    border-bottom-width: 2px;
+    border-bottom-color: var(--textfield-color, #1976d2);
+    padding-bottom: 7px; /* Adjust for thicker border */
+}
+
+/* Standard variant */
+.ueca-textfield-standard .textfield-input {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+    border-radius: 0;
+    padding: 8px 0;
+}
+
+.ueca-textfield-standard .textfield-input:hover:not(:disabled) {
+    border-bottom-color: rgba(0, 0, 0, 0.87);
+}
+
+.ueca-textfield-standard .textfield-input:focus {
+    border-bottom-width: 2px;
+    border-bottom-color: var(--textfield-color, #1976d2);
+    padding-bottom: 7px; /* Adjust for thicker border */
+}
+
+/* Error state */
+.ueca-textfield-error .textfield-label {
+    color: #d32f2f;
+}
+
+.ueca-textfield-error .textfield-input {
+    border-color: #d32f2f;
+}
+
+.ueca-textfield-error .textfield-input:focus {
+    border-color: #d32f2f;
+}
+
+/* Helper text */
+.textfield-helper-text {
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: 4px;
+}
+
+.textfield-helper-text-error {
+    color: #d32f2f;
+}
+
+/* Disabled state */
+.ueca-textfield-disabled .textfield-label {
+    color: rgba(0, 0, 0, 0.38);
+}
