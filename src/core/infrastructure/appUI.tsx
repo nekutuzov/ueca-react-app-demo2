@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { ErrorFallback, Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, FileSelectorModel, useFileSelector } from "@components";
-import { AbortExecutionException, AppRoutes, AppBusyDisplayModel, useAppBusyDisplay, AppDialogManagerModel, useAppDialogManager } from "@core";
+import { AbortExecutionException, AppRoutes, AppBusyDisplayModel, useAppBusyDisplay, AppDialogManagerModel, useAppDialogManager, AppAlertManagerModel, useAppAlertManager } from "@core";
 
 type AppUIStruct = UIBaseStruct<{
     props: {
@@ -10,8 +10,9 @@ type AppUIStruct = UIBaseStruct<{
     children: {
         busyDisplay: AppBusyDisplayModel;
         dialogManager: AppDialogManagerModel;
+        alertManager: AppAlertManagerModel;
         fileSelector: FileSelectorModel;
-        // Future: Add child components (themeManager, alertManager, etc.)
+        // Future: Add child components (themeManager, etc.)
     };
 
     methods: {
@@ -30,6 +31,7 @@ function useAppUI(params?: AppUIParams): AppUIModel {
 
         children: {
             dialogManager: useAppDialogManager(),
+            alertManager: useAppAlertManager(),
             busyDisplay: useAppBusyDisplay(),
             fileSelector: useFileSelector(),
             // Future: Initialize child components here
@@ -59,9 +61,9 @@ function useAppUI(params?: AppUIParams): AppUIModel {
                     </ErrorFallback>
                     <model.busyDisplay.View />
                     <model.dialogManager.View />
+                    <model.alertManager.View />
                     <model.fileSelector.View />
-                    {/* Future: Add
-                    {/* Future: Add dialogManager, alertManager views */}
+                    {/* Future: Add themeManager, etc. */}
                 </Col>
             </ErrorFallback>
     };

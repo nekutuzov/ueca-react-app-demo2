@@ -10,6 +10,7 @@ type AlertToastStruct = UIBaseStruct<{
         transition: boolean;
         severity: "success" | "info" | "warning" | "error";
         anchorOrigin: { vertical: "top" | "bottom"; horizontal: "left" | "center" | "right"; };
+        disablePortal: boolean;
     };
 
     children: {
@@ -33,7 +34,8 @@ function useAlertToast(params?: AlertToastParams): AlertToastModel {
             contentView: undefined,
             transition: true,
             severity: "info",
-            anchorOrigin: undefined
+            anchorOrigin: undefined,
+            disablePortal: false
         },
 
         children: {
@@ -51,6 +53,7 @@ function useAlertToast(params?: AlertToastParams): AlertToastModel {
                 anchorOrigin: () => model.anchorOrigin,
                 simple: () => !model.anchorOrigin,
                 transition: () => model.transition,
+                disablePortal: () => model.disablePortal,
                 closeReasons: {
                     clickaway: false,
                     escapeKeyDown: false

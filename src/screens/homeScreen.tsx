@@ -17,6 +17,10 @@ type HomeScreenStruct = UIBaseStruct<{
         testActionConfirmationDialog: () => Promise<void>;
         testBusyDisplay: () => Promise<void>;
         testFileSelector: () => Promise<void>;
+        testSuccessAlert: () => Promise<void>;
+        testInfoAlert: () => Promise<void>;
+        testWarningAlert: () => Promise<void>;
+        testErrorAlert: () => Promise<void>;
     };
 }>;
 
@@ -134,6 +138,30 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                 } else {
                     console.log("No files selected");
                 }
+            },
+
+            testSuccessAlert: async () => {
+                await model.bus.unicast("Alert.Success", { 
+                    message: "Operation completed successfully!" 
+                });
+            },
+
+            testInfoAlert: async () => {
+                await model.bus.unicast("Alert.Information", { 
+                    message: "This is an informational message." 
+                });
+            },
+
+            testWarningAlert: async () => {
+                await model.bus.unicast("Alert.Warning", { 
+                    message: "Warning: Please review your input." 
+                });
+            },
+
+            testErrorAlert: async () => {
+                await model.bus.unicast("Alert.Error", { 
+                    message: "Error: Something went wrong!" 
+                });
             }
         },
 
@@ -214,6 +242,39 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 onClick={model.testFileSelector}
                             />
                         </Row>
+
+                        <h3>📢 Global Alert Tests</h3>
+                        <p style={{ fontSize: "14px", color: "#666" }}>Global alerts (app-wide, managed by AppAlertManager via message bus):</p>
+                        <Row spacing="small" sx={{ flexWrap: "wrap" }}>
+                            <Button 
+                                contentView="Success Alert"
+                                variant="contained"
+                                color="success.main"
+                                size="small"
+                                onClick={model.testSuccessAlert}
+                            />
+                            <Button 
+                                contentView="Info Alert"
+                                variant="contained"
+                                color="info.main"
+                                size="small"
+                                onClick={model.testInfoAlert}
+                            />
+                            <Button 
+                                contentView="Warning Alert"
+                                variant="contained"
+                                color="warning.main"
+                                size="small"
+                                onClick={model.testWarningAlert}
+                            />
+                            <Button 
+                                contentView="Error Alert"
+                                variant="contained"
+                                color="error.main"
+                                size="small"
+                                onClick={model.testErrorAlert}
+                            />
+                        </Row>
                     </Block>
 
                     <Block sx={{
@@ -268,7 +329,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                 </Block>
             </Col>
         )
-    }
+    };
 
     const model = useUIBase(struct, params);
     return model;

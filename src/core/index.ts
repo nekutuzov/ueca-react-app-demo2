@@ -8,4 +8,5 @@ export * from "./infrastructure/appUtils";
 export * from "./infrastructure/appUI";
 export * from "./infrastructure/appBusyDisplay";
 export * from "./infrastructure/appDialogManager";
+export * from "./infrastructure/appAlertManager";
 export * from "./infrastructure/appTheme";

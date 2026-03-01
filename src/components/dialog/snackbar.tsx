@@ -13,6 +13,7 @@ type SnackbarStruct = UIBaseStruct<{
         transition: boolean;
         simple: boolean;
         closeReasons: { timeout?: boolean; clickaway?: boolean; escapeKeyDown?: boolean; };
+        disablePortal: boolean;
     };
 
     events: {
@@ -35,7 +36,8 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
             anchorOrigin: { vertical: "top", horizontal: "right" },
             transition: true,
             simple: false,
-            closeReasons: undefined
+            closeReasons: undefined,
+            disablePortal: false
         },
 
         events: {
@@ -83,13 +85,14 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
         View: () => {
             if (!model.open) return null;
 
-            const positionClass = `snackbar-${model.anchorOrigin.vertical}-${model.anchorOrigin.horizontal}`;
+            const positionClass = model.disablePortal ? "" : `snackbar-${model.anchorOrigin.vertical}-${model.anchorOrigin.horizontal}`;
             const transitionClass = model.transition ? "snackbar-transition" : "";
+            const portalClass = model.disablePortal ? "snackbar-relative" : "";
 
             return (
                 <div
                     id={model.htmlId()}
-                    className={`ueca-snackbar ${positionClass} ${transitionClass}`}
+                    className={`ueca-snackbar ${positionClass} ${transitionClass} ${portalClass}`}
                 >
                     {model.contentView || (
                         <div className="snackbar-content">

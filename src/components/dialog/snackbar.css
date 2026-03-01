@@ -7,6 +7,17 @@
     pointer-events: none;
 }
 
+/* Relative positioning mode for stacked toasts */
+.ueca-snackbar.snackbar-relative {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    transform: none;
+    width: 100%;
+}
+
 .ueca-snackbar>* {
     pointer-events: auto;
 }

@@ -3,4 +3,6 @@ type UserContext = {
     apiToken?: string;
 }
 
-export { UserContext }
+type Intent = "success" | "info" | "warning" | "error";
+
+export { UserContext, Intent }
