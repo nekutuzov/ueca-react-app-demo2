@@ -5,6 +5,7 @@ import { Intent } from "@core";
 // AppAlertManager - Global toast notification manager
 type AppAlertManagerStruct = UIBaseStruct<{
     props: {
+        anchorOrigin: { vertical: "top" | "bottom"; horizontal: "left" | "center" | "right" };
         _alerts: {
             message: React.ReactNode;
             intent: Intent;
@@ -31,6 +32,7 @@ function useAppAlertManager(params?: AppAlertManagerParams): AppAlertManagerMode
     const struct: AppAlertManagerStruct = {
         props: {
             id: useAppAlertManager.name,
+            anchorOrigin: { vertical: "top", horizontal: "right" },
             _alerts: []
         },
 
@@ -74,23 +76,33 @@ function useAppAlertManager(params?: AppAlertManagerParams): AppAlertManagerMode
             }
         },
 
-        View: () => (
-            <div
-                id={model.htmlId()}
-                style={{
-                    position: "fixed",
-                    right: "24px",
-                    top: "24px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                    gap: "8px",
-                    zIndex: 1400
-                }}
-            >
-                <model._alertView />
-            </div>
-        )
+        View: () => {
+            const { vertical, horizontal } = model.anchorOrigin;
+            const containerStyle: React.CSSProperties = {
+                position: "fixed",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
+                zIndex: 1400,
+                [vertical]: "24px"
+            };
+
+            // Handle horizontal positioning
+            if (horizontal === "center") {
+                containerStyle.left = "50%";
+                containerStyle.transform = "translateX(-50%)";
+                containerStyle.alignItems = "center";
+            } else {
+                containerStyle[horizontal] = "24px";
+                containerStyle.alignItems = horizontal === "left" ? "flex-start" : "flex-end";
+            }
+
+            return (
+                <div id={model.htmlId()} style={containerStyle}>
+                    <model._alertView />
+                </div>
+            );
+        }
     };
 
     const model = useUIBase(struct, params);
