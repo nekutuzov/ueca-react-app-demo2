@@ -1,0 +1,61 @@
+/* IconButton base styles */
+.ueca-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background-color: transparent;
+    color: var(--icon-button-color, inherit);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    outline: none;
+    padding: 0;
+}
+
+.ueca-icon-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.ueca-icon-button:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.ueca-icon-button:active:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Size variants */
+.ueca-icon-button-small {
+    width: 32px;
+    height: 32px;
+    font-size: 1.125rem;
+}
+
+.ueca-icon-button-small svg {
+    width: 18px;
+    height: 18px;
+}
+
+.ueca-icon-button-medium {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+}
+
+.ueca-icon-button-medium svg {
+    width: 24px;
+    height: 24px;
+}
+
+.ueca-icon-button-large {
+    width: 48px;
+    height: 48px;
+    font-size: 1.875rem;
+}
+
+.ueca-icon-button-large svg {
+    width: 28px;
+    height: 28px;
+}

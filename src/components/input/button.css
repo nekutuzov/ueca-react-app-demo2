@@ -1,0 +1,111 @@
+/* Button base styles */
+.ueca-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    border-radius: 4px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.02857em;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.ueca-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Size variants */
+.ueca-button-small {
+    padding: 4px 10px;
+    font-size: 0.8125rem;
+    min-height: 30px;
+}
+
+.ueca-button-medium {
+    padding: 6px 16px;
+    font-size: 0.875rem;
+    min-height: 36px;
+}
+
+.ueca-button-large {
+    padding: 8px 22px;
+    font-size: 0.9375rem;
+    min-height: 42px;
+}
+
+/* Text variant */
+.ueca-button-text {
+    background-color: transparent;
+    color: var(--button-color, #1976d2);
+}
+
+.ueca-button-text:hover:not(:disabled) {
+    background-color: rgba(25, 118, 210, 0.04);
+}
+
+.ueca-button-text:active:not(:disabled) {
+    background-color: rgba(25, 118, 210, 0.12);
+}
+
+/* Outlined variant */
+.ueca-button-outlined {
+    background-color: transparent;
+    color: var(--button-color, #1976d2);
+    border: 1px solid rgba(25, 118, 210, 0.5);
+}
+
+.ueca-button-outlined:hover:not(:disabled) {
+    background-color: rgba(25, 118, 210, 0.04);
+    border-color: var(--button-color, #1976d2);
+}
+
+.ueca-button-outlined:active:not(:disabled) {
+    background-color: rgba(25, 118, 210, 0.12);
+}
+
+/* Contained variant */
+.ueca-button-contained {
+    background-color: var(--button-color, #1976d2);
+    color: white;
+    box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),
+                0px 2px 2px 0px rgba(0,0,0,0.14),
+                0px 1px 5px 0px rgba(0,0,0,0.12);
+}
+
+.ueca-button-contained:hover:not(:disabled) {
+    box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),
+                0px 4px 5px 0px rgba(0,0,0,0.14),
+                0px 1px 10px 0px rgba(0,0,0,0.12);
+    filter: brightness(1.1);
+}
+
+.ueca-button-contained:active:not(:disabled) {
+    box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2),
+                0px 8px 10px 1px rgba(0,0,0,0.14),
+                0px 3px 14px 2px rgba(0,0,0,0.12);
+}
+
+/* Icon styles */
+.button-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+}
+
+.button-start-icon {
+    margin-left: -4px;
+}
+
+.button-end-icon {
+    margin-right: -4px;
+}

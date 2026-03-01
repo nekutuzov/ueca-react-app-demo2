@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { ErrorFallback, Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, FileSelectorModel, useFileSelector } from "@components";
-import { AbortExecutionException, AppRoutes, AppBusyDisplayModel, useAppBusyDisplay } from "@core";
+import { AbortExecutionException, AppRoutes, AppBusyDisplayModel, useAppBusyDisplay, AppDialogManagerModel, useAppDialogManager } from "@core";
 
 type AppUIStruct = UIBaseStruct<{
     props: {
@@ -9,8 +9,9 @@ type AppUIStruct = UIBaseStruct<{
 
     children: {
         busyDisplay: AppBusyDisplayModel;
+        dialogManager: AppDialogManagerModel;
         fileSelector: FileSelectorModel;
-        // Future: Add child components (themeManager, dialogManager, alertManager, etc.)
+        // Future: Add child components (themeManager, alertManager, etc.)
     };
 
     methods: {
@@ -28,6 +29,7 @@ function useAppUI(params?: AppUIParams): AppUIModel {
         },
 
         children: {
+            dialogManager: useAppDialogManager(),
             busyDisplay: useAppBusyDisplay(),
             fileSelector: useFileSelector(),
             // Future: Initialize child components here
@@ -47,8 +49,8 @@ function useAppUI(params?: AppUIParams): AppUIModel {
             appView: () => {
                 return <AppRoutes id={"routes"} />;
             },
-        },        
-        
+        },
+
         View: () =>
             <ErrorFallback onError={(e) => { console.error("AppUI ErrorFallback:", e) }}>
                 <Col id={model.htmlId()} fill>
@@ -56,7 +58,9 @@ function useAppUI(params?: AppUIParams): AppUIModel {
                         <model.appView />
                     </ErrorFallback>
                     <model.busyDisplay.View />
+                    <model.dialogManager.View />
                     <model.fileSelector.View />
+                    {/* Future: Add
                     {/* Future: Add dialogManager, alertManager views */}
                 </Col>
             </ErrorFallback>
@@ -70,12 +74,10 @@ function useAppUI(params?: AppUIParams): AppUIModel {
         if (ignoreAbort && (error instanceof AbortExecutionException)) {
             return;
         }
-        // Future: Show dialog with error
-        console.error("Unhandled exception:", error);
+        model.bus.unicast("Dialog.Exception", { error });
     }
 
     function _processReactException(error: Error) {
-        console.error("React component rendering error:", error);
         _processUnhandledException(error, false);
     }
 }

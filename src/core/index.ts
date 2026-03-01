@@ -7,4 +7,5 @@ export * from "./infrastructure/appTypes";
 export * from "./infrastructure/appUtils";
 export * from "./infrastructure/appUI";
 export * from "./infrastructure/appBusyDisplay";
+export * from "./infrastructure/appDialogManager";
 export * from "./infrastructure/appTheme";

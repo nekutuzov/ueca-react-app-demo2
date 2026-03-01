@@ -1,0 +1,121 @@
+/* Snackbar container */
+.ueca-snackbar {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.ueca-snackbar>* {
+    pointer-events: auto;
+}
+
+/* Position variants */
+.snackbar-top-left {
+    top: 24px;
+    left: 24px;
+}
+
+.snackbar-top-center {
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.snackbar-top-right {
+    top: 24px;
+    right: 24px;
+}
+
+.snackbar-bottom-left {
+    bottom: 24px;
+    left: 24px;
+}
+
+.snackbar-bottom-center {
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.snackbar-bottom-right {
+    bottom: 24px;
+    right: 24px;
+}
+
+/* Transition animation */
+.snackbar-transition {
+    animation: slideInFromRight 0.3s ease;
+}
+
+.snackbar-top-left.snackbar-transition,
+.snackbar-bottom-left.snackbar-transition {
+    animation: slideInFromLeft 0.3s ease;
+}
+
+.snackbar-top-center.snackbar-transition,
+.snackbar-bottom-center.snackbar-transition {
+    animation: slideInFromBottom 0.3s ease;
+}
+
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInFromBottom {
+    from {
+        transform: translate(-50%, 100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+/* Snackbar content */
+.snackbar-content {
+    display: flex;
+    align-items: center;
+    background-color: #323232;
+    color: white;
+    border-radius: 4px;
+    padding: 6px 16px;
+    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+        0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+        0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    min-width: 288px;
+    max-width: 568px;
+}
+
+.snackbar-message {
+    flex: 1;
+    padding: 8px 0;
+}
+
+.snackbar-action {
+    margin-left: 16px;
+    margin-right: -8px;
+}
