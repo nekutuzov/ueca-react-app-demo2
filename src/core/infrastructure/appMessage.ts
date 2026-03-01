@@ -1,5 +1,6 @@
 import * as UECA from "ueca-react";
-import { AppRoute, AnyRoute } from "./appRoutes";
+import { AnyRoute } from "@components";
+import { AppRoute } from "./appRoutes";
 
 // Application Messages: "message-type": { in: <parameter-type>, out: <parameter-type> }
 // Properties "in" and "out" describe value type of input and output parameters. Both properties are optional.

@@ -1,10 +1,13 @@
 import * as UECA from "ueca-react";
 import { ErrorFallback, Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, FileSelectorModel, useFileSelector } from "@components";
-import { AbortExecutionException, AppRoutes, AppBusyDisplayModel, useAppBusyDisplay, AppDialogManagerModel, useAppDialogManager, AppAlertManagerModel, useAppAlertManager } from "@core";
+import {
+    AbortExecutionException, AppBusyDisplayModel, useAppBusyDisplay, AppDialogManagerModel, useAppDialogManager,
+    AppAlertManagerModel, useAppAlertManager, AppRouter
+} from "@core";
 
 type AppUIStruct = UIBaseStruct<{
     props: {
-        // Future: Add properties like authorizedMode when needed
+        authorizedMode: boolean;
     };
 
     children: {
@@ -12,7 +15,6 @@ type AppUIStruct = UIBaseStruct<{
         dialogManager: AppDialogManagerModel;
         alertManager: AppAlertManagerModel;
         fileSelector: FileSelectorModel;
-        // Future: Add child components (themeManager, etc.)
     };
 
     methods: {
@@ -27,6 +29,7 @@ function useAppUI(params?: AppUIParams): AppUIModel {
     const struct: AppUIStruct = {
         props: {
             id: useAppUI.name,
+            authorizedMode: true,
         },
 
         children: {
@@ -34,7 +37,6 @@ function useAppUI(params?: AppUIParams): AppUIModel {
             alertManager: useAppAlertManager(),
             busyDisplay: useAppBusyDisplay(),
             fileSelector: useFileSelector(),
-            // Future: Initialize child components here
         },
 
         messages: {
@@ -49,7 +51,10 @@ function useAppUI(params?: AppUIParams): AppUIModel {
 
         methods: {
             appView: () => {
-                return <AppRoutes id={"routes"} />;
+                if (model.authorizedMode) {
+                    return <AppRouter id={"router"} />;
+                }
+                return <>Unauthorized Access</>;
             },
         },
 
@@ -63,7 +68,6 @@ function useAppUI(params?: AppUIParams): AppUIModel {
                     <model.dialogManager.View />
                     <model.alertManager.View />
                     <model.fileSelector.View />
-                    {/* Future: Add themeManager, etc. */}
                 </Col>
             </ErrorFallback>
     };
