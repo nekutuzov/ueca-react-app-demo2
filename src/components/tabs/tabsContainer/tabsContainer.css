@@ -1,0 +1,133 @@
+.tabs-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.tabs-container.horizontal {
+    flex-direction: column;
+}
+
+.tabs-container.vertical {
+    flex-direction: row;
+}
+
+/* Tabs header */
+.tabs-header {
+    display: flex;
+    position: relative;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.tabs-vertical .tabs-header {
+    flex-direction: column;
+    border-bottom: none;
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Tabs wrapper (for scrolling) */
+.tabs-wrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    overflow: hidden;
+}
+
+.tabs-vertical .tabs-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+/* Tabs scroller */
+.tabs-scroller {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.tabs-scroller.scrollable {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.tabs-scroller.scrollable::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.tabs-vertical .tabs-scroller {
+    flex-direction: column;
+}
+
+.tabs-vertical .tabs-scroller.scrollable {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Tabs list */
+.tabs-list {
+    display: flex;
+    gap: 0;
+    flex-wrap: nowrap;
+    min-width: min-content;
+}
+
+.tabs-list.fullWidth .tab {
+    flex: 1;
+    max-width: none;
+}
+
+.tabs-list.centered {
+    justify-content: center;
+}
+
+.tabs-vertical .tabs-list {
+    flex-direction: column;
+    width: 100%;
+    min-height: min-content;
+}
+
+/* Scroll buttons */
+.tabs-scroll-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    min-width: 40px;
+    flex-shrink: 0;
+    background: white;
+    border: none;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.54);
+    transition: color 0.2s ease;
+}
+
+.tabs-scroll-button:hover:not(:disabled) {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.tabs-scroll-button:disabled {
+    opacity: 0.38;
+    cursor: default;
+}
+
+.tabs-scroll-button svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.tabs-vertical .tabs-scroll-button {
+    width: 100%;
+    height: 40px;
+    min-height: 40px;
+}
+
+/* Content area */
+.tabs-content {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+}

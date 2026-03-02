@@ -21,3 +21,5 @@ export * from "./flyouts/alertToast/alertToast";
 export * from "./navigation/router";
 export * from "./navigation/navLink/navLink";
 export * from "./navigation/navItem/navItem";
+export * from "./tabs/tab/tab"; 
+export * from "./tabs/tabsContainer/tabsContainer"; 

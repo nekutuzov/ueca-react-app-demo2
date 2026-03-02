@@ -1,11 +1,17 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, NavLink, NavItem } from "@components";
+import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, NavLink, NavItem, useTab, useTabsContainer } from "@components";
 import { DetailedError } from "@core";
 
 type HomeScreenStruct = UIBaseStruct<{
     props: {
         message: string;
         busyTestCounter: number;
+    };
+
+    children: {
+        horizontalTabs: ReturnType<typeof useTabsContainer>;
+        verticalTabs: ReturnType<typeof useTabsContainer>;
+        scrollableTabs: ReturnType<typeof useTabsContainer>;
     };
 
     methods: {
@@ -33,6 +39,175 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
             id: useHomeScreen.name,
             message: "Welcome to UECA-React!",
             busyTestCounter: 0
+        },
+
+        children: {
+            horizontalTabs: useTabsContainer({
+                tabs: [
+                    useTab({
+                        tabId: "overview",
+                        labelView: "Overview",
+                        contentView: (
+                            <Block sx={{ padding: "20px" }}>
+                                <h3>Overview Tab</h3>
+                                <p>This is the overview content. Tabs allow you to organize content into separate views that users can switch between.</p>
+                                <p>This horizontal tabs container demonstrates the standard variant with labels.</p>
+                            </Block>
+                        )
+                    }),
+                    useTab({
+                        tabId: "features",
+                        labelView: "Features",
+                        iconView: (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                        ),
+                        iconPosition: "start",
+                        contentView: (
+                            <Block sx={{ padding: "20px" }}>
+                                <h3>Features Tab</h3>
+                                <ul>
+                                    <li>✓ Icon support with configurable positioning (top, bottom, start, end)</li>
+                                    <li>✓ Multiple variants: standard, scrollable, fullWidth</li>
+                                    <li>✓ Horizontal and vertical orientations</li>
+                                    <li>✓ Automatic selection management</li>
+                                    <li>✓ Form validation integration with invalid state styling</li>
+                                </ul>
+                            </Block>
+                        )
+                    }),
+                    useTab({
+                        tabId: "settings",
+                        labelView: "Settings",
+                        iconView: (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                            </svg>
+                        ),
+                        iconPosition: "start",
+                        contentView: (
+                            <Block sx={{ padding: "20px" }}>
+                                <h3>Settings Tab</h3>
+                                <p>This tab demonstrates icon + label combination with icon positioned at the start.</p>
+                                <p>Tab content can include any React components, forms, or complex layouts.</p>
+                            </Block>
+                        )
+                    })
+                ],
+                selectedTabId: "overview",
+                orientation: "horizontal",
+                variant: "standard",
+                centered: false,
+                onChange: (container) => {
+                    console.log("Horizontal tabs changed to:", container.selectedTab.getTabId());
+                }
+            }),
+
+            verticalTabs: useTabsContainer({
+                tabs: [
+                    useTab({
+                        tabId: "profile",
+                        labelView: "Profile",
+                        iconView: (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        ),
+                        iconPosition: "start",
+                        contentView: (
+                            <Block sx={{ padding: "20px" }}>
+                                <h3>Profile</h3>
+                                <p>Vertical tabs are useful for navigation-heavy interfaces or settings panels.</p>
+                            </Block>
+                        )
+                    }),
+                    useTab({
+                        tabId: "account",
+                        labelView: "Account",
+                        iconView: (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                            </svg>
+                        ),
+                        iconPosition: "start",
+                        contentView: (
+                            <Block sx={{ padding: "20px" }}>
+                                <h3>Account</h3>
+                                <p>The vertical orientation provides more space for longer tab labels.</p>
+                            </Block>
+                        )
+                    }),
+                    useTab({
+                        tabId: "security",
+                        labelView: "Security",
+                        iconView: (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                            </svg>
+                        ),
+                        iconPosition: "start",
+                        contentView: (
+                            <Block sx={{ padding: "20px" }}>
+                                <h3>Security</h3>
+                                <p>Vertical tabs work well with content that needs maximum horizontal space.</p>
+                            </Block>
+                        )
+                    })
+                ],
+                selectedTabId: "profile",
+                orientation: "vertical",
+                variant: "standard"
+            }),
+
+            scrollableTabs: useTabsContainer({
+                tabs: [
+                    useTab({
+                        tabId: "tab1",
+                        labelView: "First Tab",
+                        contentView: <Block sx={{ padding: "20px" }}><p>Content for first tab</p></Block>
+                    }),
+                    useTab({
+                        tabId: "tab2",
+                        labelView: "Second Tab",
+                        contentView: <Block sx={{ padding: "20px" }}><p>Content for second tab</p></Block>
+                    }),
+                    useTab({
+                        tabId: "tab3",
+                        labelView: "Third Tab",
+                        contentView: <Block sx={{ padding: "20px" }}><p>Content for third tab</p></Block>
+                    }),
+                    useTab({
+                        tabId: "tab4",
+                        labelView: "Fourth Tab",
+                        contentView: <Block sx={{ padding: "20px" }}><p>Content for fourth tab</p></Block>
+                    }),
+                    useTab({
+                        tabId: "tab5",
+                        labelView: "Fifth Tab",
+                        contentView: <Block sx={{ padding: "20px" }}><p>Content for fifth tab</p></Block>
+                    }),
+                    useTab({
+                        tabId: "tab6",
+                        labelView: "Sixth Tab",
+                        contentView: <Block sx={{ padding: "20px" }}><p>Content for sixth tab</p></Block>
+                    }),
+                    useTab({
+                        tabId: "tab7",
+                        labelView: "Seventh Tab",
+                        contentView: <Block sx={{ padding: "20px" }}><p>Content for seventh tab</p></Block>
+                    }),
+                    useTab({
+                        tabId: "tab8",
+                        labelView: "Eighth Tab",
+                        contentView: <Block sx={{ padding: "20px" }}><p>Content for eighth tab</p></Block>
+                    })
+                ],
+                selectedTabId: "tab1",
+                orientation: "horizontal",
+                variant: "scrollable",
+                scrollButtons: "auto"
+            })
         },
 
         methods: {
@@ -539,6 +714,47 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 }
                             />
                         </Col>
+                    </Block>
+
+                    <Block sx={{
+                        backgroundColor: "white",
+                        padding: "20px",
+                        borderRadius: "8px",
+                        marginBottom: "20px",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                    }}>
+                        <h2 style={{ marginTop: 0 }}>📑 Tabs Component Tests</h2>
+                        <p>Test the TabsContainer and Tab components with different orientations and variants (no Material-UI):</p>
+
+                        <h3>Standard Horizontal Tabs</h3>
+                        <Block sx={{ 
+                            border: "1px solid #e0e0e0", 
+                            borderRadius: "4px", 
+                            height: "300px",
+                            marginBottom: "20px"
+                        }}>
+                            <model.horizontalTabs.View />
+                        </Block>
+
+                        <h3>Vertical Tabs</h3>
+                        <Block sx={{ 
+                            border: "1px solid #e0e0e0", 
+                            borderRadius: "4px", 
+                            height: "300px",
+                            marginBottom: "20px"
+                        }}>
+                            <model.verticalTabs.View />
+                        </Block>
+
+                        <h3>Scrollable Tabs</h3>
+                        <p style={{ fontSize: "14px", color: "#666" }}>When there are many tabs, use scrollable variant with scroll buttons:</p>
+                        <Block sx={{ 
+                            border: "1px solid #e0e0e0", 
+                            borderRadius: "4px", 
+                            height: "250px"
+                        }}>
+                            <model.scrollableTabs.View />
+                        </Block>
                     </Block>
                 </Block>
             </Col>
