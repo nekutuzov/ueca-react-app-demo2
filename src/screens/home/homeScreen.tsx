@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block } from "@components";
+import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, NavLink, NavItem } from "@components";
 import { DetailedError } from "@core";
 
 type HomeScreenStruct = UIBaseStruct<{
@@ -65,7 +65,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     "The server returned a 404 status code. The requested resource could not be found.\n\nRequest URL: https://api.example.com/users/12345\nMethod: GET"
                 );
                 error.stack = "Error: Network request failed\n    at fetchUser (api.js:42:15)\n    at async loadUserData (users.js:18:9)";
-                
+
                 await model.bus.unicast("Dialog.Exception", {
                     title: "Operation Failed",
                     error
@@ -77,7 +77,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     title: "Confirm Action",
                     message: "Are you sure you want to proceed with this action?"
                 });
-                
+
                 if (confirmed) {
                     await model.bus.unicast("Dialog.Information", {
                         title: "Success",
@@ -94,7 +94,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     message: "This action cannot be undone. All data associated with this item will be permanently deleted.",
                     action: "Delete"
                 });
-                
+
                 if (confirmed) {
                     await model.bus.unicast("Dialog.Information", {
                         title: "Deleted",
@@ -108,11 +108,11 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
             testBusyDisplay: async () => {
                 model.busyTestCounter++;
                 await model.bus.unicast("BusyDisplay.Set", true);
-                
+
                 try {
                     // Simulate async operation
                     await new Promise(resolve => setTimeout(resolve, 2000));
-                    
+
                     await model.bus.unicast("Dialog.Information", {
                         title: "Operation Complete",
                         message: `Busy display test #${model.busyTestCounter} completed successfully!`
@@ -127,7 +127,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     fileMask: ".pdf,.jpg,.png,.txt",
                     multiselect: true
                 });
-                
+
                 if (files && files.length > 0) {
                     const fileList = files.map(f => f.name).join("\n");
                     const message = `You selected ${files.length} file(s):\n\n${fileList}`;
@@ -141,26 +141,26 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
             },
 
             testSuccessAlert: async () => {
-                await model.bus.unicast("Alert.Success", { 
-                    message: "Operation completed successfully!" 
+                await model.bus.unicast("Alert.Success", {
+                    message: "Operation completed successfully!"
                 });
             },
 
             testInfoAlert: async () => {
-                await model.bus.unicast("Alert.Information", { 
-                    message: "This is an informational message." 
+                await model.bus.unicast("Alert.Information", {
+                    message: "This is an informational message."
                 });
             },
 
             testWarningAlert: async () => {
-                await model.bus.unicast("Alert.Warning", { 
-                    message: "Warning: Please review your input." 
+                await model.bus.unicast("Alert.Warning", {
+                    message: "Warning: Please review your input."
                 });
             },
 
             testErrorAlert: async () => {
-                await model.bus.unicast("Alert.Error", { 
-                    message: "Error: Something went wrong!" 
+                await model.bus.unicast("Alert.Error", {
+                    message: "Error: Something went wrong!"
                 });
             }
         },
@@ -176,50 +176,50 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     <p>Your minimal UECA-React application is ready to go!</p>
 
                     <Block sx={{
-                        backgroundColor: "white", 
-                        padding: "20px", 
-                        borderRadius: "8px", 
+                        backgroundColor: "white",
+                        padding: "20px",
+                        borderRadius: "8px",
                         marginBottom: "20px",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
                     }}>
                         <h2 style={{ marginTop: 0 }}>🧪 Dialog Component Tests</h2>
                         <p>Test the newly implemented dialog system with plain HTML/CSS (no Material-UI):</p>
-                        
+
                         <Row spacing="small" sx={{ flexWrap: "wrap", marginBottom: "10px" }}>
-                            <Button 
+                            <Button
                                 contentView="Information Dialog"
                                 variant="contained"
                                 color="info.main"
                                 onClick={model.testInformationDialog}
                             />
-                            <Button 
+                            <Button
                                 contentView="Warning Dialog"
                                 variant="contained"
                                 color="warning.main"
                                 onClick={model.testWarningDialog}
                             />
-                            <Button 
+                            <Button
                                 contentView="Error Dialog"
                                 variant="contained"
                                 color="error.main"
                                 onClick={model.testErrorDialog}
                             />
                         </Row>
-                        
+
                         <Row spacing="small" sx={{ flexWrap: "wrap", marginBottom: "10px" }}>
-                            <Button 
+                            <Button
                                 contentView="Exception Dialog"
                                 variant="outlined"
                                 color="error.main"
                                 onClick={model.testExceptionDialog}
                             />
-                            <Button 
+                            <Button
                                 contentView="Confirmation Dialog"
                                 variant="outlined"
                                 color="primary.main"
                                 onClick={model.testConfirmationDialog}
                             />
-                            <Button 
+                            <Button
                                 contentView="Action Confirmation"
                                 variant="outlined"
                                 color="error.main"
@@ -229,13 +229,13 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
 
                         <h3>🔧 Infrastructure Tests</h3>
                         <Row spacing="small" sx={{ flexWrap: "wrap" }}>
-                            <Button 
+                            <Button
                                 contentView="Test Busy Display"
                                 variant="text"
                                 color="primary.main"
                                 onClick={model.testBusyDisplay}
                             />
-                            <Button 
+                            <Button
                                 contentView="Test File Selector"
                                 variant="text"
                                 color="primary.main"
@@ -246,28 +246,28 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         <h3>📢 Global Alert Tests</h3>
                         <p style={{ fontSize: "14px", color: "#666" }}>Global alerts (app-wide, managed by AppAlertManager via message bus):</p>
                         <Row spacing="small" sx={{ flexWrap: "wrap" }}>
-                            <Button 
+                            <Button
                                 contentView="Success Alert"
                                 variant="contained"
                                 color="success.main"
                                 size="small"
                                 onClick={model.testSuccessAlert}
                             />
-                            <Button 
+                            <Button
                                 contentView="Info Alert"
                                 variant="contained"
                                 color="info.main"
                                 size="small"
                                 onClick={model.testInfoAlert}
                             />
-                            <Button 
+                            <Button
                                 contentView="Warning Alert"
                                 variant="contained"
                                 color="warning.main"
                                 size="small"
                                 onClick={model.testWarningAlert}
                             />
-                            <Button 
+                            <Button
                                 contentView="Error Alert"
                                 variant="contained"
                                 color="error.main"
@@ -278,53 +278,267 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     </Block>
 
                     <Block sx={{
-                        backgroundColor: "white", 
-                        padding: "20px", 
+                        backgroundColor: "white",
+                        padding: "20px",
                         borderRadius: "8px",
+                        marginBottom: "20px",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
                     }}>
-                        <h2 style={{ marginTop: 0 }}>What is UECA-React?</h2>
-                        <p>
-                            UECA (Unified Encapsulated Component Architecture) is a React framework that provides:
-                        </p>
-                        <ul>
-                            <li>Component-based architecture with structured props, children, methods, and events</li>
-                            <li>Message bus communication for decoupled components</li>
-                            <li>MobX-powered reactive state management</li>
-                            <li>Lifecycle hooks (init, mount, draw, erase, unmount, deinit)</li>
-                            <li>Property bindings (unidirectional, bidirectional, custom)</li>
-                            <li>Automatic onChange events for all properties</li>
-                        </ul>
+                        <h2 style={{ marginTop: 0 }}>🔗 NavLink Component Tests</h2>
+                        <p>Test the NavLink component with different colors and underline styles (no Material-UI):</p>
 
-                        <h2>Getting Started</h2>
-                        <p>Check out the following resources:</p>
-                        <ul>
-                            <li>Documentation: <code>node_modules/ueca-react/docs/index.md</code></li>
-                            <li>Copilot Instructions: <code>.github/copilot-instructions.md</code></li>
-                            <li>Example Project: <a href="https://github.com/nekutuzov/ueca-react-app" target="_blank">https://github.com/nekutuzov/ueca-react-app</a></li>
-                        </ul>
+                        <h3>Different Colors</h3>
+                        <Row spacing="medium" sx={{ flexWrap: "wrap", marginBottom: "15px" }}>
+                            <NavLink
+                                route={{ path: "/" }}
+                                title="Primary Link"
+                                color="primary.main"
+                                underline="hover"
+                                linkView="Primary Color (hover underline)"
+                            />
+                            <NavLink
+                                route={{ path: "/" }}
+                                title="Secondary Link"
+                                color="secondary.main"
+                                underline="hover"
+                                linkView="Secondary Color (hover underline)"
+                            />
+                            <NavLink
+                                route={{ path: "/" }}
+                                title="Success Link"
+                                color="success.main"
+                                underline="hover"
+                                linkView="Success Color (hover underline)"
+                            />
+                            <NavLink
+                                route={{ path: "/" }}
+                                title="Error Link"
+                                color="error.main"
+                                underline="hover"
+                                linkView="Error Color (hover underline)"
+                            />
+                        </Row>
 
-                        <h2>Next Steps</h2>
-                        <ol>
-                            <li>Run <code>npm install</code> to install dependencies</li>
-                            <li>Run <code>npm run dev</code> to start the development server</li>
-                            <li>Copy the <code>.github/copilot-instructions.md</code> file from the source project for AI assistance</li>
-                            <li>Explore the component patterns in <code>src/components/base/</code></li>
-                            <li>Add your screens in <code>src/screens/</code></li>
-                            <li>Define routes in <code>src/core/infrastructure/appRoutes.tsx</code></li>
-                        </ol>
+                        <h3>Underline Variants</h3>
+                        <Row spacing="medium" sx={{ flexWrap: "wrap", marginBottom: "15px" }}>
+                            <NavLink
+                                route={{ path: "/" }}
+                                title="No Underline"
+                                color="primary.main"
+                                underline="none"
+                                linkView="No underline"
+                            />
+                            <NavLink
+                                route={{ path: "/" }}
+                                title="Hover Underline"
+                                color="primary.main"
+                                underline="hover"
+                                linkView="Hover underline (default)"
+                            />
+                            <NavLink
+                                route={{ path: "/" }}
+                                title="Always Underline"
+                                color="primary.main"
+                                underline="always"
+                                linkView="Always underlined"
+                            />
+                        </Row>
 
-                        <h2>Key Files Created</h2>
-                        <ul>
-                            <li><strong>Configuration:</strong> package.json, vite.config.ts, tsconfig files, eslint.config.js</li>
-                            <li><strong>Base Components:</strong> base.tsx, uiBase.tsx, editBase.tsx</li>
-                            <li><strong>Core Infrastructure:</strong> application.tsx, appStart.tsx, appMessage.ts, appUtils.ts, appBrowsingHistory.ts, appRoutes.tsx</li>
-                            <li><strong>API:</strong> restApiClient.ts, mocks/handlers.ts (MSW setup)</li>
-                        </ul>
+                        <h3>Disabled State</h3>
+                        <Row spacing="medium" sx={{ flexWrap: "wrap", marginBottom: "15px" }}>
+                            <NavLink
+                                route={{ path: "/" }}
+                                title="Enabled Link"
+                                color="primary.main"
+                                underline="hover"
+                                linkView="Enabled link"
+                            />
+                            <NavLink
+                                route={{ path: "/" }}
+                                title="Disabled Link"
+                                color="primary.main"
+                                underline="hover"
+                                disabled={true}
+                                linkView="Disabled link (not clickable)"
+                            />
+                        </Row>
 
-                        <p style={{ marginTop: "40px", color: "#666" }}>
-                            <em>This bare-bone template provides a minimal foundation to build UECA-React applications with native HTML controls!</em>
-                        </p>
+                        <h3>External Link (New Tab)</h3>
+                        <Row spacing="medium" sx={{ flexWrap: "wrap" }}>
+                            <NavLink
+                                route={{ path: "https://ueca-react.carrd.co/" }}
+                                title="UECA-React Official Website"
+                                color="primary.main"
+                                underline="always"
+                                newTab={true}
+                                linkView="UECA-React Official Website →"
+                            />
+                            <NavLink
+                                route={{ path: "https://github.com/nekutuzov/ueca-react-app" }}
+                                title="UECA-React Demo App"
+                                color="info.main"
+                                underline="always"
+                                newTab={true}
+                                linkView="Demo App on GitHub →"
+                            />
+                        </Row>
+                    </Block>
+
+                    <Block sx={{
+                        backgroundColor: "white",
+                        padding: "20px",
+                        borderRadius: "8px",
+                        marginBottom: "20px",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                    }}>
+                        <h2 style={{ marginTop: 0 }}>📱 NavItem Component Tests</h2>
+                        <p>Test the NavItem component with icon buttons and list items (no Material-UI):</p>
+
+                        <h3>Icon Button Mode</h3>
+                        <Row spacing="medium" sx={{ marginBottom: "15px", alignItems: "center" }}>
+                            <NavItem
+                                kind="button"
+                                route={{ path: "/" }}
+                                active={false}
+                                text="Home"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                                    </svg>
+                                }
+                            />
+                            <NavItem
+                                kind="button"
+                                route={{ path: "/" }}
+                                active={true}
+                                activeColor="primary.main"
+                                text="Active Home"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                                    </svg>
+                                }
+                            />
+                            <NavItem
+                                kind="button"
+                                route={{ path: "/" }}
+                                active={true}
+                                activeColor="success.main"
+                                text="Success Color"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                }
+                            />
+                            <NavItem
+                                kind="button"
+                                route={{ path: "/" }}
+                                active={false}
+                                disabled={true}
+                                text="Disabled"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                    </svg>
+                                }
+                            />
+                        </Row>
+
+                        <h3>List Item Mode (Default)</h3>
+                        <Col spacing="small" sx={{ maxWidth: "400px", marginBottom: "15px" }}>
+                            <NavItem
+                                kind="list-item"
+                                route={{ path: "/" }}
+                                active={false}
+                                text="Home"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                                    </svg>
+                                }
+                            />
+                            <NavItem
+                                kind="list-item"
+                                route={{ path: "/" }}
+                                active={true}
+                                activeColor="primary.main"
+                                text="Active Item (Selected)"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z"/>
+                                    </svg>
+                                }
+                            />
+                            <NavItem
+                                kind="list-item"
+                                route={{ path: "/" }}
+                                active={false}
+                                text="Settings"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                                    </svg>
+                                }
+                            />
+                            <NavItem
+                                kind="list-item"
+                                route={{ path: "/" }}
+                                active={false}
+                                disabled={true}
+                                text="Disabled List Item"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z"/>
+                                    </svg>
+                                }
+                            />
+                        </Col>
+
+                        <h3>List Item Without Icons</h3>
+                        <Col spacing="small" sx={{ maxWidth: "400px" }}>
+                            <NavItem
+                                kind="list-item"
+                                route={{ path: "/" }}
+                                active={false}
+                                text="Text Only Item"
+                            />
+                            <NavItem
+                                kind="list-item"
+                                route={{ path: "/" }}
+                                active={true}
+                                activeColor="secondary.main"
+                                text="Active Text Only"
+                            />
+                        </Col>
+
+                        <h3>External Navigation (New Tab)</h3>
+                        <Col spacing="small" sx={{ maxWidth: "400px" }}>
+                            <NavItem
+                                kind="list-item"
+                                route={{ path: "https://ueca-react.carrd.co/" }}
+                                newTab={true}
+                                active={false}
+                                text="UECA-React Official Website"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    </svg>
+                                }
+                            />
+                            <NavItem
+                                kind="list-item"
+                                route={{ path: "https://github.com/nekutuzov/ueca-react-app" }}
+                                newTab={true}
+                                active={false}
+                                text="UECA Demo App on GitHub"
+                                icon={
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                    </svg>
+                                }
+                            />
+                        </Col>
                     </Block>
                 </Block>
             </Col>

@@ -19,3 +19,5 @@ export * from "./popups/alertDialog/alertDialog";
 export * from "./flyouts/alertDrawer/alertDrawer";
 export * from "./flyouts/alertToast/alertToast";
 export * from "./navigation/router";
+export * from "./navigation/navLink/navLink";
+export * from "./navigation/navItem/navItem";

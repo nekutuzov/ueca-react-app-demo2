@@ -11,6 +11,8 @@ const screenRoutes = {
 const otherRoutes = {
     // Add routes without the app layout like document viewers and external links
     "https://cranesoft.net": () => null,
+    "https://ueca-react.carrd.co/": () => null,
+    "https://github.com/nekutuzov/ueca-react-app": () => null,
 };
 
 type OtherRoutes = typeof otherRoutes;
