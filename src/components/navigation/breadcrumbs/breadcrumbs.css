@@ -1,0 +1,22 @@
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 0;
+    list-style: none;
+    margin: 0;
+}
+
+.breadcrumbs-separator {
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.54);
+    user-select: none;
+}
+
+.breadcrumbs-separator svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}

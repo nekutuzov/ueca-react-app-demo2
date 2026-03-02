@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, NavLink, NavItem, useTab, useTabsContainer } from "@components";
+import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, NavLink, NavItem, useTab, useTabsContainer, Breadcrumbs } from "@components";
 import { DetailedError } from "@core";
 
 type HomeScreenStruct = UIBaseStruct<{
@@ -755,6 +755,85 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         }}>
                             <model.scrollableTabs.View />
                         </Block>
+                    </Block>
+
+                    <Block sx={{
+                        backgroundColor: "white",
+                        padding: "20px",
+                        borderRadius: "8px",
+                        marginBottom: "20px",
+                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                    }}>
+                        <h2 style={{ marginTop: 0 }}>🍞 Breadcrumbs Component Tests</h2>
+                        <p>Test the Breadcrumbs component for navigation trails (no Material-UI):</p>
+
+                        <h3>Simple Breadcrumbs with Text</h3>
+                        <Breadcrumbs childrenView={<>
+                            <span>Home</span>
+                            <span>Products</span>
+                            <span>Electronics</span>
+                            <span>Laptops</span>
+                        </>} />
+
+                        <h3 style={{ marginTop: "30px" }}>Breadcrumbs with NavLinks</h3>
+                        <Breadcrumbs childrenView={<>
+                            <NavLink route={{ path: "/" }} linkView="Home" underline="hover" />
+                            <NavLink route={{ path: "/" }} linkView="Category" underline="hover" />
+                            <NavLink route={{ path: "/" }} linkView="Subcategory" underline="hover" />
+                            <span style={{ color: "#666" }}>Current Page</span>
+                        </>} />
+
+                        <h3 style={{ marginTop: "30px" }}>Breadcrumbs with Colored Links</h3>
+                        <Breadcrumbs childrenView={<>
+                            <NavLink route={{ path: "/" }} linkView="Dashboard" color="secondary.main" underline="hover" />
+                            <NavLink route={{ path: "/" }} linkView="Settings" color="info.main" underline="hover" />
+                            <NavLink route={{ path: "/" }} linkView="Profile" color="success.main" underline="hover" />
+                            <span style={{ fontWeight: 600, color: "#d32f2f" }}>Edit</span>
+                        </>} />
+
+                        <h3 style={{ marginTop: "30px" }}>Breadcrumbs with Custom Separator</h3>
+                        <Breadcrumbs 
+                            separator={<span style={{ margin: "0 8px", color: "#999" }}>/</span>}
+                            childrenView={<>
+                                <NavLink route={{ path: "/" }} linkView="Root" underline="hover" />
+                                <NavLink route={{ path: "/" }} linkView="Folder" underline="hover" />
+                                <NavLink route={{ path: "/" }} linkView="Subfolder" underline="hover" />
+                                <span>File.txt</span>
+                            </>} 
+                        />
+
+                        <h3 style={{ marginTop: "30px" }}>Breadcrumbs with Dot Separator</h3>
+                        <Breadcrumbs 
+                            separator={<span style={{ margin: "0 8px", color: "#ccc" }}>•</span>}
+                            childrenView={<>
+                                <span>Blog</span>
+                                <span>Technology</span>
+                                <span>React</span>
+                                <span style={{ fontStyle: "italic" }}>Current Article</span>
+                            </>} 
+                        />
+
+                        <h3 style={{ marginTop: "30px" }}>Complex Breadcrumbs with Icons</h3>
+                        <Breadcrumbs childrenView={<>
+                            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                                </svg>
+                                <NavLink route={{ path: "/" }} linkView="Home" underline="hover" />
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
+                                </svg>
+                                <NavLink route={{ path: "/" }} linkView="Documents" underline="hover" />
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                </svg>
+                                <span>Report.pdf</span>
+                            </div>
+                        </>} />
                     </Block>
                 </Block>
             </Col>
