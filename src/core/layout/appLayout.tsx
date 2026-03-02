@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { Col, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, AnyRoute, RouterModel, useRouter } from "@components";
-import { ScreenRoute, screenRoutes } from "@core";
+import { ScreenRoute, screenRoutes, AppSideBarModel, useAppSideBar } from "@core";
 
 type AppLayoutStruct = UIBaseStruct<{
     props: {
@@ -8,6 +8,7 @@ type AppLayoutStruct = UIBaseStruct<{
     },
 
     children: {
+        sideBar: AppSideBarModel;
         router: RouterModel;
     },
 
@@ -27,6 +28,8 @@ function useAppLayout(params?: AppLayoutParams): AppLayoutModel {
         },
 
         children: {
+            sideBar: useAppSideBar(),
+
             router: useRouter({
                 routes: screenRoutes,
                 route: UECA.bind(() => model, "route") as UECA.Bond<AnyRoute>
@@ -42,6 +45,7 @@ function useAppLayout(params?: AppLayoutParams): AppLayoutModel {
         View: () => (
             <Col id={model.htmlId()} fill>
                 <Row fill divider spacing={"none"}>
+                    <model.sideBar.View />
                     <model.router.View />
                 </Row>
             </Col>

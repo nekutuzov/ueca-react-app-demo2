@@ -13,6 +13,7 @@ type NavItemStruct = UIBaseStruct<{
         activeColor: Palette;
         icon: React.ReactNode;
         text: string;
+        iconOnly: boolean;
     },
 
     children: {
@@ -39,6 +40,7 @@ function useNavItem(params?: NavItemParams): NavItemModel {
             activeColor: "primary.main",
             icon: undefined,
             text: undefined,
+            iconOnly: false,
         },
 
         children: {
@@ -77,7 +79,7 @@ function useNavItem(params?: NavItemParams): NavItemModel {
                     </button>
                 ) : (
                     <div
-                        className={`nav-item-list-button ${model.active ? 'selected' : ''}`}
+                        className={`nav-item-list-button ${model.active ? 'selected' : ''} ${model.iconOnly ? 'icon-only' : ''}`}
                         style={{ height, width }}
                     >
                         {model.icon && <div className="nav-item-icon">{model.icon}</div>}

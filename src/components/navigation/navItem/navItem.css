@@ -37,6 +37,7 @@
 .nav-item-list-button {
     display: flex;
     align-items: center;
+    gap: 8px;
     padding: 8px 16px;
     border: none;
     background-color: transparent;
@@ -47,6 +48,18 @@
     font-family: inherit;
     font-size: 16px;
     color: inherit;
+}
+
+/* Icon-only mode - center the icon */
+.nav-item-list-button.icon-only {
+    padding: 8px 0;
+    justify-content: center;
+}
+
+.nav-item-list-button.icon-only .nav-item-icon {
+    min-width: unset;
+    width: auto;
+    margin: 0;
 }
 
 .nav-item-list-button:hover:not(:disabled) {
@@ -66,7 +79,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 56px;
+    min-width: 32px;
     color: rgba(0, 0, 0, 0.54);
 }
 
