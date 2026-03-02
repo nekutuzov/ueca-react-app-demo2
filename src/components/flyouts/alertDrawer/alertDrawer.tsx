@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { Row, ButtonModel, DrawerModel, UIBaseModel, UIBaseParams, UIBaseStruct, useButton, useDrawer, useUIBase } from "@components";
+import { Row, ButtonModel, DrawerModel, SeverityIcon, UIBaseModel, UIBaseParams, UIBaseStruct, useButton, useDrawer, useUIBase } from "@components";
 
 // Alert Drawer component
 type AlertDrawerStruct = UIBaseStruct<{
@@ -8,6 +8,7 @@ type AlertDrawerStruct = UIBaseStruct<{
         contentView: React.ReactNode;
         customActionView: React.ReactNode;
         open: boolean;
+        severity?: "success" | "info" | "warning" | "error";
         titleView: React.ReactNode;
         width?: number;
         buttons: {
@@ -42,6 +43,7 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
             contentView: undefined,
             customActionView: undefined,
             open: false,
+            severity: undefined,
             titleView: undefined,
             width: undefined,
             closeResult: false,
@@ -49,7 +51,12 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
 
         children: {
             drawer: useDrawer({
-                titleView: () => model.titleView,
+                titleView: () => (
+                    <Row spacing="small" verticalAlign="center">
+                        {model.severity && <SeverityIcon severity={model.severity} size={24} />}
+                        {model.titleView}
+                    </Row>
+                ),
                 contentView: () => model.contentView,
                 actionView: () => (
                     <Row horizontalAlign={"right"}>

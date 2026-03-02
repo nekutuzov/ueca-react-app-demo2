@@ -44,9 +44,8 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
             onChangeOpen: () => {
                 if (model.open) {
                     asyncSafe(() => model.onOpen?.(model));
-                    // Auto-hide after 4 seconds if timeout is not disabled
-                    const flag = model.closeReasons?.timeout;
-                    if (UECA.isUndefined(flag) || flag) {
+                    // Auto-hide after 4 seconds if timeout is not disabled                    
+                    if (model.closeReasons?.timeout) {
                         setTimeout(() => {
                             if (model.open) {
                                 model.open = false;
@@ -59,7 +58,7 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
             }
         },
 
-        constr: () => {
+        init: () => {
             if (model.open) {
                 asyncSafe(() => model.onOpen?.(model));
             }
@@ -68,18 +67,24 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
         mount: () => {
             // Handle escape key
             const handleKeyDown = (e: KeyboardEvent) => {
-                if (e.key === "Escape" && model.open) {
-                    const flag = model.closeReasons?.escapeKeyDown;
-                    if (UECA.isUndefined(flag) || flag) {
+                if (e.key === "Escape" && model.open) {                    
+                    if (model.closeReasons?.escapeKeyDown) {
                         model.open = false;
                     }
                 }
             };
             document.addEventListener("keydown", handleKeyDown);
-        },
 
-        unmount: () => {
-            // Cleanup handled by React
+            // Handle click outside
+            const handleClickAway = (e: MouseEvent) => {
+                if (!model.open || !model.closeReasons?.clickaway) return;
+                
+                const snackbarElement = document.getElementById(model.htmlId());
+                if (snackbarElement && !snackbarElement.contains(e.target as Node)) {
+                    model.open = false;
+                }
+            };
+            document.addEventListener("mousedown", handleClickAway);
         },
 
         View: () => {
@@ -90,8 +95,7 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
             const portalClass = model.disablePortal ? "snackbar-relative" : "";
 
             return (
-                <div
-                    id={model.htmlId()}
+                <div id={model.htmlId()}
                     className={`ueca-snackbar ${positionClass} ${transitionClass} ${portalClass}`}
                 >
                     {model.contentView || (

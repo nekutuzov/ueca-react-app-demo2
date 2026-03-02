@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { Row, AlertDrawerModel, ButtonModel, DialogModel, UIBaseModel, UIBaseParams, UIBaseStruct, useAlertDrawer, useButton, useDialog, useUIBase } from "@components";
+import { Row, AlertDrawerModel, ButtonModel, DialogModel, SeverityIcon, UIBaseModel, UIBaseParams, UIBaseStruct, useAlertDrawer, useButton, useDialog, useUIBase } from "@components";
 
 // Alert Dialog component
 type AlertDialogStruct = UIBaseStruct<{
@@ -9,6 +9,7 @@ type AlertDialogStruct = UIBaseStruct<{
         detailsOpen: boolean,
         detailsView: React.ReactNode,
         open: boolean;
+        severity?: "success" | "info" | "warning" | "error";
         titleView: React.ReactNode;
         detailsTitleView: React.ReactNode;
         buttons: {
@@ -46,6 +47,7 @@ function useAlertDialog(params?: AlertDialogParams): AlertDialogModel {
             detailsOpen: false,
             detailsView: undefined,
             open: false,
+            severity: undefined,
             titleView: undefined,
             detailsTitleView: "Details",
             closeResult: undefined,
@@ -53,7 +55,12 @@ function useAlertDialog(params?: AlertDialogParams): AlertDialogModel {
 
         children: {
             dialog: useDialog({
-                titleView: () => model.titleView,
+                titleView: () => (
+                    <Row spacing="small" verticalAlign="center">
+                        {model.severity && <SeverityIcon severity={model.severity} size={24} />}
+                        {model.titleView}
+                    </Row>
+                ),
                 contentView: () => model.contentView,
                 actionView: () => (
                     <Row horizontalAlign={"spaceBetween"}>

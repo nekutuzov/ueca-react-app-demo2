@@ -48,12 +48,15 @@ function useAppDialogManager(params?: AppDialogManagerParams): AppDialogManagerM
             }
         });
 
+        const severity = _getSeverity(_kind);
+
         const newDialog = (
             <AlertDialog
                 id={"activeDialog"}
                 titleView={title}
                 contentView={message}
                 detailsView={details}
+                severity={severity}
                 buttons={{ okCancel: true, details: true }}
                 open={true}                
                 init={(m) => { if (action) m.okButton.contentView = action; }}
@@ -74,6 +77,19 @@ function useAppDialogManager(params?: AppDialogManagerParams): AppDialogManagerM
         details = details ? `${message}\n\n${details}` : message;
         details = error.stack ? `${details}\n\nCall Stack:\n${error.stack}` : details;
         await _openDialog("error", title, message, details);
+    }
+
+    function _getSeverity(kind: DialogKind): "success" | "info" | "warning" | "error" | undefined {
+        switch (kind) {
+            case "information":
+                return "info";
+            case "warning":
+                return "warning";
+            case "error":
+                return "error";
+            default:
+                return undefined;
+        }
     }
 }
 

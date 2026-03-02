@@ -54,10 +54,7 @@ function useAlertToast(params?: AlertToastParams): AlertToastModel {
                 simple: () => !model.anchorOrigin,
                 transition: () => model.transition,
                 disablePortal: () => model.disablePortal,
-                closeReasons: {
-                    clickaway: false,
-                    escapeKeyDown: false
-                },
+                closeReasons: { timeout: true },
                 onOpen: async () => {
                     await model.onOpen?.(model);
                 },
