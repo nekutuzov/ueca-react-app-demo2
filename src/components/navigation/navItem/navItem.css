@@ -1,16 +1,16 @@
-.nav-item {    
+.ueca-nav-item {    
     background-color: transparent;
     transition: background-color 0.2s;
 }
 
-.nav-item:hover:not(:disabled) {
+.ueca-nav-item:hover:not(:disabled) {
     background-color: var(--nav-item-hover);
 }
 
-.nav-item:disabled {
+.ueca-nav-item:disabled {
     color: var(--nav-item-disabled);
 }
 
-.nav-item.active:not(:disabled) {
+.ueca-nav-item.active:not(:disabled) {
     background-color: var(--nav-item-active);
 }

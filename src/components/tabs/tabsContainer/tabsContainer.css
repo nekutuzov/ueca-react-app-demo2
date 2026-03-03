@@ -1,96 +1,96 @@
-.tabs-container {
+.ueca-tabs-container {
     display: flex;
     width: 100%;
     height: 100%;
 }
 
-.tabs-container.horizontal {
+.ueca-tabs-container.horizontal {
     flex-direction: column;
 }
 
-.tabs-container.vertical {
+.ueca-tabs-container.vertical {
     flex-direction: row;
 }
 
 /* Tabs header */
-.tabs-header {
+.ueca-tabs-header {
     display: flex;
     position: relative;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.tabs-vertical .tabs-header {
+.ueca-tabs-vertical .ueca-tabs-header {
     flex-direction: column;
     border-bottom: none;
     border-right: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 /* Tabs wrapper (for scrolling) */
-.tabs-wrapper {
+.ueca-tabs-wrapper {
     display: flex;
     align-items: center;
     flex: 1;
     overflow: hidden;
 }
 
-.tabs-vertical .tabs-wrapper {
+.ueca-tabs-vertical .ueca-tabs-wrapper {
     flex-direction: column;
     align-items: stretch;
 }
 
 /* Tabs scroller */
-.tabs-scroller {
+.ueca-tabs-scroller {
     display: flex;
     flex: 1;
     overflow: hidden;
     position: relative;
 }
 
-.tabs-scroller.scrollable {
+.ueca-tabs-scroller.scrollable {
     overflow-x: auto;
     scroll-behavior: smooth;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE/Edge */
 }
 
-.tabs-scroller.scrollable::-webkit-scrollbar {
+.ueca-tabs-scroller.scrollable::-webkit-scrollbar {
     display: none; /* Chrome/Safari */
 }
 
-.tabs-vertical .tabs-scroller {
+.ueca-tabs-vertical .ueca-tabs-scroller {
     flex-direction: column;
 }
 
-.tabs-vertical .tabs-scroller.scrollable {
+.ueca-tabs-vertical .ueca-tabs-scroller.scrollable {
     overflow-x: hidden;
     overflow-y: auto;
 }
 
 /* Tabs list */
-.tabs-list {
+.ueca-tabs-list {
     display: flex;
     gap: 0;
     flex-wrap: nowrap;
     min-width: min-content;
 }
 
-.tabs-list.fullWidth .tab {
+.ueca-tabs-list.fullWidth .ueca-tab {
     flex: 1;
     max-width: none;
 }
 
-.tabs-list.centered {
+.ueca-tabs-list.centered {
     justify-content: center;
 }
 
-.tabs-vertical .tabs-list {
+.ueca-tabs-vertical .ueca-tabs-list {
     flex-direction: column;
     width: 100%;
     min-height: min-content;
 }
 
 /* Scroll buttons */
-.tabs-scroll-button {
+.ueca-tabs-scroll-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -104,29 +104,29 @@
     transition: color 0.2s ease;
 }
 
-.tabs-scroll-button:hover:not(:disabled) {
+.ueca-tabs-scroll-button:hover:not(:disabled) {
     color: rgba(0, 0, 0, 0.87);
 }
 
-.tabs-scroll-button:disabled {
+.ueca-tabs-scroll-button:disabled {
     opacity: 0.38;
     cursor: default;
 }
 
-.tabs-scroll-button svg {
+.ueca-tabs-scroll-button svg {
     width: 24px;
     height: 24px;
     fill: currentColor;
 }
 
-.tabs-vertical .tabs-scroll-button {
+.ueca-tabs-vertical .ueca-tabs-scroll-button {
     width: 100%;
     height: 40px;
     min-height: 40px;
 }
 
 /* Content area */
-.tabs-content {
+.ueca-tabs-content {
     flex: 1;
     overflow: auto;
     padding: 16px;

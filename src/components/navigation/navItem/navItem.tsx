@@ -56,7 +56,7 @@ function useNavItem(params?: NavItemParams): NavItemModel {
             _linkView: () => {
                 return (
                     <Block
-                        className={`nav-item ${model.active ? "active" : ""} ${model.disabled ? "disabled" : ""}`}
+                        className={`ueca-nav-item ${model.active ? "active" : ""} ${model.disabled ? "disabled" : ""}`}
                         height={model.extent?.height}
                         width={model.extent?.width}
                         padding={{

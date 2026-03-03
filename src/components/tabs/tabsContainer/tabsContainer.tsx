@@ -110,20 +110,20 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
 
         View: () => {
             const containerClasses = [
-                "tabs-container",
+                "ueca-tabs-container",
                 model.orientation
             ].filter(Boolean).join(" ");
 
             const scrollerClasses = [
-                "tabs-scroller",
+                "ueca-tabs-scroller",
                 model.variant === "scrollable" ? "scrollable" : ""
             ].filter(Boolean).join(" ");
 
             const listClasses = [
-                "tabs-list",
+                "ueca-tabs-list",
                 model.variant === "fullWidth" ? "fullWidth" : "",
                 model.centered ? "centered" : "",
-                model.orientation === "vertical" ? "tabs-vertical" : ""
+                model.orientation === "vertical" ? "ueca-tabs-vertical" : ""
             ].filter(Boolean).join(" ");
 
             const showScrollButtons = model.variant === "scrollable" && 
@@ -131,12 +131,12 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
 
             return (
                 <div id={model.htmlId()} className={containerClasses}>
-                    <div className={`tabs-header ${model.orientation === "vertical" ? "tabs-vertical" : ""}`}>
-                        <div className="tabs-wrapper">
+                    <div className={`ueca-tabs-header ${model.orientation === "vertical" ? "ueca-tabs-vertical" : ""}`}>
+                        <div className="ueca-tabs-wrapper">
                             {showScrollButtons && (
                                 <button 
                                     type="button"
-                                    className="tabs-scroll-button tabs-scroll-start"
+                                    className="ueca-tabs-scroll-button ueca-tabs-scroll-start"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
@@ -162,7 +162,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                             {showScrollButtons && (
                                 <button 
                                     type="button"
-                                    className="tabs-scroll-button tabs-scroll-end"
+                                    className="ueca-tabs-scroll-button ueca-tabs-scroll-end"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();

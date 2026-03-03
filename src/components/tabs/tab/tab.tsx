@@ -55,7 +55,7 @@ function useTab(params?: TabParams): TabModel {
 
             const invalid = !model.isValid();
             const classNames = [
-                "tab",
+                "ueca-tab",
                 model.selected ? "selected" : "",
                 invalid ? "invalid" : "",
                 model.iconView ? `icon-${model.iconPosition}` : "",
@@ -74,10 +74,10 @@ function useTab(params?: TabParams): TabModel {
                     }}
                 >
                     {model.iconView && (
-                        <span className="tab-icon">{model.iconView}</span>
+                        <span className="ueca-tab-icon">{model.iconView}</span>
                     )}
                     {model.labelView && (
-                        <span className="tab-label">{model.labelView}</span>
+                        <span className="ueca-tab-label">{model.labelView}</span>
                     )}
                 </button>
             );
