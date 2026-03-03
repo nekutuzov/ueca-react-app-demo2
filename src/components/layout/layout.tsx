@@ -30,6 +30,8 @@ type BlockProps = {
     zIndex?: number | string;
     width?: number | string;
     height?: number | string;
+    maxWidth?: number | string;
+    maxHeight?: number | string;
     padding?: Padding;
     backgroundColor?: Palette;
     overflow?: React.CSSProperties["overflow"];
@@ -45,6 +47,7 @@ type FlexProps = BlockProps & {
     reverseItems?: boolean;
     spacing?: Spacing;
     divider?: boolean;
+    flexWrap?: React.CSSProperties["flexWrap"];
 };
 
 type RowHorizontalAlign = keyof typeof rowHorizontalAlignMap;
@@ -71,8 +74,10 @@ function Block(props: BlockProps): UECA.ReactElement {
         textAlign: blockHorizontalAlignMap[props?.horizontalAlign ?? "left"],
         width: props?.width,
         height: props?.height,
+        maxWidth: props?.maxWidth,
+        maxHeight: props?.maxHeight,
         zIndex: props?.zIndex,
-        overflow: props?.overflow ?? "auto",
+        overflow: props?.overflow,
         backgroundColor: resolvePaletteColor(props?.backgroundColor),
         flex: props?.fill ? 1 : undefined,
         cursor: props?.cursor,
@@ -107,11 +112,14 @@ function Row(props: RowProps): UECA.ReactElement {
             ? rowReverseHorizontalAlignMap[props?.horizontalAlign ?? "left"]
             : rowHorizontalAlignMap[props?.horizontalAlign ?? "left"],
         alignItems: rowVerticalAlignMap[props?.verticalAlign],
+        flexWrap: props?.flexWrap,
         gap: spacingMap[props?.spacing ?? "default"] * 8, // Convert to pixels
         width: props?.width ?? (props?.horizontalAlign ? "100%" : undefined), // Default to full width when alignment is used
-        height: props?.height ?? (props?.verticalAlign ? "100%" : undefined), // Fill stretches vertically
+        height: props?.height ?? (props?.fill ? "100%" : undefined), // Fill stretches vertically
+        maxWidth: props?.maxWidth,
+        maxHeight: props?.maxHeight,
         zIndex: props?.zIndex,
-        overflow: props?.overflow ?? "hidden",
+        overflow: props?.overflow,
         backgroundColor: resolvePaletteColor(props?.backgroundColor),
         flex: props?.fill ? 1 : undefined, // Also set flex for when inside flex parent
         cursor: props?.cursor,
@@ -166,11 +174,14 @@ function Col(props: ColProps): UECA.ReactElement {
         justifyContent: props?.reverseItems
             ? colReverseVerticalAlignMap[props?.verticalAlign ?? "top"]
             : colVerticalAlignMap[props?.verticalAlign ?? "top"],
+        flexWrap: props?.flexWrap,
         gap: spacingMap[props?.spacing ?? "default"] * 8, // Convert to pixels
-        width: props?.width ?? (props?.horizontalAlign ? "100%" : undefined), // Fill stretches horizontally
+        width: props?.width ?? (props?.fill ? "100%" : undefined), // Fill stretches horizontally
         height: props?.height ?? (props?.verticalAlign ? "100%" : undefined), // Default to full height when alignment is used
+        maxWidth: props?.maxWidth,
+        maxHeight: props?.maxHeight,
         zIndex: props?.zIndex,
-        overflow: props?.overflow ?? "hidden",
+        overflow: props?.overflow ?? "visible",
         backgroundColor: resolvePaletteColor(props?.backgroundColor),
         flex: props?.fill ? 1 : undefined, // Also set flex for when inside flex parent
         cursor: props?.cursor,

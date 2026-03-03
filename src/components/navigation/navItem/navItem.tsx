@@ -89,7 +89,7 @@ function useNavItem(params?: NavItemParams): NavItemModel {
         },
 
         View: () => (
-            <Block id={model.htmlId()} fill>
+            <Block id={model.htmlId()}>
                 <model.navLink.View />
             </Block>
         )

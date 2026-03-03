@@ -61,7 +61,7 @@ function useAppUI(params?: AppUIParams): AppUIModel {
 
         View: () =>
             <ErrorFallback onError={(e) => { console.error("AppUI ErrorFallback:", e) }}>
-                <Col id={model.htmlId()} fill>
+                <Col id={model.htmlId()} fill height="100vh">
                     <ErrorFallback onError={(e) => { _processReactException(e) }}>
                         <model.appView />
                     </ErrorFallback>

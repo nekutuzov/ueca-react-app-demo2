@@ -43,8 +43,8 @@ function useAppLayout(params?: AppLayoutParams): AppLayoutModel {
         },
 
         View: () => (
-            <Col id={model.htmlId()} fill>
-                <Row fill divider spacing={"none"}>
+            <Col id={model.htmlId()} fill overflow="hidden">
+                <Row fill divider spacing={"none"} overflow="hidden">
                     <model.sideBar.View />
                     <model.router.View />
                 </Row>
