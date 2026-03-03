@@ -62,7 +62,7 @@ function useTabsScreen(params?: TabsScreenParams): TabsScreenModel {
         },
 
         View: () =>
-            <Col id={model.htmlId()} fill verticalAlign={"top"} overflow={"auto"}>
+            <Col id={model.htmlId()} fill verticalAlign={"top"}>
                 <model.crudScreen.View />
             </Col >
     }

@@ -55,7 +55,7 @@ function useScreenLayout(params?: ScreenParams): ScreenLayoutModel {
                         model.contentPaddings;
 
             return (
-                <Col id={model.htmlId()} fill divider>
+                <Col id={model.htmlId()} fill divider overflow={"hidden"}>
                     <Row verticalAlign={"center"} horizontalAlign={"spaceBetween"} padding={{ leftRight: "medium" }} height={"52px"}>
                         <model.breadcrumbsControl.View />
                         <Row>
@@ -63,7 +63,7 @@ function useScreenLayout(params?: ScreenParams): ScreenLayoutModel {
                             {/* <HiddenToolsButton items={model.hiddenToolsView} /> */}
                         </Row>
                     </Row>
-                    <Col fill padding={contentPaddings}>
+                    <Col fill padding={contentPaddings} overflow={"auto"}>
                         {model.contentView}
                     </Col>
                     <model.drawerPanel.View />

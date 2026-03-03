@@ -9,21 +9,24 @@
   <base href="/myapp/" />
   <style>
     html,
-    body {
-      height: 100vh;
+
+    * {
       margin: 0;
-      overflow: hidden;
+      padding: 0;
+      box-sizing: border-box;      
     }
 
     body {
+      height: 100vh;      
       display: flex;
       flex-direction: column;
-    }
+      overflow: hidden;
+    }    
 
     .main {
       flex: 1;
       display: flex;
-      overflow: hidden;
+      overflow: auto;
     }
   </style>
 </head>

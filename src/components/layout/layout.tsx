@@ -119,7 +119,7 @@ function Row(props: RowProps): UECA.ReactElement {
         maxWidth: props?.maxWidth,
         maxHeight: props?.maxHeight,
         zIndex: props?.zIndex,
-        overflow: props?.overflow,
+        overflow: props?.overflow ?? "visible",
         backgroundColor: resolvePaletteColor(props?.backgroundColor),
         flex: props?.fill ? 1 : undefined, // Also set flex for when inside flex parent
         cursor: props?.cursor,

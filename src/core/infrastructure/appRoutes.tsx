@@ -1,12 +1,12 @@
 import { Route } from "@components";
-import { HomeScreen, ButtonScreen } from "@screens";
+import { HomeScreen, ButtonScreen, LayoutScreen } from "@screens";
 
 
 const screenRoutes = {
     // Add routes within the app layout
     "/": () => <HomeScreen id={"homeScreen"} />, // Default route, can be used for dashboard or welcome screen
     "/home": () => <HomeScreen id={"homeScreen"} />, // TODO: after refactoring this screen add some general info about the app and its architecture.
-    "/layout": () => null, // Placeholder for future screens demonstrating Col,Row, Block components
+    "/layout": () => <LayoutScreen id={"layoutScreen"} />,
     "/buttons": () => <ButtonScreen id={"buttonScreen"} />,
     "/inputs": () => null, // Placeholder for future screens demonstrating input components    
     "/popups": () => null, // Placeholder for future screens demonstrating popupcomponents

@@ -9,6 +9,7 @@ type AppMenuStruct = UIBaseStruct<{
 
     children: {
         homeMenuItem: NavItemModel;
+        layoutMenuItem: NavItemModel;
         buttonsMenuItem: NavItemModel;
     }
 }>;
@@ -30,6 +31,16 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            layoutMenuItem: useNavItem({
+                text: "Layout",
+                route: { path: "/layout" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/>
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -58,6 +69,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
         View: () =>
             <Col id={model.htmlId()} fill overflow={"auto"} padding={{ top: "small" }} spacing={"none"}>
                 <model.homeMenuItem.View />
+                <model.layoutMenuItem.View />
                 <model.buttonsMenuItem.View />
             </Col>
     }
@@ -68,7 +80,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
     // Private methods
     function _syncActiveMenu(route: AppRoute) {
         // Directly access child menu items
-        const menuItems = [model.homeMenuItem, model.buttonsMenuItem];
+        const menuItems = [model.homeMenuItem, model.layoutMenuItem, model.buttonsMenuItem];
         menuItems.forEach(menuItem => {
             if (menuItem && menuItem.route) {
                 menuItem.active = route?.path?.startsWith(menuItem.route.path);
