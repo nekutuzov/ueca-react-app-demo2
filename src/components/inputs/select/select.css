@@ -1,0 +1,197 @@
+/* Select container */
+.ueca-select {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: inherit;
+    position: relative;
+}
+
+.ueca-select-fullwidth {
+    width: 100%;
+}
+
+/* Label */
+.ueca-select-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 4px;
+}
+
+.ueca-select-required {
+    color: #d32f2f;
+}
+
+/* Select input base */
+.ueca-select-input {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 12px 14px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    outline: none;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    color: rgba(0, 0, 0, 0.87);
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(0,0,0,0.54)'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 24px;
+    padding-right: 40px;
+}
+
+.ueca-select-input::placeholder {
+    color: rgba(0, 0, 0, 0.38);
+    font-style: italic;
+}
+
+.ueca-select-input:hover:not(:disabled) {
+    border-color: rgba(0, 0, 0, 0.87);
+}
+
+.ueca-select-input:focus {
+    border-color: var(--select-color, #1976d2);
+    border-width: 2px;
+    padding: 11px 13px 11px 13px;
+    padding-right: 39px; /* Adjust for wider border */
+}
+
+.ueca-select-input:disabled {
+    background-color: rgba(0, 0, 0, 0.04);
+    cursor: not-allowed;
+    color: rgba(0, 0, 0, 0.38);
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(0,0,0,0.26)'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+}
+
+/* Option styling */
+.ueca-select-input option {
+    padding: 8px;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.ueca-select-input option:disabled {
+    color: rgba(0, 0, 0, 0.38);
+}
+
+.ueca-select-input option[value=""]:first-child {
+    font-style: italic;
+    color: rgba(0, 0, 0, 0.38);
+}
+
+/* Outlined variant (default) */
+.ueca-select-outlined .ueca-select-input {
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    background-color: transparent;
+}
+
+/* Filled variant */
+.ueca-select-filled .ueca-select-input {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+    border-radius: 4px 4px 0 0;
+    background-color: rgba(0, 0, 0, 0.06);
+    padding: 16px 12px 8px;
+    padding-right: 40px;
+}
+
+.ueca-select-filled .ueca-select-input:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.09);
+}
+
+.ueca-select-filled .ueca-select-input:focus {
+    background-color: rgba(0, 0, 0, 0.09);
+    border-bottom-width: 2px;
+    border-bottom-color: var(--select-color, #1976d2);
+    padding: 16px 12px 7px;
+    padding-right: 39px;
+}
+
+/* Standard variant */
+.ueca-select-standard .ueca-select-input {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+    border-radius: 0;
+    padding: 8px 0;
+    padding-right: 32px;
+}
+
+.ueca-select-standard .ueca-select-input:hover:not(:disabled) {
+    border-bottom-color: rgba(0, 0, 0, 0.87);
+}
+
+.ueca-select-standard .ueca-select-input:focus {
+    border-bottom-width: 2px;
+    border-bottom-color: var(--select-color, #1976d2);
+    padding-bottom: 7px;
+    padding-right: 31px;
+}
+
+/* Error state */
+.ueca-select-error .ueca-select-input {
+    border-color: #d32f2f;
+}
+
+.ueca-select-error .ueca-select-input:focus {
+    border-color: #d32f2f;
+}
+
+.ueca-select-error.ueca-select-filled .ueca-select-input {
+    border-bottom-color: #d32f2f;
+}
+
+.ueca-select-error.ueca-select-standard .ueca-select-input {
+    border-bottom-color: #d32f2f;
+}
+
+/* Disabled state */
+.ueca-select-disabled .ueca-select-label {
+    color: rgba(0, 0, 0, 0.38);
+}
+
+/* Helper text */
+.ueca-select-helper-text {
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: 4px;
+}
+
+.ueca-select-helper-text-error {
+    color: #d32f2f;
+}
+
+/* Size variants */
+.ueca-select-small .ueca-select-input {
+    font-size: 0.875rem;
+    padding: 8px 10px;
+    padding-right: 36px;
+}
+
+.ueca-select-small .ueca-select-input:focus {
+    padding: 7px 9px;
+    padding-right: 35px;
+}
+
+.ueca-select-small.ueca-select-filled .ueca-select-input {
+    padding: 12px 10px 6px;
+    padding-right: 36px;
+}
+
+.ueca-select-small.ueca-select-filled .ueca-select-input:focus {
+    padding: 12px 10px 5px;
+    padding-right: 35px;
+}
+
+.ueca-select-small.ueca-select-standard .ueca-select-input {
+    padding: 6px 0;
+    padding-right: 28px;
+}
+
+.ueca-select-small.ueca-select-standard .ueca-select-input:focus {
+    padding-bottom: 5px;
+    padding-right: 27px;
+}

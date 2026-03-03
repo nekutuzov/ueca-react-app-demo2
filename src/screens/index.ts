@@ -5,3 +5,5 @@ export * from "./layout/tabsScreen";
 export * from "./home/homeScreen";
 export * from "./buttons/buttonScreen";
 export * from "./layouts/layoutScreen";
+export * from "./inputs/selectScreen";
+export * from "./inputs/radioGroupScreen";

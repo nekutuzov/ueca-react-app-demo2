@@ -11,6 +11,8 @@ type AppMenuStruct = UIBaseStruct<{
         homeMenuItem: NavItemModel;
         layoutMenuItem: NavItemModel;
         buttonsMenuItem: NavItemModel;
+        selectMenuItem: NavItemModel;
+        radioGroupMenuItem: NavItemModel;
     }
 }>;
 
@@ -55,6 +57,28 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
             }),
+            selectMenuItem: useNavItem({
+                text: "Select",
+                route: { path: "/select" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5z"/>
+                        <path d="M3 3h18v2H3V3zm0 16h18v2H3v-2zm0-8h18v2H3v-2z"/>
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            radioGroupMenuItem: useNavItem({
+                text: "RadioGroup",
+                route: { path: "/radio-group" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                        <circle cx="12" cy="12" r="5"/>
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
         },
 
         messages: {
@@ -71,6 +95,8 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 <model.homeMenuItem.View />
                 <model.layoutMenuItem.View />
                 <model.buttonsMenuItem.View />
+                <model.selectMenuItem.View />
+                <model.radioGroupMenuItem.View />
             </Col>
     }
 
@@ -80,7 +106,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
     // Private methods
     function _syncActiveMenu(route: AppRoute) {
         // Directly access child menu items
-        const menuItems = [model.homeMenuItem, model.layoutMenuItem, model.buttonsMenuItem];
+        const menuItems = [model.homeMenuItem, model.layoutMenuItem, model.buttonsMenuItem, model.selectMenuItem, model.radioGroupMenuItem];
         menuItems.forEach(menuItem => {
             if (menuItem && menuItem.route) {
                 menuItem.active = route?.path?.startsWith(menuItem.route.path);
