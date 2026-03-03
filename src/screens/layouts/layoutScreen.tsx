@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useTab, useUIBase } from "@components";
-import { TabsScreenModel, useTabsScreen, Breadcrumb } from "@screens";
+import { TabsScreenModel, useTabsScreen, Breadcrumb } from "@core";
 import { BlockDemos } from "./blockDemos";
 import { RowDemos } from "./rowDemos";
 import { ColDemos } from "./colDemos";

@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, RadioGroup, Row, Col, Block, Button } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@screens";
+import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 
 type RadioGroupScreenStruct = UIBaseStruct<{
     props: {

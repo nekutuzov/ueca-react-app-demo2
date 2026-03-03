@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, IconButton } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@screens";
+import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 
 type ButtonScreenStruct = UIBaseStruct<{
     props: {

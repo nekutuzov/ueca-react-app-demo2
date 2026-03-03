@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { AlertDrawerModel, BlockProps, Col, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useAlertDrawer, useUIBase } from "@components";
-import { Breadcrumb, LocationBreadcrumbsModel, useLocationBreadcrumbs } from "@screens";
+import { Breadcrumb, LocationBreadcrumbsModel, useLocationBreadcrumbs } from "@core";
 
 type ScreenLayoutStruct = UIBaseStruct<{
     props: {

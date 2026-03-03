@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { Col, TabModel, TabsContainerModel, UIBaseModel, UIBaseParams, UIBaseStruct, useTabsContainer, useUIBase } from "@components";
-import { CRUDScreenEvents, CRUDScreenMethods, CRUDScreenModel, CRUDScreenProps, useCRUDScreen } from "@screens";
+import { CRUDScreenEvents, CRUDScreenMethods, CRUDScreenModel, CRUDScreenProps, useCRUDScreen } from "@core";
 
 type TabsScreenStruct = UIBaseStruct<{
     props: Omit<CRUDScreenProps, "contentView"> & {

@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, NavLink, NavItem, useTab, useTabsContainer, Breadcrumbs } from "@components";
 import { DetailedError } from "@core";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@screens";
+import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 
 type HomeScreenStruct = UIBaseStruct<{
     props: {

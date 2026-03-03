@@ -4,7 +4,7 @@ import {
     useUIBase, useValidator
 } from "@components";
 import { AppRoute, asyncSafe } from "@core";
-import { Breadcrumb, ScreenLayoutModel, useScreenLayout } from "@screens";
+import { Breadcrumb, ScreenLayoutModel, useScreenLayout } from "@core";
 
 type CRUDScreenStruct = UIBaseStruct<{
     props: CRUDScreenProps & {
