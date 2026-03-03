@@ -55,25 +55,6 @@ function useTextField(params?: TextFieldParams): TextFieldModel {
             const colorClass = resolvePaletteColor(model.color);
             const className = `ueca-textfield ueca-textfield-${model.variant}${model.error ? " ueca-textfield-error" : ""}${model.disabled ? " ueca-textfield-disabled" : ""}${model.fullWidth ? " ueca-textfield-fullwidth" : ""}`;
 
-            const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-                model.value = e.target.value;
-                if (model.onChange) {
-                    model.onChange(model.value, model);
-                }
-            };
-
-            const handleFocus = () => {
-                if (model.onFocus) {
-                    model.onFocus(model);
-                }
-            };
-
-            const handleBlur = () => {
-                if (model.onBlur) {
-                    model.onBlur(model);
-                }
-            };
-
             return (
                 <div
                     id={model.htmlId()}
@@ -96,9 +77,9 @@ function useTextField(params?: TextFieldParams): TextFieldModel {
                             disabled={model.disabled}
                             required={model.required}
                             rows={model.rows}
-                            onChange={handleChange}
-                            onFocus={handleFocus}
-                            onBlur={handleBlur}
+                            onChange={_handleChange}
+                            onFocus={_handleFocus}
+                            onBlur={_handleBlur}
                         />
                     ) : (
                         <input
@@ -109,9 +90,9 @@ function useTextField(params?: TextFieldParams): TextFieldModel {
                             disabled={model.disabled}
                             required={model.required}
                             autoComplete={model.autoComplete}
-                            onChange={handleChange}
-                            onFocus={handleFocus}
-                            onBlur={handleBlur}
+                            onChange={_handleChange}
+                            onFocus={_handleFocus}
+                            onBlur={_handleBlur}
                         />
                     )}
                     {model.helperTextView && (
@@ -126,6 +107,26 @@ function useTextField(params?: TextFieldParams): TextFieldModel {
 
     const model = useUIBase(struct, params);
     return model;
+
+    // Private methods
+    function _handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+        model.value = e.target.value;
+        if (model.onChange) {
+            model.onChange(model.value, model);
+        }
+    }
+
+    function _handleFocus() {
+        if (model.onFocus) {
+            model.onFocus(model);
+        }
+    }
+
+    function _handleBlur() {
+        if (model.onBlur) {
+            model.onBlur(model);
+        }
+    }
 }
 
 const TextField = UECA.getFC(useTextField);

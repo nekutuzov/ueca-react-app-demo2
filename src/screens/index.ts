@@ -1,5 +1,5 @@
 export * from "./home/homeScreen";
-export * from "./buttons/buttonScreen";
+export * from "./button/buttonScreen";
 export * from "./layouts/layoutScreen";
 export * from "./inputs/textFieldScreen";
 export * from "./inputs/selectScreen";

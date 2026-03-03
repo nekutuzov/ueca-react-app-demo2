@@ -53,7 +53,6 @@
 /* Hover state */
 .ueca-checkbox:hover:not(.ueca-checkbox-disabled) .checkbox-custom {
     border-color: var(--checkbox-color, #1976d2);
-    background-color: rgba(25, 118, 210, 0.04);
 }
 
 /* Checked state */

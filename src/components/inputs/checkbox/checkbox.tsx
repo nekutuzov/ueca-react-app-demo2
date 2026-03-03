@@ -35,9 +35,9 @@ function useCheckbox(params?: CheckboxParams): CheckboxModel {
 
         View: () => {
             const colorClass = resolvePaletteColor(model.color);
-            const className = `ueca-checkbox ueca-checkbox-${model.size}${model.disabled ? " ueca-checkbox-disabled" : ""}${model.indeterminate ? " ueca-checkbox-indeterminate" : ""}`;
+            const className = `ueca-checkbox ueca-checkbox-${model.size} ${model.disabled ? "ueca-checkbox-disabled" : ""} ${model.indeterminate ? "ueca-checkbox-indeterminate" : ""}`;
 
-            const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {                
                 model.checked = e.target.checked;
                 if (model.onChange) {
                     model.onChange(model.checked, model);
