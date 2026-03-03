@@ -1,19 +1,17 @@
 import * as UECA from "ueca-react";
-import { Block, NavLinkModel, UIBaseModel, UIBaseParams, UIBaseStruct, useNavLink, useUIBase } from "@components";
-import { AppRoute, Palette, resolvePaletteColor } from "@core";
+import { Block, Row, NavLinkModel, UIBaseModel, UIBaseParams, UIBaseStruct, useNavLink, useUIBase } from "@components";
+import { AppRoute, resolvePaletteColor } from "@core";
 import "./navItem.css";
 
 type NavItemStruct = UIBaseStruct<{
     props: {
-        kind: "list-item" | "button";
         active: boolean;
         route: AppRoute;
         disabled: boolean;
         newTab: boolean;
-        activeColor: Palette;
         icon: React.ReactNode;
         text: string;
-        iconOnly: boolean;
+        mode: "icon-only" | "text-only" | "icon-text";
     },
 
     children: {
@@ -32,20 +30,17 @@ function useNavItem(params?: NavItemParams): NavItemModel {
     const struct: NavItemStruct = {
         props: {
             id: useNavItem.name,
-            kind: "list-item",
             active: false,
             route: UECA.bind(() => model.navLink, "route"),
             disabled: UECA.bind(() => model.navLink, "disabled"),
             newTab: UECA.bind(() => model.navLink, "newTab"),
-            activeColor: "primary.main",
+            text: UECA.bind(() => model.navLink, "title"),
             icon: undefined,
-            text: undefined,
-            iconOnly: false,
+            mode: "icon-text",
         },
 
         children: {
-            navLink: useNavLink({
-                title: () => model.text,
+            navLink: useNavLink({                
                 underline: "none",
                 linkView: () => <model._linkView />,
                 beforeNavigate: async (route) => {
@@ -59,38 +54,42 @@ function useNavItem(params?: NavItemParams): NavItemModel {
 
         methods: {
             _linkView: () => {
-                const activeColorStyle = resolvePaletteColor(model.activeColor);
-                const height = model.extent?.height;
-                const width = model.extent?.width;
-                
-                return model.kind === "button" ? (
-                    <button
-                        className={`nav-item-icon-button ${model.active ? 'active' : ''}`}
-                        disabled={model.disabled}
-                        style={{
-                            height,
-                            width,
-                            ...(model.active ? { 
-                                '--nav-item-active-color': activeColorStyle 
-                            } as React.CSSProperties : {})
+                return (
+                    <Block
+                        className={`nav-item ${model.active ? "active" : ""} ${model.disabled ? "disabled" : ""}`}
+                        height={model.extent?.height}
+                        width={model.extent?.width}
+                        padding={{
+                            topBottom: "small",
+                            leftRight: model.mode === "icon-only" ? undefined : "small"
                         }}
+                        cursor={model.disabled ? "default" : "pointer"}
+                        sx={{
+                            "--nav-item-hover": resolvePaletteColor("menu.hover"),
+                            "--nav-item-disabled": resolvePaletteColor("menu.disabled"),
+                            "--nav-item-active": resolvePaletteColor("menu.active")
+                        } as React.CSSProperties}
                     >
-                        {model.icon}
-                    </button>
-                ) : (
-                    <div
-                        className={`nav-item-list-button ${model.active ? 'selected' : ''} ${model.iconOnly ? 'icon-only' : ''}`}
-                        style={{ height, width }}
-                    >
-                        {model.icon && <div className="nav-item-icon">{model.icon}</div>}
-                        {model.text && <div className="nav-item-text">{model.text}</div>}
-                    </div>
+                        <Row
+                            horizontalAlign={model.mode === "icon-only" ? "center" : "left"}
+                            verticalAlign={"center"}
+                            spacing={model.mode === "icon-only" ? undefined : "small"}
+                            fill
+                        >
+                            <UECA.IF condition={model.icon && model.mode !== "text-only"}>
+                                {model.icon}
+                            </UECA.IF>
+                            <UECA.IF condition={model.mode !== "icon-only"}>
+                                {model.text}
+                            </UECA.IF>
+                        </Row>
+                    </Block>
                 );
             }
         },
 
         View: () => (
-            <Block id={model.htmlId()} className="ueca-nav-item" fill overflow={"hidden"}>
+            <Block id={model.htmlId()} fill>
                 <model.navLink.View />
             </Block>
         )

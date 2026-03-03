@@ -34,6 +34,7 @@ type BlockProps = {
     backgroundColor?: Palette;
     overflow?: React.CSSProperties["overflow"];
     horizontalAlign?: BlockHorizontalAlign;
+    cursor?: React.CSSProperties["cursor"];
     // Events
     onClick?: React.MouseEventHandler<HTMLDivElement>;
     onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
@@ -65,7 +66,7 @@ type ColProps = Omit<FlexProps, "horizontalAlign"> & {
 // Block component
 function Block(props: BlockProps): UECA.ReactElement {
     if (props?.render === false) return null;
-    
+
     const style: React.CSSProperties = {
         textAlign: blockHorizontalAlignMap[props?.horizontalAlign ?? "left"],
         width: props?.width,
@@ -74,6 +75,7 @@ function Block(props: BlockProps): UECA.ReactElement {
         overflow: props?.overflow ?? "auto",
         backgroundColor: resolvePaletteColor(props?.backgroundColor),
         flex: props?.fill ? 1 : undefined,
+        cursor: props?.cursor,
         ...paddingStyleMap(props?.padding),
         ...props?.sx
     };
@@ -97,12 +99,12 @@ function Block(props: BlockProps): UECA.ReactElement {
 // Row component
 function Row(props: RowProps): UECA.ReactElement {
     if (props?.render === false) return null;
-    
+
     const style: React.CSSProperties = {
         display: "flex",
         flexDirection: props?.reverseItems ? "row-reverse" : "row",
-        justifyContent: props?.reverseItems 
-            ? rowReverseHorizontalAlignMap[props?.horizontalAlign ?? "left"] 
+        justifyContent: props?.reverseItems
+            ? rowReverseHorizontalAlignMap[props?.horizontalAlign ?? "left"]
             : rowHorizontalAlignMap[props?.horizontalAlign ?? "left"],
         alignItems: rowVerticalAlignMap[props?.verticalAlign],
         gap: spacingMap[props?.spacing ?? "default"] * 8, // Convert to pixels
@@ -112,22 +114,23 @@ function Row(props: RowProps): UECA.ReactElement {
         overflow: props?.overflow ?? "hidden",
         backgroundColor: resolvePaletteColor(props?.backgroundColor),
         flex: props?.fill ? 1 : undefined, // Also set flex for when inside flex parent
+        cursor: props?.cursor,
         ...paddingStyleMap(props?.padding),
         ...props?.sx
     };
 
     // Handle dividers
-    const children = props?.divider 
+    const children = props?.divider
         ? React.Children.toArray(props?.children).reduce((acc: React.ReactNode[], child, index) => {
             if (index > 0) {
                 acc.push(
-                    <div 
-                        key={`divider-${index}`} 
-                        style={{ 
-                            width: "1px", 
+                    <div
+                        key={`divider-${index}`}
+                        style={{
+                            width: "1px",
                             backgroundColor: "#e0e0e0",
                             alignSelf: "stretch"
-                        }} 
+                        }}
                     />
                 );
             }
@@ -155,13 +158,13 @@ function Row(props: RowProps): UECA.ReactElement {
 // Col component
 function Col(props: ColProps): UECA.ReactElement {
     if (props?.render === false) return null;
-    
+
     const style: React.CSSProperties = {
         display: "flex",
         flexDirection: props?.reverseItems ? "column-reverse" : "column",
         alignItems: colHorizontalAlignMap[props?.horizontalAlign],
-        justifyContent: props?.reverseItems 
-            ? colReverseVerticalAlignMap[props?.verticalAlign ?? "top"] 
+        justifyContent: props?.reverseItems
+            ? colReverseVerticalAlignMap[props?.verticalAlign ?? "top"]
             : colVerticalAlignMap[props?.verticalAlign ?? "top"],
         gap: spacingMap[props?.spacing ?? "default"] * 8, // Convert to pixels
         width: props?.width ?? (props?.horizontalAlign ? "100%" : undefined), // Fill stretches horizontally
@@ -170,22 +173,23 @@ function Col(props: ColProps): UECA.ReactElement {
         overflow: props?.overflow ?? "hidden",
         backgroundColor: resolvePaletteColor(props?.backgroundColor),
         flex: props?.fill ? 1 : undefined, // Also set flex for when inside flex parent
+        cursor: props?.cursor,
         ...paddingStyleMap(props?.padding),
         ...props?.sx
     };
 
     // Handle dividers
-    const children = props?.divider 
+    const children = props?.divider
         ? React.Children.toArray(props?.children).reduce((acc: React.ReactNode[], child, index) => {
             if (index > 0) {
                 acc.push(
-                    <div 
-                        key={`divider-${index}`} 
-                        style={{ 
-                            height: "1px", 
+                    <div
+                        key={`divider-${index}`}
+                        style={{
+                            height: "1px",
                             backgroundColor: "#e0e0e0",
                             alignSelf: "stretch"
-                        }} 
+                        }}
                     />
                 );
             }

@@ -18,41 +18,41 @@ const paletteColors: Record<string, string> = {
     "primary.main": "#1976d2",
     "primary.light": "#42a5f5",
     "primary.dark": "#1565c0",
-    
+
     // Secondary colors
     "secondary.main": "#9c27b0",
     "secondary.light": "#ba68c8",
     "secondary.dark": "#7b1fa2",
-    
+
     // Error colors
     "error.main": "#d32f2f",
     "error.light": "#ef5350",
     "error.dark": "#c62828",
-    
+
     // Warning colors
     "warning.main": "#ed6c02",
     "warning.light": "#ff9800",
     "warning.dark": "#e65100",
-    
+
     // Info colors
     "info.main": "#0288d1",
     "info.light": "#03a9f4",
     "info.dark": "#01579b",
-    
+
     // Success colors
     "success.main": "#2e7d32",
     "success.light": "#4caf50",
     "success.dark": "#1b5e20",
-    
+
     // Text colors
     "text.primary": "rgba(0, 0, 0, 0.87)",
     "text.secondary": "rgba(0, 0, 0, 0.6)",
     "text.disabled": "rgba(0, 0, 0, 0.38)",
-    
+
     // Background colors
     "background.paper": "#ffffff",
     "background.default": "#fafafa",
-    
+
     // Action colors
     "action.active": "rgba(0, 0, 0, 0.54)",
     "action.hover": "rgba(0, 0, 0, 0.04)",
@@ -60,6 +60,10 @@ const paletteColors: Record<string, string> = {
     "action.disabled": "rgba(0, 0, 0, 0.26)",
     "action.disabledBackground": "rgba(0, 0, 0, 0.12)",
     "action.focus": "rgba(0, 0, 0, 0.12)",
+
+    "menu.hover": "rgba(0, 0, 0, 0.04)",
+    "menu.disabled": "rgba(0, 0, 0, 0.26)",    
+    "menu.active": "rgba(25, 118, 210, 0.08)",    
 } as const;
 
 // Helper function to resolve palette color to CSS color

@@ -569,10 +569,10 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         <h2 style={{ marginTop: 0 }}>📱 NavItem Component Tests</h2>
                         <p>Test the NavItem component with icon buttons and list items (no Material-UI):</p>
 
-                        <h3>Icon Button Mode</h3>
+                        <h3>Icon Only Mode</h3>
                         <Row spacing="medium" sx={{ marginBottom: "15px", alignItems: "center" }}>
                             <NavItem
-                                kind="button"
+                                mode="icon-only"
                                 route={{ path: "/" }}
                                 active={false}
                                 text="Home"
@@ -583,10 +583,9 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 }
                             />
                             <NavItem
-                                kind="button"
+                                mode="icon-only"
                                 route={{ path: "/" }}
                                 active={true}
-                                activeColor="primary.main"
                                 text="Active Home"
                                 icon={
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -595,10 +594,9 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 }
                             />
                             <NavItem
-                                kind="button"
+                                mode="icon-only"
                                 route={{ path: "/" }}
                                 active={true}
-                                activeColor="success.main"
                                 text="Success Color"
                                 icon={
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -607,7 +605,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 }
                             />
                             <NavItem
-                                kind="button"
+                                mode="icon-only"
                                 route={{ path: "/" }}
                                 active={false}
                                 disabled={true}
@@ -620,10 +618,10 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                             />
                         </Row>
 
-                        <h3>List Item Mode (Default)</h3>
+                        <h3>Icon + Text Mode (Default)</h3>
                         <Col spacing="small" sx={{ maxWidth: "400px", marginBottom: "15px" }}>
                             <NavItem
-                                kind="list-item"
+                                mode="icon-text"
                                 route={{ path: "/" }}
                                 active={false}
                                 text="Home"
@@ -634,10 +632,9 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 }
                             />
                             <NavItem
-                                kind="list-item"
+                                mode="icon-text"
                                 route={{ path: "/" }}
                                 active={true}
-                                activeColor="primary.main"
                                 text="Active Item (Selected)"
                                 icon={
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -646,7 +643,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 }
                             />
                             <NavItem
-                                kind="list-item"
+                                mode="icon-text"
                                 route={{ path: "/" }}
                                 active={false}
                                 text="Settings"
@@ -657,7 +654,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 }
                             />
                             <NavItem
-                                kind="list-item"
+                                mode="icon-text"
                                 route={{ path: "/" }}
                                 active={false}
                                 disabled={true}
@@ -670,19 +667,18 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                             />
                         </Col>
 
-                        <h3>List Item Without Icons</h3>
+                        <h3>Text Only Mode</h3>
                         <Col spacing="small" sx={{ maxWidth: "400px" }}>
                             <NavItem
-                                kind="list-item"
+                                mode="text-only"
                                 route={{ path: "/" }}
                                 active={false}
                                 text="Text Only Item"
                             />
                             <NavItem
-                                kind="list-item"
+                                mode="text-only"
                                 route={{ path: "/" }}
                                 active={true}
-                                activeColor="secondary.main"
                                 text="Active Text Only"
                             />
                         </Col>
@@ -690,7 +686,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         <h3>External Navigation (New Tab)</h3>
                         <Col spacing="small" sx={{ maxWidth: "400px" }}>
                             <NavItem
-                                kind="list-item"
+                                mode="icon-text"
                                 route={{ path: "https://ueca-react.carrd.co/" }}
                                 newTab={true}
                                 active={false}
@@ -702,7 +698,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 }
                             />
                             <NavItem
-                                kind="list-item"
+                                mode="icon-text"
                                 route={{ path: "https://github.com/nekutuzov/ueca-react-app" }}
                                 newTab={true}
                                 active={false}
