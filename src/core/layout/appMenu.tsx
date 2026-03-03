@@ -11,8 +11,14 @@ type AppMenuStruct = UIBaseStruct<{
         homeMenuItem: NavItemModel;
         layoutMenuItem: NavItemModel;
         buttonsMenuItem: NavItemModel;
+        textFieldMenuItem: NavItemModel;
         selectMenuItem: NavItemModel;
         radioGroupMenuItem: NavItemModel;
+        popupsMenuItem: NavItemModel;
+        flyoutsMenuItem: NavItemModel;
+        navigationMenuItem: NavItemModel;
+        tabsMenuItem: NavItemModel;
+        miscMenuItem: NavItemModel;
     }
 }>;
 
@@ -49,10 +55,20 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
             }),
             buttonsMenuItem: useNavItem({
                 text: "Buttons",
-                route: { path: "/buttons" },
+                route: { path: "/button" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            textFieldMenuItem: useNavItem({
+                text: "TextField",
+                route: { path: "/text-field" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M5 4v3h5.5v12h3V7H19V4z"/>
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -79,6 +95,56 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
             }),
+            popupsMenuItem: useNavItem({
+                text: "Popups",
+                route: { path: "/popups" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-8-2h2v-2h-2v2zm0-4h2V7h-2v6z"/>
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            flyoutsMenuItem: useNavItem({
+                text: "Flyouts",
+                route: { path: "/flyouts" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            navigationMenuItem: useNavItem({
+                text: "Navigation",
+                route: { path: "/navigation" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            tabsMenuItem: useNavItem({
+                text: "Tabs",
+                route: { path: "/tabs" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h10v4h8v10z"/>
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            miscMenuItem: useNavItem({
+                text: "Misc",
+                route: { path: "/misc" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
         },
 
         messages: {
@@ -95,8 +161,14 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 <model.homeMenuItem.View />
                 <model.layoutMenuItem.View />
                 <model.buttonsMenuItem.View />
+                <model.textFieldMenuItem.View />
                 <model.selectMenuItem.View />
                 <model.radioGroupMenuItem.View />
+                <model.popupsMenuItem.View />
+                <model.flyoutsMenuItem.View />
+                <model.navigationMenuItem.View />
+                <model.tabsMenuItem.View />
+                <model.miscMenuItem.View />
             </Col>
     }
 
@@ -106,7 +178,19 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
     // Private methods
     function _syncActiveMenu(route: AppRoute) {
         // Directly access child menu items
-        const menuItems = [model.homeMenuItem, model.layoutMenuItem, model.buttonsMenuItem, model.selectMenuItem, model.radioGroupMenuItem];
+        const menuItems = [
+            model.homeMenuItem, 
+            model.layoutMenuItem, 
+            model.buttonsMenuItem, 
+            model.textFieldMenuItem,
+            model.selectMenuItem, 
+            model.radioGroupMenuItem,
+            model.popupsMenuItem,
+            model.flyoutsMenuItem,
+            model.navigationMenuItem,
+            model.tabsMenuItem,
+            model.miscMenuItem
+        ];
         menuItems.forEach(menuItem => {
             if (menuItem && menuItem.route) {
                 menuItem.active = route?.path?.startsWith(menuItem.route.path);

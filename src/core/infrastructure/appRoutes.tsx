@@ -1,5 +1,17 @@
 import { Route } from "@components";
-import { HomeScreen, ButtonScreen, LayoutScreen, SelectScreen, RadioGroupScreen } from "@screens";
+import { 
+    HomeScreen, 
+    ButtonScreen, 
+    LayoutScreen, 
+    TextFieldScreen,
+    SelectScreen, 
+    RadioGroupScreen,
+    PopupsScreen,
+    FlyoutsScreen,
+    NavigationScreen,
+    TabsComponentScreen,
+    MiscScreen
+} from "@screens";
 
 
 const screenRoutes = {
@@ -7,15 +19,15 @@ const screenRoutes = {
     "/": () => <HomeScreen id={"homeScreen"} />, // Default route, can be used for dashboard or welcome screen
     "/home": () => <HomeScreen id={"homeScreen"} />, // TODO: after refactoring this screen add some general info about the app and its architecture.
     "/layout": () => <LayoutScreen id={"layoutScreen"} />,
-    "/buttons": () => <ButtonScreen id={"buttonScreen"} />,
-    "/inputs": () => null, // Placeholder for future screens demonstrating input components
+    "/button": () => <ButtonScreen id={"buttonScreen"} />,
+    "/text-field": () => <TextFieldScreen id={"textFieldScreen"} />,
     "/select": () => <SelectScreen id={"selectScreen"} />,
     "/radio-group": () => <RadioGroupScreen id={"radioGroupScreen"} />,
-    "/popups": () => null, // Placeholder for future screens demonstrating popupcomponents
-    "/flyouts": () => null, // Placeholder for future screens demonstrating flyout components
-    "/navigation": () => null, // Placeholder for future screens demonstrating navigation components    
-    "/tabs": () => null, // Placeholder for future screens demonstrating tab components
-    "/misc": () => null, // Placeholder for future screens demonstrating miscellaneous components
+    "/popups": () => <PopupsScreen id={"popupsScreen"} />,
+    "/flyouts": () => <FlyoutsScreen id={"flyoutsScreen"} />,
+    "/navigation": () => <NavigationScreen id={"navigationScreen"} />,
+    "/tabs": () => <TabsComponentScreen id={"tabsComponentScreen"} />,
+    "/misc": () => <MiscScreen id={"miscScreen"} />,
 };
 
 

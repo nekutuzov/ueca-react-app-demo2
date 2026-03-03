@@ -1,5 +1,6 @@
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Select, Row, Col, Block, Button } from "@components";
+import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@screens";
 
 type SelectScreenStruct = UIBaseStruct<{
     props: {
@@ -7,6 +8,14 @@ type SelectScreenStruct = UIBaseStruct<{
         selectedCity: string;
         selectedColor: string;
         requiredSelection: string;
+        colorDemo1: string;
+        colorDemo2: string;
+        colorDemo3: string;
+        colorDemo4: string;
+    };
+
+    children: {
+        crudScreen: CRUDScreenModel;
     };
 
     methods: {
@@ -24,21 +33,22 @@ function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
             selectedCountry: "",
             selectedCity: "",
             selectedColor: "blue",
-            requiredSelection: ""
+            requiredSelection: "",
+            colorDemo1: "1",
+            colorDemo2: "1",
+            colorDemo3: "1",
+            colorDemo4: "1"
         },
 
-        methods: {
-            resetSelections: () => {
-                model.selectedCountry = "";
-                model.selectedCity = "";
-                model.selectedColor = "blue";
-                model.requiredSelection = "";
-                model.alertInformation("Selections reset");
-            }
-        },
-
-        View: () => (
-            <Col id={model.htmlId()} fill overflow={"auto"} padding={"medium"}>
+        children: {
+            crudScreen: useCRUDScreen({
+                intent: "none",
+                breadcrumbs: [
+                    { route: { path: "/" }, label: "Home" },
+                    { route: { path: "/select" }, label: "Select Component" }
+                ] as Breadcrumb[],
+                contentView: () => (
+                    <Col fill overflow={"auto"} padding={"medium"}>
                 <Block>
                     <h1>Select Component</h1>
                     <p>Demonstration of the Select component with various variants, sizes, and states.</p>
@@ -219,48 +229,48 @@ function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
                 {/* Colors Section */}
                 <Block>
                     <h2>Select Colors</h2>
-                    <p>Selects support the full color palette from the theme.</p>
+                    <p>Selects support the full color palette from the theme. The color is applied to the label and focus state.</p>
                     
                     <Col spacing="medium" padding={{ top: "small" }} maxWidth="400px">
                         <Select
                             labelView="Primary Color"
-                            value=""
+                            value={model.colorDemo1}
                             color="primary.main"
                             options={[
                                 { value: "1", label: "Option 1" },
                                 { value: "2", label: "Option 2" },
                             ]}
-                            placeholder="Primary themed..."
+                            onChange={(value) => { model.colorDemo1 = value as string; }}
                         />
                         <Select
                             labelView="Secondary Color"
-                            value=""
+                            value={model.colorDemo2}
                             color="secondary.main"
                             options={[
                                 { value: "1", label: "Option 1" },
                                 { value: "2", label: "Option 2" },
                             ]}
-                            placeholder="Secondary themed..."
+                            onChange={(value) => { model.colorDemo2 = value as string; }}
                         />
                         <Select
                             labelView="Success Color"
-                            value=""
+                            value={model.colorDemo3}
                             color="success.main"
                             options={[
                                 { value: "1", label: "Option 1" },
                                 { value: "2", label: "Option 2" },
                             ]}
-                            placeholder="Success themed..."
+                            onChange={(value) => { model.colorDemo3 = value as string; }}
                         />
                         <Select
                             labelView="Error Color"
-                            value=""
+                            value={model.colorDemo4}
                             color="error.main"
                             options={[
                                 { value: "1", label: "Option 1" },
                                 { value: "2", label: "Option 2" },
                             ]}
-                            placeholder="Error themed..."
+                            onChange={(value) => { model.colorDemo4 = value as string; }}
                         />
                     </Col>
                 </Block>
@@ -322,7 +332,25 @@ Required: ${model.requiredSelection || "(none)"}
                     </Row>
                 </Block>
             </Col>
-        )
+                )
+            })
+        },
+
+        methods: {
+            resetSelections: () => {
+                model.selectedCountry = "";
+                model.selectedCity = "";
+                model.selectedColor = "blue";
+                model.requiredSelection = "";
+                model.colorDemo1 = "1";
+                model.colorDemo2 = "1";
+                model.colorDemo3 = "1";
+                model.colorDemo4 = "1";
+                model.alertInformation("Selections reset");
+            }
+        },
+
+        View: () => <model.crudScreen.View />
     }
 
     const model = useUIBase(struct, params);

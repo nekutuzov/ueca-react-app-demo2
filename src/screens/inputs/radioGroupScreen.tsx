@@ -1,5 +1,6 @@
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, RadioGroup, Row, Col, Block, Button } from "@components";
+import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@screens";
 
 type RadioGroupScreenStruct = UIBaseStruct<{
     props: {
@@ -7,6 +8,10 @@ type RadioGroupScreenStruct = UIBaseStruct<{
         selectedSize: string;
         selectedPriority: number;
         requiredSelection: string;
+    };
+
+    children: {
+        crudScreen: CRUDScreenModel;
     };
 
     methods: {
@@ -27,18 +32,15 @@ function useRadioGroupScreen(params?: RadioGroupScreenParams): RadioGroupScreenM
             requiredSelection: ""
         },
 
-        methods: {
-            resetSelections: () => {
-                model.selectedGender = "";
-                model.selectedSize = "medium";
-                model.selectedPriority = 2;
-                model.requiredSelection = "";
-                model.alertInformation("Selections reset");
-            }
-        },
-
-        View: () => (
-            <Col id={model.htmlId()} fill overflow={"auto"} padding={"medium"}>
+        children: {
+            crudScreen: useCRUDScreen({
+                intent: "none",
+                breadcrumbs: [
+                    { route: { path: "/" }, label: "Home" },
+                    { route: { path: "/radio-group" }, label: "RadioGroup Component" }
+                ] as Breadcrumb[],
+                contentView: () => (
+                    <Col fill overflow={"auto"} padding={"medium"}>
                 <Block>
                     <h1>RadioGroup Component</h1>
                     <p>Demonstration of the RadioGroup component with various orientations, sizes, and states.</p>
@@ -305,7 +307,21 @@ Required: ${model.requiredSelection || "(none)"}
                     </Row>
                 </Block>
             </Col>
-        )
+                )
+            })
+        },
+
+        methods: {
+            resetSelections: () => {
+                model.selectedGender = "";
+                model.selectedSize = "medium";
+                model.selectedPriority = 2;
+                model.requiredSelection = "";
+                model.alertInformation("Selections reset");
+            }
+        },
+
+        View: () => <model.crudScreen.View />
     }
 
     const model = useUIBase(struct, params);

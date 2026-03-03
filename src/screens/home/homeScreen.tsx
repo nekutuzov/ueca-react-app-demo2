@@ -1,6 +1,7 @@
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, NavLink, NavItem, useTab, useTabsContainer, Breadcrumbs } from "@components";
 import { DetailedError } from "@core";
+import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@screens";
 
 type HomeScreenStruct = UIBaseStruct<{
     props: {
@@ -9,6 +10,7 @@ type HomeScreenStruct = UIBaseStruct<{
     };
 
     children: {
+        crudScreen: CRUDScreenModel;
         horizontalTabs: ReturnType<typeof useTabsContainer>;
         verticalTabs: ReturnType<typeof useTabsContainer>;
         scrollableTabs: ReturnType<typeof useTabsContainer>;
@@ -42,6 +44,14 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
         },
 
         children: {
+            crudScreen: useCRUDScreen({
+                intent: "none",
+                breadcrumbs: [
+                    { route: { path: "/" }, label: "Home" }
+                ] as Breadcrumb[],
+                contentView: () => _homeContent()
+            }),
+
             horizontalTabs: useTabsContainer({
                 tabs: [
                     useTab({
@@ -344,7 +354,16 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
             console.log("HomeScreen initialized");
         },
 
-        View: () => (
+        View: () => <model.crudScreen.View />
+    };
+
+    const model = useUIBase(struct, params);
+    return model;
+
+
+    // Private functions
+    function _homeContent() {
+        return (
             <Col id={model.htmlId()} fill sx={{ padding: "20px", fontFamily: "Arial, sans-serif", backgroundColor: "#f5f5f5" }}>
                 <Block sx={{ maxWidth: "1200px", width: "100%", margin: "0 auto" }}>
                     <h1>{model.message}</h1>
@@ -833,11 +852,8 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     </Block>
                 </Block>
             </Col>
-        )
-    };
-
-    const model = useUIBase(struct, params);
-    return model;
+        );
+    }
 }
 
 const HomeScreen = UECA.getFC(useHomeScreen);
