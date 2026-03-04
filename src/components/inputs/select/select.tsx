@@ -64,35 +64,14 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
         View: () => {
             const colorClass = resolvePaletteColor(model.color);
             const sizeClass = model.size ? `ueca-select-${model.size}` : "";
-            const className = `ueca-select ueca-select-${model.variant} ${sizeClass} ${!model.isValid() ? "ueca-select-error" : ""} ${model.disabled ? "ueca-select-disabled" : ""} ${model.fullWidth ? "ueca-select-fullwidth" : ""}`.trim();
-
-            const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-                const newValue = e.target.value as T;
-                // Convert back to number if the original option value was a number
-                const option = model.options.find(opt => String(opt.value) === newValue);
-                model.value = option ? option.value : newValue;
-                if (model.onChange) {
-                    model.onChange(model.value, model);
-                }
-            };
-
-            const handleFocus = () => {
-                if (model.onFocus) {
-                    model.onFocus(model);
-                }
-            };
-
-            const handleBlur = () => {
-                if (model.onBlur) {
-                    model.onBlur(model);
-                }
-            };
+            const className = `ueca-select ueca-select-${model.variant} ${sizeClass} ${!model.isValid() ? "ueca-select-error" : ""} ${model.disabled ? "ueca-select-disabled" : ""}`.trim();
 
             return (
                 <div
                     id={model.htmlId()}
                     className={className}
                     style={{
+                        width: model.fullWidth ? "100%" : model.extent?.width,
                         "--select-color": colorClass
                     } as React.CSSProperties}
                 >
@@ -106,10 +85,10 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
                         className="ueca-select-input"
                         value={String(model.value)}
                         disabled={model.disabled}
-                        required={model.required}
-                        onChange={handleChange}
-                        onFocus={handleFocus}
-                        onBlur={handleBlur}
+                        required={model.required}                        
+                        onChange={_handleChange}
+                        onFocus={_handleFocus}
+                        onBlur={_handleBlur}
                     >
                         {model.placeholder && (
                             <option value="" disabled>
@@ -138,6 +117,29 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
 
     const model = useEditBase(struct, params);
     return model;
+
+    // Private methods
+    function _handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        const newValue = e.target.value as T;
+        // Convert back to number if the original option value was a number
+        const option = model.options.find(opt => String(opt.value) === newValue);
+        model.value = option ? option.value : newValue;
+        if (model.onChange) {
+            model.onChange(model.value, model);
+        }
+    }
+
+    function _handleFocus() {
+        if (model.onFocus) {
+            model.onFocus(model);
+        }
+    }
+
+    function _handleBlur() {
+        if (model.onBlur) {
+            model.onBlur(model);
+        }
+    }
 }
 
 const Select = UECA.getFC(useSelect);

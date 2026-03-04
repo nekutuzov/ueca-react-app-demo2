@@ -4,7 +4,7 @@ export * from "./layout/block/blockScreen";
 export * from "./layout/row/rowScreen";
 export * from "./layout/col/colScreen";
 export * from "./inputs/textFieldScreen";
-export * from "./inputs/selectScreen";
+export * from "./select/selectScreen";
 export * from "./inputs/radioGroupScreen";
 export * from "./popups/popupsScreen";
 export * from "./flyouts/flyoutsScreen";

@@ -7,10 +7,6 @@
     position: relative;
 }
 
-.ueca-select-fullwidth {
-    width: 100%;
-}
-
 /* Label */
 .ueca-select-label {
     font-size: 0.875rem;
@@ -58,7 +54,8 @@
     border-color: var(--select-color, #1976d2);
     border-width: 2px;
     padding: 11px 13px 11px 13px;
-    padding-right: 39px; /* Adjust for wider border */
+    padding-right: 39px;
+    /* Adjust for wider border */
 }
 
 .ueca-select-input:disabled {
