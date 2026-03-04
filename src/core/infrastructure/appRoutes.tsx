@@ -22,9 +22,9 @@ const screenRoutes = {
     // Add routes within the app layout
     "/": () => <HomeScreen id={"homeScreen"} />, // Default route, can be used for dashboard or welcome screen
     "/home": () => <HomeScreen id={"homeScreen"} />, // TODO: after refactoring this screen add some general info about the app and its architecture.    
-    "/layout/block": () => <BlockScreen id={"blockScreen"} />,
-    "/layout/row": () => <RowScreen id={"rowScreen"} />,
-    "/layout/col": () => <ColScreen id={"colScreen"} />,
+    "/block": () => <BlockScreen id={"blockScreen"} />,
+    "/row": () => <RowScreen id={"rowScreen"} />,
+    "/col": () => <ColScreen id={"colScreen"} />,
     "/button": () => <ButtonScreen id={"buttonScreen"} />,
     "/icon-button": () => <IconButtonScreen id={"iconButtonScreen"} />,
     "/text-field": () => <TextFieldScreen id={"textFieldScreen"} />,

@@ -61,8 +61,7 @@ function useColScreen(params?: ColScreenParams): ColScreenModel {
                 intent: "none",
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
-                    { route: { path: "/layout/col" }, label: "Layout" },
-                    { route: { path: "/layout/col" }, label: "Col Component" }
+                    { route: { path: "/col" }, label: "Col Component" }
                 ],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">

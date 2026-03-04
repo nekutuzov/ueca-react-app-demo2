@@ -60,9 +60,8 @@ function useBlockScreen(params?: BlockScreenParams): BlockScreenModel {
             crudScreen: useCRUDScreen({
                 intent: "none",
                 breadcrumbs: [
-                    { route: { path: "/" }, label: "Home" },
-                    { route: { path: "/layout/block" }, label: "Layout" },
-                    { route: { path: "/layout/block" }, label: "Block Component" }
+                    { route: { path: "/" }, label: "Home" },                    
+                    { route: { path: "/block" }, label: "Block Component" }
                 ],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">

@@ -61,8 +61,7 @@ function useRowScreen(params?: RowScreenParams): RowScreenModel {
                 intent: "none",
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
-                    { route: { path: "/layout/row" }, label: "Layout" },
-                    { route: { path: "/layout/row" }, label: "Row Component" }
+                    { route: { path: "/row" }, label: "Row Component" }
                 ],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
