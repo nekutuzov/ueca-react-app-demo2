@@ -114,7 +114,7 @@ function useRowScreen(params?: RowScreenParams): RowScreenModel {
             resetProperties: () => {
                 model.spacing = "medium";
                 model.horizontalAlign = "left";
-                model.verticalAlign = "center";
+                model.verticalAlign = "top";
                 model.padding = "medium";
                 model.backgroundColor = "transparent";
                 model.reverseItems = false;
@@ -122,7 +122,7 @@ function useRowScreen(params?: RowScreenParams): RowScreenModel {
                 model.flexWrap = "nowrap";
                 model.fill = false;
                 model.width = "";
-                model.height = "";
+                model.height = "200px";
                 model.childrenCount = 3;
                 model.alertInformation("Properties reset to defaults");
             }

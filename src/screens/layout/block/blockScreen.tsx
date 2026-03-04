@@ -42,8 +42,8 @@ function useBlockScreen(params?: BlockScreenParams): BlockScreenModel {
     const struct: BlockScreenStruct = {
         props: {
             id: useBlockScreen.name,
-            width: "200px",
-            height: "150px",
+            width: "400px",
+            height: "200px",
             minWidth: "",
             minHeight: "",
             maxWidth: "",
@@ -112,8 +112,8 @@ function useBlockScreen(params?: BlockScreenParams): BlockScreenModel {
 
         methods: {
             resetProperties: () => {
-                model.width = "200px";
-                model.height = "150px";
+                model.width = "400px";
+                model.height = "200px";
                 model.minWidth = "";
                 model.minHeight = "";
                 model.maxWidth = "";

@@ -51,7 +51,7 @@ function useColScreen(params?: ColScreenParams): ColScreenModel {
             divider: false,
             flexWrap: "nowrap",
             fill: false,
-            width: "",
+            width: "400px",
             height: "",
             childrenCount: 3
         },
@@ -121,7 +121,7 @@ function useColScreen(params?: ColScreenParams): ColScreenModel {
                 model.divider = false;
                 model.flexWrap = "nowrap";
                 model.fill = false;
-                model.width = "";
+                model.width = "400px";
                 model.height = "";
                 model.childrenCount = 3;
                 model.alertInformation("Properties reset to defaults");

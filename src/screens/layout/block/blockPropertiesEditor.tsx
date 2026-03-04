@@ -34,9 +34,9 @@ type BlockPropertiesEditorStruct = UIBaseStruct<{
         minHeightField: TextFieldModel;
         maxWidthField: TextFieldModel;
         maxHeightField: TextFieldModel;
-        paddingSelect: SelectModel;
+        paddingRadioGroup: RadioGroupModel;
         backgroundColorSelect: SelectModel;
-        overflowSelect: SelectModel;
+        overflowRadioGroup: RadioGroupModel;
         horizontalAlignRadioGroup: RadioGroupModel;
         fillCheckbox: CheckboxModel;
         contentField: TextFieldModel;
@@ -112,9 +112,9 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                 fullWidth: true
             }),
 
-            paddingSelect: useSelect({
+            paddingRadioGroup: useRadioGroup({
                 labelView: "Padding",
-                value: UECA.bind(() => model, "padding"),
+                value: UECA.bind(() => model, "padding") as UECA.Bond<string>,
                 options: [
                     { value: "", label: "None" },
                     { value: "tiny", label: "Tiny" },
@@ -122,7 +122,7 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                     { value: "medium", label: "Medium" },
                     { value: "large", label: "Large" }
                 ],
-                fullWidth: true
+                orientation: "row"
             }),
 
             backgroundColorSelect: useSelect({
@@ -142,16 +142,16 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                 fullWidth: true
             }),
 
-            overflowSelect: useSelect({
+            overflowRadioGroup: useRadioGroup({
                 labelView: "Overflow",
-                value: UECA.bind(() => model, "overflow"),
+                value: UECA.bind(() => model, "overflow") as UECA.Bond<string>,
                 options: [
                     { value: "visible", label: "Visible" },
                     { value: "hidden", label: "Hidden" },
                     { value: "scroll", label: "Scroll" },
                     { value: "auto", label: "Auto" }
                 ],
-                fullWidth: true
+                orientation: "row"
             }),
 
             horizontalAlignRadioGroup: useRadioGroup({
@@ -190,6 +190,10 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
             <Col spacing="medium" minWidth={"300px"} fill>
                 <h2>Properties</h2>
                 <model.contentField.View />
+                <model.backgroundColorSelect.View />
+                <model.paddingRadioGroup.View />
+                <model.horizontalAlignRadioGroup.View />
+                <model.overflowRadioGroup.View />
                 <Row>
                     <model.widthField.View />
                     <model.minWidthField.View />
@@ -200,10 +204,6 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                     <model.minHeightField.View />
                     <model.maxHeightField.View />
                 </Row>
-                <model.paddingSelect.View />
-                <model.backgroundColorSelect.View />
-                <model.overflowSelect.View />
-                <model.horizontalAlignRadioGroup.View />
                 <model.fillCheckbox.View />
                 <Block padding={{ top: "medium" }}>
                     <model.resetButton.View />

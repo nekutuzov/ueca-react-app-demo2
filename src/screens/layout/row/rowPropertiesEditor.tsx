@@ -3,6 +3,7 @@ import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
     Col, Block,
     TextFieldModel, useTextField,
+    RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
     ButtonModel, useButton
@@ -26,14 +27,14 @@ type RowPropertiesEditorStruct = UIBaseStruct<{
     };
 
     children: {
-        spacingSelect: SelectModel;
-        horizontalAlignSelect: SelectModel;
-        verticalAlignSelect: SelectModel;
-        paddingSelect: SelectModel;
+        spacingRadioGroup: RadioGroupModel;
+        horizontalAlignRadioGroup: RadioGroupModel;
+        verticalAlignRadioGroup: RadioGroupModel;
+        paddingRadioGroup: RadioGroupModel;
         backgroundColorSelect: SelectModel;
         reverseItemsCheckbox: CheckboxModel;
         dividerCheckbox: CheckboxModel;
-        flexWrapSelect: SelectModel;
+        flexWrapRadioGroup: RadioGroupModel;
         fillCheckbox: CheckboxModel;
         widthField: TextFieldModel;
         heightField: TextFieldModel;
@@ -68,9 +69,9 @@ function useRowPropertiesEditor(params?: RowPropertiesEditorParams): RowProperti
         },
 
         children: {
-            spacingSelect: useSelect({
+            spacingRadioGroup: useRadioGroup({
                 labelView: "Spacing",
-                value: UECA.bind(() => model, "spacing"),
+                value: UECA.bind(() => model, "spacing") as UECA.Bond<string>,
                 options: [
                     { value: "none", label: "None" },
                     { value: "tiny", label: "Tiny" },
@@ -81,12 +82,12 @@ function useRowPropertiesEditor(params?: RowPropertiesEditorParams): RowProperti
                     { value: "huge", label: "Huge" },
                     { value: "massive", label: "Massive" }
                 ],
-                fullWidth: true
+                orientation: "row"
             }),
 
-            horizontalAlignSelect: useSelect({
+            horizontalAlignRadioGroup: useRadioGroup({
                 labelView: "Horizontal Align",
-                value: UECA.bind(() => model, "horizontalAlign"),
+                value: UECA.bind(() => model, "horizontalAlign") as UECA.Bond<string>,
                 options: [
                     { value: "left", label: "Left" },
                     { value: "center", label: "Center" },
@@ -95,12 +96,12 @@ function useRowPropertiesEditor(params?: RowPropertiesEditorParams): RowProperti
                     { value: "spaceAround", label: "Space Around" },
                     { value: "spaceEvenly", label: "Space Evenly" }
                 ],
-                fullWidth: true
+                orientation: "row"
             }),
 
-            verticalAlignSelect: useSelect({
+            verticalAlignRadioGroup: useRadioGroup({
                 labelView: "Vertical Align",
-                value: UECA.bind(() => model, "verticalAlign"),
+                value: UECA.bind(() => model, "verticalAlign") as UECA.Bond<string>,
                 options: [
                     { value: "top", label: "Top" },
                     { value: "center", label: "Center" },
@@ -108,12 +109,12 @@ function useRowPropertiesEditor(params?: RowPropertiesEditorParams): RowProperti
                     { value: "stretch", label: "Stretch" },
                     { value: "baseline", label: "Baseline" }
                 ],
-                fullWidth: true
+                orientation: "row"
             }),
 
-            paddingSelect: useSelect({
+            paddingRadioGroup: useRadioGroup({
                 labelView: "Padding",
-                value: UECA.bind(() => model, "padding"),
+                value: UECA.bind(() => model, "padding") as UECA.Bond<string>,
                 options: [
                     { value: "", label: "None" },
                     { value: "tiny", label: "Tiny" },
@@ -121,7 +122,7 @@ function useRowPropertiesEditor(params?: RowPropertiesEditorParams): RowProperti
                     { value: "medium", label: "Medium" },
                     { value: "large", label: "Large" }
                 ],
-                fullWidth: true
+                orientation: "row"
             }),
 
             backgroundColorSelect: useSelect({
@@ -151,15 +152,15 @@ function useRowPropertiesEditor(params?: RowPropertiesEditorParams): RowProperti
                 checked: UECA.bind(() => model, "divider")
             }),
 
-            flexWrapSelect: useSelect({
+            flexWrapRadioGroup: useRadioGroup({
                 labelView: "Flex Wrap",
-                value: UECA.bind(() => model, "flexWrap"),
+                value: UECA.bind(() => model, "flexWrap") as UECA.Bond<string>,
                 options: [
                     { value: "nowrap", label: "No Wrap" },
                     { value: "wrap", label: "Wrap" },
                     { value: "wrap-reverse", label: "Wrap Reverse" }
                 ],
-                fullWidth: true
+                orientation: "row"
             }),
 
             fillCheckbox: useCheckbox({
@@ -202,12 +203,12 @@ function useRowPropertiesEditor(params?: RowPropertiesEditorParams): RowProperti
             <Col spacing="medium" minWidth={"300px"} fill>
                 <h2>Properties</h2>
                 <model.childrenCountField.View />
-                <model.spacingSelect.View />
-                <model.horizontalAlignSelect.View />
-                <model.verticalAlignSelect.View />
-                <model.paddingSelect.View />
                 <model.backgroundColorSelect.View />
-                <model.flexWrapSelect.View />
+                <model.spacingRadioGroup.View />
+                <model.horizontalAlignRadioGroup.View />
+                <model.verticalAlignRadioGroup.View />
+                <model.paddingRadioGroup.View />
+                <model.flexWrapRadioGroup.View />
                 <model.widthField.View />
                 <model.heightField.View />
                 <model.reverseItemsCheckbox.View />

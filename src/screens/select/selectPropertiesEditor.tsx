@@ -160,9 +160,9 @@ function useSelectPropertiesEditor(params?: SelectPropertiesEditorParams): Selec
                 <h2>Properties</h2>
                 <model.labelField.View />
                 <model.placeholderField.View />
+                <model.colorSelect.View />
                 <model.variantRadioGroup.View />
                 <model.sizeRadioGroup.View />
-                <model.colorSelect.View />
                 <model.disabledCheckbox.View />
                 <model.requiredCheckbox.View />
                 <model.fullWidthCheckbox.View />
