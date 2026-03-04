@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block, TextFieldModel, useTextField } from "@components";
+import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block, Button, TextFieldModel, useTextField } from "@components";
 import { Palette } from "@core";
 
 type TextFieldVariant = "outlined" | "filled" | "standard";
@@ -86,6 +86,13 @@ function useTextFieldPreview(params?: TextFieldPreviewParams): TextFieldPreviewM
                 >
                     <Col spacing="medium" horizontalAlign="center" verticalAlign="center">
                         <model.testTextField.View />
+                        <Button
+                            contentView="Validate"
+                            variant="outlined"
+                            color="primary.main"
+                            size="small"
+                            onClick={() => model.testTextField.validate()}
+                        />
                         <model._ValueDisplayView />
                     </Col>
                 </Block>

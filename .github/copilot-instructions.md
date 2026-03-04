@@ -50,12 +50,17 @@ Application
 **Input** (`input/`):
 - Button: variants (text/outlined/contained), sizes (small/medium/large), fullWidth
 - IconButton: predefined kinds (ok/cancel/delete/refresh/close) or custom SVG, CloseIconButton factory
-- TextField`<T>`: variants (outlined/filled/standard), types (text/email/password/etc), multiline, error state
-- RadioGroup`<T>`: orientation (row/column), sizes (small/medium/large), color palette
-- Select`<T>`: variants (filled/outlined/standard), sizes (small/medium), fullWidth
-- Checkbox: sizes, indeterminate state
+- TextField`<T>`: variants (outlined/filled/standard), types (text/email/password/number/tel/url/search), multiline, built-in validation
+- RadioGroup`<T>`: orientation (row/column), sizes (small/medium/large), color palette, built-in validation
+- Select`<T>`: variants (filled/outlined/standard), sizes (small/medium), fullWidth, built-in validation
+- Checkbox: sizes, indeterminate state, built-in validation
 
-**Note**: TextField, RadioGroup, and Select accept generic type parameter for type-safe values
+**Note**: TextField, RadioGroup, Select, and Checkbox:
+- TextField, RadioGroup, and Select accept generic type parameter `<T>` for type-safe values
+- All extend EditBase providing built-in validation via `onInternalValidate`
+- TextField validates based on `type` property (email, url, tel, number)
+- Checkbox validates `required` state (must be checked)
+- All support `required` validation automatically
 
 **Dialog** (`dialog/`):
 - Dialog: modal with backdrop, title, content, actions
@@ -268,12 +273,20 @@ const files = await model.bus.unicast("App.SelectFiles", {
 // Button
 <Button contentView="Save" variant="contained" fullWidth onClick={save} />
 
-// TextField
-<TextField labelView="Email" type="email" value={UECA.bind(() => model, "email")} 
-    required error={!!error} helperTextView={error} />
+// TextField with built-in validation (type-specific: email, url, tel, number)
+<TextField labelView="Email" type="email" value={UECA.bind(() => model, "email")} required />
+<TextField labelView="Website" type="url" value={UECA.bind(() => model, "website")} />
 
-// Checkbox
-<Checkbox checked={model.agree} labelView="I agree" onChange={(v) => model.agree = v} />
+// TextField with external error (for custom validation)
+<TextField labelView="Username" value={UECA.bind(() => model, "username")} 
+    error={!!error} helperTextView={error} />
+
+// Checkbox with built-in validation
+<Checkbox checked={UECA.bind(() => model, "agree")} labelView="I agree to terms" required 
+    helperTextView="Required" onChange={(v) => model.agree = v} />
+
+// Checkbox without validation
+<Checkbox checked={model.newsletter} labelView="Subscribe to newsletter" onChange={(v) => model.newsletter = v} />
 
 // Layout
 <Row horizontalAlign="spaceBetween" spacing="medium" fill>

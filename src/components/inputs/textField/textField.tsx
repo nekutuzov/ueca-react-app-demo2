@@ -1,9 +1,9 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
+import { EditBaseModel, EditBaseParams, EditBaseStruct, useEditBase } from "@components";
 import { Palette, resolvePaletteColor } from "@core";
 import "./textField.css";
 
-type TextFieldStruct<T = string> = UIBaseStruct<{
+type TextFieldStruct<T = string> = EditBaseStruct<{
     props: {
         value: T;
         labelView: React.ReactNode;
@@ -28,8 +28,8 @@ type TextFieldStruct<T = string> = UIBaseStruct<{
     };
 }>;
 
-type TextFieldParams<T = string> = UIBaseParams<TextFieldStruct<T>>;
-type TextFieldModel<T = string> = UIBaseModel<TextFieldStruct<T>>;
+type TextFieldParams<T = string> = EditBaseParams<TextFieldStruct<T>>;
+type TextFieldModel<T = string> = EditBaseModel<TextFieldStruct<T>>;
 
 function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T> {
     const struct: TextFieldStruct<T> = {
@@ -51,9 +51,62 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
             color: "primary.main"
         },
 
+        events: {
+            onInternalValidate: async () => {
+                const fieldName = UECA.isString(model.labelView) ? model.labelView : "This field";
+                
+                // Required validation
+                if (model.required && (!model.value || model.value.toString().trim() === "")) {
+                    return `${fieldName} is required`;
+                }
+
+                // Type-specific validation (only if value is not empty)
+                if (model.value && model.value.toString().trim() !== "") {
+                    const valueStr = model.value.toString();
+
+                    switch (model.type) {
+                        case "email":
+                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                            if (!emailRegex.test(valueStr)) {
+                                return `${fieldName} must be a valid email address`;
+                            }
+                            break;
+
+                        case "url":
+                            try {
+                                new URL(valueStr);
+                            } catch {
+                                return `${fieldName} must be a valid URL (e.g., https://example.com)`;
+                            }
+                            break;
+
+                        case "tel":
+                            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+                            if (!phoneRegex.test(valueStr)) {
+                                return `${fieldName} must be a valid phone number`;
+                            }
+                            break;
+
+                        case "number":
+                            if (isNaN(Number(valueStr))) {
+                                return `${fieldName} must be a valid number`;
+                            }
+                            break;
+                    }
+                }
+            },
+
+            onChangeValue: () => model.resetValidationErrors(),
+        },
+
         View: () => {
             const colorClass = resolvePaletteColor(model.color);
-            const className = `ueca-textfield ueca-textfield-${model.variant}${model.error ? " ueca-textfield-error" : ""}${model.disabled ? " ueca-textfield-disabled" : ""}${model.fullWidth ? " ueca-textfield-fullwidth" : ""}`;
+            const hasValidationError = !model.isValid();
+            const hasExternalError = model.error;
+            const showError = hasValidationError || hasExternalError;
+            const errorMessage = hasValidationError ? model.getValidationError() : model.helperTextView;
+
+            const className = `ueca-textfield ueca-textfield-${model.variant}${showError ? " ueca-textfield-error" : ""}${model.disabled ? " ueca-textfield-disabled" : ""}${model.fullWidth ? " ueca-textfield-fullwidth" : ""}`;
 
             return (
                 <div
@@ -95,9 +148,9 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                             onBlur={_handleBlur}
                         />
                     )}
-                    {model.helperTextView && (
-                        <div className={`textfield-helper-text${model.error ? " textfield-helper-text-error" : ""}`}>
-                            {model.helperTextView}
+                    {(showError || model.helperTextView) && (
+                        <div className={`textfield-helper-text${showError ? " textfield-helper-text-error" : ""}`}>
+                            {errorMessage}
                         </div>
                     )}
                 </div>
@@ -105,7 +158,7 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
         }
     };
 
-    const model = useUIBase(struct, params);
+    const model = useEditBase(struct, params);
     return model;
 
     // Private methods

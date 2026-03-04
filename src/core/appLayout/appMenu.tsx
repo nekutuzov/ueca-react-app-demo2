@@ -14,9 +14,11 @@ type AppMenuStruct = UIBaseStruct<{
         layoutRowMenuItem: NavItemModel;
         layoutColMenuItem: NavItemModel;
         buttonsMenuItem: NavItemModel;
+        iconButtonsMenuItem: NavItemModel;
         textFieldMenuItem: NavItemModel;
         selectMenuItem: NavItemModel;
         radioGroupMenuItem: NavItemModel;
+        checkboxMenuItem: NavItemModel;
         popupsMenuItem: NavItemModel;
         flyoutsMenuItem: NavItemModel;
         navigationMenuItem: NavItemModel;
@@ -81,6 +83,16 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
             }),
+            iconButtonsMenuItem: useNavItem({
+                text: "IconButton",
+                route: { path: "/icon-button" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
             textFieldMenuItem: useNavItem({
                 text: "TextField",
                 route: { path: "/text-field" },
@@ -109,6 +121,16 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
                         <circle cx="12" cy="12" r="5" />
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            checkboxMenuItem: useNavItem({
+                text: "Checkbox",
+                route: { path: "/checkbox" },
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -179,9 +201,11 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 <model.homeMenuItem.View />
                 <model.layoutMenuItem.View />
                 <model.buttonsMenuItem.View />
+                <model.iconButtonsMenuItem.View />
                 <model.textFieldMenuItem.View />
                 <model.selectMenuItem.View />
                 <model.radioGroupMenuItem.View />
+                <model.checkboxMenuItem.View />
                 <model.popupsMenuItem.View />
                 <model.flyoutsMenuItem.View />
                 <model.navigationMenuItem.View />
@@ -211,10 +235,12 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
 
         // Sync other menu items
         model.homeMenuItem.active = route?.path === "/home" || route?.path === "/";
-        model.buttonsMenuItem.active = route?.path?.startsWith("/button");
+        model.buttonsMenuItem.active = route?.path === "/button";
+        model.iconButtonsMenuItem.active = route?.path?.startsWith("/icon-button");
         model.textFieldMenuItem.active = route?.path?.startsWith("/text-field");
         model.selectMenuItem.active = route?.path?.startsWith("/select");
         model.radioGroupMenuItem.active = route?.path?.startsWith("/radio-group");
+        model.checkboxMenuItem.active = route?.path?.startsWith("/checkbox");
         model.popupsMenuItem.active = route?.path?.startsWith("/popups");
         model.flyoutsMenuItem.active = route?.path?.startsWith("/flyouts");
         model.navigationMenuItem.active = route?.path?.startsWith("/navigation");

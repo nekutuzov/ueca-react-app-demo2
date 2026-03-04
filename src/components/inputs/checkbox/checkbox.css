@@ -128,3 +128,28 @@
 .ueca-checkbox-indeterminate .checkbox-icon {
     animation: checkboxCheck 0.2s ease;
 }
+
+/* Helper text */
+.checkbox-helper-text {
+    font-size: 0.75rem;
+    line-height: 1.66;
+    letter-spacing: 0.03333em;
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: 4px;
+    margin-left: 0;
+}
+
+/* Error state */
+.ueca-checkbox-error .checkbox-custom {
+    border-color: #d32f2f;
+}
+
+.ueca-checkbox-error .checkbox-input:checked + .checkbox-custom,
+.ueca-checkbox-error.ueca-checkbox-indeterminate .checkbox-custom {
+    background-color: #d32f2f;
+    border-color: #d32f2f;
+}
+
+.checkbox-helper-text-error {
+    color: #d32f2f;
+}
