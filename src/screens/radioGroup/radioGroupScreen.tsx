@@ -1,19 +1,17 @@
 import * as UECA from "ueca-react";
-import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Row, Col
-} from "@components";
-import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
-import { SelectPropertiesEditorModel, useSelectPropertiesEditor } from "./selectPropertiesEditor";
-import { SelectPreviewModel, useSelectPreview } from "./selectPreview";
+import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Row, Col } from "@components";
+import { CRUDScreenModel, useCRUDScreen, Breadcrumb, Palette } from "@core";
+import { RadioGroupPropertiesEditorModel, useRadioGroupPropertiesEditor } from "./radioGroupPropertiesEditor";
+import { RadioGroupPreviewModel, useRadioGroupPreview } from "./radioGroupPreview";
 
-type SelectScreenStruct = UIBaseStruct<{
+type RadioOrientation = "row" | "column";
+type RadioSize = "small" | "medium" | "large";
+
+type RadioGroupScreenStruct = UIBaseStruct<{
     props: {
-        // Select properties
         labelText: string;
-        placeholder: string;
-        variant: "filled" | "outlined" | "standard";
-        size: "small" | "medium";
+        orientation: RadioOrientation;
+        size: RadioSize;
         color: Palette;
         disabled: boolean;
         required: boolean;
@@ -25,26 +23,24 @@ type SelectScreenStruct = UIBaseStruct<{
 
     children: {
         crudScreen: CRUDScreenModel;
-        propertiesEditor: SelectPropertiesEditorModel;
-        preview: SelectPreviewModel;
+        properties: RadioGroupPropertiesEditorModel;
+        preview: RadioGroupPreviewModel;
     };
 
     methods: {
         resetProperties: () => void;
-        handleSelectionChange: (value: string) => void;
     };
 }>;
 
-type SelectScreenParams = UIBaseParams<SelectScreenStruct>;
-type SelectScreenModel = UIBaseModel<SelectScreenStruct>;
+type RadioGroupScreenParams = UIBaseParams<RadioGroupScreenStruct>;
+type RadioGroupScreenModel = UIBaseModel<RadioGroupScreenStruct>;
 
-function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
-    const struct: SelectScreenStruct = {
+function useRadioGroupScreen(params?: RadioGroupScreenParams): RadioGroupScreenModel {
+    const struct: RadioGroupScreenStruct = {
         props: {
-            id: useSelectScreen.name,
+            id: useRadioGroupScreen.name,
             labelText: "Select an Option",
-            placeholder: "Choose an option...",
-            variant: "outlined",
+            orientation: "column",
             size: "medium",
             color: "primary.main",
             disabled: false,
@@ -60,26 +56,25 @@ function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
                 intent: "none",
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
-                    { route: { path: "/select" }, label: "Select Component" }
-                ],
+                    { route: { path: "/radio-group" }, label: "RadioGroup Component" }
+                ] as Breadcrumb[],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>Select Component</h1>
+                            <h1>RadioGroup Component</h1>
                             <p>Modify properties and see the changes in real-time.</p>
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
-                            <model.propertiesEditor.View />
+                            <model.properties.View />
                             <model.preview.View />
                         </Row>
                     </Col>
                 )
             }),
 
-            propertiesEditor: useSelectPropertiesEditor({
+            properties: useRadioGroupPropertiesEditor({
                 labelText: UECA.bind(() => model, "labelText"),
-                placeholder: UECA.bind(() => model, "placeholder"),
-                variant: UECA.bind(() => model, "variant"),
+                orientation: UECA.bind(() => model, "orientation"),
                 size: UECA.bind(() => model, "size"),
                 color: UECA.bind(() => model, "color"),
                 disabled: UECA.bind(() => model, "disabled"),
@@ -90,10 +85,9 @@ function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
                 onReset: () => model.resetProperties()
             }),
 
-            preview: useSelectPreview({
+            preview: useRadioGroupPreview({
                 labelText: UECA.bind(() => model, "labelText"),
-                placeholder: UECA.bind(() => model, "placeholder"),
-                variant: UECA.bind(() => model, "variant"),
+                orientation: UECA.bind(() => model, "orientation"),
                 size: UECA.bind(() => model, "size"),
                 color: UECA.bind(() => model, "color"),
                 disabled: UECA.bind(() => model, "disabled"),
@@ -101,16 +95,14 @@ function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
                 fullWidth: UECA.bind(() => model, "fullWidth"),
                 helperText: UECA.bind(() => model, "helperText"),
                 optionsText: UECA.bind(() => model, "optionsText"),
-                selectedValue: UECA.bind(() => model, "selectedValue"),
-                onSelectionChange: (value) => model.handleSelectionChange(value)
+                selectedValue: UECA.bind(() => model, "selectedValue")
             })
         },
 
         methods: {
             resetProperties: () => {
                 model.labelText = "Select an Option";
-                model.placeholder = "Choose an option...";
-                model.variant = "outlined";
+                model.orientation = "column";
                 model.size = "medium";
                 model.color = "primary.main";
                 model.disabled = false;
@@ -119,22 +111,16 @@ function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
                 model.helperText = "";
                 model.optionsText = "Option 1=1, Option 2=2, Option 3=3";
                 model.selectedValue = "";
-                model.alertInformation("Properties reset to defaults");
-            },
-
-            handleSelectionChange: (value: string) => {
-                model.selectedValue = value;
-                model.alertSuccess(`Selected: ${value}`);
             }
         },
 
         View: () => <model.crudScreen.View />
-    }
+    };
 
     const model = useUIBase(struct, params);
     return model;
 }
 
-const SelectScreen = UECA.getFC(useSelectScreen);
+const RadioGroupScreen = UECA.getFC(useRadioGroupScreen);
 
-export { SelectScreenParams, SelectScreenModel, useSelectScreen, SelectScreen };
+export { RadioGroupScreenParams, RadioGroupScreenModel, useRadioGroupScreen, RadioGroupScreen };

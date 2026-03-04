@@ -2,16 +2,18 @@ import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
     Col, Block,
-    SelectModel, useSelect, SelectOption
+    RadioGroupModel, useRadioGroup, RadioOption
 } from "@components";
 import { Palette } from "@core";
 
-type SelectPreviewStruct = UIBaseStruct<{
+type RadioOrientation = "row" | "column";
+type RadioSize = "small" | "medium" | "large";
+
+type RadioGroupPreviewStruct = UIBaseStruct<{
     props: {
         labelText: string;
-        placeholder: string;
-        variant: "filled" | "outlined" | "standard";
-        size: "small" | "medium";
+        orientation: RadioOrientation;
+        size: RadioSize;
         color: Palette;
         disabled: boolean;
         required: boolean;
@@ -22,14 +24,14 @@ type SelectPreviewStruct = UIBaseStruct<{
     };
 
     children: {
-        testSelect: SelectModel<string>;
+        testRadioGroup: RadioGroupModel<string>;
     };
 
     methods: {
         _PreviewBlockView: () => React.ReactElement;
         _CodeDisplayView: () => React.ReactElement;
         _ValueDisplayView: () => React.ReactElement;
-        _parseOptions: () => SelectOption<string>[];
+        _parseOptions: () => RadioOption<string>[];
     };
 
     events: {
@@ -37,31 +39,29 @@ type SelectPreviewStruct = UIBaseStruct<{
     };
 }>;
 
-type SelectPreviewParams = UIBaseParams<SelectPreviewStruct>;
-type SelectPreviewModel = UIBaseModel<SelectPreviewStruct>;
+type RadioGroupPreviewParams = UIBaseParams<RadioGroupPreviewStruct>;
+type RadioGroupPreviewModel = UIBaseModel<RadioGroupPreviewStruct>;
 
-function useSelectPreview(params?: SelectPreviewParams): SelectPreviewModel {
-    const struct: SelectPreviewStruct = {
+function useRadioGroupPreview(params?: RadioGroupPreviewParams): RadioGroupPreviewModel {
+    const struct: RadioGroupPreviewStruct = {
         props: {
-            id: useSelectPreview.name,
+            id: useRadioGroupPreview.name,
             labelText: "Select an Option",
-            placeholder: "Choose an option...",
-            variant: "outlined",
+            orientation: "column",
             size: "medium",
             color: "primary.main",
             disabled: false,
             required: false,
-            fullWidth: true,
+            fullWidth: false,
             helperText: "",
             optionsText: "Option 1=1, Option 2=2, Option 3=3",
             selectedValue: ""
         },
 
         children: {
-            testSelect: useSelect({
+            testRadioGroup: useRadioGroup({
                 labelView: () => model.labelText,
-                placeholder: () => model.placeholder,
-                variant: () => model.variant,
+                orientation: () => model.orientation,
                 size: () => model.size,
                 color: () => model.color,
                 disabled: () => model.disabled,
@@ -69,7 +69,6 @@ function useSelectPreview(params?: SelectPreviewParams): SelectPreviewModel {
                 fullWidth: () => model.fullWidth,
                 helperTextView: () => model.helperText,
                 options: () => model._parseOptions(),
-                extent: { width: "300px" },            
                 value: UECA.bind(() => model, "selectedValue"),
                 onChange: (value) => model.onSelectionChange?.(value)
             })
@@ -105,7 +104,7 @@ function useSelectPreview(params?: SelectPreviewParams): SelectPreviewModel {
                     }}
                 >
                     <Col spacing="medium" horizontalAlign="center" verticalAlign="center">
-                        <model.testSelect.View />
+                        <model.testRadioGroup.View />
                         <model._ValueDisplayView />
                     </Col>
                 </Block>
@@ -138,10 +137,9 @@ function useSelectPreview(params?: SelectPreviewParams): SelectPreviewModel {
                             }}
                         >
                             <pre>
-                                {`<Select
+                                {`<RadioGroup
     labelView="${model.labelText}"
-    placeholder="${model.placeholder}"
-    variant="${model.variant}"
+    orientation="${model.orientation}"
     size="${model.size}"
     color="${model.color}"
     disabled={${model.disabled}}
@@ -171,6 +169,6 @@ function useSelectPreview(params?: SelectPreviewParams): SelectPreviewModel {
     return model;
 }
 
-const SelectPreview = UECA.getFC(useSelectPreview);
+const RadioGroupPreview = UECA.getFC(useRadioGroupPreview);
 
-export { SelectPreviewParams, SelectPreviewModel, useSelectPreview, SelectPreview };
+export { RadioGroupPreviewParams, RadioGroupPreviewModel, useRadioGroupPreview, RadioGroupPreview };

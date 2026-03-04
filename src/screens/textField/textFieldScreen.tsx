@@ -68,7 +68,7 @@ function useTextFieldScreen(params?: TextFieldScreenParams): TextFieldScreenMode
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
                             <h1>TextField Component</h1>
-                            <p>Modify text field properties and see the changes in real-time.</p>
+                            <p>Modify properties and see the changes in real-time.</p>
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.properties.View />

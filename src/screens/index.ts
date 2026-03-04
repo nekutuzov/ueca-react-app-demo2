@@ -5,6 +5,7 @@ export * from "./layout/row/rowScreen";
 export * from "./layout/col/colScreen";
 export * from "./textField/textFieldScreen";
 export * from "./select/selectScreen";
+export * from "./radioGroup/radioGroupScreen";
 export * from "./popups/popupsScreen";
 export * from "./flyouts/flyoutsScreen";
 export * from "./navigation/navigationScreen";

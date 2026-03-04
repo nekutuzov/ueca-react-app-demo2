@@ -24,6 +24,7 @@ type ButtonPreviewStruct = UIBaseStruct<{
     methods: {
         _PreviewBlockView: () => React.ReactElement;
         _CodeDisplayView: () => React.ReactElement;
+        _ClickCountView: () => React.ReactElement;
     };
 
     events: {
@@ -72,10 +73,14 @@ function useButtonPreview(params?: ButtonPreviewParams): ButtonPreviewModel {
                 >
                     <Col spacing="medium" horizontalAlign="center" verticalAlign="center">
                         <model.testButton.View />
-                        <Block padding={{ top: "large" }}>
-                            Click count: <strong>{model.clickCount}</strong>
-                        </Block>
+                        <model._ClickCountView />
                     </Col>
+                </Block>
+            ),
+
+            _ClickCountView: () => (
+                <Block padding={{ top: "large" }}>
+                    Click count: <strong>{model.clickCount}</strong>
                 </Block>
             ),
 

@@ -166,7 +166,8 @@ function useTextFieldPropertiesEditor(params?: TextFieldPropertiesEditorParams):
                 type: "number",
                 value: UECA.bind(() => model, "rows"),
                 placeholder: "Number of rows",
-                fullWidth: true
+                fullWidth: true,
+                disabled: () => !model.multiline
             }),
 
             helperTextField: useTextField({

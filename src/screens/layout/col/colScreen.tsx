@@ -68,7 +68,7 @@ function useColScreen(params?: ColScreenParams): ColScreenModel {
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
                             <h1>Col Component</h1>
-                            <p>Modify col properties and see the changes in real-time.</p>
+                            <p>Modify properties and see the changes in real-time.</p>
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.propertiesEditor.View />
