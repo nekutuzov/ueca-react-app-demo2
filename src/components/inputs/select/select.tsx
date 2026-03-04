@@ -3,17 +3,17 @@ import { EditBaseModel, EditBaseParams, EditBaseStruct, useEditBase } from "@com
 import { Palette, resolvePaletteColor } from "@core";
 import "./select.css";
 
-type SelectOption = {
-    value: string | number;
+type SelectOption<T = string> = {
+    value: T;
     label: string;
     disabled?: boolean;
 };
 
-type SelectStruct = EditBaseStruct<{
+type SelectStruct<T = string> = EditBaseStruct<{
     props: {
         labelView: React.ReactNode;
-        value: string | number;
-        options: SelectOption[];
+        value: T;
+        options: SelectOption<T>[];
         placeholder: string;
         disabled: boolean;
         helperTextView: string;
@@ -25,20 +25,20 @@ type SelectStruct = EditBaseStruct<{
     };
 
     events: {
-        onChange: (value: string | number, source: SelectModel) => UECA.MaybePromise;
-        onFocus: (source: SelectModel) => UECA.MaybePromise;
-        onBlur: (source: SelectModel) => UECA.MaybePromise;
+        onChange: (value: T, source: SelectModel<T>) => UECA.MaybePromise;
+        onFocus: (source: SelectModel<T>) => UECA.MaybePromise;
+        onBlur: (source: SelectModel<T>) => UECA.MaybePromise;
     };
 }>;
 
-type SelectParams = EditBaseParams<SelectStruct>;
-type SelectModel = EditBaseModel<SelectStruct>;
+type SelectParams<T = string> = EditBaseParams<SelectStruct<T>>;
+type SelectModel<T = string> = EditBaseModel<SelectStruct<T>>;
 
-function useSelect(params?: SelectParams): SelectModel {
-    const struct: SelectStruct = {
+function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
+    const struct: SelectStruct<T> = {
         props: {
             id: useSelect.name,
-            value: "",
+            value: undefined,
             labelView: undefined,
             options: [],
             placeholder: undefined,
@@ -67,7 +67,7 @@ function useSelect(params?: SelectParams): SelectModel {
             const className = `ueca-select ueca-select-${model.variant} ${sizeClass} ${!model.isValid() ? "ueca-select-error" : ""} ${model.disabled ? "ueca-select-disabled" : ""} ${model.fullWidth ? "ueca-select-fullwidth" : ""}`.trim();
 
             const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-                const newValue = e.target.value;
+                const newValue = e.target.value as T;
                 // Convert back to number if the original option value was a number
                 const option = model.options.find(opt => String(opt.value) === newValue);
                 model.value = option ? option.value : newValue;
@@ -118,7 +118,7 @@ function useSelect(params?: SelectParams): SelectModel {
                         )}
                         {model.options.map((option) => (
                             <option
-                                key={option.value}
+                                key={option.value?.toString()}
                                 value={String(option.value)}
                                 disabled={option.disabled}
                             >

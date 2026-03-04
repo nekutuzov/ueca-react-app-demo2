@@ -1,10 +1,12 @@
 import { Route } from "@components";
-import { 
-    HomeScreen, 
-    ButtonScreen, 
-    LayoutScreen, 
+import {
+    HomeScreen,
+    ButtonScreen,
+    BlockScreen,
+    RowScreen,
+    ColScreen,
     TextFieldScreen,
-    SelectScreen, 
+    SelectScreen,
     RadioGroupScreen,
     PopupsScreen,
     FlyoutsScreen,
@@ -17,8 +19,10 @@ import {
 const screenRoutes = {
     // Add routes within the app layout
     "/": () => <HomeScreen id={"homeScreen"} />, // Default route, can be used for dashboard or welcome screen
-    "/home": () => <HomeScreen id={"homeScreen"} />, // TODO: after refactoring this screen add some general info about the app and its architecture.
-    "/layout": () => <LayoutScreen id={"layoutScreen"} />,
+    "/home": () => <HomeScreen id={"homeScreen"} />, // TODO: after refactoring this screen add some general info about the app and its architecture.    
+    "/layout/block": () => <BlockScreen id={"blockScreen"} />,
+    "/layout/row": () => <RowScreen id={"rowScreen"} />,
+    "/layout/col": () => <ColScreen id={"colScreen"} />,
     "/button": () => <ButtonScreen id={"buttonScreen"} />,
     "/text-field": () => <TextFieldScreen id={"textFieldScreen"} />,
     "/select": () => <SelectScreen id={"selectScreen"} />,

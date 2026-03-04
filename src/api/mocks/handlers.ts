@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { setupWorker } from "msw/browser"
 
-const apiBaseUrl = "http://localhost:3000/api"
+const apiBaseUrl = "http://localhost:8080/api"
 
 const handlers = [
     // Add your mock API handlers here

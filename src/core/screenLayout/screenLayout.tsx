@@ -56,7 +56,7 @@ function useScreenLayout(params?: ScreenParams): ScreenLayoutModel {
 
             return (
                 <Col id={model.htmlId()} fill divider overflow={"hidden"}>
-                    <Row verticalAlign={"center"} horizontalAlign={"spaceBetween"} padding={{ leftRight: "medium" }} height={"52px"}>
+                    <Row verticalAlign={"center"} horizontalAlign={"spaceBetween"} padding={{ leftRight: "medium" }} height={"40px"}>
                         <model.breadcrumbsControl.View />
                         <Row>
                             {model.toolsView}

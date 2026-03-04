@@ -3,9 +3,9 @@ import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components"
 import { Palette, resolvePaletteColor } from "@core";
 import "./textField.css";
 
-type TextFieldStruct = UIBaseStruct<{
+type TextFieldStruct<T = string> = UIBaseStruct<{
     props: {
-        value: string;
+        value: T;
         labelView: React.ReactNode;
         placeholder: string;
         type: "text" | "email" | "password" | "number" | "tel" | "url" | "search";
@@ -22,20 +22,20 @@ type TextFieldStruct = UIBaseStruct<{
     };
 
     events: {
-        onChange: (value: string, source: TextFieldModel) => UECA.MaybePromise;
-        onFocus: (source: TextFieldModel) => UECA.MaybePromise;
-        onBlur: (source: TextFieldModel) => UECA.MaybePromise;
+        onChange: (value: T, source: TextFieldModel<T>) => UECA.MaybePromise;
+        onFocus: (source: TextFieldModel<T>) => UECA.MaybePromise;
+        onBlur: (source: TextFieldModel<T>) => UECA.MaybePromise;
     };
 }>;
 
-type TextFieldParams = UIBaseParams<TextFieldStruct>;
-type TextFieldModel = UIBaseModel<TextFieldStruct>;
+type TextFieldParams<T = string> = UIBaseParams<TextFieldStruct<T>>;
+type TextFieldModel<T = string> = UIBaseModel<TextFieldStruct<T>>;
 
-function useTextField(params?: TextFieldParams): TextFieldModel {
-    const struct: TextFieldStruct = {
+function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T> {
+    const struct: TextFieldStruct<T> = {
         props: {
             id: useTextField.name,
-            value: "",
+            value: undefined,
             labelView: undefined,
             placeholder: "",
             type: "text",
@@ -72,7 +72,7 @@ function useTextField(params?: TextFieldParams): TextFieldModel {
                     {model.multiline ? (
                         <textarea
                             className="textfield-input textfield-textarea"
-                            value={model.value}
+                            value={model.value?.toString()}
                             placeholder={model.placeholder}
                             disabled={model.disabled}
                             required={model.required}
@@ -85,7 +85,7 @@ function useTextField(params?: TextFieldParams): TextFieldModel {
                         <input
                             className="textfield-input"
                             type={model.type}
-                            value={model.value}
+                            value={model.value?.toString()}
                             placeholder={model.placeholder}
                             disabled={model.disabled}
                             required={model.required}
@@ -110,7 +110,7 @@ function useTextField(params?: TextFieldParams): TextFieldModel {
 
     // Private methods
     function _handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-        model.value = e.target.value;
+        model.value = e.target.value as T;
         if (model.onChange) {
             model.onChange(model.value, model);
         }

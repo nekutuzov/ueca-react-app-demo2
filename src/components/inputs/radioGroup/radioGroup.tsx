@@ -3,17 +3,17 @@ import { EditBaseModel, EditBaseParams, EditBaseStruct, useEditBase } from "@com
 import { Palette, resolvePaletteColor } from "@core";
 import "./radioGroup.css";
 
-type RadioOption = {
-    value: string | number;
+type RadioOption<T = string> = {
+    value: T;
     label: string;
     disabled?: boolean;
 };
 
-type RadioGroupStruct = EditBaseStruct<{
+type RadioGroupStruct<T = string> = EditBaseStruct<{
     props: {
         labelView: React.ReactNode;
-        value: string | number;
-        options: RadioOption[];
+        value: T;
+        options: RadioOption<T>[];
         disabled: boolean;
         helperTextView: string;
         orientation: "row" | "column";
@@ -24,20 +24,20 @@ type RadioGroupStruct = EditBaseStruct<{
     };
 
     events: {
-        onChange: (value: string | number, source: RadioGroupModel) => UECA.MaybePromise;
-        onFocus: (source: RadioGroupModel) => UECA.MaybePromise;
-        onBlur: (source: RadioGroupModel) => UECA.MaybePromise;
+        onChange: (value: T, source: RadioGroupModel<T>) => UECA.MaybePromise;
+        onFocus: (source: RadioGroupModel<T>) => UECA.MaybePromise;
+        onBlur: (source: RadioGroupModel<T>) => UECA.MaybePromise;
     };
 }>;
 
-type RadioGroupParams = EditBaseParams<RadioGroupStruct>;
-type RadioGroupModel = EditBaseModel<RadioGroupStruct>;
+type RadioGroupParams<T = string> = EditBaseParams<RadioGroupStruct<T>>;
+type RadioGroupModel<T = string> = EditBaseModel<RadioGroupStruct<T>>;
 
-function useRadioGroup(params?: RadioGroupParams): RadioGroupModel {
-    const struct: RadioGroupStruct = {
+function useRadioGroup<T = string>(params?: RadioGroupParams<T>): RadioGroupModel<T> {
+    const struct: RadioGroupStruct<T> = {
         props: {
             id: useRadioGroup.name,
-            value: "",
+            value: undefined,
             labelView: undefined,
             options: [],
             disabled: false,
@@ -86,7 +86,7 @@ function useRadioGroup(params?: RadioGroupParams): RadioGroupModel {
 
                             return (
                                 <label
-                                    key={option.value}
+                                    key={option.value?.toString()}
                                     className={`ueca-radio-item${isDisabled ? " ueca-radio-item-disabled" : ""}`}
                                 >
                                     <input
@@ -121,7 +121,7 @@ function useRadioGroup(params?: RadioGroupParams): RadioGroupModel {
     return model;
 
     // Private methods
-    function _handleChange(optionValue: string | number) {
+    function _handleChange(optionValue: T) {
         if (!model.disabled) {
             model.value = optionValue;
             if (model.onChange) {

@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel, useNavItem } from "@components";
+import { Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel, useNavItem, NavItemExpandableModel, useNavItemExpandable } from "@components";
 import { AppRoute } from "@core";
 
 type AppMenuStruct = UIBaseStruct<{
@@ -9,7 +9,10 @@ type AppMenuStruct = UIBaseStruct<{
 
     children: {
         homeMenuItem: NavItemModel;
-        layoutMenuItem: NavItemModel;
+        layoutMenuItem: NavItemExpandableModel;
+        layoutBlockMenuItem: NavItemModel;
+        layoutRowMenuItem: NavItemModel;
+        layoutColMenuItem: NavItemModel;
         buttonsMenuItem: NavItemModel;
         textFieldMenuItem: NavItemModel;
         selectMenuItem: NavItemModel;
@@ -43,22 +46,37 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
             }),
-            layoutMenuItem: useNavItem({
-                text: "Layout",
-                route: { path: "/layout" },
-                icon: (
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/>
-                    </svg>
-                ),
+            layoutBlockMenuItem: useNavItem({
+                text: "Block",
+                route: { path: "/layout/block" },
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
             }),
+            layoutRowMenuItem: useNavItem({
+                text: "Row",
+                route: { path: "/layout/row" },
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            layoutColMenuItem: useNavItem({
+                text: "Col",
+                route: { path: "/layout/col" },
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+            }),
+            layoutMenuItem: useNavItemExpandable({
+                text: "Layout",
+                icon: (
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z" />
+                    </svg>
+                ),
+                mode: () => model.iconsOnly ? "icon-only" : "icon-text",
+                subItems: () => [model.layoutBlockMenuItem, model.layoutRowMenuItem, model.layoutColMenuItem]
+            }),
             buttonsMenuItem: useNavItem({
-                text: "Buttons",
+                text: "Button",
                 route: { path: "/button" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -68,7 +86,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 route: { path: "/text-field" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M5 4v3h5.5v12h3V7H19V4z"/>
+                        <path d="M5 4v3h5.5v12h3V7H19V4z" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -78,8 +96,8 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 route: { path: "/select" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M7 10l5 5 5-5z"/>
-                        <path d="M3 3h18v2H3V3zm0 16h18v2H3v-2zm0-8h18v2H3v-2z"/>
+                        <path d="M7 10l5 5 5-5z" />
+                        <path d="M3 3h18v2H3V3zm0 16h18v2H3v-2zm0-8h18v2H3v-2z" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -89,8 +107,8 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 route: { path: "/radio-group" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
-                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
+                        <circle cx="12" cy="12" r="5" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -100,7 +118,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 route: { path: "/popups" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-8-2h2v-2h-2v2zm0-4h2V7h-2v6z"/>
+                        <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-8-2h2v-2h-2v2zm0-4h2V7h-2v6z" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -110,7 +128,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 route: { path: "/flyouts" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -120,7 +138,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 route: { path: "/navigation" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
+                        <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -130,7 +148,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 route: { path: "/tabs" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h10v4h8v10z"/>
+                        <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h10v4h8v10z" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -140,7 +158,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 route: { path: "/misc" },
                 icon: (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
                     </svg>
                 ),
                 mode: () => model.iconsOnly ? "icon-only" : "icon-text"
@@ -177,25 +195,31 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
 
     // Private methods
     function _syncActiveMenu(route: AppRoute) {
-        // Directly access child menu items
-        const menuItems = [
-            model.homeMenuItem, 
-            model.layoutMenuItem, 
-            model.buttonsMenuItem, 
-            model.textFieldMenuItem,
-            model.selectMenuItem, 
-            model.radioGroupMenuItem,
-            model.popupsMenuItem,
-            model.flyoutsMenuItem,
-            model.navigationMenuItem,
-            model.tabsMenuItem,
-            model.miscMenuItem
-        ];
-        menuItems.forEach(menuItem => {
-            if (menuItem && menuItem.route) {
-                menuItem.active = route?.path?.startsWith(menuItem.route.path);
-            }
-        });
+        // Check if any layout sub-route is active
+        const isLayoutActive = route?.path?.startsWith("/layout");
+        model.layoutMenuItem.active = isLayoutActive;
+
+        // Auto-expand layout menu if a layout route is active
+        if (isLayoutActive && !model.iconsOnly) {
+            model.layoutMenuItem.expanded = true;
+        }
+
+        // Sync submenu items
+        model.layoutBlockMenuItem.active = route?.path === "/layout/block";
+        model.layoutRowMenuItem.active = route?.path === "/layout/row";
+        model.layoutColMenuItem.active = route?.path === "/layout/col";
+
+        // Sync other menu items
+        model.homeMenuItem.active = route?.path === "/home" || route?.path === "/";
+        model.buttonsMenuItem.active = route?.path?.startsWith("/button");
+        model.textFieldMenuItem.active = route?.path?.startsWith("/text-field");
+        model.selectMenuItem.active = route?.path?.startsWith("/select");
+        model.radioGroupMenuItem.active = route?.path?.startsWith("/radio-group");
+        model.popupsMenuItem.active = route?.path?.startsWith("/popups");
+        model.flyoutsMenuItem.active = route?.path?.startsWith("/flyouts");
+        model.navigationMenuItem.active = route?.path?.startsWith("/navigation");
+        model.tabsMenuItem.active = route?.path?.startsWith("/tabs");
+        model.miscMenuItem.active = route?.path?.startsWith("/misc");
     }
 }
 

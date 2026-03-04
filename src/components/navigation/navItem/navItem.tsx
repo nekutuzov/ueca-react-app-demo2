@@ -36,7 +36,7 @@ function useNavItem(params?: NavItemParams): NavItemModel {
             newTab: UECA.bind(() => model.navLink, "newTab"),
             text: UECA.bind(() => model.navLink, "title"),
             icon: undefined,
-            mode: "icon-text",
+            mode: "icon-text",            
         },
 
         children: {

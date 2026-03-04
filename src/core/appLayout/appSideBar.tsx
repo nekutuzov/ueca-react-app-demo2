@@ -42,18 +42,18 @@ function useAppSideBar(params?: AppSideBarParams): AppSideBarModel {
             toggleButton: useIconButton({
                 iconView: () => model.collapsed ? (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
                     </svg>
                 ) : (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 18h13v-2H3v2zm0-5h10v-2H3v2zm0-7v2h13V6H3zm18 9.59L17.42 12 21 8.41 19.59 7l-5 5 5 5L21 15.59z"/>
+                        <path d="M3 18h13v-2H3v2zm0-5h10v-2H3v2zm0-7v2h13V6H3zm18 9.59L17.42 12 21 8.41 19.59 7l-5 5 5 5L21 15.59z" />
                     </svg>
                 ),
                 size: "small",
                 onClick: () => model.toggleCollapse()
             }),
         },
-        
+
         methods: {
             toggleCollapse: () => {
                 model.collapsed = !model.collapsed;
@@ -61,33 +61,32 @@ function useAppSideBar(params?: AppSideBarParams): AppSideBarModel {
         },
 
         View: () =>
-            <Col 
-                id={model.htmlId()} 
-                width={model.collapsed ? 60 : 200} 
+            <Col id={model.htmlId()}
+                width={model.collapsed ? 60 : 200}
+                minWidth={model.collapsed ? 60 : 200}
+                maxWidth={model.collapsed ? 60 : 200}
                 fill
                 sx={{
                     transition: "width 0.3s ease-in-out",
-                    minWidth: model.collapsed ? 60 : 200,
-                    maxWidth: model.collapsed ? 60 : 200
                 }}
             >
                 {/* Header Section */}
                 <Col>
-                    <Row render={!model.collapsed} verticalAlign={"center"} spacing={"small"} padding={{ leftRight: "small", topBottom: "small" }}>
+                    <Row render={!model.collapsed} verticalAlign={"center"} spacing={"small"} padding={{ leftRight: "small", topBottom: "tiny" }}>
                         <model.toggleButton.View />
                         <span style={{ fontSize: "16px", fontWeight: "bold", color: "#1976d2" }}>
                             UECA App
                         </span>
                     </Row>
-                    <Row render={model.collapsed} horizontalAlign={"center"} verticalAlign={"center"} padding={{ topBottom: "small" }}>
+                    <Row render={model.collapsed} horizontalAlign={"center"} verticalAlign={"center"} padding={{ topBottom: "tiny" }}>
                         <model.toggleButton.View />
                     </Row>
                     {/* Divider */}
                     <div style={{ height: "1px", backgroundColor: "#e0e0e0", margin: "0 8px" }} />
                 </Col>
-                
+
                 {/* Menu Section - fills remaining space */}
-                <Col fill>
+                <Col fill overflow="hidden">
                     <model.menu.View />
                 </Col>
             </Col>

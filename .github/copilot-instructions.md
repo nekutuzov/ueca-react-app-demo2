@@ -50,8 +50,12 @@ Application
 **Input** (`input/`):
 - Button: variants (text/outlined/contained), sizes (small/medium/large), fullWidth
 - IconButton: predefined kinds (ok/cancel/delete/refresh/close) or custom SVG, CloseIconButton factory
-- TextField: variants (outlined/filled/standard), types (text/email/password/etc), multiline, error state
+- TextField`<T>`: variants (outlined/filled/standard), types (text/email/password/etc), multiline, error state
+- RadioGroup`<T>`: orientation (row/column), sizes (small/medium/large), color palette
+- Select`<T>`: variants (filled/outlined/standard), sizes (small/medium), fullWidth
 - Checkbox: sizes, indeterminate state
+
+**Note**: TextField, RadioGroup, and Select accept generic type parameter for type-safe values
 
 **Dialog** (`dialog/`):
 - Dialog: modal with backdrop, title, content, actions
@@ -125,7 +129,8 @@ disabled: () => model.isLoading
 // Bidirectional
 value: UECA.bind(() => model, "username")
 
-// Type casting for broader types
+// Type casting for broader types (when component requires string | number but model has narrower type)
+// Note: With generic components (TextField<T>, RadioGroup<T>, Select<T>), casting is often not needed
 value={UECA.bind(() => model, "variant") as UECA.Bond<string | number>}
 
 // Critical: Always use UECA.bind() for inputs to prevent focus loss
@@ -283,6 +288,52 @@ const files = await model.bus.unicast("App.SelectFiles", {
 <TabsContainer tabs={model.tabs} selectedTabId={model.currentTab} 
     onChange={(c) => model.currentTab = c.selectedTab.getTabId()} />
 ```
+
+**Generic Type Parameters for Input Components**:
+TextField, Select, and RadioGroup accept a generic type parameter `<T>` for better type safety:
+
+```tsx
+// TextField with string (default)
+<TextField labelView="Name" value={UECA.bind(() => model, "name")} />
+
+// TextField with number
+<TextField<number> labelView="Age" type="number" value={UECA.bind(() => model, "age")} />
+
+// RadioGroup with union literals - no type casting needed!
+<RadioGroup
+    labelView="Size"
+    value={UECA.bind(() => model, "size")}  // Type-safe, no "as UECA.Bond<...>"
+    options={[
+        { value: "small", label: "Small" },
+        { value: "medium", label: "Medium" },
+        { value: "large", label: "Large" }
+    ]}
+/>
+
+// Select with Palette type
+<Select
+    labelView="Color"
+    value={UECA.bind(() => model, "color")}  // Type inference works automatically
+    options={[
+        { value: "primary.main", label: "Primary" },
+        { value: "secondary.main", label: "Secondary" }
+    ]}
+/>
+
+// Only use type casting when component explicitly requires broader type
+// (e.g., RadioGroup/Select internal implementation expects string | number)
+<RadioGroup
+    labelView="Variant"
+    value={UECA.bind(() => model, "variant") as UECA.Bond<string | number>}
+    options={[{ value: "text", label: "Text" }]}
+/>
+```
+
+Benefits of generic types:
+- Type-safe bindings without manual casting in most cases
+- Better IDE autocomplete and error detection
+- Cleaner, more maintainable code
+- Automatic type inference from model properties
 
 ## Critical Conventions
 

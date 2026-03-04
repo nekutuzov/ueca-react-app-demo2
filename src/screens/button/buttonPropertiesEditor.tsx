@@ -10,21 +10,24 @@ import {
 } from "@components";
 import { Palette } from "@core";
 
+type ButtonVariant = "text" | "outlined" | "contained";
+type ButtonSize = "small" | "medium" | "large";
+
 type ButtonPropertiesEditorStruct = UIBaseStruct<{
     props: {
         buttonText: string;
-        variant: "text" | "outlined" | "contained";
-        size: "small" | "medium" | "large";
+        variant: ButtonVariant;
+        size: ButtonSize;
         color: Palette;
         disabled: boolean;
         fullWidth: boolean;
     };
 
     children: {
-        textField: TextFieldModel;
-        variantRadioGroup: RadioGroupModel;
-        sizeRadioGroup: RadioGroupModel;
-        colorSelect: SelectModel;
+        textField: TextFieldModel<string>;
+        variantRadioGroup: RadioGroupModel<ButtonVariant>;
+        sizeRadioGroup: RadioGroupModel<ButtonSize>;
+        colorSelect: SelectModel<Palette>;
         disabledCheckbox: CheckboxModel;
         fullWidthCheckbox: CheckboxModel;
         resetButton: ButtonModel;
@@ -60,7 +63,7 @@ function useButtonPropertiesEditor(params?: ButtonPropertiesEditorParams): Butto
 
             variantRadioGroup: useRadioGroup({
                 labelView: "Variant",
-                value: UECA.bind(() => model, "variant") as UECA.Bond<string | number>,
+                value: UECA.bind(() => model, "variant"),
                 options: [
                     { value: "text", label: "Text" },
                     { value: "outlined", label: "Outlined" },
@@ -71,7 +74,7 @@ function useButtonPropertiesEditor(params?: ButtonPropertiesEditorParams): Butto
 
             sizeRadioGroup: useRadioGroup({
                 labelView: "Size",
-                value: UECA.bind(() => model, "size") as UECA.Bond<string | number>,
+                value: UECA.bind(() => model, "size"),
                 options: [
                     { value: "small", label: "Small" },
                     { value: "medium", label: "Medium" },
@@ -82,7 +85,7 @@ function useButtonPropertiesEditor(params?: ButtonPropertiesEditorParams): Butto
 
             colorSelect: useSelect({
                 labelView: "Color",
-                value: UECA.bind(() => model, "color") as UECA.Bond<string | number>,
+                value: UECA.bind(() => model, "color"),
                 options: [
                     { value: "primary.main", label: "Primary" },
                     { value: "secondary.main", label: "Secondary" },
