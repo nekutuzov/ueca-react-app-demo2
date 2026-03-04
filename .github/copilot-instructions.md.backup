@@ -1,0 +1,1228 @@
+# UECA React Application - AI Coding Agent Instructions
+
+## Architecture Overview
+
+This is a **UECA (Unified Encapsulated Component Architecture)** React application - a framework that abstracts React patterns into a component model with structured props, children, methods, events, and message bus communication. UECA replaces standard React patterns with a unified component structure that emphasizes declarative composition and message-based communication.
+
+### Learning Resources
+
+**For New Developers**:
+1. Start with UECA documentation: `node_modules/ueca-react/docs/index.md`
+2. Study component patterns in `src/components/base/` for base architectures
+3. Check out the full example project at: `https://github.com/nekutuzov/ueca-react-app`
+
+**Key Documentation Files** (in node_modules/ueca-react/docs/):
+- **Introduction**: `Introduction to UECA-React.md` - Framework overview and philosophy
+- **Component Model**: `Component Mental Model in UECA-React.md` - Black box component architecture
+- **Integration**: `Component Integration Model in UECA-React.md` - Parent-child communication patterns
+- **Lifecycle**: `Lifecycle Hooks in UECA-React.md` - Component initialization and cleanup
+- **State**: `State Management in UECA-React.md` - MobX-powered reactive properties
+- **Bindings**: `Property Bindings in UECA-React.md` - Unidirectional, bidirectional, custom bindings
+- **Events**: `Automatic onChange Events in UECA-React.md` - Auto-generated property events
+- **Message Bus**: `Message Bus in UECA-React.md` - Decoupled component communication
+
+### Component Mental Model
+
+Components in UECA are **self-contained black boxes** with:
+- **Internal State** (props): Encapsulated properties accessible and modifiable
+- **Methods**: Functions to alter state, retrieve data, trigger events
+- **Internal Events**: Automatic `onChange<Prop>` and `onChanging<Prop>` events
+- **Children**: Recursive component structure (children follow same principles)
+- **Message Bus**: Decoupled inter-component communication
+- **View**: JSX presentation (if visual component)
+
+### Technology Stack
+
+- **UECA-React 2.0**: Framework installed as npm package `ueca-react`
+  - Documentation: `node_modules/ueca-react/docs/` (comprehensive guides on all patterns)
+- **TypeScript**: Core language for type safety and maintainability
+- **JSX**: UI description integrated with TypeScript
+- **React 19.0**: Minimal usage - only custom hooks for model instantiation
+- **MobX**: Powers reactive state management (abstracted by UECA)
+- **MSW**: API mocking in development
+- **Plain HTML/CSS**: No UI library dependencies - all components use vanilla HTML, CSS, and SVG
+
+**Banned React Features**: `useState`, `useEffect`, `useContext`, `useReducer`, class components
+**No Material-UI**: All components are implemented with plain HTML/CSS for zero dependencies
+
+### Key Architectural Patterns
+
+**Component Model Structure**: All components follow the UECA pattern using `useXXX` hooks:
+```tsx
+type ComponentStruct = UECA.ComponentStruct<{
+    props: { /* state properties */ },
+    children: { /* child components */ },
+    methods: { /* component methods */ },
+    events: { /* event handlers */ }
+}, AppMessage>;
+
+function useComponent(params?: ComponentParams): ComponentModel {
+    const struct: ComponentStruct = {
+        props: { id: useComponent.name },
+        View: () => <div id={model.htmlId()}>{/* JSX */}</div>
+    };
+    const model = UECA.useComponent(struct, params);
+    return model;
+}
+```
+
+**Message Bus Communication**: Components communicate via typed message bus instead of prop drilling:
+```tsx
+// Message definitions in src/core/infrastructure/appMessage.ts
+type AppMessage = {
+    "Api.GetUsers": { out: User[] };
+    "Dialog.Warning": { in: { title?: string, message: string } };
+};
+
+// Posting messages
+await model.bus.unicast("Api.GetUsers");  // First subscriber handles
+await model.bus.broadcast("*.Input", "UI.Validate");  // All matching subscribers
+await model.bus.castTo("app.form.button", "Click");  // Specific component by fullId
+
+// Handling messages in component struct
+messages: {
+    "Api.GetUsers": async () => {
+        return await apiClient.get<User[]>("/users");
+    }
+}
+```
+
+**Path Aliases** (critical for imports):
+- `@components` → `src/components`
+- `@core` → `src/core`
+- `@api` → `src/api`
+- `@screens` → `src/screens`
+
+Configured in `tsconfig.app.json` paths and resolved by `vite-tsconfig-paths` plugin.
+
+**TypeScript Config**:
+- `strictNullChecks: false` - UECA handles undefined gracefully
+- `noImplicitAny: false` - Flexibility for dynamic patterns
+
+**Base Component Hierarchy**: All components extend from base classes in `src/components/base/`:
+- `BaseModel` - Core UECA functionality with routing/dialog shortcuts
+- `UIBaseModel` - UI-focused components
+- `EditBaseModel` - Form/editing components with validation
+
+**Application Architecture** (critical understanding):
+```
+Application (top-level orchestrator)
+  ├─ AppBrowsingHistory (browser history management)
+  ├─ AppSecurity (authentication & authorization)
+  └─ AppUI (UI infrastructure layer)
+      ├─ ErrorFallback (React error boundaries - double wrapped)
+      ├─ AppBusyDisplay (global spinner/loading indicator)
+      ├─ AppDialogManager (dialog system manager)
+      ├─ AppAlertManager (toast notification system manager)
+      ├─ FileSelector (hidden file input for file selection)
+      └─ Conditional View (based on authorizedMode):
+          ├─ AppLoginForm (when not authorized)
+          └─ AppRouter (when authorized)
+              ├─ AppLayout (main app layout with navigation)
+              │   ├─ AppSideBar (collapsible sidebar)
+              │   │   ├─ Toggle Button (hamburger/menu-open SVG icon)
+              │   │   └─ AppMenu (navigation menu)
+              │   │       └─ homeMenuItem (NavItem with SVG home icon)
+              │   └─ Router → Screen Components (HomeScreen, etc.)
+              └─ OtherLayout (minimal layout for standalone pages)
+                  └─ Router → External/Document Views
+```
+
+**Layout Components** (`src/components/layout/layout.tsx`):
+- **Block**: Basic container with padding, alignment, background color, cursor
+- **Row**: Horizontal flexbox layout with spacing, dividers, alignment, cursor
+- **Col**: Vertical flexbox layout with spacing, dividers, alignment, cursor
+- All use plain HTML `<div>` with CSS flexbox (no Material-UI)
+- Support `fill` prop to stretch in cross-axis direction
+- Support `cursor` prop for interaction feedback (pointer, default, etc.)
+
+**Component Folder Structure**: Each component is in its own folder with TypeScript and CSS files:
+- `src/components/buttons/button/` - button.tsx, button.css
+- `src/components/buttons/iconButton/` - iconButton.tsx, iconButton.css
+- `src/components/inputs/textField/` - textField.tsx, textField.css
+- `src/components/inputs/checkbox/` - checkbox.tsx, checkbox.css
+- `src/components/popups/dialog/` - dialog.tsx, dialog.css
+- `src/components/popups/alertDialog/` - alertDialog.tsx, alertDialog.css
+- `src/components/flyouts/alert/` - alert.tsx, alert.css
+- `src/components/flyouts/snackbar/` - snackbar.tsx, snackbar.css
+- `src/components/flyouts/drawer/` - drawer.tsx, drawer.css
+- `src/components/flyouts/alertDrawer/` - alertDrawer.tsx, alertDrawer.css
+- `src/components/flyouts/alertToast/` - alertToast.tsx, alertToast.css
+- `src/components/navigation/navLink/` - navLink.tsx, navLink.css
+- `src/components/navigation/navItem/` - navItem.tsx, navItem.css
+- `src/components/navigation/breadcrumbs/` - breadcrumbs.tsx, breadcrumbs.css
+- `src/components/tabs/tab/` - tab.tsx, tab.css
+- `src/components/tabs/tabsContainer/` - tabsContainer.tsx, tabsContainer.css
+
+**Button Components** (`src/components/buttons/`):
+- **Button** (`button/button.tsx`): Clickable button with variants (text, outlined, contained), sizes (small, medium, large), fullWidth support
+- **IconButton** (`iconButton/iconButton.tsx`): Icon-only button with predefined icon kinds or custom icons
+  - Predefined icon kinds: `ok`, `cancel`, `delete`, `refresh`, `close`
+  - Can use `kind` prop for built-in icons or `iconView` prop for custom SVG
+  - Sizes: small, medium, large
+  - Includes `CloseIconButton` specialized factory component
+- All implemented with plain HTML/CSS, no Material-UI dependencies
+
+**Input Components** (`src/components/inputs/`):
+- **TextField** (`textField/textField.tsx`): Text input field with label, placeholder, variants (outlined, filled, standard), types (text, email, password, number, tel, url, search), multiline support, error state, helper text
+- **Checkbox** (`checkbox/checkbox.tsx`): Checkbox with label, sizes (small, medium, large), indeterminate state
+- All implemented with plain HTML/CSS, no Material-UI dependencies
+
+**Popup Components** (`src/components/popups/`):
+- **Dialog** (`dialog/dialog.tsx`): Modal dialog with backdrop, title, content, actions
+- **AlertDialog** (`alertDialog/alertDialog.tsx`): Pre-built dialog for alerts/confirmations with severity icons in title and details drawer
+- All implemented with plain HTML/CSS, no Material-UI dependencies
+
+**Flyout Components** (`src/components/flyouts/`):
+- **Drawer** (`drawer/drawer.tsx`): Side panel with anchor positions (left, right, top, bottom), variants (temporary, persistent, permanent)
+- **Snackbar** (`snackbar/snackbar.tsx`): Notification container with positioning, auto-hide, and close reasons (timeout, clickaway, escapeKeyDown)
+- **Alert** (`alert/alert.tsx`): Alert message with SeverityIcon (success, info, warning, error), variants (standard, filled, outlined)
+- **AlertDrawer** (`alertDrawer/alertDrawer.tsx`): Pre-built drawer for alert details with severity icons
+- **AlertToast** (`alertToast/alertToast.tsx`): Pre-built toast notification combining Snackbar + Alert (can be used as child component for screen-specific toasts)
+- All implemented with plain HTML/CSS, no Material-UI dependencies
+
+**Navigation Components** (`src/components/navigation/`):
+- **Router** (`router.tsx`): Generic routing engine with regex-based route matching, path/query params support
+- **NavLink** (`navLink/navLink.tsx`): Navigation link with palette colors, underline variants (none, hover, always), disabled state, new tab support, beforeNavigate hook
+- **NavItem** (`navItem/navItem.tsx`): Navigation item with three modes (icon-only, text-only, icon-text), active state, icon/text support, integrates with NavLink
+  - All layout via Block/Row props (padding, cursor, alignment)
+  - CSS only handles appearance (background-color, transition, color)
+  - Uses CSS variables from appTheme for colors (`--nav-item-hover`, `--nav-item-disabled`, `--nav-item-active`)
+  - Wraps NavLink with bidirectional bindings for transparent API
+- **Breadcrumbs** (`breadcrumbs/breadcrumbs.tsx`): Navigation breadcrumb trail with semantic HTML, default arrow separator, custom separator support, fragment unwrapping, NavLink integration
+- All implemented with plain HTML/CSS, no Material-UI dependencies
+
+**Tabs Components** (`src/components/tabs/`):
+- **TabsContainer** (`tabsContainer/tabsContainer.tsx`): Tab container managing multiple tabs with selection state
+  - Orientation: horizontal (default) or vertical
+  - Variants: standard, scrollable (with scroll buttons), fullWidth
+  - Centered tabs option
+  - Automatic tab selection management
+  - onChange event triggered when tab selection changes
+- **Tab** (`tab/tab.tsx`): Individual tab button with label, icon, disabled state, selection highlighting
+  - Icon positioning: top, bottom, start, end
+  - Wrapped text support for long labels
+  - Invalid state styling for form validation
+  - onClick event handler
+  - Integration with TabsContainer for selection management
+- All implemented with plain HTML/CSS, no Material-UI dependencies
+
+**Utility Components** (`src/components/misc/`):
+- **SeverityIcon** (`severityIcon.tsx`): Reusable severity icon component with SVG icons for success, info, warning, error - used by Alert, AlertDialog, AlertDrawer
+
+**Screen Layout Components** (`src/screens/layout/`):
+- **ScreenLayout** (`screenLayout.tsx`): Base screen layout with breadcrumbs, toolbar, and content area
+  - Breadcrumbs navigation at top
+  - Toolbar area with tools and hidden tools support
+  - Content area with configurable padding
+  - Integrated AlertDrawer for additional details
+- **LocationBreadcrumbs** (`locationBreadcrumbs.tsx`): Breadcrumbs component for screen navigation
+  - Takes array of `Breadcrumb` objects with route and label
+  - Automatically disables last breadcrumb (current location)
+  - Integrates with NavLink for navigation
+- **CRUDScreen** (`crudScreen.tsx`): Full-featured CRUD operations screen
+  - Intents: `none`, `view`, `edit`, `edit-record`, `action`
+  - Built-in validation with validator integration
+  - State management: dataNew, dataModified, dataLoading, dataSaving, dataCanceling
+  - Standard CRUD operations: refresh, save, cancel, delete
+  - Navigation prevention when data is modified (unsaved changes dialog)
+  - Action buttons: save, cancel, delete, refresh (shown based on intent)
+  - Event hooks: onRefresh, onModify, onValidate, onSave, onCancel, onDelete
+- **TabsScreen** (`tabsScreen.tsx`): Tabbed interface wrapper for CRUDScreen
+  - Combines TabsContainer with CRUDScreen functionality
+  - All CRUD operations available within tab context
+  - Validation across all tabs
+  - Tab state managed by TabsContainer
+
+**Toast Notification Patterns**:
+- **Global Alerts**: Use AppAlertManager via message bus (`Alert.Success`, `Alert.Information`, `Alert.Warning`, `Alert.Error`) for app-wide notifications
+- **Local Toasts**: Use AlertToast as child component for screen-specific notifications with custom lifecycle
+
+**Routing Architecture** (`src/core/infrastructure/` and `src/components/navigation/`):
+
+Multi-layout routing system with separation of concerns:
+
+- **Router** (`src/components/navigation/router.tsx`): Generic routing engine (reusable component)
+  - Takes `routes` object mapping paths to component functions
+  - Supports dynamic path params: `/users/:id` → `route.params.id`
+  - Supports query params: `?:tab` → `route.params.tab`
+  - Uses regex-based route matching for flexibility
+  - Manages route state and triggers view updates
+  - Type: `Route<Routing>` provides type-safe route definitions
+
+- **AppRouter** (`src/core/infrastructure/appRouter.tsx`): Application routing orchestrator
+  - Manages two layout systems: `appLayout` and `otherLayout`
+  - Routes between layouts based on path matching
+  - Integrates with browsing history for navigation state
+  - Message handlers:
+    * `App.Router.GetRoute` - Get current route
+    * `App.Router.GoToRoute` - Navigate with history tracking
+    * `App.Router.SetRoute` - Navigate without history tracking
+    * `App.Router.SetRouteParams` - Update route params
+    * `App.Router.OpenNewTab` - Open route in new browser tab
+    * `App.Router.BeforeRouteChange` - Hook before navigation
+    * `App.Router.AfterRouteChange` - Hook after navigation
+
+- **AppLayout** (`src/core/layout/appLayout.tsx`): Main application layout
+  - Uses Router with `screenRoutes` from appRoutes.tsx
+  - Includes AppSideBar with navigation menu
+  - For authenticated application screens
+  - Wraps content in Row with dividers and spacing (sideBar + router)
+
+- **AppSideBar** (`src/core/layout/appSideBar.tsx`): Collapsible navigation sidebar
+  - Collapsible state: collapsed (60px) or expanded (200px)
+  - Toggle button with hamburger SVG icon (menu when collapsed, menu-open when expanded)
+  - Contains AppMenu component with iconsOnly binding to collapsed state
+  - Title "UECA Tutorial" shown when expanded
+  - Plain HTML div with CSS transitions, no Material-UI
+
+- **AppMenu** (`src/core/layout/appMenu.tsx`): Navigation menu with menu items
+  - Contains NavItem children (homeMenuItem with SVG home icon)
+  - iconsOnly prop hides text labels when sidebar collapsed
+  - Route synchronization: _syncActiveMenu() marks active item based on current route
+  - Uses plain HTML div instead of Material-UI List
+  - All icons are SVG (no Material-UI icons)
+
+- **OtherLayout** (`src/core/layout/otherLayout.tsx`): Minimal standalone layout
+  - Uses Router with `otherRoutes` from appRoutes.tsx
+  - No decorations or navigation chrome
+  - For external redirects, document viewers, print views
+  - Directly renders route view without wrapper
+
+- **Route Definitions** (`src/core/infrastructure/appRoutes.tsx`):
+  - `screenRoutes`: Main app routes (e.g., `/`, `/home`, `/users/:id`)
+  - `otherRoutes`: Standalone routes for external URLs (e.g., `https://ueca-react.carrd.co/`, `https://github.com/nekutuzov/ueca-react-app`) and document viewers (e.g., `//printview`)
+  - Type exports: `ScreenRoute`, `OtherRoute`, `AppRoute`, `AppRouteParams<T>`
+
+**Color Palette System** (`src/core/infrastructure/appTheme.ts`):
+- Centralized color definitions in `paletteColors` object
+- `Palette` type for type-safe color references
+- `resolvePaletteColor()` helper converts palette tokens to CSS colors
+- All components should use `Palette` type for color props
+- Supports both palette tokens (`"primary.main"`) and direct CSS colors (`"#1976d2"`)
+
+**Infrastructure Components**:
+- **ErrorFallback** (`src/components/utility/errorFallback.tsx`): React error boundary for graceful error handling
+- **Spinner** (`src/components/misc/spinner.tsx`): Loading indicator with SVG animations (indeterminate/determinate)
+- **AppBusyDisplay** (`src/core/infrastructure/appBusyDisplay.tsx`): Global busy state manager with delayed spinner
+- **AppDialogManager** (`src/core/infrastructure/appDialogManager.tsx`): Centralized dialog management via message bus
+- **AppAlertManager** (`src/core/infrastructure/appAlertManager.tsx`): Global toast notification system via message bus
+  - Uses AlertToast components for each alert with position-based tracking
+  - Supports 6 positioning options via `anchorOrigin` prop: top/bottom × left/center/right
+  - Default position: `{ vertical: "bottom", horizontal: "right" }`
+  - Auto-dismisses alerts after 4 seconds
+- **FileSelector** (`src/components/misc/fileSelector.tsx`): Hidden file input for programmatic file selection
+- **AppSecurity** (`src/core/infrastructure/appSecurity.tsx`): Authentication and authorization management
+  - Stores UserContext (user, apiToken) in internal state
+  - Provides `isAuthorized()`, `authorize()`, `unauthorize()` methods
+  - Message handlers: `App.Security.IsAuthorized`, `App.Security.AuthorizeNative`, `App.Security.Unauthorize`
+- **AppLoginForm** (`src/core/infrastructure/appLoginForm.tsx`): Login form component
+  - Email/password inputs with TextField components
+  - Remember me checkbox
+  - Calls `App.Security.AuthorizeNative` message on submit
+  - Plain HTML/CSS card layout (no Material-UI)
+- **AppRouter** (`src/core/infrastructure/appRouter.tsx`): Routing orchestrator managing AppLayout and OtherLayout
+- **AppLayout** (`src/core/layout/appLayout.tsx`): Main app layout with navigation chrome
+- **OtherLayout** (`src/core/layout/otherLayout.tsx`): Minimal layout for standalone pages
+- **AppUI** (`src/core/infrastructure/appUI.tsx`): UI orchestration layer integrating all infrastructure components
+  - Conditionally renders AppLoginForm (unauthorized) or AppRouter (authorized)
+  - Receives `authorizedMode` prop from Application via binding to `security.isAuthorized()`
+
+## Development Workflows
+
+**Development Server**: `npm run dev` (Vite on port 5001, base path `/myapp`)
+**Production Build**: `npm run build` (TypeScript compilation + Vite build)
+**Linting**: `npm run lint` (ESLint with TypeScript support)
+
+**API Mocking**: MSW (Mock Service Worker) configured in `src/api/mocks/handlers.ts`:
+- Enable/disable: Comment/uncomment `initMocks()` in `src/main.tsx`
+- Service worker: `public/mockServiceWorker.js` (served at `/myapp/mockServiceWorker.js`)
+
+**Component Creation Pattern** (follow exactly):
+1. Create a folder for the component in the appropriate category (buttons/, inputs/, popups/, flyouts/, navigation/, tabs/, etc.)
+2. Define `XxxStruct` type extending appropriate base
+3. Create `XxxParams` and `XxxModel` type aliases
+4. Create `useXxx` hook with structured implementation
+5. Export `Xxx` component using `getFC(useXxx)`
+6. Always export `XxxModel`, `XxxParams`, `useXxx`, and `Xxx`
+7. Always set `id: useXxx.name` in props
+8. Use `model.htmlId()` for root element `id` attribute
+9. **One Folder Per Component** - component files (tsx + css) in dedicated folder
+10. Create accompanying CSS file in same folder for component styles
+
+**Specialized Component Factories Pattern**:
+Create pre-configured variants of components by wrapping hooks with preset properties:
+```tsx
+// Base component
+function useIconButton(params?: IconButtonParams): IconButtonModel { /* ... */ }
+
+// Specialized factory (removes iconView from params, presets the icon)
+type CloseIconButtonParams = Omit<IconButtonParams, "iconView">;
+
+function useCloseIconButton(params?: CloseIconButtonParams): IconButtonModel {
+    return useIconButton({
+        ...params,
+        iconView: <svg>...</svg>  // Preset icon
+    });
+}
+
+const CloseIconButton = UECA.getFC(useCloseIconButton);
+```
+**When to use**: For common configuration variants (icon buttons, form buttons, alerts). Not for behavioral changes.
+**See**: `Specialized Component Factories in UECA-React.md` documentation in project root
+
+**Component Structure Example**:
+```tsx
+import * as UECA from "ueca-react";
+import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
+
+type MyComponentStruct = UIBaseStruct<{
+    props: {
+        value: string;
+    };
+    events: {
+        onChange: (value: string) => void;
+    };
+}>;
+
+type MyComponentParams = UIBaseParams<MyComponentStruct>;
+type MyComponentModel = UIBaseModel<MyComponentStruct>;
+
+function useMyComponent(params?: MyComponentParams): MyComponentModel {
+    const struct: MyComponentStruct = {
+        props: {
+            id: useMyComponent.name,
+            value: "",
+        },
+        
+        View: () => <div id={model.htmlId()}>{model.value}</div>
+    };
+    
+    const model = useUIBase(struct, params);
+    return model;
+}
+
+const MyComponent = UECA.getFC(useMyComponent);
+
+export { MyComponentModel, MyComponentParams, useMyComponent, MyComponent };
+```
+
+## Critical Conventions
+
+**No React.StrictMode**: Explicitly avoided due to UECA lifecycle conflicts
+
+**Lifecycle Hooks**: Use UECA hooks instead of useEffect:
+- `constr(model)` - one-time setup when model instantiated
+- `init(model)` - called on creation or cache retrieval
+- `mount(model)` - when component attaches to DOM
+- `draw(model)` - after view rendering
+- `erase(model)` - before UI removal
+- `unmount(model)` - when component detaches from DOM
+- `deinit(model)` - when component loses React context
+
+**State Management**: Direct property assignment (MobX-powered):
+```tsx
+model.count++; // triggers reactive updates
+model.user = newUser; // no setState needed
+```
+
+**Property Bindings**: Three types for parent-child data flow:
+```tsx
+// 1. Unidirectional (read-only)
+disabled: () => model.isLoading
+
+// 2. Bidirectional (two-way sync)
+value: UECA.bind(() => model.formData, "username")
+
+// 3. Custom (with transformation)
+phone: UECA.bind(
+    () => formatPhone(model.phoneDigits),
+    (val) => model.phoneDigits = stripFormat(val)
+)
+```
+
+**Type Casting for Bindings**: When component expects broader type than model property provides:
+```tsx
+// ✅ CORRECT - Cast the entire binding result
+value={UECA.bind(() => model, "variant") as UECA.Bond<string | number>}
+checked={UECA.bind(() => model, "disabled")}  // No cast needed for matching types
+
+// ❌ WRONG - Don't use custom binding with manual setters for simple type mismatches
+value={UECA.bind(() => model.variant as string | number, (v) => model.variant = v as "text" | "outlined")}
+
+// Use case: RadioGroup/Select expect string | number, but model has union literals or Palette type
+// Solution: Cast binding to UECA.Bond<string | number> - maintains bidirectional sync automatically
+```
+
+**Critical for Focus Management**: Always use `UECA.bind()` for input components to maintain stable references across re-renders. Without bindings, onChange handlers are recreated on every render, causing inputs to lose focus while typing.
+
+**Centralized Error Handling**: All errors caught by `UECA.globalSettings.errorHandler`:
+```tsx
+UECA.globalSettings.errorHandler = (error: Error) => {
+    appMessageBus.unicast("App.UnhandledException", error);
+};
+```
+
+**Automatic Event Handlers**: UECA generates events for all props:
+```tsx
+// onChange<Prop> - fires AFTER property updates
+events: {
+    onChangeValue: (newVal, oldVal) => { 
+        console.log("Value changed"); 
+    }
+}
+
+// onChanging<Prop> - fires BEFORE update (can transform or block)
+events: {
+    onChangingValue: (newVal, oldVal) => {
+        if (newVal < 0) return oldVal;  // Block invalid changes
+        return newVal.toUpperCase();  // Transform before setting
+    }
+}
+```
+
+## Best Practices
+
+**Component Encapsulation**:
+- Prefer passing domain objects over many individual properties
+- Handle data transformations internally, not in consuming components
+- Keep interfaces minimal and cohesive
+
+**JSX Structure**:
+- Keep JSX clean and structural
+- Move algorithmic logic to private functions (prefix with `_`)
+- Break large JSX into private observer View methods for precise re-rendering
+
+**Observer View Methods**:
+For complex screens with multiple independent sections, define private View methods as model methods:
+```tsx
+methods: {
+    _PropertiesEditorView: () => React.ReactElement;
+    _PreviewAreaView: () => React.ReactElement;
+}
+
+// Implementation in methods section
+methods: {
+    _PropertiesEditorView: () => {
+        return (
+            <Col spacing="medium">
+                <TextField value={UECA.bind(() => model, "inputValue")} />
+                {/* More inputs */}
+            </Col>
+        );
+    }
+}
+
+// Use in contentView
+contentView: () => (
+    <Row>
+        {model._PropertiesEditorView()}
+        {model._PreviewAreaView()}
+    </Row>
+)
+```
+Benefits:
+- Methods become MobX observers - only re-render when their dependencies change
+- Prevents entire component tree recreation on property changes
+- Maintains component identity - critical for input focus management
+- Improves performance by isolating re-render boundaries
+
+**Component Integration**:
+- **Direct Model Calls**: Parent → Child only
+- **Message Bus**: Any → Any for decoupled communication
+- **Never** call parent from child directly
+
+**Component Wrapping Pattern**:
+When one component wraps another to extend functionality, use bidirectional bindings for one-to-one property mapping:
+```tsx
+// NavItem wraps NavLink to add visual presentation
+props: {
+    route: UECA.bind(() => model.navLink, "route"),
+    disabled: UECA.bind(() => model.navLink, "disabled"),
+    newTab: UECA.bind(() => model.navLink, "newTab"),
+    text: UECA.bind(() => model.navLink, "title"),  // Maps to NavLink's 'title'
+}
+```
+Benefits:
+- Transparent API - users don't need to know about internal children
+- Automatic synchronization - changes flow bidirectionally
+- Single source of truth - child owns logic, parent adds presentation
+- Clean separation of concerns
+
+**CSS Best Practices**:
+- **CSS should only handle appearance**: colors, backgrounds, borders, border-radius, transitions
+- **Layout & behavior in JSX**: Use Block/Row/Col props for padding, cursor, alignment, spacing, sizing
+- **Use CSS variables for theme colors**: Define colors in appTheme.ts, apply via CSS variables with `resolvePaletteColor()`
+- **Keep CSS files minimal**: Avoid layout properties (display, width, padding, align-items, etc.) in CSS
+```tsx
+// Good: Layout in JSX, appearance in CSS
+<Block
+    className="nav-item"
+    padding="small"
+    cursor="pointer"
+    sx={{
+        "--nav-item-hover": resolvePaletteColor("menu.hover")
+    } as React.CSSProperties}
+>
+    {content}
+</Block>
+
+// CSS: .nav-item { background-color: transparent; transition: background-color 0.2s; }
+// CSS: .nav-item:hover { background-color: var(--nav-item-hover); }
+```
+
+**Using Layout Components**:
+```tsx
+// Row for horizontal layouts
+<Row horizontalAlign="spaceBetween" spacing="small" fill>
+    <Block>Left</Block>
+    <Block>Right</Block>
+</Row>
+
+// Col for vertical layouts
+<Col verticalAlign="center" fill backgroundColor="background.paper">
+    <Block>Header</Block>
+    <Block fill>Content</Block>
+</Col>
+```
+
+**Using Color Palette**:
+```tsx
+// Import from core
+import { Palette, resolvePaletteColor } from "@core";
+
+// Use palette tokens
+<Block backgroundColor="primary.main">...</Block>
+<Spinner color="info.light" />
+
+// Or direct CSS colors as fallback
+<Block backgroundColor="#ff5722">...</Block>
+```
+
+**Showing Busy State**:
+```tsx
+// Show spinner
+await model.bus.unicast("BusyDisplay.Set", true);
+try {
+    await someAsyncOperation();
+} finally {
+    await model.bus.unicast("BusyDisplay.Set", false);
+}
+```
+
+**File Selection**:
+```tsx
+const files = await model.bus.unicast("App.SelectFiles", {
+    fileMask: ".pdf,.jpg,.png",
+    multiselect: true
+});
+```
+
+**Authentication & Security**:
+```tsx
+// Check if user is authorized
+const isAuthorized = await model.bus.unicast("App.Security.IsAuthorized");
+
+// Login (native authentication)
+await model.bus.unicast("App.Security.AuthorizeNative", {
+    user: "user@example.com",
+    password: "password123"
+});
+
+// Logout
+await model.bus.unicast("App.Security.Unauthorize");
+
+// Access user context directly (in Application component)
+const userContext = model.security.getUserContext();
+console.log(userContext.user, userContext.apiToken);
+
+// The authorization flow:
+// 1. AppLoginForm collects credentials
+// 2. Calls App.Security.AuthorizeNative message
+// 3. AppSecurity.authorize() sets _userContext with token
+// 4. Application's binding updates: authorizedMode: () => model.security.isAuthorized()
+// 5. AppUI switches from AppLoginForm to AppRouter
+// 6. User sees the main application
+```
+
+**Showing Dialogs** (automatically includes severity icons):
+```tsx
+// Information dialog (shows info icon)
+await model.bus.unicast("Dialog.Information", { 
+    title: "Success", 
+    message: "Operation completed." 
+});
+
+// Warning dialog (shows warning icon)
+await model.bus.unicast("Dialog.Warning", { 
+    title: "Warning", 
+    message: "Are you sure?",
+    details: "Additional details..."
+});
+
+// Error dialog (shows error icon)
+await model.bus.unicast("Dialog.Error", { 
+    title: "Error", 
+    message: "Something went wrong.",
+    details: "Error details..."
+});
+
+// Exception dialog
+try {
+    await riskyOperation();
+} catch (error) {
+    await model.bus.unicast("Dialog.Exception", { 
+        title: "Operation Failed",
+        error 
+    });
+}
+
+// Confirmation dialog
+const confirmed = await model.bus.unicast("Dialog.Confirmation", { 
+    title: "Confirm", 
+    message: "Proceed with this action?" 
+});
+
+// Action confirmation with custom button text
+const confirmed = await model.bus.unicast("Dialog.ActionConfirmation", { 
+    title: "Delete", 
+    message: "This action cannot be undone.",
+    action: "Delete"
+});
+```
+
+**Showing Alerts** (toast notifications):
+```tsx
+// Success alert
+await model.bus.unicast("Alert.Success", { 
+    message: "Operation completed successfully!" 
+});
+
+// Information alert
+await model.bus.unicast("Alert.Information", { 
+    message: "Your changes have been saved." 
+});
+
+// Warning alert
+await model.bus.unicast("Alert.Warning", { 
+    message: "Please review your input before submitting." 
+});
+
+// Error alert
+await model.bus.unicast("Alert.Error", { 
+    message: "Failed to save changes. Please try again." 
+});
+
+// Multiple alerts stack automatically
+await model.bus.unicast("Alert.Success", { message: "First notification" });
+await model.bus.unicast("Alert.Information", { message: "Second notification" });
+// Both appear stacked at configured position (default: bottom-right), auto-dismiss after 4 seconds
+
+// Configure alert position in AppUI (optional)
+alertManager: useAppAlertManager({
+    anchorOrigin: { vertical: "top", horizontal: "center" }  // top-center positioning
+})
+// Supports: top/bottom × left/center/right (6 positions)
+```
+
+**Navigating with Routing**:
+```tsx
+// Get current route
+const currentRoute = await model.bus.unicast("App.Router.GetRoute");
+console.log(currentRoute.path, currentRoute.params);
+
+// Navigate to a route (adds to history)
+await model.bus.unicast("App.Router.GoToRoute", { 
+    path: "/users/:id", 
+    params: { id: "123" } 
+});
+
+// Navigate without history (replaces current state)
+await model.bus.unicast("App.Router.SetRoute", { 
+    path: "/home" 
+});
+
+// Update route params without changing path
+await model.bus.unicast("App.Router.SetRouteParams", { 
+    params: { tab: "settings" }, 
+    patch: true  // merge with existing params
+});
+
+// Open route in new browser tab
+await model.bus.unicast("App.Router.OpenNewTab", { 
+    path: "/users/:id", 
+    params: { id: "456" } 
+});
+
+// Hook before route change (can cancel navigation)
+messages: {
+    "App.Router.BeforeRouteChange": async (route) => {
+        if (model.hasUnsavedChanges) {
+            const confirm = await model.bus.unicast("Dialog.Confirmation", {
+                message: "You have unsaved changes. Continue?"
+            });
+            return confirm;  // Return false to cancel navigation
+        }
+        return true;  // Allow navigation
+    }
+}
+
+// Hook after route change
+messages: {
+    "App.Router.AfterRouteChange": async (route) => {
+        console.log("Navigated to:", route.path);
+        // Update analytics, breadcrumbs, etc.
+    }
+}
+
+// Define routes in appRoutes.tsx
+const screenRoutes = {
+    "/": () => <HomeScreen id={"homeScreen"} />,
+    "/users/:id": () => <UserDetailScreen id={"userDetailScreen"} />,
+    "/settings?:tab": () => <SettingsScreen id={"settingsScreen"} />
+};
+```
+
+**Using Input Components**:
+```tsx
+// Button component
+<Button
+    contentView="Click Me"
+    variant="contained"
+    color="primary.main"
+    size="medium"
+    fullWidth={false}
+    onClick={(source) => console.log("Clicked!")}
+/>
+
+// IconButton with predefined icon kind
+<IconButton
+    kind="ok"
+    size="large"
+    disabled={false}
+    onClick={(source) => console.log("OK clicked!")}
+/>
+
+// IconButton with other kinds
+<IconButton kind="cancel" size="medium" onClick={() => model.cancel()} />
+<IconButton kind="delete" size="medium" onClick={() => model.delete()} />
+<IconButton kind="refresh" size="medium" onClick={() => model.refresh()} />
+<IconButton kind="close" size="small" onClick={() => model.close()} />
+
+// IconButton with custom icon
+<IconButton
+    iconView={
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+    }
+    color="warning.main"
+    size="medium"
+    onClick={() => console.log("Star clicked!")}
+/>
+
+// TextField component
+<TextField
+    labelView="Email"
+    value={model.email}
+    type="email"
+    placeholder="your@email.com"
+    required={true}
+    variant="outlined"
+    fullWidth={true}
+    error={model.hasError}
+    helperTextView="Enter a valid email address"
+    onChange={(value, source) => model.email = value}
+/>
+
+// Multiline TextField
+<TextField
+    labelView="Description"
+    value={model.description}
+    multiline={true}
+    rows={4}
+    placeholder="Enter description..."
+/>
+
+// Checkbox component
+<Checkbox
+    checked={model.agreeToTerms}
+    labelView="I agree to the terms and conditions"
+    onChange={(checked, source) => model.agreeToTerms = checked}
+/>
+```
+
+**Using Navigation Components**:
+```tsx
+// NavLink for simple navigation links
+<NavLink
+    route={{ path: "/home" }}
+    title="Home"
+    color="primary.main"
+    underline="hover"  // none, hover, always
+    linkView="Go to Home"
+    newTab={false}
+/>
+
+// NavLink with external URL (requires otherRoutes entry)
+<NavLink
+    route={{ path: "https://ueca-react.carrd.co/" }}
+    title="UECA Website"
+    color="info.main"
+    underline="always"
+    newTab={true}
+    linkView="UECA Official Site →"
+/>
+
+// NavItem for navigation with icons (button mode)
+<NavItem
+    mode="icon-only"
+    route={{ path: "/" }}
+    active={currentPath === "/"}
+    text="Home"
+    icon={<svg>...</svg>}
+/>
+
+// NavItem for list navigation (list-item mode)
+<NavItem
+    mode="icon-text"
+    route={{ path: "/settings" }}
+    active={currentPath === "/settings"}
+    text="Settings"
+    icon={<svg>...</svg>}
+    disabled={false}
+/>
+
+// NavItem text-only mode
+<NavItem
+    mode="text-only"
+    route={{ path: "/about" }}
+    active={currentPath === "/about"}
+    text="About"
+    disabled={false}
+/>
+```
+
+**Using Tabs Components**:
+```tsx
+// TabsContainer with Tab children
+const tabsContainer = useTabsContainer({
+    props: {
+        tabs: [
+            useTab({
+                props: {
+                    tabId: "tab1",
+                    labelView: "Tab One",
+                    contentView: <div>Content for Tab One</div>
+                }
+            }),
+            useTab({
+                props: {
+                    tabId: "tab2",
+                    labelView: "Tab Two",
+                    iconView: <svg>...</svg>,
+                    iconPosition: "start",
+                    contentView: <div>Content for Tab Two</div>
+                }
+            })
+        ],
+        selectedTabId: "tab1",  // Initial selection
+        orientation: "horizontal",  // or "vertical"
+        variant: "standard",  // or "scrollable", "fullWidth"
+        centered: false
+    },
+    events: {
+        onChange: (container) => {
+            console.log("Selected tab:", container.selectedTab.getTabId());
+        }
+    }
+});
+
+// Render
+<tabsContainer.View />
+
+// Scrollable tabs with scroll buttons
+<TabsContainer
+    tabs={model.tabs}
+    variant="scrollable"
+    scrollButtons="auto"  // or true, false
+    selectedTabId={model.currentTabId}
+    onChange={(container) => model.handleTabChange(container)}
+/>
+
+// Vertical tabs
+<TabsContainer
+    tabs={model.tabs}
+    orientation="vertical"
+    selectedTabId={model.currentTabId}
+/>
+
+// Individual Tab with icon and wrapped text
+<Tab
+    tabId="settings"
+    labelView="Settings & Preferences"
+    iconView={<svg>...</svg>}
+    iconPosition="top"  // top, bottom, start, end
+    wrapped={true}
+    disabled={false}
+/>
+```
+
+**Using Breadcrumbs Components**:
+```tsx
+// Simple breadcrumbs with text
+<Breadcrumbs childrenView={<>
+    <span>Home</span>
+    <span>Products</span>
+    <span>Electronics</span>
+    <span>Laptops</span>
+</>} />
+
+// Breadcrumbs with NavLink navigation
+<Breadcrumbs childrenView={<>
+    <NavLink route={{ path: "/" }} linkView="Home" underline="hover" />
+    <NavLink route={{ path: "/category" }} linkView="Category" underline="hover" />
+    <NavLink route={{ path: "/subcategory" }} linkView="Subcategory" underline="hover" />
+    <span style={{ color: "#666" }}>Current Page</span>
+</>} />
+
+// Breadcrumbs with colored links
+<Breadcrumbs childrenView={<>
+    <NavLink route={{ path: "/" }} linkView="Dashboard" color="secondary.main" underline="hover" />
+    <NavLink route={{ path: "/settings" }} linkView="Settings" color="info.main" underline="hover" />
+    <NavLink route={{ path: "/profile" }} linkView="Profile" color="success.main" underline="hover" />
+    <span style={{ fontWeight: 600 }}>Edit</span>
+</>} />
+
+// Custom separator (forward slash)
+<Breadcrumbs 
+    separator={<span style={{ margin: "0 8px", color: "#999" }}>/</span>}
+    childrenView={<>
+        <NavLink route={{ path: "/" }} linkView="Root" underline="hover" />
+        <NavLink route={{ path: "/folder" }} linkView="Folder" underline="hover" />
+        <span>File.txt</span>
+    </>} 
+/>
+
+// Custom separator (dot)
+<Breadcrumbs 
+    separator={<span style={{ margin: "0 8px", color: "#ccc" }}>•</span>}
+    childrenView={<>
+        <span>Blog</span>
+        <span>Technology</span>
+        <span>React</span>
+        <span>Current Article</span>
+    </>} 
+/>
+
+// Complex breadcrumbs with icons
+<Breadcrumbs childrenView={<>
+    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        <NavLink route={{ path: "/" }} linkView="Home" underline="hover" />
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
+        </svg>
+        <NavLink route={{ path: "/docs" }} linkView="Documents" underline="hover" />
+    </div>
+    <span>Report.pdf</span>
+</>} />
+```
+
+**Using Dialog Components Directly**:
+```tsx
+// Dialog component
+<Dialog
+    open={model.dialogOpen}
+    titleView="My Dialog"
+    contentView="Dialog content here"
+    actionView={<Button contentView="OK" onClick={() => model.dialogOpen = false} />}
+    fullWidth={true}
+    maxWidth="md"
+    onClose={() => model.dialogOpen = false}
+/>
+
+// Drawer component
+<Drawer
+    open={model.drawerOpen}
+    anchor="right"
+    variant="temporary"
+    width={400}
+    titleView="Side Panel"
+    contentView={<div>Panel content</div>}
+    onClose={() => model.drawerOpen = false}
+/>
+```
+
+**Using Screen Layout Components**:
+```tsx
+// Basic CRUD Screen with edit intent
+function useUserEditScreen(params?: UserEditScreenParams): UserEditScreenModel {
+    const struct: UserEditScreenStruct = {
+        props: {
+            id: useUserEditScreen.name,
+        },
+
+        children: {
+            crudScreen: useCRUDScreen({
+                intent: "edit-record",
+                breadcrumbs: [
+                    { route: { path: "/" }, label: "Home" },
+                    { route: { path: "/users" }, label: "Users" },
+                    { route: { path: "/users/:id" }, label: "Edit User" }
+                ],
+                contentView: () => (
+                    <Col spacing="medium">
+                        <TextField 
+                            labelView="Name" 
+                            value={model.user.name}
+                            onChange={(v) => {
+                                model.user.name = v;
+                                model.crudScreen.setScreenState({ dataModified: true });
+                            }}
+                        />
+                        <TextField 
+                            labelView="Email" 
+                            value={model.user.email}
+                            onChange={(v) => {
+                                model.user.email = v;
+                                model.crudScreen.setScreenState({ dataModified: true });
+                            }}
+                        />
+                    </Col>
+                ),
+                onRefresh: async () => {
+                    // Load user data
+                    const userId = model.route.params.id;
+                    model.user = await apiClient.get(`/users/${userId}`);
+                },
+                onValidate: async () => {
+                    // Custom validation logic
+                    if (!model.user.name) {
+                        return false; // Fail validation
+                    }
+                    return true;
+                },
+                onSave: async () => {
+                    // Save user data
+                    await apiClient.put(`/users/${model.user.id}`, model.user);
+                    await model.alertSuccess("User saved successfully!");
+                },
+                onCancel: async () => {
+                    // Reload original data
+                    await model.crudScreen.refresh();
+                },
+                onDelete: async () => {
+                    // Delete user
+                    await apiClient.delete(`/users/${model.user.id}`);
+                    await model.alertSuccess("User deleted!");
+                }
+            })
+        },
+
+        View: () => <model.crudScreen.View />
+    };
+
+    const model = useUIBase(struct, params);
+    return model;
+}
+
+// TabsScreen with multiple tabs
+function useUserProfileScreen(params?: UserProfileScreenParams): UserProfileScreenModel {
+    const struct: UserProfileScreenStruct = {
+        props: {
+            id: useUserProfileScreen.name,
+        },
+
+        children: {
+            tabsScreen: useTabsScreen({
+                intent: "edit-record",
+                breadcrumbs: [
+                    { route: { path: "/" }, label: "Home" },
+                    { route: { path: "/profile" }, label: "Profile" }
+                ],
+                tabs: [
+                    useTab({
+                        tabId: "personal",
+                        labelView: "Personal Info",
+                        contentView: (
+                            <Col spacing="medium">
+                                <TextField labelView="First Name" value={model.user.firstName} />
+                                <TextField labelView="Last Name" value={model.user.lastName} />
+                            </Col>
+                        )
+                    }),
+                    useTab({
+                        tabId: "account",
+                        labelView: "Account Settings",
+                        contentView: (
+                            <Col spacing="medium">
+                                <TextField labelView="Email" value={model.user.email} />
+                                <Checkbox labelView="Email Notifications" checked={model.user.emailNotifications} />
+                            </Col>
+                        )
+                    }),
+                    useTab({
+                        tabId: "security",
+                        labelView: "Security",
+                        contentView: (
+                            <Col spacing="medium">
+                                <TextField labelView="Current Password" type="password" />
+                                <TextField labelView="New Password" type="password" />
+                            </Col>
+                        )
+                    })
+                ],
+                onRefresh: async () => {
+                    model.user = await apiClient.get("/user/profile");
+                },
+                onSave: async () => {
+                    await apiClient.put("/user/profile", model.user);
+                    await model.alertSuccess("Profile updated!");
+                }
+            })
+        },
+
+        View: () => <model.tabsScreen.View />
+    };
+
+    const model = useUIBase(struct, params);
+    return model;
+}
+
+// Using CRUDScreen state management
+// Set initial state when creating new record
+model.crudScreen.setScreenState({ 
+    dataNew: true, 
+    dataModified: true 
+});
+
+// Mark data as modified when user edits
+onChange={(value) => {
+    model.fieldValue = value;
+    model.crudScreen.setScreenState({ dataModified: true });
+}}
+
+// Get current screen state
+const state = model.crudScreen.getScreenState();
+if (state.dataModified) {
+    // Prompt user about unsaved changes
+}
+
+// Manually trigger operations
+await model.crudScreen.refresh();  // Reload data
+await model.crudScreen.validate(true);  // Validate with dialog
+await model.crudScreen.save();  // Save changes
+await model.crudScreen.cancel();  // Cancel changes
+await model.crudScreen.delete();  // Delete record
+```
+
+When modifying this codebase:
+- **Never use standard React patterns** (useState, useEffect, Context, prop drilling)
+- **Never use Material-UI or other UI libraries** - use plain HTML/CSS/SVG only
+- **Always use the centralized color palette** from appTheme.ts for consistency
+- **Follow UECA's structured model approach** with message bus communication for component interaction

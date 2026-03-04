@@ -30,6 +30,8 @@ type BlockProps = {
     zIndex?: number | string;
     width?: number | string;
     height?: number | string;
+    minWidth?: number | string;
+    minHeight?: number | string;
     maxWidth?: number | string;
     maxHeight?: number | string;
     padding?: Padding;
@@ -74,6 +76,8 @@ function Block(props: BlockProps): UECA.ReactElement {
         textAlign: blockHorizontalAlignMap[props?.horizontalAlign ?? "left"],
         width: props?.width,
         height: props?.height,
+        minWidth: props?.minWidth,
+        minHeight: props?.minHeight,
         maxWidth: props?.maxWidth,
         maxHeight: props?.maxHeight,
         zIndex: props?.zIndex,
@@ -116,6 +120,8 @@ function Row(props: RowProps): UECA.ReactElement {
         gap: spacingMap[props?.spacing ?? "default"] * 8, // Convert to pixels
         width: props?.width ?? (props?.horizontalAlign ? "100%" : undefined), // Default to full width when alignment is used
         height: props?.height ?? (props?.fill ? "100%" : undefined), // Fill stretches vertically
+        minWidth: props?.minWidth,
+        minHeight: props?.minHeight,
         maxWidth: props?.maxWidth,
         maxHeight: props?.maxHeight,
         zIndex: props?.zIndex,
@@ -178,6 +184,8 @@ function Col(props: ColProps): UECA.ReactElement {
         gap: spacingMap[props?.spacing ?? "default"] * 8, // Convert to pixels
         width: props?.width ?? (props?.fill ? "100%" : undefined), // Fill stretches horizontally
         height: props?.height ?? (props?.verticalAlign ? "100%" : undefined), // Default to full height when alignment is used
+        minWidth: props?.minWidth,
+        minHeight: props?.minHeight,
         maxWidth: props?.maxWidth,
         maxHeight: props?.maxHeight,
         zIndex: props?.zIndex,
