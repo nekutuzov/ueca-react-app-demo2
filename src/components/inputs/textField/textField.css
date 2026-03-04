@@ -1,13 +1,15 @@
 /* TextField container */
 .ueca-textfield {
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
     gap: 4px;
     font-family: inherit;
     position: relative;
+    min-width: 200px;
 }
 
 .ueca-textfield-fullwidth {
+    display: flex;
     width: 100%;
 }
 
