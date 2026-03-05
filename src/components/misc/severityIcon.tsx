@@ -1,10 +1,12 @@
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
+import { SuccessCircleIcon, InfoCircleIcon, WarningIcon, ErrorCircleIcon } from "@core";
 
 type SeverityIconStruct = UIBaseStruct<{
     props: {
         severity: "success" | "info" | "warning" | "error";
         size: number;
+        color?: string;
     };
 }>;
 
@@ -17,36 +19,21 @@ function useSeverityIcon(params?: SeverityIconParams): SeverityIconModel {
             id: useSeverityIcon.name,
             severity: "info",
             size: 22,
+            color: undefined,
         },
 
         View: () => {
-            const { size, severity } = model;
+            const { size, severity, color } = model;
             
             switch (severity) {
                 case "success":
-                    return (
-                        <svg id={model.htmlId()} width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                    );
+                    return <span id={model.htmlId()}><SuccessCircleIcon size={size} color={color} /></span>;
                 case "info":
-                    return (
-                        <svg id={model.htmlId()} width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                        </svg>
-                    );
+                    return <span id={model.htmlId()}><InfoCircleIcon size={size} color={color} /></span>;
                 case "warning":
-                    return (
-                        <svg id={model.htmlId()} width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-                        </svg>
-                    );
+                    return <span id={model.htmlId()}><WarningIcon size={size} color={color} /></span>;
                 case "error":
-                    return (
-                        <svg id={model.htmlId()} width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                        </svg>
-                    );
+                    return <span id={model.htmlId()}><ErrorCircleIcon size={size} color={color} /></span>;
                 default:
                     return null;
             }

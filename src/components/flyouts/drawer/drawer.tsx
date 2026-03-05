@@ -59,7 +59,7 @@ function useDrawer(params?: DrawerParams): DrawerModel {
             const openClass = model.open ? "drawer-open" : "drawer-closed";
 
             return (
-                <>
+                <UECA.IF condition={model.open || model.variant === "permanent"}>
                     {showBackdrop && model.open && (
                         <div className="ueca-drawer-backdrop" onClick={_close} />
                     )}
@@ -67,19 +67,22 @@ function useDrawer(params?: DrawerParams): DrawerModel {
                         id={model.htmlId()}
                         className={`ueca-drawer ${anchorClass} ${openClass}`}
                         style={{
-                            ...(model.width && !isVertical ? { width: `${model.width}px` } : {})
+                            ...(model.width && !isVertical ? { width: `${model.width}px` } : {}),
+                            ...(isVertical ? { height: `${model.width || 600}px`, maxHeight: "60vh" } : {})
                         }}
                     >
-                        <Col fill>
+                        <Col fill overflow="hidden">
                             <Row verticalAlign="center" horizontalAlign="spaceBetween" className="drawer-title">
                                 <div>{model.titleView}</div>
                                 <Block render={model.variant !== "permanent"}>
                                     <CloseIconButton onClick={_close} />
                                 </Block>
                             </Row>
-                            <div className="drawer-content">
-                                {model.contentView}
-                            </div>
+                            <Col overflow="auto">
+                                <div className="drawer-content">
+                                    {model.contentView}
+                                </div>
+                            </Col>
                             {model.actionView && (
                                 <div className="drawer-actions">
                                     {model.actionView}
@@ -87,7 +90,7 @@ function useDrawer(params?: DrawerParams): DrawerModel {
                             )}
                         </Col>
                     </div>
-                </>
+                </UECA.IF>
             );
         },
     };

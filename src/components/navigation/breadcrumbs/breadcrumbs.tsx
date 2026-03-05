@@ -2,6 +2,7 @@ import React from "react";
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
 import { asyncSafe } from "@core";
+import { ChevronRightIcon } from "@core";
 import "./breadcrumbs.css";
 
 // Breadcrumbs component
@@ -26,9 +27,7 @@ function useBreadcrumbs(params?: BreadcrumbsParams): BreadcrumbsModel {
             childrenView: undefined,
             separator: (
                 <span className="ueca-breadcrumbs-separator">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M9.29 6.71a.996.996 0 000 1.41L13.17 12l-3.88 3.88a.996.996 0 101.41 1.41l4.59-4.59a.996.996 0 000-1.41L10.7 6.7c-.38-.38-1.02-.38-1.41.01z"/>
-                    </svg>
+                    <ChevronRightIcon />
                 </span>
             )
         },

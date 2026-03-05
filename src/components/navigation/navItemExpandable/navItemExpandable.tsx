@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { Block, Col, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel } from "@components";
-import { resolvePaletteColor } from "@core";
+import { ChevronDownIcon, resolvePaletteColor } from "@core";
 import "./navItemExpandable.css";
 
 type NavItemExpandableStruct = UIBaseStruct<{
@@ -70,18 +70,14 @@ function useNavItemExpandable(params?: NavItemExpandableParams): NavItemExpandab
                             </UECA.IF>
                         </Row>
                         <UECA.IF condition={model.mode !== "icon-only"}>
-                            <svg 
-                                width="24" 
-                                height="24" 
-                                viewBox="0 0 24 24" 
-                                fill="currentColor"
-                                style={{ 
-                                    transform: model.expanded ? "rotate(180deg)" : "rotate(0deg)",
-                                    transition: "transform 0.2s ease"
-                                }}
-                            >
-                                <path d="M7 10l5 5 5-5z"/>
-                            </svg>
+                            <div style={{ 
+                                transform: model.expanded ? "rotate(180deg)" : "rotate(0deg)",
+                                transition: "transform 0.2s ease",
+                                display: "flex",
+                                alignItems: "center"
+                            }}>
+                                <ChevronDownIcon />
+                            </div>
                         </UECA.IF>
                     </Row>
                 </Block>

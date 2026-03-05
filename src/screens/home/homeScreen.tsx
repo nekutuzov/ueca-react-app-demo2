@@ -2,6 +2,7 @@ import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, NavLink, NavItem, useTab, useTabsContainer, Breadcrumbs } from "@components";
 import { DetailedError } from "@core";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
+import { CheckIcon, SettingsIcon, PersonIcon, AccountIcon, SecurityIcon, HomeIcon, ClipboardIcon, InfoIcon, BlockIcon, GitHubIcon, FolderIcon, DocumentIcon } from "@core";
 
 type HomeScreenStruct = UIBaseStruct<{
     props: {
@@ -68,11 +69,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     useTab({
                         tabId: "features",
                         labelView: "Features",
-                        iconView: (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                            </svg>
-                        ),
+                        iconView: <CheckIcon size={20} />,
                         iconPosition: "start",
                         contentView: (
                             <Block sx={{ padding: "20px" }}>
@@ -90,11 +87,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     useTab({
                         tabId: "settings",
                         labelView: "Settings",
-                        iconView: (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-                            </svg>
-                        ),
+                        iconView: <SettingsIcon size={20} />,
                         iconPosition: "start",
                         contentView: (
                             <Block sx={{ padding: "20px" }}>
@@ -119,11 +112,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     useTab({
                         tabId: "profile",
                         labelView: "Profile",
-                        iconView: (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                            </svg>
-                        ),
+                        iconView: <PersonIcon size={20} />,
                         iconPosition: "start",
                         contentView: (
                             <Block sx={{ padding: "20px" }}>
@@ -135,11 +124,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     useTab({
                         tabId: "account",
                         labelView: "Account",
-                        iconView: (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-                            </svg>
-                        ),
+                        iconView: <AccountIcon size={20} />,
                         iconPosition: "start",
                         contentView: (
                             <Block sx={{ padding: "20px" }}>
@@ -151,11 +136,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                     useTab({
                         tabId: "security",
                         labelView: "Security",
-                        iconView: (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
-                            </svg>
-                        ),
+                        iconView: <SecurityIcon size={20} />,
                         iconPosition: "start",
                         contentView: (
                             <Block sx={{ padding: "20px" }}>
@@ -595,33 +576,21 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 route={{ path: "/" }}
                                 active={false}
                                 text="Home"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                                    </svg>
-                                }
+                                icon={<HomeIcon />}
                             />
                             <NavItem
                                 mode="icon-only"
                                 route={{ path: "/" }}
                                 active={true}
                                 text="Active Home"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                                    </svg>
-                                }
+                                icon={<HomeIcon />}
                             />
                             <NavItem
                                 mode="icon-only"
                                 route={{ path: "/" }}
                                 active={true}
                                 text="Success Color"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                    </svg>
-                                }
+                                icon={<CheckIcon />}
                             />
                             <NavItem
                                 mode="icon-only"
@@ -629,11 +598,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 active={false}
                                 disabled={true}
                                 text="Disabled"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                                    </svg>
-                                }
+                                icon={<InfoIcon />}
                             />
                         </Row>
 
@@ -644,33 +609,21 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 route={{ path: "/" }}
                                 active={false}
                                 text="Home"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                                    </svg>
-                                }
+                                icon={<HomeIcon />}
                             />
                             <NavItem
                                 mode="icon-text"
                                 route={{ path: "/" }}
                                 active={true}
                                 text="Active Item (Selected)"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z"/>
-                                    </svg>
-                                }
+                                icon={<ClipboardIcon />}
                             />
                             <NavItem
                                 mode="icon-text"
                                 route={{ path: "/" }}
                                 active={false}
                                 text="Settings"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-                                    </svg>
-                                }
+                                icon={<SettingsIcon />}
                             />
                             <NavItem
                                 mode="icon-text"
@@ -678,11 +631,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 active={false}
                                 disabled={true}
                                 text="Disabled List Item"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z"/>
-                                    </svg>
-                                }
+                                icon={<BlockIcon />}
                             />
                         </Col>
 
@@ -710,11 +659,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 newTab={true}
                                 active={false}
                                 text="UECA-React Official Website"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                    </svg>
-                                }
+                                icon={<CheckIcon />}
                             />
                             <NavItem
                                 mode="icon-text"
@@ -722,11 +667,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                                 newTab={true}
                                 active={false}
                                 text="UECA Demo App on GitHub"
-                                icon={
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                    </svg>
-                                }
+                                icon={<GitHubIcon />}
                             />
                         </Col>
                     </Block>
@@ -831,21 +772,15 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         <h3 style={{ marginTop: "30px" }}>Complex Breadcrumbs with Icons</h3>
                         <Breadcrumbs childrenView={<>
                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                                </svg>
+                                <HomeIcon size={16} />
                                 <NavLink route={{ path: "/" }} linkView="Home" underline="hover" />
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
-                                </svg>
+                                <FolderIcon size={16} />
                                 <NavLink route={{ path: "/" }} linkView="Documents" underline="hover" />
                             </div>
                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-                                </svg>
+                                <DocumentIcon size={16} />
                                 <span>Report.pdf</span>
                             </div>
                         </>} />

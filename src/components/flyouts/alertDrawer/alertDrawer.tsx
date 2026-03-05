@@ -1,5 +1,6 @@
 import * as UECA from "ueca-react";
 import { Row, ButtonModel, DrawerModel, SeverityIcon, UIBaseModel, UIBaseParams, UIBaseStruct, useButton, useDrawer, useUIBase } from "@components";
+import { resolvePaletteColor } from "@core";
 
 // Alert Drawer component
 type AlertDrawerStruct = UIBaseStruct<{
@@ -53,13 +54,13 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
             drawer: useDrawer({
                 titleView: () => (
                     <Row spacing="small" verticalAlign="center">
-                        {model.severity && <SeverityIcon severity={model.severity} size={24} />}
-                        {model.titleView}
+                        {model.severity && <SeverityIcon severity={model.severity} size={24} color={_getSeverityColor()} />}
+                        <span style={{ fontSize: "20px", fontWeight: 500 }}>{model.titleView}</span>
                     </Row>
                 ),
                 contentView: () => model.contentView,
                 actionView: () => (
-                    <Row horizontalAlign={"right"}>
+                    <Row horizontalAlign={"right"} spacing="small">
                         {model.customActionView}
                         <model.cancelButton.View render={!!(model.buttons?.cancel || model.buttons?.okCancel)} />
                         <model.okButton.View render={!!(model.buttons?.ok || model.buttons?.okCancel)} />
@@ -82,12 +83,13 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
             }),
             okButton: useButton({
                 contentView: "OK",
-                variant: "text",
+                variant: "contained",
+                color: "primary.main",
                 onClick: () => _close(true)
             }),
             cancelButton: useButton({
                 contentView: "Cancel",
-                variant: "text",
+                variant: "outlined",
                 onClick: () => _close(false)
             }),
         },
@@ -102,6 +104,17 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
     function _close(result: boolean) {
         model.closeResult = result;
         model.open = false;
+    }
+
+    function _getSeverityColor(): string | undefined {
+        if (!model.severity) return undefined;
+        const colorMap = {
+            success: "success.main",
+            info: "info.main",
+            warning: "warning.main",
+            error: "error.main"
+        };
+        return resolvePaletteColor(colorMap[model.severity]);
     }
 }
 
