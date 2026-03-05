@@ -2,7 +2,7 @@ import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Row, Block, ButtonModel, useButton } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 
-type PopupsScreenStruct = UIBaseStruct<{
+type DialogScreenStruct = UIBaseStruct<{
     props: {};
 
     children: {
@@ -28,13 +28,13 @@ type PopupsScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type PopupsScreenParams = UIBaseParams<PopupsScreenStruct>;
-type PopupsScreenModel = UIBaseModel<PopupsScreenStruct>;
+type DialogScreenParams = UIBaseParams<DialogScreenStruct>;
+type DialogScreenModel = UIBaseModel<DialogScreenStruct>;
 
-function usePopupsScreen(params?: PopupsScreenParams): PopupsScreenModel {
-    const struct: PopupsScreenStruct = {
+function useDialogScreen(params?: DialogScreenParams): DialogScreenModel {
+    const struct: DialogScreenStruct = {
         props: {
-            id: usePopupsScreen.name
+            id: useDialogScreen.name
         },
 
         children: {
@@ -357,6 +357,6 @@ if (confirmed) {
     }
 }
 
-const PopupsScreen = UECA.getFC(usePopupsScreen);
+const DialogScreen = UECA.getFC(useDialogScreen);
 
-export { PopupsScreenParams, PopupsScreenModel, usePopupsScreen, PopupsScreen };
+export { DialogScreenParams, DialogScreenModel, useDialogScreen, DialogScreen };

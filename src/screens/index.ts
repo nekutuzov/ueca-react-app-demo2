@@ -8,7 +8,7 @@ export * from "./textField/textFieldScreen";
 export * from "./select/selectScreen";
 export * from "./radioGroup/radioGroupScreen";
 export * from "./checkbox/checkboxScreen";
-export * from "./popups/popupsScreen";
+export * from "./popups/dialogScreen";
 export * from "./flyouts/flyoutsScreen";
 export * from "./navigation/navigationScreen";
 export * from "./tabs/tabsComponentScreen";
