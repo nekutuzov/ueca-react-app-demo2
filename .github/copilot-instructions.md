@@ -169,6 +169,51 @@ methods: {
 // Benefits: MobX observers, isolated re-renders, maintains focus
 ```
 
+**View Method Purity & Helper Functions** (keep View methods clean):
+```tsx
+// RULE: View methods should be pure JSX only - no const declarations or logic
+// Extract complex data/strings/logic to private helper functions after `return model`
+
+// ❌ BAD: Logic clutters View method
+methods: {
+    _DemoView: () => {
+        const codeExample = `const x = 1;\nconst y = 2;`;  // Don't do this
+        const items = ["a", "b", "c"];
+        return <Block>{/* JSX using codeExample, items */}</Block>;
+    }
+}
+
+// ✅ GOOD: Pure JSX in View, helpers after return
+function useMyComponent(params?: MyParams): MyModel {
+    const struct: MyStruct = {
+        props: { id: useMyComponent.name },
+        methods: {
+            // Pure JSX only - calls helper functions
+            _DemoView: () => (
+                <Block>
+                    <pre>{_getCodeExample()}</pre>
+                    {_getItems().map(item => <div key={item}>{item}</div>)}
+                </Block>
+            )
+        },
+        View: () => <Col>{model._DemoView()}</Col>
+    };
+    
+    const model = useUIBase(struct, params);
+    return model;
+    
+    // Private helper functions after return - available due to hoisting
+    function _getCodeExample(): string {
+        return `const x = 1;\nconst y = 2;`;
+    }
+    
+    function _getItems(): string[] {
+        return ["a", "b", "c"];
+    }
+}
+// Benefits: Clean separation, scannable Views, testable helpers, follows UECA conventions
+```
+
 **Component Wrapping** (extend functionality):
 ```tsx
 // NavItem wraps NavLink with bidirectional bindings
@@ -417,7 +462,12 @@ Benefits of generic types:
 
 **IDs**: `id: useXxx.name` in props, `model.htmlId()` for root element
 
-**Helper Functions**: When creating multiple similar components (e.g., menu items), use private helper functions that return configured components with computed properties. Store reactive state (`_activeRoute`) and reference it in computed bindings to eliminate manual synchronization logic.
+**Helper Functions**: Private helper functions (prefixed with `_`) should be defined after `return model` using function declarations for hoisting. Use them to:
+- Extract complex data/strings/logic from View methods (keep Views pure JSX only)
+- Create multiple similar components (e.g., menu items) with computed properties
+- Store reactive state (`_activeRoute`) and reference it in computed bindings to eliminate manual synchronization
+
+**View Method Purity**: View methods should contain pure JSX only with minimal code. Extract const declarations, data processing, and complex logic to private helper functions. This improves readability, maintainability, and follows UECA best practices.
 
 ## Development
 

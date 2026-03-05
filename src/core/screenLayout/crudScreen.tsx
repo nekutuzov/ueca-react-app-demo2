@@ -247,7 +247,7 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
 
             delete: async () => {
                 if (model.onDelete) {
-                    const confirm = await model.dialogConfirmDelete();
+                    const confirm = await model.dialogConfirmAction();
                     if (!confirm) {
                         return;
                     }

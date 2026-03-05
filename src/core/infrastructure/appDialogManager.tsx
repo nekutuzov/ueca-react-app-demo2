@@ -59,7 +59,16 @@ function useAppDialogManager(params?: AppDialogManagerParams): AppDialogManagerM
                 severity={severity}
                 buttons={{ okCancel: true, details: true }}
                 open={true}                
-                init={(m) => { if (action) m.okButton.contentView = action; }}
+                init={(m) => { 
+                    if (action) {
+                        m.okButton.contentView = action; 
+                    }
+                    if (_kind === "action") {
+                        m.okButton.color = "error.main";
+                    } else {
+                        m.okButton.color = "primary.main";
+                    }
+                }}
                 onClose={onDialogClose}
             />
         );

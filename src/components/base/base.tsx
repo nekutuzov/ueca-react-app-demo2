@@ -20,7 +20,7 @@ type BasePartialStruct = UECA.ComponentStruct<{
         dialogError: (title: string, message: string, details?: string) => Promise<void>;
         dialogException: (title: string, error: Error) => Promise<void>;
         dialogYesNo: (title: string, message: string) => Promise<boolean>;
-        dialogConfirmDelete: (title?: string, message?: string) => Promise<boolean>;
+        dialogConfirmAction: (title?: string, message?: string, action?: string) => Promise<boolean>;
         alertInformation: (text: string) => Promise<void>;
         alertWarning: (message: React.ReactNode) => Promise<void>;
         alertSuccess: (message: React.ReactNode) => Promise<void>;
@@ -64,7 +64,7 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
             dialogError: async (title, message, details) => await model.bus.unicast("Dialog.Error", { title, message, details }),
             dialogException: async (title: string, error: Error) => await model.bus.unicast("Dialog.Exception", { title, error }),
             dialogYesNo: async (title, message) => await model.bus.unicast("Dialog.Confirmation", { title, message }),
-            dialogConfirmDelete: async (title = "Warning", message = "Are you sure want to delete this item?") => await model.bus.unicast("Dialog.ActionConfirmation", { title, message, action: "Delete" }),
+            dialogConfirmAction: async (title = "Warning", message = "Are you sure want to delete this item?", action = "Delete") => await model.bus.unicast("Dialog.ActionConfirmation", { title, message, action }),
             alertInformation: async (text) => await model.bus.unicast("Alert.Information", { message: text }),
             alertSuccess: async (message) => await model.bus.unicast("Alert.Success", { message }),
             alertWarning: async (message) => await model.bus.unicast("Alert.Warning", { message }),
