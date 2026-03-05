@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import { Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel, useNavItem, NavItemExpandableModel, useNavItemExpandable } from "@components";
 import { AppRoute } from "@core";
-import { HomeIcon, LayoutIcon, ButtonsIcon, InputsIcon, PopupsIcon, FlyoutsIcon, NavigationIcon, TabsIcon, MiscIcon } from "../misc/icons";
+import { HomeIcon, LayoutIcon, ButtonsIcon, InputsIcon, PopupsIcon, NavigationIcon, TabsIcon, MiscIcon } from "../misc/icons";
 
 type AppMenuStruct = UIBaseStruct<{
     props: {
@@ -26,7 +26,7 @@ type AppMenuStruct = UIBaseStruct<{
         popupsMenuItem: NavItemExpandableModel;
         dialogMenuItem: NavItemModel;
         drawerMenuItem: NavItemModel;
-        flyoutsMenuItem: NavItemModel;
+        toastMenuItem: NavItemModel;
         navigationMenuItem: NavItemModel;
         tabsMenuItem: NavItemModel;
         miscMenuItem: NavItemModel;
@@ -63,7 +63,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
             popupsMenuItem: _useGroupMenuItem({
                 text: "Popups",
                 icon: <PopupsIcon />,
-                subItems: () => [model.dialogMenuItem, model.drawerMenuItem]
+                subItems: () => [model.dialogMenuItem, model.drawerMenuItem, model.toastMenuItem]
             }),
             homeMenuItem: useNavItem({
                 text: "Home",
@@ -116,10 +116,9 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 text: "Drawer",
                 route: { path: "/drawer" }
             }),
-            flyoutsMenuItem: _useMenuItem({
-                text: "Flyouts",
-                route: { path: "/flyouts" },
-                icon: <FlyoutsIcon />
+            toastMenuItem: _useMenuItem({
+                text: "Toast",
+                route: { path: "/toast" }
             }),
             navigationMenuItem: _useMenuItem({
                 text: "Navigation",
@@ -155,7 +154,6 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 <model.buttonsMenuItem.View />
                 <model.inputsMenuItem.View />
                 <model.popupsMenuItem.View />
-                <model.flyoutsMenuItem.View />
                 <model.navigationMenuItem.View />
                 <model.tabsMenuItem.View />
                 <model.miscMenuItem.View />

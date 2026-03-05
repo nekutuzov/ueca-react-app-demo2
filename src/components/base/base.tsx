@@ -58,13 +58,15 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
             setRouteParams: async (params, patch) => await model.bus.unicast("App.Router.SetRouteParams", { params, patch }),
             openNewTab: async (route) => await model.bus.unicast("App.Router.OpenNewTab", route),
 
-            // Dialogs
+            // Modal dialogs
             dialogInfo: async (title, message) => await model.bus.unicast("Dialog.Information", { title, message }),
             dialogWarning: async (title, message, details) => await model.bus.unicast("Dialog.Warning", { title, message, details }),
             dialogError: async (title, message, details) => await model.bus.unicast("Dialog.Error", { title, message, details }),
             dialogException: async (title: string, error: Error) => await model.bus.unicast("Dialog.Exception", { title, error }),
             dialogYesNo: async (title, message) => await model.bus.unicast("Dialog.Confirmation", { title, message }),
             dialogConfirmAction: async (title = "Warning", message = "Are you sure want to delete this item?", action = "Delete") => await model.bus.unicast("Dialog.ActionConfirmation", { title, message, action }),
+            
+            // Toast notifications
             alertInformation: async (text) => await model.bus.unicast("Alert.Information", { message: text }),
             alertSuccess: async (message) => await model.bus.unicast("Alert.Success", { message }),
             alertWarning: async (message) => await model.bus.unicast("Alert.Warning", { message }),
