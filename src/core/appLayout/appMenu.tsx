@@ -27,7 +27,9 @@ type AppMenuStruct = UIBaseStruct<{
         dialogMenuItem: NavItemModel;
         drawerMenuItem: NavItemModel;
         toastMenuItem: NavItemModel;
-        navigationMenuItem: NavItemModel;
+        navigationMenuItem: NavItemExpandableModel;
+        navLinkMenuItem: NavItemModel;
+        navItemMenuItem: NavItemModel;
         tabsMenuItem: NavItemModel;
         miscMenuItem: NavItemModel;
     }
@@ -64,6 +66,11 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 text: "Popups",
                 icon: <PopupsIcon />,
                 subItems: () => [model.dialogMenuItem, model.drawerMenuItem, model.toastMenuItem]
+            }),
+            navigationMenuItem: _useGroupMenuItem({
+                text: "Navigation",
+                icon: <NavigationIcon />,
+                subItems: () => [model.navLinkMenuItem, model.navItemMenuItem]
             }),
             homeMenuItem: useNavItem({
                 text: "Home",
@@ -120,10 +127,13 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 text: "Toast",
                 route: { path: "/toast" }
             }),
-            navigationMenuItem: _useMenuItem({
-                text: "Navigation",
-                route: { path: "/navigation" },
-                icon: <NavigationIcon />
+            navLinkMenuItem: _useMenuItem({
+                text: "NavLink",
+                route: { path: "/navlink" }
+            }),
+            navItemMenuItem: _useMenuItem({
+                text: "NavItem",
+                route: { path: "/navitem" }
             }),
             tabsMenuItem: _useMenuItem({
                 text: "Tabs",

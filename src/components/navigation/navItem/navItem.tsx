@@ -3,6 +3,8 @@ import { Block, Row, NavLinkModel, UIBaseModel, UIBaseParams, UIBaseStruct, useN
 import { AppRoute, resolvePaletteColor } from "@core";
 import "./navItem.css";
 
+type NavItemMode = "icon-only" | "text-only" | "icon-text";
+
 type NavItemStruct = UIBaseStruct<{
     props: {
         active: boolean;
@@ -11,7 +13,7 @@ type NavItemStruct = UIBaseStruct<{
         newTab: boolean;
         icon: React.ReactNode;
         text: string;
-        mode: "icon-only" | "text-only" | "icon-text";
+        mode: NavItemMode;
     },
 
     children: {
@@ -36,11 +38,11 @@ function useNavItem(params?: NavItemParams): NavItemModel {
             newTab: UECA.bind(() => model.navLink, "newTab"),
             text: UECA.bind(() => model.navLink, "title"),
             icon: undefined,
-            mode: "icon-text",            
+            mode: "icon-text",
         },
 
         children: {
-            navLink: useNavLink({                
+            navLink: useNavLink({
                 underline: "none",
                 linkView: () => <model._linkView />,
                 beforeNavigate: async (route) => {
@@ -101,4 +103,4 @@ function useNavItem(params?: NavItemParams): NavItemModel {
 
 const NavItem = UECA.getFC(useNavItem);
 
-export { NavItemParams, NavItemModel, useNavItem, NavItem };
+export { NavItemParams, NavItemModel, NavItemMode, useNavItem, NavItem };

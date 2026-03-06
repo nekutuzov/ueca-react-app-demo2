@@ -18,6 +18,14 @@ type Padding = {
 
 type BlockHorizontalAlign = keyof typeof blockHorizontalAlignMap;
 
+type Overflow = React.CSSProperties["overflow"];
+
+type Cursor = React.CSSProperties["cursor"];
+
+type FlexWrap = React.CSSProperties["flexWrap"];
+
+type Border = "solid" | "dashed" | "dotted" | "rounded";
+
 type BlockProps = {
     id?: string;
     key?: string | number;
@@ -36,9 +44,10 @@ type BlockProps = {
     maxHeight?: number | string;
     padding?: Padding;
     backgroundColor?: Palette;
-    overflow?: React.CSSProperties["overflow"];
+    overflow?: Overflow;
     horizontalAlign?: BlockHorizontalAlign;
-    cursor?: React.CSSProperties["cursor"];
+    cursor?: Cursor;
+    border?: Border;
     // Events
     onClick?: React.MouseEventHandler<HTMLDivElement>;
     onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
@@ -49,7 +58,7 @@ type FlexProps = BlockProps & {
     reverseItems?: boolean;
     spacing?: Spacing;
     divider?: boolean;
-    flexWrap?: React.CSSProperties["flexWrap"];
+    flexWrap?: FlexWrap;
 };
 
 type RowHorizontalAlign = keyof typeof rowHorizontalAlignMap;
@@ -66,6 +75,10 @@ type ColVerticalAlign = keyof typeof colVerticalAlignMap;
 type ColProps = Omit<FlexProps, "horizontalAlign"> & {
     horizontalAlign?: ColHorizontalAlign;
     verticalAlign?: ColVerticalAlign;
+};
+
+type CardProps = BlockProps & {
+    title?: string;
 };
 
 // Block component
@@ -86,6 +99,7 @@ function Block(props: BlockProps): UECA.ReactElement {
         flex: props?.fill ? 1 : undefined,
         cursor: props?.cursor,
         ...paddingStyleMap(props?.padding),
+        ...borderStyleMap(props?.border),
         ...props?.sx
     };
 
@@ -130,6 +144,7 @@ function Row(props: RowProps): UECA.ReactElement {
         flex: props?.fill ? 1 : undefined, // Also set flex for when inside flex parent
         cursor: props?.cursor,
         ...paddingStyleMap(props?.padding),
+        ...borderStyleMap(props?.border),
         ...props?.sx
     };
 
@@ -192,8 +207,12 @@ function Col(props: ColProps): UECA.ReactElement {
         overflow: props?.overflow ?? "visible",
         backgroundColor: resolvePaletteColor(props?.backgroundColor),
         flex: props?.fill ? 1 : undefined, // Also set flex for when inside flex parent
+        // flexBasis: props?.flexBasis,
+        // flexGrow: props?.flexGrow,
+        // flexShrink: props?.flexShrink,
         cursor: props?.cursor,
         ...paddingStyleMap(props?.padding),
+        ...borderStyleMap(props?.border),
         ...props?.sx
     };
 
@@ -353,4 +372,66 @@ function paddingStyleMap(padding?: Padding): React.CSSProperties {
     return paddingValues;
 }
 
-export { BlockProps, RowProps, ColProps, Block, Row, Col };
+// Function to map border prop to CSS style properties
+function borderStyleMap(border?: Border): React.CSSProperties {
+    if (!border) {
+        return {};
+    }
+
+    const borderColor = resolvePaletteColor("border.color");
+    const borderWidth = "2px";
+
+    switch (border) {
+        case "solid":
+            return {
+                border: `${borderWidth} solid ${borderColor}`
+            };
+        case "dashed":
+            return {
+                border: `${borderWidth} dashed ${borderColor}`
+            };
+        case "dotted":
+            return {
+                border: `${borderWidth} dotted ${borderColor}`
+            };
+        case "rounded":
+            return {
+                border: `${borderWidth} solid ${borderColor}`,
+                borderRadius: "8px"
+            };
+        default:
+            return {};
+    }
+}
+
+// Card component
+function Card(props: CardProps): React.ReactElement {
+    if (props?.render === false) return null;
+
+    const sx: React.CSSProperties = {
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        ...props?.sx
+    };
+
+    const p = { ...props };
+    p.padding = p.padding || "medium";
+    p.backgroundColor = p.backgroundColor || "background.paper";    
+
+    return (
+        <Col {...p} sx={sx} spacing="small" overflow="hidden">
+            <Block render={!!p?.title}>
+                {<h2>{p.title}</h2>}
+            </Block>
+            <Col overflow={props?.overflow} fill>
+                {p?.children}
+            </Col>
+        </Col>
+    );
+}
+
+export {
+    BlockProps, RowProps, ColProps, CardProps, Spacing, PaddingSize, Padding, BlockHorizontalAlign,
+    RowHorizontalAlign, RowVerticalAlign, ColHorizontalAlign, ColVerticalAlign, Overflow, Cursor,
+    FlexWrap, Border, Block, Row, Col, Card
+};

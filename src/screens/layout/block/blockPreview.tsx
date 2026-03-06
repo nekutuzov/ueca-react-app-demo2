@@ -1,9 +1,9 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block
+    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block, PaddingSize, Overflow, BlockHorizontalAlign,
+    Card
 } from "@components";
-import { Palette } from "@core";
+import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
 type BlockPreviewStruct = UIBaseStruct<{
     props: {
@@ -13,17 +13,20 @@ type BlockPreviewStruct = UIBaseStruct<{
         minHeight: string;
         maxWidth: string;
         maxHeight: string;
-        padding: string;
+        padding: PaddingSize;
         backgroundColor: Palette;
-        overflow: string;
-        horizontalAlign: "left" | "center" | "right";
+        overflow: Overflow;
+        horizontalAlign: BlockHorizontalAlign;
         fill: boolean;
         content: string;
     };
 
+    children: {
+        codeSample: CodeSampleModel;
+    };
+
     methods: {
         _PreviewBlockView: () => React.ReactElement;
-        _CodeDisplayView: () => React.ReactElement;
     };
 }>;
 
@@ -50,67 +53,57 @@ function useBlockPreview(params?: BlockPreviewParams): BlockPreviewModel {
 
         methods: {
             _PreviewBlockView: () => (
-                <Block
-                    padding="large"
-                    backgroundColor="background.paper"
-                    minHeight={"300px"}
-                    sx={{
-                        border: "1px solid #e0e0e0",
-                        borderRadius: "8px",
-                    }}
-                >
-                    <Col spacing="medium" horizontalAlign="center" verticalAlign="center">
-                        <Block
-                            width={model.width || undefined}
-                            height={model.height || undefined}
-                            minWidth={model.minWidth || undefined}
-                            minHeight={model.minHeight || undefined}
-                            maxWidth={model.maxWidth || undefined}
-                            maxHeight={model.maxHeight || undefined}
-                            padding={model.padding as any || undefined}
-                            backgroundColor={model.backgroundColor}
-                            overflow={model.overflow as any}
-                            horizontalAlign={model.horizontalAlign}
-                            fill={model.fill}
-                            sx={{
-                                border: "2px dashed #999",
-                            }}
-                        >
-                            {model.content}
-                        </Block>
-                    </Col>
-                </Block>
-            ),
-
-            _CodeDisplayView: () => (
-                <Col spacing="tiny" padding={{ top: "medium" }}>
-                    <h4>JSX Code</h4>
+                <Col horizontalAlign="center" minHeight={"300px"}>
                     <Block
-                        backgroundColor="background.default"
-                        padding="medium"
-                        sx={{
-                            border: "1px solid #e0e0e0",
-                            borderRadius: "4px",
-                            fontFamily: "monospace",
-                            fontSize: "12px",
-                            overflowX: "auto"
-                        }}
+                        width={model.width}
+                        height={model.height}
+                        minWidth={model.minWidth}
+                        minHeight={model.minHeight}
+                        maxWidth={model.maxWidth}
+                        maxHeight={model.maxHeight}
+                        padding={model.padding}
+                        backgroundColor={model.backgroundColor}
+                        overflow={model.overflow}
+                        horizontalAlign={model.horizontalAlign}
+                        fill={model.fill}
                     >
-                        <pre>{`<Block${model.width ? `\n    width="${model.width}"` : ""}${model.height ? `\n    height="${model.height}"` : ""}${model.minWidth ? `\n    minWidth="${model.minWidth}"` : ""}${model.minHeight ? `\n    minHeight="${model.minHeight}"` : ""}${model.maxWidth ? `\n    maxWidth="${model.maxWidth}"` : ""}${model.maxHeight ? `\n    maxHeight="${model.maxHeight}"` : ""}${model.padding ? `\n    padding="${model.padding}"` : ""}${model.backgroundColor && model.backgroundColor !== "transparent" ? `\n    backgroundColor="${model.backgroundColor}"` : ""}${model.overflow !== "visible" ? `\n    overflow="${model.overflow}"` : ""}${model.horizontalAlign !== "left" ? `\n    horizontalAlign="${model.horizontalAlign}"` : ""}${model.fill ? `\n    fill={true}` : ""}
->
-    ${model.content}
-</Block>`}</pre>
+                        <pre>{model.content}</pre>
                     </Block>
                 </Col>
             )
         },
 
+        children: {
+            codeSample: useCodeSample({
+                componentName: "Block",
+                sourceObject: () => model,
+                properties: () => [
+                    "width",
+                    "height",
+                    "minWidth",
+                    "minHeight",
+                    "maxWidth",
+                    "maxHeight",
+                    "padding",
+                    "backgroundColor",
+                    "overflow",
+                    "horizontalAlign",
+                    "fill"
+                ],
+                content: () => model.content
+            })
+        },
+
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Preview</h2>
+            <Card id={model.htmlId()}
+                title="👁️ Preview"
+                fill
+                minWidth={400}
+                overflow="auto"
+            >
                 <model._PreviewBlockView />
-                <model._CodeDisplayView />
-            </Col>
+                <model.codeSample.View />
+            </Card>
         )
     };
 

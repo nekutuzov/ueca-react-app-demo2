@@ -22,3 +22,4 @@ export * from "./screenLayout/crudScreen";
 export * from "./screenLayout/locationBreadcrumbs";
 export * from "./screenLayout/tabsScreen";
 export * from "./misc/icons";
+export * from "./appComponents/codeSample/codeSample";

@@ -10,6 +10,8 @@ type Palette =
     "text.primary" | "text.secondary" | "text.disabled" |
     "background.paper" | "background.default" |
     "action.active" | "action.hover" | "action.selected" | "action.disabled" | "action.disabledBackground" | "action.focus" |
+    "menu.hover" | "menu.disabled" | "menu.active" |
+    "border.color" |
     (string & {});
 
 // Color palette mapping - customize these colors as needed
@@ -63,7 +65,9 @@ const paletteColors: Record<string, string> = {
 
     "menu.hover": "rgba(0, 0, 0, 0.04)",
     "menu.disabled": "rgba(0, 0, 0, 0.26)",    
-    "menu.active": "rgba(25, 118, 210, 0.08)",    
+    "menu.active": "rgba(25, 118, 210, 0.08)",  
+    
+    "border.color": "#e0e0e0",
 } as const;
 
 // Helper function to resolve palette color to CSS color

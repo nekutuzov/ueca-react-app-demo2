@@ -3,27 +3,11 @@ import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
     Row, Col
 } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { BlockPropertiesEditorModel, useBlockPropertiesEditor } from "./blockPropertiesEditor";
 import { BlockPreviewModel, useBlockPreview } from "./blockPreview";
 
 type BlockScreenStruct = UIBaseStruct<{
-    props: {
-        // Block properties
-        width: string;
-        height: string;
-        minWidth: string;
-        minHeight: string;
-        maxWidth: string;
-        maxHeight: string;
-        padding: string;
-        backgroundColor: Palette;
-        overflow: string;
-        horizontalAlign: "left" | "center" | "right";
-        fill: boolean;
-        content: string;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         propertiesEditor: BlockPropertiesEditorModel;
@@ -41,33 +25,20 @@ type BlockScreenModel = UIBaseModel<BlockScreenStruct>;
 function useBlockScreen(params?: BlockScreenParams): BlockScreenModel {
     const struct: BlockScreenStruct = {
         props: {
-            id: useBlockScreen.name,
-            width: "400px",
-            height: "200px",
-            minWidth: "",
-            minHeight: "",
-            maxWidth: "",
-            maxHeight: "",
-            padding: "medium",
-            backgroundColor: "primary.main",
-            overflow: "visible",
-            horizontalAlign: "left",
-            fill: false,
-            content: "Block Content"
+            id: useBlockScreen.name
         },
 
         children: {
             crudScreen: useCRUDScreen({
                 intent: "none",
                 breadcrumbs: [
-                    { route: { path: "/" }, label: "Home" },                    
+                    { route: { path: "/" }, label: "Home" },
                     { route: { path: "/block" }, label: "Block Component" }
                 ],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>Block Component</h1>
-                            <p>Modify properties and see the changes in real-time.</p>
+                            <h1>Block Component</h1>                            
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.propertiesEditor.View />
@@ -78,53 +49,45 @@ function useBlockScreen(params?: BlockScreenParams): BlockScreenModel {
             }),
 
             propertiesEditor: useBlockPropertiesEditor({
-                width: UECA.bind(() => model, "width"),
-                height: UECA.bind(() => model, "height"),
-                minWidth: UECA.bind(() => model, "minWidth"),
-                minHeight: UECA.bind(() => model, "minHeight"),
-                maxWidth: UECA.bind(() => model, "maxWidth"),
-                maxHeight: UECA.bind(() => model, "maxHeight"),
-                padding: UECA.bind(() => model, "padding"),
-                backgroundColor: UECA.bind(() => model, "backgroundColor") as UECA.Bond<Palette>,
-                overflow: UECA.bind(() => model, "overflow"),
-                horizontalAlign: UECA.bind(() => model, "horizontalAlign"),
-                fill: UECA.bind(() => model, "fill"),
-                content: UECA.bind(() => model, "content"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useBlockPreview({
-                width: UECA.bind(() => model, "width"),
-                height: UECA.bind(() => model, "height"),
-                minWidth: UECA.bind(() => model, "minWidth"),
-                minHeight: UECA.bind(() => model, "minHeight"),
-                maxWidth: UECA.bind(() => model, "maxWidth"),
-                maxHeight: UECA.bind(() => model, "maxHeight"),
-                padding: UECA.bind(() => model, "padding"),
-                backgroundColor: UECA.bind(() => model, "backgroundColor") as UECA.Bond<Palette>,
-                overflow: UECA.bind(() => model, "overflow"),
-                horizontalAlign: UECA.bind(() => model, "horizontalAlign"),
-                fill: UECA.bind(() => model, "fill"),
-                content: UECA.bind(() => model, "content")
+                width: UECA.bind(() => model.propertiesEditor, "width"),
+                height: UECA.bind(() => model.propertiesEditor, "height"),
+                minWidth: UECA.bind(() => model.propertiesEditor, "minWidth"),
+                minHeight: UECA.bind(() => model.propertiesEditor, "minHeight"),
+                maxWidth: UECA.bind(() => model.propertiesEditor, "maxWidth"),
+                maxHeight: UECA.bind(() => model.propertiesEditor, "maxHeight"),
+                padding: UECA.bind(() => model.propertiesEditor, "padding"),
+                backgroundColor: UECA.bind(() => model.propertiesEditor, "backgroundColor"),
+                overflow: UECA.bind(() => model.propertiesEditor, "overflow"),
+                horizontalAlign: UECA.bind(() => model.propertiesEditor, "horizontalAlign"),
+                fill: UECA.bind(() => model.propertiesEditor, "fill"),
+                content: UECA.bind(() => model.propertiesEditor, "content")
             })
         },
 
         methods: {
             resetProperties: () => {
-                model.width = "400px";
-                model.height = "200px";
-                model.minWidth = "";
-                model.minHeight = "";
-                model.maxWidth = "";
-                model.maxHeight = "";
-                model.padding = "medium";
-                model.backgroundColor = "primary.main";
-                model.overflow = "visible";
-                model.horizontalAlign = "left";
-                model.fill = false;
-                model.content = "Block Content";
-                model.alertInformation("Properties reset to defaults");
+                model.propertiesEditor.width = "400px";
+                model.propertiesEditor.height = "200px";
+                model.propertiesEditor.minWidth = "";
+                model.propertiesEditor.minHeight = "";
+                model.propertiesEditor.maxWidth = "";
+                model.propertiesEditor.maxHeight = "";
+                model.propertiesEditor.padding = "small";
+                model.propertiesEditor.backgroundColor = "primary.main";
+                model.propertiesEditor.overflow = "visible";
+                model.propertiesEditor.horizontalAlign = "left";
+                model.propertiesEditor.fill = false;
+                model.propertiesEditor.content = "Block Content";
             }
+        },
+
+        constr: () => {
+            // Initialize properties with default values on model construction
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />

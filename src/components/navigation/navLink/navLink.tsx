@@ -3,12 +3,14 @@ import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components"
 import { AppRoute, asyncSafe, Palette, resolvePaletteColor } from "@core";
 import "./navLink.css";
 
+type NavLinkUnderline = "none" | "hover" | "always";
+
 type NavLinkStruct = UIBaseStruct<{
     props: {
         route: AppRoute;
         title: string;
         color: Palette;
-        underline: "none" | "hover" | "always";
+        underline: NavLinkUnderline;
         disabled: boolean;
         newTab: boolean;
         linkView: React.ReactNode;
@@ -101,4 +103,4 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
 
 const NavLink = UECA.getFC(useNavLink);
 
-export { NavLinkModel, useNavLink, NavLink };
+export { NavLinkModel, NavLinkUnderline, useNavLink, NavLink };

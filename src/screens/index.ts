@@ -11,6 +11,7 @@ export * from "./inputs/checkbox/checkboxScreen";
 export * from "./popups/dialog/dialogScreen";
 export * from "./popups/drawer/drawerScreen";
 export * from "./popups/toast/toastScreen";
-export * from "./navigation/navigationScreen";
+export * from "./navigation/navLink/navLinkScreen";
+export * from "./navigation/navItem/navItemScreen";
 export * from "./tabs/tabsComponentScreen";
 export * from "./misc/miscScreen";

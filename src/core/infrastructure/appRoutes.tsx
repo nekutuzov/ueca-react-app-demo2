@@ -13,7 +13,8 @@ import {
     DialogScreen,
     DrawerScreen,
     ToastScreen,
-    NavigationScreen,
+    NavLinkScreen,
+    NavItemScreen,
     TabsComponentScreen,
     MiscScreen
 } from "@screens";
@@ -35,7 +36,8 @@ const screenRoutes = {
     "/dialogs": () => <DialogScreen id={"dialogScreen"} />,
     "/drawer": () => <DrawerScreen id={"drawerScreen"} />,    
     "/toast": () => <ToastScreen id={"toastScreen"} />,    
-    "/navigation": () => <NavigationScreen id={"navigationScreen"} />,
+    "/navlink": () => <NavLinkScreen id={"navLinkScreen"} />,
+    "/navitem": () => <NavItemScreen id={"navItemScreen"} />,
     "/tabs": () => <TabsComponentScreen id={"tabsComponentScreen"} />,
     "/misc": () => <MiscScreen id={"miscScreen"} />,
 };

@@ -1,13 +1,9 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
-    TextFieldModel, useTextField,
-    RadioGroupModel, useRadioGroup,
-    SelectModel, useSelect,
-    CheckboxModel, useCheckbox,
-    ButtonModel, useButton,
-    Row
+    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block, TextFieldModel, useTextField, RadioGroupModel,
+    useRadioGroup, SelectModel, useSelect, CheckboxModel, useCheckbox, ButtonModel, useButton, Row, PaddingSize,
+    Overflow, BlockHorizontalAlign,
+    Card
 } from "@components";
 import { Palette } from "@core";
 
@@ -19,10 +15,10 @@ type BlockPropertiesEditorStruct = UIBaseStruct<{
         minHeight: string;
         maxWidth: string;
         maxHeight: string;
-        padding: string;
+        padding: PaddingSize;
         backgroundColor: Palette;
-        overflow: string;
-        horizontalAlign: "left" | "center" | "right";
+        overflow: Overflow;
+        horizontalAlign: BlockHorizontalAlign;
         fill: boolean;
         content: string;
     };
@@ -34,10 +30,10 @@ type BlockPropertiesEditorStruct = UIBaseStruct<{
         minHeightField: TextFieldModel;
         maxWidthField: TextFieldModel;
         maxHeightField: TextFieldModel;
-        paddingRadioGroup: RadioGroupModel;
-        backgroundColorSelect: SelectModel;
-        overflowRadioGroup: RadioGroupModel;
-        horizontalAlignRadioGroup: RadioGroupModel;
+        paddingRadioGroup: RadioGroupModel<PaddingSize>;
+        backgroundColorSelect: SelectModel<Palette>;
+        overflowRadioGroup: RadioGroupModel<Overflow>;
+        horizontalAlignRadioGroup: RadioGroupModel<BlockHorizontalAlign>;
         fillCheckbox: CheckboxModel;
         contentField: TextFieldModel;
         resetButton: ButtonModel;
@@ -112,11 +108,11 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                 fullWidth: true
             }),
 
-            paddingRadioGroup: useRadioGroup({
+            paddingRadioGroup: useRadioGroup<PaddingSize>({
                 labelView: "Padding",
-                value: UECA.bind(() => model, "padding") as UECA.Bond<string>,
+                value: UECA.bind(() => model, "padding"),
                 options: [
-                    { value: "", label: "None" },
+                    { value: undefined, label: "None" },
                     { value: "tiny", label: "Tiny" },
                     { value: "small", label: "Small" },
                     { value: "medium", label: "Medium" },
@@ -125,10 +121,11 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                 orientation: "row"
             }),
 
-            backgroundColorSelect: useSelect({
+            backgroundColorSelect: useSelect<Palette>({
                 labelView: "Background Color",
                 value: UECA.bind(() => model, "backgroundColor"),
                 options: [
+                    { value: undefined, label: "None" },
                     { value: "transparent", label: "Transparent" },
                     { value: "primary.main", label: "Primary" },
                     { value: "secondary.main", label: "Secondary" },
@@ -136,15 +133,14 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                     { value: "error.main", label: "Error" },
                     { value: "warning.main", label: "Warning" },
                     { value: "info.main", label: "Info" },
-                    { value: "background.paper", label: "Paper" },
-                    { value: "background.default", label: "Default" }
+                    { value: "background.paper", label: "Paper" }
                 ],
                 fullWidth: true
             }),
 
-            overflowRadioGroup: useRadioGroup({
+            overflowRadioGroup: useRadioGroup<Overflow>({
                 labelView: "Overflow",
-                value: UECA.bind(() => model, "overflow") as UECA.Bond<string>,
+                value: UECA.bind(() => model, "overflow"),
                 options: [
                     { value: "visible", label: "Visible" },
                     { value: "hidden", label: "Hidden" },
@@ -154,9 +150,9 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                 orientation: "row"
             }),
 
-            horizontalAlignRadioGroup: useRadioGroup({
+            horizontalAlignRadioGroup: useRadioGroup<BlockHorizontalAlign>({
                 labelView: "Horizontal Align",
-                value: UECA.bind(() => model, "horizontalAlign") as UECA.Bond<string>,
+                value: UECA.bind(() => model, "horizontalAlign"),
                 options: [
                     { value: "left", label: "Left" },
                     { value: "center", label: "Center" },
@@ -174,6 +170,7 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                 labelView: "Block Content",
                 value: UECA.bind(() => model, "content"),
                 placeholder: "Enter content",
+                multiline: true,
                 fullWidth: true
             }),
 
@@ -187,28 +184,34 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Properties</h2>
-                <model.contentField.View />
-                <model.backgroundColorSelect.View />
-                <model.paddingRadioGroup.View />
-                <model.horizontalAlignRadioGroup.View />
-                <model.overflowRadioGroup.View />
-                <Row>
-                    <model.widthField.View />
-                    <model.minWidthField.View />
-                    <model.maxWidthField.View />
-                </Row>
-                <Row>
-                    <model.heightField.View />
-                    <model.minHeightField.View />
-                    <model.maxHeightField.View />
-                </Row>
-                <model.fillCheckbox.View />
-                <Block padding={{ top: "medium" }}>
-                    <model.resetButton.View />
-                </Block>
-            </Col>
+            <Card id={model.htmlId()}
+                title="⚙️ Properties"
+                fill      
+                minWidth={664}          
+                overflow="auto"
+            >
+                <Col spacing="medium" fill>
+                    <model.contentField.View />
+                    <model.backgroundColorSelect.View />
+                    <model.paddingRadioGroup.View />
+                    <model.horizontalAlignRadioGroup.View />
+                    <model.overflowRadioGroup.View />
+                    <Row>
+                        <model.widthField.View />
+                        <model.minWidthField.View />
+                        <model.maxWidthField.View />
+                    </Row>
+                    <Row>
+                        <model.heightField.View />
+                        <model.minHeightField.View />
+                        <model.maxHeightField.View />
+                    </Row>
+                    <model.fillCheckbox.View />
+                    <Block padding={{ top: "medium" }}>
+                        <model.resetButton.View />
+                    </Block>
+                </Col>
+            </Card>
         )
     };
 

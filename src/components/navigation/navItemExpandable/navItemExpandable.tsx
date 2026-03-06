@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { Block, Col, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel } from "@components";
+import { Block, Col, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel, NavItemMode } from "@components";
 import { ChevronDownIcon, resolvePaletteColor } from "@core";
 import "./navItemExpandable.css";
 
@@ -9,7 +9,7 @@ type NavItemExpandableStruct = UIBaseStruct<{
         expanded: boolean;
         icon: React.ReactNode;
         text: string;
-        mode: "icon-only" | "text-only" | "icon-text";
+        mode: NavItemMode;
         subItems: NavItemModel[];
     };
 
