@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Row, Col } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb, Palette } from "@core";
 import { RadioGroupPropertiesEditorModel, useRadioGroupPropertiesEditor } from "./radioGroupPropertiesEditor";
 import { RadioGroupPreviewModel, useRadioGroupPreview } from "./radioGroupPreview";
@@ -7,7 +7,7 @@ import { RadioGroupPreviewModel, useRadioGroupPreview } from "./radioGroupPrevie
 type RadioOrientation = "row" | "column";
 type RadioSize = "small" | "medium" | "large";
 
-type RadioGroupScreenStruct = UIBaseStruct<{
+type RadioGroupScreenStruct = ScreenBaseStruct<{
     props: {
         labelText: string;
         orientation: RadioOrientation;
@@ -32,8 +32,8 @@ type RadioGroupScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type RadioGroupScreenParams = UIBaseParams<RadioGroupScreenStruct>;
-type RadioGroupScreenModel = UIBaseModel<RadioGroupScreenStruct>;
+type RadioGroupScreenParams = ScreenBaseParams<RadioGroupScreenStruct>;
+type RadioGroupScreenModel = ScreenBaseModel<RadioGroupScreenStruct>;
 
 function useRadioGroupScreen(params?: RadioGroupScreenParams): RadioGroupScreenModel {
     const struct: RadioGroupScreenStruct = {
@@ -116,7 +116,7 @@ function useRadioGroupScreen(params?: RadioGroupScreenParams): RadioGroupScreenM
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

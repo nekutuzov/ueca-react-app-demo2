@@ -1,13 +1,13 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
+    ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase,
     Row, Col
 } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
 import { ColPropertiesEditorModel, useColPropertiesEditor } from "./colPropertiesEditor";
 import { ColPreviewModel, useColPreview } from "./colPreview";
 
-type ColScreenStruct = UIBaseStruct<{
+type ColScreenStruct = ScreenBaseStruct<{
     props: {
         // Col properties
         spacing: string;
@@ -35,8 +35,8 @@ type ColScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type ColScreenParams = UIBaseParams<ColScreenStruct>;
-type ColScreenModel = UIBaseModel<ColScreenStruct>;
+type ColScreenParams = ScreenBaseParams<ColScreenStruct>;
+type ColScreenModel = ScreenBaseModel<ColScreenStruct>;
 
 function useColScreen(params?: ColScreenParams): ColScreenModel {
     const struct: ColScreenStruct = {
@@ -129,7 +129,7 @@ function useColScreen(params?: ColScreenParams): ColScreenModel {
         View: () => <model.crudScreen.View />
     }
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

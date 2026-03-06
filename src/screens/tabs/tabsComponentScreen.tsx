@@ -1,16 +1,16 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Col, Block } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 
-type TabsComponentScreenStruct = UIBaseStruct<{
+type TabsComponentScreenStruct = ScreenBaseStruct<{
     props: {};
     children: {
         crudScreen: CRUDScreenModel;
     };
 }>;
 
-type TabsComponentScreenParams = UIBaseParams<TabsComponentScreenStruct>;
-type TabsComponentScreenModel = UIBaseModel<TabsComponentScreenStruct>;
+type TabsComponentScreenParams = ScreenBaseParams<TabsComponentScreenStruct>;
+type TabsComponentScreenModel = ScreenBaseModel<TabsComponentScreenStruct>;
 
 function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsComponentScreenModel {
     const struct: TabsComponentScreenStruct = {
@@ -39,7 +39,7 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
         View: () => <model.crudScreen.View />
     }
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

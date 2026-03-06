@@ -1,13 +1,13 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
+    ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase,
     Row, Col
 } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
 import { SelectPropertiesEditorModel, useSelectPropertiesEditor } from "./selectPropertiesEditor";
 import { SelectPreviewModel, useSelectPreview } from "./selectPreview";
 
-type SelectScreenStruct = UIBaseStruct<{
+type SelectScreenStruct = ScreenBaseStruct<{
     props: {
         // Select properties
         labelText: string;
@@ -35,8 +35,8 @@ type SelectScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type SelectScreenParams = UIBaseParams<SelectScreenStruct>;
-type SelectScreenModel = UIBaseModel<SelectScreenStruct>;
+type SelectScreenParams = ScreenBaseParams<SelectScreenStruct>;
+type SelectScreenModel = ScreenBaseModel<SelectScreenStruct>;
 
 function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
     const struct: SelectScreenStruct = {
@@ -130,7 +130,7 @@ function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
         View: () => <model.crudScreen.View />
     }
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

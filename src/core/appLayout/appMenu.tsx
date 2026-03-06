@@ -72,12 +72,10 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 icon: <NavigationIcon />,
                 subItems: () => [model.navLinkMenuItem, model.navItemMenuItem]
             }),
-            homeMenuItem: useNavItem({
+            homeMenuItem: _useMenuItem({
                 text: "Home",
                 route: { path: "/home" },
-                icon: <HomeIcon />,
-                active: () => model._activeRoute?.path === "/home" || model._activeRoute?.path === "/",
-                mode: () => model.iconsOnly ? "icon-only" : "icon-text"
+                icon: <HomeIcon />
             }),
             layoutBlockMenuItem: _useMenuItem({
                 text: "Block",

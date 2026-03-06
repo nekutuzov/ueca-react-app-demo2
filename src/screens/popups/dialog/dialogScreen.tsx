@@ -1,8 +1,8 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Row, Block, ButtonModel, useButton } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Col, Row, Block, ButtonModel, useButton } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 
-type DialogScreenStruct = UIBaseStruct<{
+type DialogScreenStruct = ScreenBaseStruct<{
     props: {};
 
     children: {
@@ -28,8 +28,8 @@ type DialogScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type DialogScreenParams = UIBaseParams<DialogScreenStruct>;
-type DialogScreenModel = UIBaseModel<DialogScreenStruct>;
+type DialogScreenParams = ScreenBaseParams<DialogScreenStruct>;
+type DialogScreenModel = ScreenBaseModel<DialogScreenStruct>;
 
 function useDialogScreen(params?: DialogScreenParams): DialogScreenModel {
     const struct: DialogScreenStruct = {
@@ -253,7 +253,7 @@ function useDialogScreen(params?: DialogScreenParams): DialogScreenModel {
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 
     // Private helper functions for code examples

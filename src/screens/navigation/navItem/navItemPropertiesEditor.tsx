@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     TextFieldModel, useTextField,
     RadioGroupModel, useRadioGroup,
     CheckboxModel, useCheckbox,
@@ -62,7 +62,7 @@ function useNavItemPropertiesEditor(params?: NavItemPropertiesEditorParams): Nav
                     { value: "text-only", label: "Text Only" },
                     { value: "icon-only", label: "Icon Only" }
                 ],
-                orientation: "column"
+                orientation: "row"
             }),
 
             disabledCheckbox: useCheckbox({
@@ -90,15 +90,7 @@ function useNavItemPropertiesEditor(params?: NavItemPropertiesEditorParams): Nav
         },
 
         View: () => (
-            <Block sx={{
-                flex: "1 1 400px",
-                minWidth: "300px",
-                padding: "24px",
-                border: "2px solid #e0e0e0",
-                borderRadius: "8px",
-                backgroundColor: "white"
-            }}>
-                <h2 style={{ margin: "0 0 20px 0" }}>⚙️ Properties</h2>
+            <Card title="⚙️ Properties" fill minWidth={400} overflow="auto">
                 <Col spacing="medium" fill>
                     <model.textField.View />
                     <model.modeRadioGroup.View />
@@ -109,7 +101,7 @@ function useNavItemPropertiesEditor(params?: NavItemPropertiesEditorParams): Nav
                         <model.resetButton.View />
                     </Block>
                 </Col>
-            </Block>
+            </Card>
         )
     };
 

@@ -1,7 +1,6 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Row, Col
+    Row, Col, ScreenBaseStruct, ScreenBaseParams, ScreenBaseModel, useScreenBase
 } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
 import { IconButtonPropertiesEditorModel, useIconButtonPropertiesEditor } from "./iconButtonPropertiesEditor";
@@ -9,7 +8,7 @@ import { IconButtonPreviewModel, useIconButtonPreview } from "./iconButtonPrevie
 
 type IconKind = "ok" | "cancel" | "delete" | "refresh" | "close";
 
-type IconButtonScreenStruct = UIBaseStruct<{
+type IconButtonScreenStruct = ScreenBaseStruct<{
     props: {
         // IconButton properties
         kind: IconKind;
@@ -32,8 +31,8 @@ type IconButtonScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type IconButtonScreenParams = UIBaseParams<IconButtonScreenStruct>;
-type IconButtonScreenModel = UIBaseModel<IconButtonScreenStruct>;
+type IconButtonScreenParams = ScreenBaseParams<IconButtonScreenStruct>;
+type IconButtonScreenModel = ScreenBaseModel<IconButtonScreenStruct>;
 
 function useIconButtonScreen(params?: IconButtonScreenParams): IconButtonScreenModel {
     const struct: IconButtonScreenStruct = {
@@ -107,7 +106,7 @@ function useIconButtonScreen(params?: IconButtonScreenParams): IconButtonScreenM
         View: () => <model.crudScreen.View />
     }
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

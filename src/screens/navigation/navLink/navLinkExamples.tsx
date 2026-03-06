@@ -1,9 +1,10 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Row, Col, Block,
+    Row, Col, Block, Card,
     NavLinkModel, useNavLink
 } from "@components";
+import { CodeSampleModel, useCodeSample } from "@core";
 
 type NavLinkExamplesStruct = UIBaseStruct<{
     children: {
@@ -11,10 +12,9 @@ type NavLinkExamplesStruct = UIBaseStruct<{
         toastNavLink: NavLinkModel;
         uecaWebsiteNavLink: NavLinkModel;
         githubNavLink: NavLinkModel;
-    };
-
-    methods: {
-        _CodeBlockView(props: { code: string }): React.ReactElement;
+        internalRoutesCodeSample: CodeSampleModel;
+        externalUrlsCodeSample: CodeSampleModel;
+        routingSystemCodeSample: CodeSampleModel;
     };
 }>;
 
@@ -56,42 +56,32 @@ function useNavLinkExamples(params?: NavLinkExamplesParams): NavLinkExamplesMode
                 color: "text.primary",
                 underline: "hover",
                 newTab: true
+            }),
+
+            internalRoutesCodeSample: useCodeSample({
+                content: () => _getInternalRoutesCode()
+            }),
+
+            externalUrlsCodeSample: useCodeSample({
+                content: () => _getExternalUrlsCode()
+            }),
+
+            routingSystemCodeSample: useCodeSample({
+                content: () => _getRoutingSystemCode()
             })
         },
 
-        methods: {
-            _CodeBlockView: ({ code }) => (
-                <pre style={{
-                    backgroundColor: "#f5f5f5",
-                    padding: "12px",
-                    border: "1px solid #e0e0e0",
-                    borderRadius: "4px",
-                    fontSize: "12px",
-                    lineHeight: "1.5",
-                    overflow: "auto",
-                    margin: "8px 0 0 0"
-                }}>
-                    <code>{code}</code>
-                </pre>
-            )
-        },
-
         View: () => (
-            <Block sx={{
-                padding: "24px",
-                border: "2px solid #e0e0e0",
-                borderRadius: "8px",
-                backgroundColor: "white"
-            }}>
-                <h2 style={{ margin: "0 0 20px 0" }}>📚 Examples</h2>
-                <Col spacing="large">
+            <Card title="📚 Examples" fill minWidth={400}>
+                <Row spacing="medium" flexWrap="wrap">
                     {/* Internal Routes */}
-                    <Block sx={{
-                        padding: "16px",
-                        backgroundColor: "#f5f5f5",
-                        borderRadius: "4px",
-                        border: "1px solid #e0e0e0"
-                    }}>
+                    <Block fill
+                        sx={{
+                            padding: "16px",
+                            backgroundColor: "#f5f5f5",
+                            borderRadius: "4px",
+                            border: "1px solid #e0e0e0"
+                        }}>
                         <Block sx={{ fontWeight: 600, marginBottom: "8px", fontSize: "14px" }}>
                             Internal Routes
                         </Block>
@@ -99,16 +89,17 @@ function useNavLinkExamples(params?: NavLinkExamplesParams): NavLinkExamplesMode
                             <model.homeNavLink.View />
                             <model.toastNavLink.View />
                         </Row>
-                        <model._CodeBlockView code={_getInternalRoutesCode()} />
+                        <model.internalRoutesCodeSample.View />
                     </Block>
 
                     {/* External URLs */}
-                    <Block sx={{
-                        padding: "16px",
-                        backgroundColor: "#f5f5f5",
-                        borderRadius: "4px",
-                        border: "1px solid #e0e0e0"
-                    }}>
+                    <Block fill
+                        sx={{
+                            padding: "16px",
+                            backgroundColor: "#f5f5f5",
+                            borderRadius: "4px",
+                            border: "1px solid #e0e0e0"
+                        }}>
                         <Block sx={{ fontWeight: 600, marginBottom: "8px", fontSize: "14px" }}>
                             External URLs (Open in New Tab)
                         </Block>
@@ -116,24 +107,25 @@ function useNavLinkExamples(params?: NavLinkExamplesParams): NavLinkExamplesMode
                             <model.uecaWebsiteNavLink.View />
                             <model.githubNavLink.View />
                         </Col>
-                        <model._CodeBlockView code={_getExternalUrlsCode()} />
+                        <model.externalUrlsCodeSample.View />
                     </Block>
 
                     {/* Routing System */}
-                    <Block sx={{
-                        padding: "16px",
-                        backgroundColor: "#fff3e0",
-                        border: "1px solid #ffb74d",
-                        borderRadius: "4px"
-                    }}>
+                    <Block fill
+                        sx={{
+                            padding: "16px",
+                            backgroundColor: "#fff3e0",
+                            border: "1px solid #ffb74d",
+                            borderRadius: "4px"
+                        }}>
                         <h4 style={{ margin: "0 0 10px 0", fontSize: "14px", color: "#e65100" }}>📡 Routing System</h4>
                         <p style={{ margin: "0 0 10px 0", fontSize: "13px", color: "#555" }}>
                             Register new routes in <code>appRoutes.tsx</code>:
                         </p>
-                        <model._CodeBlockView code={_getRoutingSystemCode()} />
+                        <model.routingSystemCodeSample.View />
                     </Block>
-                </Col>
-            </Block>
+                </Row>
+            </Card>
         )
     };
 
@@ -183,7 +175,7 @@ import { MyNewScreen } from "@screens";
 
 const screenRoutes = {
     "/my-route": () => <MyNewScreen id="myNewScreen" />,
-    "/users/:id": () => <UserScreen id="userScreen" />,
+    "/users/:id": (p: { id?: string }) => <UserScreen id="userScreen" />,
     "/settings?:tab": () => <SettingsScreen id="settingsScreen" />
 };
 

@@ -78,7 +78,7 @@ function useDrawer(params?: DrawerParams): DrawerModel {
                                     <CloseIconButton onClick={_close} />
                                 </Block>
                             </Row>
-                            <Col overflow="auto">
+                            <Col fill overflow="auto">
                                 <div className="drawer-content">
                                     {model.contentView}
                                 </div>

@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
+    ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase,
     Row, Col,
     NavItemMode
 } from "@components";
@@ -9,7 +9,7 @@ import { NavItemPropertiesEditorModel, useNavItemPropertiesEditor } from "./navI
 import { NavItemPreviewModel, useNavItemPreview } from "./navItemPreview";
 import { NavItemExamplesModel, useNavItemExamples } from "./navItemExamples";
 
-type NavItemScreenStruct = UIBaseStruct<{
+type NavItemScreenStruct = ScreenBaseStruct<{
     props: {
         text: string;
         mode: NavItemMode;
@@ -30,8 +30,8 @@ type NavItemScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type NavItemScreenParams = UIBaseParams<NavItemScreenStruct>;
-type NavItemScreenModel = UIBaseModel<NavItemScreenStruct>;
+type NavItemScreenParams = ScreenBaseParams<NavItemScreenStruct>;
+type NavItemScreenModel = ScreenBaseModel<NavItemScreenStruct>;
 
 function useNavItemScreen(params?: NavItemScreenParams): NavItemScreenModel {
     const struct: NavItemScreenStruct = {
@@ -52,12 +52,11 @@ function useNavItemScreen(params?: NavItemScreenParams): NavItemScreenModel {
                     { route: { path: "/navitem" }, label: "NavItem Component" }
                 ],
                 contentView: () => (
-                    <Col fill overflow="auto" padding="medium" spacing="large">
+                    <Col padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>NavItem Component</h1>
-                            <p>Full-featured navigation menu item with icon support and visual states (active, hover, disabled). Perfect for sidebar menus and navigation lists.</p>
+                            <h1>NavItem Component</h1>                  
                         </Col>
-                        <Row spacing="large" fill flexWrap="wrap">
+                        <Row spacing="large" flexWrap="wrap">
                             <model.propertiesEditor.View />
                             <model.preview.View />
                         </Row>
@@ -100,7 +99,7 @@ function useNavItemScreen(params?: NavItemScreenParams): NavItemScreenModel {
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

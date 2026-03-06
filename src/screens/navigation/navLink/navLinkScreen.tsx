@@ -1,13 +1,13 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Row, Col, NavLinkUnderline
+    ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col, NavLinkUnderline
 } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
 import { NavLinkPropertiesEditorModel, useNavLinkPropertiesEditor } from "./navLinkPropertiesEditor";
 import { NavLinkPreviewModel, useNavLinkPreview } from "./navLinkPreview";
 import { NavLinkExamplesModel, useNavLinkExamples } from "./navLinkExamples";
 
-type NavLinkScreenStruct = UIBaseStruct<{
+type NavLinkScreenStruct = ScreenBaseStruct<{
     props: {
         text: string;
         color: Palette;
@@ -28,8 +28,8 @@ type NavLinkScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type NavLinkScreenParams = UIBaseParams<NavLinkScreenStruct>;
-type NavLinkScreenModel = UIBaseModel<NavLinkScreenStruct>;
+type NavLinkScreenParams = ScreenBaseParams<NavLinkScreenStruct>;
+type NavLinkScreenModel = ScreenBaseModel<NavLinkScreenStruct>;
 
 function useNavLinkScreen(params?: NavLinkScreenParams): NavLinkScreenModel {
     const struct: NavLinkScreenStruct = {
@@ -50,10 +50,9 @@ function useNavLinkScreen(params?: NavLinkScreenParams): NavLinkScreenModel {
                     { route: { path: "/navlink" }, label: "NavLink Component" }
                 ],
                 contentView: () => (
-                    <Col fill overflow="auto" padding="medium" spacing="large">
+                    <Col padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>NavLink Component</h1>
-                            <p>Basic link component with customizable appearance and behavior. Supports both internal app routes and external URLs.</p>
+                            <h1>NavLink Component</h1>                            
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.propertiesEditor.View />
@@ -98,7 +97,7 @@ function useNavLinkScreen(params?: NavLinkScreenParams): NavLinkScreenModel {
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

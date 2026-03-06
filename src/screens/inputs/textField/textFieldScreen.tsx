@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Row, Col } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb, Palette } from "@core";
 import { TextFieldPropertiesEditorModel, useTextFieldPropertiesEditor } from "./textFieldPropertiesEditor";
 import { TextFieldPreviewModel, useTextFieldPreview } from "./textFieldPreview";
@@ -7,7 +7,7 @@ import { TextFieldPreviewModel, useTextFieldPreview } from "./textFieldPreview";
 type TextFieldVariant = "outlined" | "filled" | "standard";
 type TextFieldType = "text" | "email" | "password" | "number" | "tel" | "url" | "search";
 
-type TextFieldScreenStruct = UIBaseStruct<{
+type TextFieldScreenStruct = ScreenBaseStruct<{
     props: {
         labelText: string;
         placeholder: string;
@@ -35,8 +35,8 @@ type TextFieldScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type TextFieldScreenParams = UIBaseParams<TextFieldScreenStruct>;
-type TextFieldScreenModel = UIBaseModel<TextFieldScreenStruct>;
+type TextFieldScreenParams = ScreenBaseParams<TextFieldScreenStruct>;
+type TextFieldScreenModel = ScreenBaseModel<TextFieldScreenStruct>;
 
 function useTextFieldScreen(params?: TextFieldScreenParams): TextFieldScreenModel {
     const struct: TextFieldScreenStruct = {
@@ -132,7 +132,7 @@ function useTextFieldScreen(params?: TextFieldScreenParams): TextFieldScreenMode
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

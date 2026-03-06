@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     TextFieldModel, useTextField,
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
@@ -103,16 +103,7 @@ function useNavLinkPropertiesEditor(params?: NavLinkPropertiesEditorParams): Nav
         },
 
         View: () => (
-            <Block id={model.htmlId()}
-                sx={{
-                    flex: "1 1 400px",
-                    minWidth: "300px",
-                    padding: "24px",
-                    border: "2px solid #e0e0e0",
-                    borderRadius: "8px",
-                    backgroundColor: "white"
-                }}>
-                <h2 style={{ margin: "0 0 20px 0" }}>⚙️ Properties</h2>
+            <Card title="⚙️ Properties" fill minWidth={400} overflow="auto">
                 <Col spacing="medium" fill>
                     <model.textField.View />
                     <model.colorSelect.View />
@@ -123,7 +114,7 @@ function useNavLinkPropertiesEditor(params?: NavLinkPropertiesEditorParams): Nav
                         <model.resetButton.View />
                     </Block>
                 </Col>
-            </Block>
+            </Card>
         )
     };
 

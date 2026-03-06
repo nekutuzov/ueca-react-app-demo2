@@ -1,10 +1,10 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Button, Row, Col, Block, NavLink, NavItem, useTab, useTabsContainer, Breadcrumbs } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Button, Row, Col, Block, NavLink, NavItem, useTab, useTabsContainer, Breadcrumbs } from "@components";
 import { DetailedError } from "@core";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 import { CheckIcon, SettingsIcon, PersonIcon, AccountIcon, SecurityIcon, HomeIcon, ClipboardIcon, InfoIcon, BlockIcon, GitHubIcon, FolderIcon, DocumentIcon } from "@core";
 
-type HomeScreenStruct = UIBaseStruct<{
+type HomeScreenStruct = ScreenBaseStruct<{
     props: {
         message: string;
         busyTestCounter: number;
@@ -33,8 +33,8 @@ type HomeScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type HomeScreenParams = UIBaseParams<HomeScreenStruct>;
-type HomeScreenModel = UIBaseModel<HomeScreenStruct>;
+type HomeScreenParams = ScreenBaseParams<HomeScreenStruct>;
+type HomeScreenModel = ScreenBaseModel<HomeScreenStruct>;
 
 function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
     const struct: HomeScreenStruct = {
@@ -338,7 +338,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 
 

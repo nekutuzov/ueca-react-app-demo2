@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
+    ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase,
     Row, Col
 } from "@components";
 import { CRUDScreenModel, useCRUDScreen } from "@core";
@@ -11,7 +11,7 @@ type DrawerAnchor = "left" | "top" | "right" | "bottom";
 type DrawerSeverity = "success" | "info" | "warning" | "error" | undefined;
 type DrawerButtonType = "ok" | "cancel" | "okCancel" | "none";
 
-type DrawerScreenStruct = UIBaseStruct<{
+type DrawerScreenStruct = ScreenBaseStruct<{
     props: {
         anchor: DrawerAnchor;
         severity: DrawerSeverity;
@@ -30,8 +30,8 @@ type DrawerScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type DrawerScreenParams = UIBaseParams<DrawerScreenStruct>;
-type DrawerScreenModel = UIBaseModel<DrawerScreenStruct>;
+type DrawerScreenParams = ScreenBaseParams<DrawerScreenStruct>;
+type DrawerScreenModel = ScreenBaseModel<DrawerScreenStruct>;
 
 function useDrawerScreen(params?: DrawerScreenParams): DrawerScreenModel {
     const struct: DrawerScreenStruct = {
@@ -92,7 +92,7 @@ function useDrawerScreen(params?: DrawerScreenParams): DrawerScreenModel {
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

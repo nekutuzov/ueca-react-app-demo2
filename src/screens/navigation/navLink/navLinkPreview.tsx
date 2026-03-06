@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Block,
+    Block, Card,
     NavLinkModel, useNavLink, NavLinkUnderline
 } from "@components";
 import { Palette } from "@core";
@@ -46,16 +46,7 @@ function useNavLinkPreview(params?: NavLinkPreviewParams): NavLinkPreviewModel {
         },
 
         View: () => (
-            <Block id={model.htmlId()}
-                sx={{
-                    flex: "1 1 500px",
-                    minWidth: "300px",
-                    padding: "24px",
-                    border: "2px solid #e0e0e0",
-                    borderRadius: "8px",
-                    backgroundColor: "white"
-                }}>
-                <h2 style={{ margin: "0 0 20px 0" }}>👁️ Preview</h2>
+            <Card title="👁️ Preview" fill minWidth={400} overflow="auto">
                 <Block sx={{
                     padding: "24px",
                     backgroundColor: "#f5f5f5",
@@ -76,7 +67,7 @@ function useNavLinkPreview(params?: NavLinkPreviewParams): NavLinkPreviewModel {
                 }}>
                     Modify properties on the left to see real-time changes
                 </Block>
-            </Block>
+            </Card>
         )
     };
 

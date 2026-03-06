@@ -141,7 +141,7 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
             // Current origin current base URL
             url = new URL(model.__baseURL + route.path, window.location.origin);
         }
-        const routeParams = UECA.clone(route.params);
+        const routeParams = UECA.clone(route.params) || {};
 
         // Process dynamic path params
         const parts = url.pathname.split("/");

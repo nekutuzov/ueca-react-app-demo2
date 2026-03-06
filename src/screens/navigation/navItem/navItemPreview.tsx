@@ -1,8 +1,9 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Block,
-    NavItemModel, useNavItem, NavItemMode
+    Block, Card,
+    NavItemModel, useNavItem, NavItemMode,
+    Col
 } from "@components";
 import { HomeIcon } from "@core";
 
@@ -47,36 +48,30 @@ function useNavItemPreview(params?: NavItemPreviewParams): NavItemPreviewModel {
         },
 
         View: () => (
-            <Block sx={{
-                flex: "1 1 500px",
-                minWidth: "300px",
-                padding: "24px",
-                border: "2px solid #e0e0e0",
-                borderRadius: "8px",
-                backgroundColor: "white"
-            }}>
-                <h2 style={{ margin: "0 0 20px 0" }}>👁️ Preview</h2>
-                <Block sx={{
-                    padding: "24px",
-                    backgroundColor: "#f5f5f5",
-                    borderRadius: "4px",
-                    border: "1px solid #e0e0e0",
-                    minHeight: "100px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                }}>
-                    <model.demoNavItem.View />
-                </Block>
-                <Block sx={{
-                    marginTop: "12px",
-                    fontSize: "13px",
-                    color: "#666",
-                    textAlign: "center"
-                }}>
-                    Modify properties on the left to see real-time changes
-                </Block>
-            </Block>
+            <Card title="👁️ Preview" fill minWidth={400} overflow="auto">
+                <Col spacing="medium" fill>
+                    <Block sx={{
+                        padding: "24px",
+                        backgroundColor: "#f5f5f5",
+                        borderRadius: "4px",
+                        border: "1px solid #e0e0e0",
+                        minHeight: "100px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                    }}>
+                        <model.demoNavItem.View />
+                    </Block>
+                    <Block sx={{
+                        marginTop: "12px",
+                        fontSize: "13px",
+                        color: "#666",
+                        textAlign: "center"
+                    }}>
+                        Modify properties on the left to see real-time changes
+                    </Block>
+                </Col>
+            </Card>
         )
     };
 

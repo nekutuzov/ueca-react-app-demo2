@@ -1,10 +1,10 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Row, Col } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 import { MiscPropertiesEditorModel, useMiscPropertiesEditor } from "./miscPropertiesEditor";
 import { MiscPreviewModel, useMiscPreview } from "./miscPreview";
 
-type MiscScreenStruct = UIBaseStruct<{
+type MiscScreenStruct = ScreenBaseStruct<{
     props: {
         busyDuration: number;
         fileMask: string;
@@ -22,8 +22,8 @@ type MiscScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type MiscScreenParams = UIBaseParams<MiscScreenStruct>;
-type MiscScreenModel = UIBaseModel<MiscScreenStruct>;
+type MiscScreenParams = ScreenBaseParams<MiscScreenStruct>;
+type MiscScreenModel = ScreenBaseModel<MiscScreenStruct>;
 
 function useMiscScreen(params?: MiscScreenParams): MiscScreenModel {
     const struct: MiscScreenStruct = {
@@ -80,7 +80,7 @@ function useMiscScreen(params?: MiscScreenParams): MiscScreenModel {
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

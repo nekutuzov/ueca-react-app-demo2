@@ -1,13 +1,13 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
+    ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase,
     Row, Col
 } from "@components";
 import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { BlockPropertiesEditorModel, useBlockPropertiesEditor } from "./blockPropertiesEditor";
 import { BlockPreviewModel, useBlockPreview } from "./blockPreview";
 
-type BlockScreenStruct = UIBaseStruct<{
+type BlockScreenStruct = ScreenBaseStruct<{
     children: {
         crudScreen: CRUDScreenModel;
         propertiesEditor: BlockPropertiesEditorModel;
@@ -19,8 +19,8 @@ type BlockScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type BlockScreenParams = UIBaseParams<BlockScreenStruct>;
-type BlockScreenModel = UIBaseModel<BlockScreenStruct>;
+type BlockScreenParams = ScreenBaseParams<BlockScreenStruct>;
+type BlockScreenModel = ScreenBaseModel<BlockScreenStruct>;
 
 function useBlockScreen(params?: BlockScreenParams): BlockScreenModel {
     const struct: BlockScreenStruct = {
@@ -93,7 +93,7 @@ function useBlockScreen(params?: BlockScreenParams): BlockScreenModel {
         View: () => <model.crudScreen.View />
     }
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

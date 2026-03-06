@@ -1,6 +1,7 @@
 export * from "./base/base";
 export * from "./base/uiBase";
 export * from "./base/editBase";
+export * from "./base/screenBase";
 export * from "./layout/layout";
 export * from "./misc/fileSelector";
 export * from "./misc/notebook";
@@ -24,6 +25,6 @@ export * from "./navigation/navLink/navLink";
 export * from "./navigation/navItem/navItem";
 export * from "./navigation/navItemExpandable/navItemExpandable";
 export * from "./navigation/breadcrumbs/breadcrumbs";
-export * from "./tabs/tab/tab"; 
-export * from "./tabs/tabsContainer/tabsContainer"; 
+export * from "./tabs/tab/tab";
+export * from "./tabs/tabsContainer/tabsContainer";
 export * from "./inputs/select/select";

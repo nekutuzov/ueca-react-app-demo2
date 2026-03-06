@@ -32,6 +32,11 @@ function useCodeSample(params?: CodeSampleParams): CodeSampleModel {
         methods: {
             _generateJsxCode: () => {
                 const obj = model.sourceObject;
+
+                if (!obj || model.properties?.length === 0) {
+                    return model.content;
+                }
+
                 const propAssignment = (prop: string, value: unknown) => {
                     if (!UECA.isUndefined(value) && obj[prop]) {
                         return `    ${prop}="${obj[prop]}"`;

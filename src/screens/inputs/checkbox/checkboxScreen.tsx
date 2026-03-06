@@ -1,12 +1,12 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Row, Col } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb, Palette } from "@core";
 import { CheckboxPropertiesEditorModel, useCheckboxPropertiesEditor } from "./checkboxPropertiesEditor";
 import { CheckboxPreviewModel, useCheckboxPreview } from "./checkboxPreview";
 
 type CheckboxSize = "small" | "medium" | "large";
 
-type CheckboxScreenStruct = UIBaseStruct<{
+type CheckboxScreenStruct = ScreenBaseStruct<{
     props: {
         labelText: string;
         size: CheckboxSize;
@@ -29,8 +29,8 @@ type CheckboxScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type CheckboxScreenParams = UIBaseParams<CheckboxScreenStruct>;
-type CheckboxScreenModel = UIBaseModel<CheckboxScreenStruct>;
+type CheckboxScreenParams = ScreenBaseParams<CheckboxScreenStruct>;
+type CheckboxScreenModel = ScreenBaseModel<CheckboxScreenStruct>;
 
 function useCheckboxScreen(params?: CheckboxScreenParams): CheckboxScreenModel {
     const struct: CheckboxScreenStruct = {
@@ -105,7 +105,7 @@ function useCheckboxScreen(params?: CheckboxScreenParams): CheckboxScreenModel {
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

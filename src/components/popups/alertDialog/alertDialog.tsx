@@ -105,7 +105,8 @@ function useAlertDialog(params?: AlertDialogParams): AlertDialogModel {
             }),
             detailsDrawer: useAlertDrawer({
                 titleView: () => model.detailsTitleView,
-                contentView: () => model.detailsView
+                contentView: () => model.detailsView,
+                width: 800,
             }),
         },
 

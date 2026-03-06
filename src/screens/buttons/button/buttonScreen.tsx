@@ -1,13 +1,10 @@
 import * as UECA from "ueca-react";
-import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Row, Col
-} from "@components";
+import { Row, Col, ScreenBaseStruct, ScreenBaseParams, ScreenBaseModel, useScreenBase } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
 import { ButtonPropertiesEditorModel, useButtonPropertiesEditor } from "./buttonPropertiesEditor";
 import { ButtonPreviewModel, useButtonPreview } from "./buttonPreview";
 
-type ButtonScreenStruct = UIBaseStruct<{
+type ButtonScreenStruct = ScreenBaseStruct<{
     props: {
         // Button properties
         buttonText: string;
@@ -31,8 +28,8 @@ type ButtonScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type ButtonScreenParams = UIBaseParams<ButtonScreenStruct>;
-type ButtonScreenModel = UIBaseModel<ButtonScreenStruct>;
+type ButtonScreenParams = ScreenBaseParams<ButtonScreenStruct>;
+type ButtonScreenModel = ScreenBaseModel<ButtonScreenStruct>;
 
 function useButtonScreen(params?: ButtonScreenParams): ButtonScreenModel {
     const struct: ButtonScreenStruct = {
@@ -57,7 +54,7 @@ function useButtonScreen(params?: ButtonScreenParams): ButtonScreenModel {
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>Button Component</h1>                            
+                            <h1>Button Component</h1>
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.propertiesEditor.View />
@@ -110,7 +107,7 @@ function useButtonScreen(params?: ButtonScreenParams): ButtonScreenModel {
         View: () => <model.crudScreen.View />
     }
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 }
 

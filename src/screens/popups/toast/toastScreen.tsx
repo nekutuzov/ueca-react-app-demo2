@@ -1,8 +1,8 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Row, Block, ButtonModel, useButton } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Col, Row, Block, ButtonModel, useButton } from "@components";
 import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 
-type ToastScreenStruct = UIBaseStruct<{
+type ToastScreenStruct = ScreenBaseStruct<{
     props: {};
 
     children: {
@@ -23,8 +23,8 @@ type ToastScreenStruct = UIBaseStruct<{
     };
 }>;
 
-type ToastScreenParams = UIBaseParams<ToastScreenStruct>;
-type ToastScreenModel = UIBaseModel<ToastScreenStruct>;
+type ToastScreenParams = ScreenBaseParams<ToastScreenStruct>;
+type ToastScreenModel = ScreenBaseModel<ToastScreenStruct>;
 
 function useToastScreen(params?: ToastScreenParams): ToastScreenModel {
     const struct: ToastScreenStruct = {
@@ -177,7 +177,7 @@ function useToastScreen(params?: ToastScreenParams): ToastScreenModel {
         View: () => <model.crudScreen.View />
     };
 
-    const model = useUIBase(struct, params);
+    const model = useScreenBase(struct, params);
     return model;
 
     // Private helper functions for code examples
