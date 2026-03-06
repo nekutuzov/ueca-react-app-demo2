@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     TextFieldModel, useTextField,
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
@@ -187,25 +187,26 @@ function useTextFieldPropertiesEditor(params?: TextFieldPropertiesEditorParams):
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Properties</h2>
-                <model.typeSelect.View />
-                <model.labelField.View />
-                <model.placeholderField.View />
-                <model.valueField.View />
-                <model.colorSelect.View />
-                <model.variantRadioGroup.View />
-                <model.disabledCheckbox.View />
-                <model.requiredCheckbox.View />
-                <model.errorCheckbox.View />
-                <model.fullWidthCheckbox.View />
-                <model.multilineCheckbox.View />
-                <model.rowsField.View />
-                <model.helperTextField.View />
-                <Block padding={{ top: "medium" }}>
-                    <model.resetButton.View />
-                </Block>
-            </Col>
+            <Card title="⚙️ Properties" fill minWidth={400} overflow="auto">
+                <Col spacing="medium" fill>
+                    <model.typeSelect.View />
+                    <model.labelField.View />
+                    <model.placeholderField.View />
+                    <model.valueField.View />
+                    <model.colorSelect.View />
+                    <model.variantRadioGroup.View />
+                    <model.disabledCheckbox.View />
+                    <model.requiredCheckbox.View />
+                    <model.errorCheckbox.View />
+                    <model.fullWidthCheckbox.View />
+                    <model.multilineCheckbox.View />
+                    <model.rowsField.View />
+                    <model.helperTextField.View />
+                    <Block padding={{ top: "medium" }}>
+                        <model.resetButton.View />
+                    </Block>
+                </Col>
+            </Card>
         )
     };
 

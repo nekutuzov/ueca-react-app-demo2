@@ -66,10 +66,9 @@ function useRowScreen(params?: RowScreenParams): RowScreenModel {
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>Row Component</h1>
-                            <p>Modify properties and see the changes in real-time.</p>
+                            <h1>Row Component</h1>                            
                         </Col>
-                        <Row spacing="large" fill flexWrap="wrap">
+                        <Row spacing="large" fill flexWrap="wrap">                            
                             <model.propertiesEditor.View />
                             <model.preview.View />
                         </Row>

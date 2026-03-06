@@ -1,10 +1,10 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block, Button,
+    Col, Block, Button, Card,
     CheckboxModel, useCheckbox
 } from "@components";
-import { Palette } from "@core";
+import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
 type CheckboxSize = "small" | "medium" | "large";
 
@@ -22,11 +22,11 @@ type CheckboxPreviewStruct = UIBaseStruct<{
 
     children: {
         testCheckbox: CheckboxModel;
+        codeSample: CodeSampleModel;
     };
 
     methods: {
         _PreviewBlockView: () => React.ReactElement;
-        _CodeDisplayView: () => React.ReactElement;
         _ValueDisplayView: () => React.ReactElement;
     };
 
@@ -63,78 +63,44 @@ function useCheckboxPreview(params?: CheckboxPreviewParams): CheckboxPreviewMode
                 helperTextView: () => model.helperText,
                 checked: UECA.bind(() => model, "checked"),
                 onChange: (checked) => model.onCheckChange?.(checked)
+            }),
+
+            codeSample: useCodeSample({
+                componentName: "Checkbox",
+                sourceObject: () => model,
+                properties: () => ["labelText", "size", "color", "disabled", "required", "indeterminate", "helperText", "checked"],
+                content: () => ""
             })
         },
 
         methods: {
             _PreviewBlockView: () => (
-                <Block
-                    padding="large"
-                    backgroundColor="background.paper"
-                    minHeight={"200px"}
-                    sx={{
-                        border: "1px solid #e0e0e0",
-                        borderRadius: "8px",
-                    }}
-                >
-                    <Col spacing="medium" horizontalAlign="center" verticalAlign="center">
-                        <model.testCheckbox.View />
-                        <Button
-                            contentView="Validate"
-                            variant="outlined"
-                            size="small"
-                            onClick={() => model.testCheckbox.validate()}
-                        />
-                        <model._ValueDisplayView />
-                    </Col>
-                </Block>
+                <Col spacing="medium" horizontalAlign="center" verticalAlign="center" minHeight={"200px"}>
+                    <model.testCheckbox.View />
+                    <Button
+                        contentView="Validate"
+                        variant="outlined"
+                        size="small"
+                        onClick={() => model.testCheckbox.validate()}
+                    />
+                    <model._ValueDisplayView />
+                </Col>
             ),
 
             _ValueDisplayView: () => (
                 <Block padding={{ top: "medium" }}>
                     Checked: <strong>{model.checked ? "true" : "false"}</strong>
                 </Block>
-            ),
-
-            _CodeDisplayView: () => {
-                return (
-                    <Col spacing="tiny" padding={{ top: "medium" }}>
-                        <h4>JSX Code</h4>
-                        <Block
-                            backgroundColor="background.default"
-                            padding="medium"
-                            sx={{
-                                border: "1px solid #e0e0e0",
-                                borderRadius: "4px",
-                                fontFamily: "monospace",
-                                fontSize: "12px",
-                                overflowX: "auto"
-                            }}
-                        >
-                            <pre>
-                                {`<Checkbox
-    labelView="${model.labelText}"
-    size="${model.size}"
-    color="${model.color}"
-    disabled={${model.disabled}}
-    required={${model.required}}
-    indeterminate={${model.indeterminate}}${model.helperText ? `\n    helperTextView="${model.helperText}"` : ''}
-    checked={checked}
-    onChange={handleChange}
-/>`}
-                            </pre>
-                        </Block>
-                    </Col>
-                );
-            }
+            )
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Preview</h2>
-                <model._PreviewBlockView />
-                <model._CodeDisplayView />
-            </Col>
+            <Card title="👁️ Preview" fill minWidth={400} overflow="auto">
+                <Col spacing="medium" fill>
+                    <model._PreviewBlockView />
+                    <model.codeSample.View />
+                </Col>
+            </Card>
         )
     };
 

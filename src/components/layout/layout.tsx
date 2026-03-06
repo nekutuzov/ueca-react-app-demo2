@@ -416,16 +416,16 @@ function Card(props: CardProps): React.ReactElement {
 
     const p = { ...props };
     p.padding = p.padding || "medium";
-    p.backgroundColor = p.backgroundColor || "background.paper";    
+    p.backgroundColor = p.backgroundColor || "background.paper";
 
     return (
         <Col {...p} sx={sx} spacing="small" overflow="hidden">
             <Block render={!!p?.title}>
                 {<h2>{p.title}</h2>}
             </Block>
-            <Col overflow={props?.overflow} fill>
+            <Block overflow={props?.overflow} fill>
                 {p?.children}
-            </Col>
+            </Block>
         </Col>
     );
 }

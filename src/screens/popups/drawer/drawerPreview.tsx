@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     ButtonModel, useButton,
     AlertDrawerModel, useAlertDrawer
 } from "@components";
@@ -63,8 +63,8 @@ function useDrawerPreview(params?: DrawerPreviewParams): DrawerPreviewModel {
                     okCancel: false
                 }),
                 onClose: async (result) => {
-                    const resultText = typeof result === "boolean" 
-                        ? (result ? "OK" : "Cancel") 
+                    const resultText = typeof result === "boolean"
+                        ? (result ? "OK" : "Cancel")
                         : result;
                     await model.alertInformation(`Drawer closed with: ${resultText}`);
                 }
@@ -77,34 +77,23 @@ function useDrawerPreview(params?: DrawerPreviewParams): DrawerPreviewModel {
             },
 
             _PreviewBlockView: () => (
-                <Block
-                    padding="large"
-                    backgroundColor="background.paper"
-                    minHeight={"200px"}
-                    sx={{
-                        border: "2px solid #e0e0e0",
-                        borderRadius: "8px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "20px"
-                    }}
-                >
+                <Col spacing="medium" horizontalAlign="center" verticalAlign="center" minHeight={"200px"}>
                     <h3 style={{ margin: 0 }}>Preview</h3>
                     <model.openDrawerButton.View />
                     <Block sx={{ fontSize: "14px", color: "#666", textAlign: "center", maxWidth: "400px" }}>
                         Click the button to open the AlertDrawer. Modify properties on the left to see the changes.
                     </Block>
-                </Block>
+                </Col>
             )
         },
 
         View: () => (
-            <Col spacing="medium" fill>
-                <model._PreviewBlockView />
-                <model.alertDrawer.View />
-            </Col>
+            <Card title="👁️ Preview" fill minWidth={400} overflow="auto">
+                <Col spacing="medium" fill>
+                    <model._PreviewBlockView />
+                    <model.alertDrawer.View />
+                </Col>
+            </Card>
         )
     };
 
@@ -128,15 +117,15 @@ function useDrawerPreview(params?: DrawerPreviewParams): DrawerPreviewModel {
                 <Block>
                     <h3 style={{ marginTop: 0 }}>Welcome to AlertDrawer!</h3>
                     <p>
-                        This is an <strong>AlertDrawer</strong> component demonstrating side panel functionality. 
-                        It's perfect for displaying additional information, forms, settings, or any supplementary 
+                        This is an <strong>AlertDrawer</strong> component demonstrating side panel functionality.
+                        It's perfect for displaying additional information, forms, settings, or any supplementary
                         content without navigating away from the current page.
                     </p>
                 </Block>
 
-                <Block sx={{ 
-                    padding: "16px", 
-                    backgroundColor: "rgba(0, 0, 0, 0.04)", 
+                <Block sx={{
+                    padding: "16px",
+                    backgroundColor: "rgba(0, 0, 0, 0.04)",
                     borderRadius: "4px",
                     border: "1px solid rgba(0, 0, 0, 0.12)"
                 }}>
@@ -171,7 +160,7 @@ function useDrawerPreview(params?: DrawerPreviewParams): DrawerPreviewModel {
                         overflow: "auto",
                         border: "1px solid #e0e0e0"
                     }}>
-{`const drawer = useAlertDrawer({
+                        {`const drawer = useAlertDrawer({
     anchor: "right",
     severity: "info",
     titleView: "Information",
@@ -202,13 +191,13 @@ drawer.open = true;`}
                     </ul>
                 </Block>
 
-                <Block sx={{ 
-                    padding: "16px", 
+                <Block sx={{
+                    padding: "16px",
                     backgroundColor: "rgba(25, 118, 210, 0.08)",
                     borderRadius: "4px",
                     borderLeft: "4px solid #1976d2"
                 }}>
-                    <strong>💡 Tip:</strong> Try changing the properties on the left to see how they affect 
+                    <strong>💡 Tip:</strong> Try changing the properties on the left to see how they affect
                     the drawer's appearance and behavior in real-time!
                 </Block>
             </Col>

@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     TextFieldModel, useTextField,
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
@@ -120,19 +120,20 @@ function useCheckboxPropertiesEditor(params?: CheckboxPropertiesEditorParams): C
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Properties</h2>
-                <model.labelField.View />
-                <model.colorSelect.View />
-                <model.sizeRadioGroup.View />
-                <model.disabledCheckbox.View />
-                <model.requiredCheckbox.View />
-                <model.indeterminateCheckbox.View />
-                <model.helperTextField.View />
-                <Block padding={{ top: "medium" }}>
-                    <model.resetButton.View />
-                </Block>
-            </Col>
+            <Card title="⚙️ Properties" fill minWidth={400} overflow="auto">
+                <Col spacing="medium" fill>
+                    <model.labelField.View />
+                    <model.colorSelect.View />
+                    <model.sizeRadioGroup.View />
+                    <model.disabledCheckbox.View />
+                    <model.requiredCheckbox.View />
+                    <model.indeterminateCheckbox.View />
+                    <model.helperTextField.View />
+                    <Block padding={{ top: "medium" }}>
+                        <model.resetButton.View />
+                    </Block>
+                </Col>
+            </Card>
         )
     };
 

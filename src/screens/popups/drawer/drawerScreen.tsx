@@ -53,8 +53,7 @@ function useDrawerScreen(params?: DrawerScreenParams): DrawerScreenModel {
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>AlertDrawer Component</h1>
-                            <p>A side panel component for displaying alerts, forms, and additional content. Modify properties to see real-time changes.</p>
+                            <h1>AlertDrawer Component</h1>                            
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.propertiesEditor.View />

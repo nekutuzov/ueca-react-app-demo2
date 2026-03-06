@@ -58,7 +58,6 @@ function useIconButtonScreen(params?: IconButtonScreenParams): IconButtonScreenM
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
                             <h1>IconButton Component</h1>
-                            <p>Modify properties and see the changes in real-time.</p>
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.propertiesEditor.View />

@@ -61,8 +61,7 @@ function useRadioGroupScreen(params?: RadioGroupScreenParams): RadioGroupScreenM
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>RadioGroup Component</h1>
-                            <p>Modify properties and see the changes in real-time.</p>
+                            <h1>RadioGroup Component</h1>                            
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.properties.View />

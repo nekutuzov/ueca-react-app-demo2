@@ -1,11 +1,12 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Block, Card,
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
-    ButtonModel, useButton
+    ButtonModel, useButton,
+    Col
 } from "@components";
 import { Palette } from "@core";
 
@@ -109,17 +110,23 @@ function useIconButtonPropertiesEditor(params?: IconButtonPropertiesEditorParams
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Properties</h2>
-                <model.kindRadioGroup.View />
-                <model.sizeRadioGroup.View />
-                <model.colorSelect.View />
-                <model.disabledCheckbox.View />
-                <model.customIconCheckbox.View />
-                <Block padding={{ top: "medium" }}>
-                    <model.resetButton.View />
-                </Block>
-            </Col>
+            <Card id={model.htmlId()}
+                title="⚙️ Properties"
+                fill
+                minWidth={400}
+                overflow="auto"
+            >
+                <Col spacing="medium" fill>
+                    <model.kindRadioGroup.View />
+                    <model.sizeRadioGroup.View />
+                    <model.colorSelect.View />
+                    <model.disabledCheckbox.View />
+                    <model.customIconCheckbox.View />
+                    <Block padding={{ top: "medium" }}>
+                        <model.resetButton.View />
+                    </Block>
+                </Col>
+            </Card>
         )
     };
 

@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block, Button, TextFieldModel, useTextField } from "@components";
-import { Palette } from "@core";
+import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block, Button, Card, TextFieldModel, useTextField } from "@components";
+import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
 type TextFieldVariant = "outlined" | "filled" | "standard";
 type TextFieldType = "text" | "email" | "password" | "number" | "tel" | "url" | "search";
@@ -24,11 +24,11 @@ type TextFieldPreviewStruct = UIBaseStruct<{
 
     children: {
         testTextField: TextFieldModel<string>;
+        codeSample: CodeSampleModel;
     };
 
     methods: {
         _PreviewBlockView: () => React.JSX.Element;
-        _CodeDisplayView: () => React.JSX.Element;
         _ValueDisplayView: () => React.JSX.Element;
     };
 }>;
@@ -70,82 +70,44 @@ function useTextFieldPreview(params?: TextFieldPreviewParams): TextFieldPreviewM
                 multiline: UECA.bind(() => model, "multiline"),
                 rows: UECA.bind(() => model, "rows"),
                 helperTextView: () => model.helperText
+            }),
+
+            codeSample: useCodeSample({
+                componentName: "TextField",
+                sourceObject: () => model,
+                properties: () => ["labelText", "placeholder", "variant", "type", "color", "disabled", "required", "error", "fullWidth", "multiline", "rows", "helperText", "value"],                
             })
         },
 
         methods: {
             _PreviewBlockView: () => (
-                <Block
-                    padding="large"
-                    backgroundColor="background.paper"
-                    minHeight={"200px"}
-                    sx={{
-                        border: "1px solid #e0e0e0",
-                        borderRadius: "8px",
-                    }}
-                >
-                    <Col spacing="medium" horizontalAlign="center" verticalAlign="center">
-                        <model.testTextField.View />
-                        <Button
-                            contentView="Validate"
-                            variant="outlined"
-                            color="primary.main"
-                            size="small"
-                            onClick={() => model.testTextField.validate()}
-                        />
-                        <model._ValueDisplayView />
-                    </Col>
-                </Block>
+                <Col spacing="medium" horizontalAlign="center" verticalAlign="center" minHeight={"200px"}>
+                    <model.testTextField.View />
+                    <Button
+                        contentView="Validate"
+                        variant="outlined"
+                        color="primary.main"
+                        size="small"
+                        onClick={() => model.testTextField.validate()}
+                    />
+                    <model._ValueDisplayView />
+                </Col>
             ),
 
             _ValueDisplayView: () => (
                 <Block render={!!model.value} padding={{ top: "medium" }}>
                     Value: <strong>{model.value}</strong>
                 </Block>
-            ),
-
-            _CodeDisplayView: () => {
-                return (
-                    <Col spacing="tiny" padding={{ top: "medium" }}>
-                        <h4>JSX Code</h4>
-                        <Block
-                            backgroundColor="background.default"
-                            padding="medium"
-                            sx={{
-                                border: "1px solid #e0e0e0",
-                                borderRadius: "4px",
-                                fontFamily: "monospace",
-                                fontSize: "12px",
-                                overflowX: "auto"
-                            }}
-                        >
-                            <pre>
-                                {`<TextField
-    labelView="${model.labelText}"
-    placeholder="${model.placeholder}"
-    variant="${model.variant}"
-    type="${model.type}"
-    color="${model.color}"
-    disabled={${model.disabled}}
-    required={${model.required}}
-    error={${model.error}}
-    fullWidth={${model.fullWidth}}
-    multiline={${model.multiline}}${model.multiline && model.rows > 1 ? `\n    rows={${model.rows}}` : ''}${model.helperText ? `\n    helperTextView="${model.helperText}"` : ''}
-    value="${model.value}"
-/>`}
-                            </pre>
-                        </Block>
-                    </Col>
-                );
-            }
+            )
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Preview</h2>
-                <model._PreviewBlockView />
-                <model._CodeDisplayView />
-            </Col>
+            <Card title="👁️ Preview" fill minWidth={400} overflow="auto">
+                <Col spacing="medium" fill>
+                    <model._PreviewBlockView />
+                    <model.codeSample.View />
+                </Col>
+            </Card>
         )
     };
 

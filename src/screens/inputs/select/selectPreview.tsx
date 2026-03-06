@@ -1,10 +1,10 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     SelectModel, useSelect, SelectOption
 } from "@components";
-import { Palette } from "@core";
+import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
 type SelectPreviewStruct = UIBaseStruct<{
     props: {
@@ -23,11 +23,11 @@ type SelectPreviewStruct = UIBaseStruct<{
 
     children: {
         testSelect: SelectModel<string>;
+        codeSample: CodeSampleModel;
     };
 
     methods: {
         _PreviewBlockView: () => React.ReactElement;
-        _CodeDisplayView: () => React.ReactElement;
         _ValueDisplayView: () => React.ReactElement;
         _parseOptions: () => SelectOption<string>[];
     };
@@ -69,9 +69,15 @@ function useSelectPreview(params?: SelectPreviewParams): SelectPreviewModel {
                 fullWidth: () => model.fullWidth,
                 helperTextView: () => model.helperText,
                 options: () => model._parseOptions(),
-                extent: { width: "300px" },            
+                extent: { width: "300px" },
                 value: UECA.bind(() => model, "selectedValue"),
                 onChange: (value) => model.onSelectionChange?.(value)
+            }),
+
+            codeSample: useCodeSample({
+                componentName: "Select",
+                sourceObject: () => model,
+                properties: () => ["labelText", "placeholder", "variant", "size", "color", "disabled", "required", "fullWidth", "helperText", "selectedValue"],                
             })
         },
 
@@ -95,75 +101,26 @@ function useSelectPreview(params?: SelectPreviewParams): SelectPreviewModel {
             },
 
             _PreviewBlockView: () => (
-                <Block
-                    padding="large"
-                    backgroundColor="background.paper"
-                    minHeight={"200px"}
-                    sx={{
-                        border: "1px solid #e0e0e0",
-                        borderRadius: "8px",
-                    }}
-                >
-                    <Col spacing="medium" horizontalAlign="center" verticalAlign="center">
-                        <model.testSelect.View />
-                        <model._ValueDisplayView />
-                    </Col>
-                </Block>
+                <Col spacing="medium" horizontalAlign="center" verticalAlign="center" minHeight={"200px"}>
+                    <model.testSelect.View />
+                    <model._ValueDisplayView />
+                </Col>
             ),
 
             _ValueDisplayView: () => (
                 <Block render={!!model.selectedValue} padding={{ top: "medium" }}>
                     Selected: <strong>{model.selectedValue}</strong>
                 </Block>
-            ),
-
-            _CodeDisplayView: () => {
-                const options = model._parseOptions();
-                const optionsCode = options.length > 0
-                    ? `[\n        ${options.map(opt => `{ value: "${opt.value}", label: "${opt.label}" }`).join(',\n        ')}\n    ]`
-                    : '[]';
-
-                return (
-                    <Col spacing="tiny" padding={{ top: "medium" }}>
-                        <h4>JSX Code</h4>
-                        <Block
-                            backgroundColor="background.default"
-                            padding="medium"
-                            sx={{
-                                border: "1px solid #e0e0e0",
-                                borderRadius: "4px",
-                                fontFamily: "monospace",
-                                fontSize: "12px",
-                                overflowX: "auto"
-                            }}
-                        >
-                            <pre>
-                                {`<Select
-    labelView="${model.labelText}"
-    placeholder="${model.placeholder}"
-    variant="${model.variant}"
-    size="${model.size}"
-    color="${model.color}"
-    disabled={${model.disabled}}
-    required={${model.required}}
-    fullWidth={${model.fullWidth}}${model.helperText ? `\n    helperTextView="${model.helperText}"` : ''}
-    options={${optionsCode}}
-    value={selectedValue}
-    onChange={handleChange}
-/>`}
-                            </pre>
-                        </Block>
-                    </Col>
-                );
-            }
+            )
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Preview</h2>
-                <model._PreviewBlockView />
-                <model._CodeDisplayView />
-            </Col>
+            <Card title="👁️ Preview" fill minWidth={400} overflow="auto">
+                <Col spacing="medium" fill>
+                    <model._PreviewBlockView />
+                    <model.codeSample.View />
+                </Col>
+            </Card>
         )
     };
 

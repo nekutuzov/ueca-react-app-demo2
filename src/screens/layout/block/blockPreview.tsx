@@ -101,8 +101,10 @@ function useBlockPreview(params?: BlockPreviewParams): BlockPreviewModel {
                 minWidth={400}
                 overflow="auto"
             >
-                <model._PreviewBlockView />
-                <model.codeSample.View />
+                <Col spacing="medium" fill>
+                    <model._PreviewBlockView />
+                    <model.codeSample.View />
+                </Col>
             </Card>
         )
     };

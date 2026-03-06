@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     TextFieldModel, useTextField,
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
@@ -146,21 +146,22 @@ function useRadioGroupPropertiesEditor(params?: RadioGroupPropertiesEditorParams
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Properties</h2>
-                <model.labelField.View />
-                <model.colorSelect.View />
-                <model.orientationRadioGroup.View />
-                <model.sizeRadioGroup.View />
-                <model.disabledCheckbox.View />
-                <model.requiredCheckbox.View />
-                <model.fullWidthCheckbox.View />
-                <model.helperTextField.View />
-                <model.optionsField.View />
-                <Block padding={{ top: "medium" }}>
-                    <model.resetButton.View />
-                </Block>
-            </Col>
+            <Card title="⚙️ Properties" fill minWidth={400} overflow="auto">
+                <Col spacing="medium" fill>
+                    <model.labelField.View />
+                    <model.colorSelect.View />
+                    <model.orientationRadioGroup.View />
+                    <model.sizeRadioGroup.View />
+                    <model.disabledCheckbox.View />
+                    <model.requiredCheckbox.View />
+                    <model.fullWidthCheckbox.View />
+                    <model.helperTextField.View />
+                    <model.optionsField.View />
+                    <Block padding={{ top: "medium" }}>
+                        <model.resetButton.View />
+                    </Block>
+                </Col>
+            </Card>
         )
     };
 

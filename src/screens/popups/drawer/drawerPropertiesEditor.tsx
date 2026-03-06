@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
     ButtonModel, useButton
@@ -105,16 +105,17 @@ function useDrawerPropertiesEditor(params?: DrawerPropertiesEditorParams): Drawe
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Properties</h2>
-                <model.anchorRadioGroup.View />
-                <model.severitySelect.View />
-                <model.buttonTypeRadioGroup.View />
-                <model.widthSlider.View />
-                <Block padding={{ top: "medium" }}>
-                    <model.resetButton.View />
-                </Block>
-            </Col>
+            <Card title="⚙️ Properties" fill minWidth={400} overflow="auto">
+                <Col spacing="medium" fill>
+                    <model.anchorRadioGroup.View />
+                    <model.severitySelect.View />
+                    <model.buttonTypeRadioGroup.View />
+                    <model.widthSlider.View />
+                    <Block padding={{ top: "medium" }}>
+                        <model.resetButton.View />
+                    </Block>
+                </Col>
+            </Card>
         )
     };
 

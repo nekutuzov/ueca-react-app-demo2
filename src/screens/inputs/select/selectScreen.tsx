@@ -65,8 +65,7 @@ function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>Select Component</h1>
-                            <p>Modify properties and see the changes in real-time.</p>
+                            <h1>Select Component</h1>                            
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.propertiesEditor.View />

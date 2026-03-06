@@ -1,10 +1,10 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     IconButtonModel, useIconButton
 } from "@components";
-import { Palette, HeartIcon } from "@core";
+import { Palette, HeartIcon, CodeSampleModel, useCodeSample } from "@core";
 
 type IconKind = "ok" | "cancel" | "delete" | "refresh" | "close";
 
@@ -20,11 +20,11 @@ type IconButtonPreviewStruct = UIBaseStruct<{
 
     children: {
         testIconButton: IconButtonModel;
+        codeSample: CodeSampleModel;
     };
 
     methods: {
         _PreviewBlockView: () => React.ReactElement;
-        _CodeDisplayView: () => React.ReactElement;
         _ClickCountView: () => React.ReactElement;
         _getCustomIcon: () => React.ReactNode;
     };
@@ -57,6 +57,14 @@ function useIconButtonPreview(params?: IconButtonPreviewParams): IconButtonPrevi
                 disabled: () => model.disabled,
                 iconView: () => model.useCustomIcon ? model._getCustomIcon() : undefined,
                 onClick: () => model.onIconButtonClick?.()
+            }),
+
+            codeSample: useCodeSample({
+                componentName: "IconButton",
+                sourceObject: () => model,
+                properties: () => model.useCustomIcon 
+                    ? ["size", "color", "disabled"]
+                    : ["kind", "size", "color", "disabled"],                
             })
         },
 
@@ -64,69 +72,31 @@ function useIconButtonPreview(params?: IconButtonPreviewParams): IconButtonPrevi
             _getCustomIcon: () => <HeartIcon />,
 
             _PreviewBlockView: () => (
-                <Block
-                    padding="large"
-                    backgroundColor="background.paper"
-                    minHeight={"200px"}
-                    sx={{
-                        border: "1px solid #e0e0e0",
-                        borderRadius: "8px",
-                    }}
-                >
-                    <Col spacing="medium" horizontalAlign="center" verticalAlign="center">
-                        <model.testIconButton.View />
-                        <model._ClickCountView />
-                    </Col>
-                </Block>
+                <Col horizontalAlign="center" verticalAlign="center" minHeight={"200px"}>
+                    <model.testIconButton.View />
+                    <model._ClickCountView />
+                </Col>
             ),
 
             _ClickCountView: () => (
                 <Block padding={{ top: "large" }}>
                     Click count: <strong>{model.clickCount}</strong>
                 </Block>
-            ),
-
-            _CodeDisplayView: () => (
-                <Col spacing="tiny" padding={{ top: "medium" }}>
-                    <h4>JSX Code</h4>
-                    <Block
-                        backgroundColor="background.default"
-                        padding="medium"
-                        sx={{
-                            border: "1px solid #e0e0e0",
-                            borderRadius: "4px",
-                            fontFamily: "monospace",
-                            fontSize: "12px",
-                            overflowX: "auto"
-                        }}
-                    >
-                        <pre>
-                            {model.useCustomIcon ? 
-`<IconButton
-    iconView={customIcon}
-    size="${model.size}"
-    color="${model.color}"
-    disabled={${model.disabled}}
-    onClick={handleClick}
-/>` :
-`<IconButton
-    kind="${model.kind}"
-    size="${model.size}"
-    color="${model.color}"
-    disabled={${model.disabled}}
-    onClick={handleClick}
-/>`}</pre>
-                    </Block>
-                </Col>
             )
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Preview</h2>
-                <model._PreviewBlockView />
-                <model._CodeDisplayView />
-            </Col>
+            <Card id={model.htmlId()}
+                title="👁️ Preview"
+                fill
+                minWidth={400}
+                overflow="auto"
+            >
+                <Col spacing="medium" fill>
+                    <model._PreviewBlockView />
+                    <model.codeSample.View />
+                </Col>
+            </Card>
         )
     };
 

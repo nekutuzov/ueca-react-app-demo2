@@ -1,10 +1,10 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Col, Block, Card,
     ButtonModel, useButton
 } from "@components";
-import { Palette } from "@core";
+import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
 type ButtonPreviewStruct = UIBaseStruct<{
     props: {
@@ -19,11 +19,11 @@ type ButtonPreviewStruct = UIBaseStruct<{
 
     children: {
         testButton: ButtonModel;
+        codeSample: CodeSampleModel;
     };
 
     methods: {
         _PreviewBlockView: () => React.ReactElement;
-        _CodeDisplayView: () => React.ReactElement;
         _ClickCountView: () => React.ReactElement;
     };
 
@@ -57,68 +57,49 @@ function useButtonPreview(params?: ButtonPreviewParams): ButtonPreviewModel {
                 disabled: () => model.disabled,
                 fullWidth: () => model.fullWidth,
                 onClick: () => model.onButtonClick?.()
+            }),
+
+            codeSample: useCodeSample({
+                componentName: "Button",
+                sourceObject: () => model,
+                properties: () => [
+                    "buttonText",
+                    "variant",
+                    "size",
+                    "color",
+                    "disabled",
+                    "fullWidth"
+                ]                
             })
         },
 
         methods: {
             _PreviewBlockView: () => (
-                <Block
-                    padding="large"
-                    backgroundColor="background.paper"
-                    minHeight={"200px"}
-                    sx={{
-                        border: "1px solid #e0e0e0",
-                        borderRadius: "8px",
-                    }}
-                >
-                    <Col spacing="medium" horizontalAlign="center" verticalAlign="center">
-                        <model.testButton.View />
-                        <model._ClickCountView />
-                    </Col>
-                </Block>
+                <Col horizontalAlign="center" verticalAlign="center" minHeight={"200px"}>
+                    <model.testButton.View />
+                    <model._ClickCountView />
+                </Col>
             ),
 
             _ClickCountView: () => (
                 <Block padding={{ top: "large" }}>
                     Click count: <strong>{model.clickCount}</strong>
                 </Block>
-            ),
-
-            _CodeDisplayView: () => (
-                <Col spacing="tiny" padding={{ top: "medium" }}>
-                    <h4>JSX Code</h4>
-                    <Block
-                        backgroundColor="background.default"
-                        padding="medium"
-                        sx={{
-                            border: "1px solid #e0e0e0",
-                            borderRadius: "4px",
-                            fontFamily: "monospace",
-                            fontSize: "12px",
-                            overflowX: "auto"
-                        }}
-                    >
-                        <pre>
-                            {`<Button
-    contentView="${model.buttonText}"
-    variant="${model.variant}"
-    size="${model.size}"
-    color="${model.color}"
-    disabled={${model.disabled}}
-    fullWidth={${model.fullWidth}}
-    onClick={handleClick}
-/>`}</pre>
-                    </Block>
-                </Col>
             )
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Preview</h2>
-                <model._PreviewBlockView />
-                <model._CodeDisplayView />
-            </Col>
+            <Card id={model.htmlId()}
+                title="👁️ Preview"
+                fill
+                minWidth={400}
+                overflow="auto"
+            >
+                <Col spacing="medium" fill>
+                    <model._PreviewBlockView />
+                    <model.codeSample.View />
+                </Col>
+            </Card>
         )
     };
 

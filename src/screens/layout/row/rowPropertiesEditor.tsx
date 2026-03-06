@@ -1,12 +1,13 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Col, Block,
+    Block, Card,
     TextFieldModel, useTextField,
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
-    ButtonModel, useButton
+    ButtonModel, useButton,
+    Col
 } from "@components";
 import { Palette } from "@core";
 
@@ -200,24 +201,30 @@ function useRowPropertiesEditor(params?: RowPropertiesEditorParams): RowProperti
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Properties</h2>
-                <model.childrenCountField.View />
-                <model.backgroundColorSelect.View />
-                <model.spacingRadioGroup.View />
-                <model.horizontalAlignRadioGroup.View />
-                <model.verticalAlignRadioGroup.View />
-                <model.paddingRadioGroup.View />
-                <model.flexWrapRadioGroup.View />
-                <model.widthField.View />
-                <model.heightField.View />
-                <model.reverseItemsCheckbox.View />
-                <model.dividerCheckbox.View />
-                <model.fillCheckbox.View />
-                <Block padding={{ top: "medium" }}>
-                    <model.resetButton.View />
-                </Block>
-            </Col>
+            <Card id={model.htmlId()}
+                title="⚙️ Properties"
+                fill
+                minWidth={400}
+                overflow="auto"
+            >
+                <Col spacing="medium" fill>
+                    <model.childrenCountField.View />
+                    <model.backgroundColorSelect.View />
+                    <model.spacingRadioGroup.View />
+                    <model.horizontalAlignRadioGroup.View />
+                    <model.verticalAlignRadioGroup.View />
+                    <model.paddingRadioGroup.View />
+                    <model.flexWrapRadioGroup.View />
+                    <model.widthField.View />
+                    <model.heightField.View />
+                    <model.reverseItemsCheckbox.View />
+                    <model.dividerCheckbox.View />
+                    <model.fillCheckbox.View />
+                    <Block padding={{ top: "medium" }}>
+                        <model.resetButton.View />
+                    </Block>
+                </Col>
+            </Card>
         )
     };
 

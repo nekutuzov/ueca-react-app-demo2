@@ -1,9 +1,9 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Row, Col, Block
+    Row, Col, Block, Card
 } from "@components";
-import { Palette } from "@core";
+import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
 type RowPreviewStruct = UIBaseStruct<{
     props: {
@@ -21,9 +21,12 @@ type RowPreviewStruct = UIBaseStruct<{
         childrenCount: number;
     };
 
+    children: {
+        codeSample: CodeSampleModel;
+    };
+
     methods: {
         _PreviewBlockView: () => React.ReactElement;
-        _CodeDisplayView: () => React.ReactElement;
     };
 }>;
 
@@ -69,75 +72,78 @@ function useRowPreview(params?: RowPreviewParams): RowPreviewModel {
                 }
 
                 return (
-                    <Col
-                        padding="large"
-                        backgroundColor="background.paper"
-                        minHeight={"300px"}
-                        sx={{
-                            border: "1px solid #e0e0e0",
-                            borderRadius: "8px",
-                        }}
-                    >
-                        <Col spacing="medium" fill>
-                            <Row
-                                spacing={model.spacing as any}
-                                horizontalAlign={model.horizontalAlign as any}
-                                verticalAlign={model.verticalAlign as any}
-                                padding={model.padding as any || undefined}
-                                backgroundColor={model.backgroundColor}
-                                reverseItems={model.reverseItems}
-                                divider={model.divider}
-                                flexWrap={model.flexWrap as any}
-                                fill={model.fill}
-                                width={model.width || undefined}
-                                height={model.height || undefined}
-                                sx={{
-                                    border: "2px dashed #999",
-                                }}
-                            >
-                                {children}
-                            </Row>
-                        </Col>
+                    <Col horizontalAlign="center" minHeight={"300px"}>
+                        <Row
+                            spacing={model.spacing as any}
+                            horizontalAlign={model.horizontalAlign as any}
+                            verticalAlign={model.verticalAlign as any}
+                            padding={model.padding as any || undefined}
+                            backgroundColor={model.backgroundColor}
+                            reverseItems={model.reverseItems}
+                            divider={model.divider}
+                            flexWrap={model.flexWrap as any}
+                            fill={model.fill}
+                            width={model.width || undefined}
+                            height={model.height || undefined}
+                            sx={{
+                                border: "2px dashed #999",
+                            }}
+                        >
+                            {children}
+                        </Row>
                     </Col>
                 );
-            },
+            }
+        },
 
-            _CodeDisplayView: () => (
-                <Col spacing="tiny" padding={{ top: "medium" }}>
-                    <h4>JSX Code</h4>
-                    <Block
-                        backgroundColor="background.default"
-                        padding="medium"
-                        sx={{
-                            border: "1px solid #e0e0e0",
-                            borderRadius: "4px",
-                            fontFamily: "monospace",
-                            fontSize: "12px",
-                            overflowX: "auto"
-                        }}
-                    >
-                        <pre>{`<Row${model.spacing !== "default" ? `\n    spacing="${model.spacing}"` : ""}${model.horizontalAlign !== "left" ? `\n    horizontalAlign="${model.horizontalAlign}"` : ""}${model.verticalAlign !== "center" ? `\n    verticalAlign="${model.verticalAlign}"` : ""}${model.padding ? `\n    padding="${model.padding}"` : ""}${model.backgroundColor && model.backgroundColor !== "transparent" ? `\n    backgroundColor="${model.backgroundColor}"` : ""}${model.reverseItems ? `\n    reverseItems={true}` : ""}${model.divider ? `\n    divider={true}` : ""}${model.flexWrap !== "nowrap" ? `\n    flexWrap="${model.flexWrap}"` : ""}${model.fill ? `\n    fill={true}` : ""}${model.width ? `\n    width="${model.width}"` : ""}${model.height ? `\n    height="${model.height}"` : ""}
->
-    <Block>Item 1</Block>
-    <Block>Item 2</Block>
-    <Block>Item 3</Block>
-</Row>`}</pre>
-                    </Block>
-                </Col>
-            )
+        children: {
+            codeSample: useCodeSample({
+                componentName: "Row",
+                sourceObject: () => model,
+                properties: () => [
+                    "spacing",
+                    "horizontalAlign",
+                    "verticalAlign",
+                    "padding",
+                    "backgroundColor",
+                    "reverseItems",
+                    "divider",
+                    "flexWrap",
+                    "fill",
+                    "width",
+                    "height"
+                ],
+                content: () => _generateChildrenContent()
+            })
         },
 
         View: () => (
-            <Col spacing="medium" minWidth={"300px"} fill>
-                <h2>Preview</h2>
-                <model._PreviewBlockView />
-                <model._CodeDisplayView />
-            </Col>
+            <Card id={model.htmlId()}
+                title="👁️ Preview"
+                fill
+                minWidth={400}
+                overflow="auto"
+            >
+                <Col spacing="medium" fill>
+                    <model._PreviewBlockView />
+                    <model.codeSample.View />
+                </Col>
+            </Card>
         )
     };
 
     const model = useUIBase(struct, params);
     return model;
+
+    // Helper function to generate children content for code sample
+    function _generateChildrenContent(): string {
+        const count = Math.min(Math.max(1, model.childrenCount), 10);
+        const children = [];
+        for (let i = 0; i < count; i++) {
+            children.push(`<Block>Item ${i + 1}</Block>`);
+        }
+        return children.join("\n    ");
+    }
 }
 
 const RowPreview = UECA.getFC(useRowPreview);
