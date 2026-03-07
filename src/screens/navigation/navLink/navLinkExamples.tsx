@@ -174,9 +174,10 @@ function useNavLinkExamples(params?: NavLinkExamplesParams): NavLinkExamplesMode
 import { MyNewScreen } from "@screens";
 
 const screenRoutes = {
-    "/my-route": () => <MyNewScreen id="myNewScreen" />,
-    "/users/:id": (p: { id?: string }) => <UserScreen id="userScreen" />,
-    "/settings?:tab": () => <SettingsScreen id="settingsScreen" />
+    "/my-route": () => <MyNewScreen id="myNewScreen" />,    
+    "/settings?:tab": (p: { tab?: string }) => <SettingsScreen id="settingsScreen" routeParams={p} />,    
+    "/users/:id?:tab&:section": 
+        (p: { id?: string, tab?: string, section?: string }) => <UserScreen id="userScreen" routeParams={p} />,
 };
 
 // Navigation methods (available in all components via BaseModel)
@@ -186,11 +187,11 @@ await model.goToRoute({ path: "/my-route" });
 // With params
 await model.goToRoute({ 
     path: "/users/:id", 
-    params: { id: "123" } 
+    params: { id: "123", tab: "profile", section: "info" } 
 });
 
 // Open in new tab
-await model.openNewTab({ path: "/settings" });`;
+await model.openNewTab({ path: "/settings", params: {tab: "address"} });`;
     }
 }
 
