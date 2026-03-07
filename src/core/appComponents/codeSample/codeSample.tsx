@@ -5,6 +5,7 @@ import {
 
 type CodeSampleStruct = UIBaseStruct<{
     props: {
+        title: string;
         componentName: string;
         sourceObject: unknown;
         properties: string[];
@@ -23,6 +24,7 @@ function useCodeSample(params?: CodeSampleParams): CodeSampleModel {
     const struct: CodeSampleStruct = {
         props: {
             id: useCodeSample.name,
+            title: "JSX Code",
             componentName: "Component",
             sourceObject: {},
             properties: [],
@@ -59,7 +61,7 @@ function useCodeSample(params?: CodeSampleParams): CodeSampleModel {
 
         View: () => (
             <Col spacing="tiny" padding={{ top: "medium" }}>
-                <h4>JSX Code</h4>
+                <h4>{model.title}</h4>
                 <Block
                     backgroundColor="background.default"
                     padding="medium"

@@ -74,6 +74,11 @@
     min-width: min-content;
 }
 
+.ueca-tabs-list.fullWidth {
+    width: 100%;
+    min-width: 100%;
+}
+
 .ueca-tabs-list.fullWidth .ueca-tab {
     flex: 1;
     max-width: none;
@@ -81,6 +86,8 @@
 
 .ueca-tabs-list.centered {
     justify-content: center;
+    width: 100%;
+    min-width: 100%;
 }
 
 .ueca-tabs-vertical .ueca-tabs-list {

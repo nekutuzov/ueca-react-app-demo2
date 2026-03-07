@@ -1,9 +1,11 @@
 export type IconProps = {
+    render?: boolean;
     size?: number;
     color?: string;
 };
 
 export function HomeIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -14,6 +16,7 @@ export function HomeIcon(props?: IconProps) {
 }
 
 export function LayoutIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -24,6 +27,7 @@ export function LayoutIcon(props?: IconProps) {
 }
 
 export function ButtonsIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -34,6 +38,7 @@ export function ButtonsIcon(props?: IconProps) {
 }
 
 export function InputsIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -44,6 +49,7 @@ export function InputsIcon(props?: IconProps) {
 }
 
 export function PopupsIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -54,6 +60,7 @@ export function PopupsIcon(props?: IconProps) {
 }
 
 export function FlyoutsIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -64,6 +71,7 @@ export function FlyoutsIcon(props?: IconProps) {
 }
 
 export function NavigationIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -74,6 +82,7 @@ export function NavigationIcon(props?: IconProps) {
 }
 
 export function TabsIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -84,6 +93,7 @@ export function TabsIcon(props?: IconProps) {
 }
 
 export function MiscIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -95,6 +105,7 @@ export function MiscIcon(props?: IconProps) {
 
 // Icon Button Icons
 export function CheckIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -105,6 +116,7 @@ export function CheckIcon(props?: IconProps) {
 }
 
 export function IndeterminateIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -115,6 +127,7 @@ export function IndeterminateIcon(props?: IconProps) {
 }
 
 export function CancelIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -125,6 +138,7 @@ export function CancelIcon(props?: IconProps) {
 }
 
 export function DeleteIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -135,6 +149,7 @@ export function DeleteIcon(props?: IconProps) {
 }
 
 export function RefreshIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -145,6 +160,7 @@ export function RefreshIcon(props?: IconProps) {
 }
 
 export function CloseIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -156,6 +172,7 @@ export function CloseIcon(props?: IconProps) {
 
 // Settings and Profile Icons
 export function SettingsIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -166,6 +183,7 @@ export function SettingsIcon(props?: IconProps) {
 }
 
 export function PersonIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -176,6 +194,7 @@ export function PersonIcon(props?: IconProps) {
 }
 
 export function AccountIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -186,6 +205,7 @@ export function AccountIcon(props?: IconProps) {
 }
 
 export function SecurityIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -196,6 +216,7 @@ export function SecurityIcon(props?: IconProps) {
 }
 
 export function InfoIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -206,6 +227,7 @@ export function InfoIcon(props?: IconProps) {
 }
 
 export function BlockIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -216,6 +238,7 @@ export function BlockIcon(props?: IconProps) {
 }
 
 export function ClipboardIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -227,6 +250,7 @@ export function ClipboardIcon(props?: IconProps) {
 
 // Navigation Icons
 export function MenuIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -237,6 +261,7 @@ export function MenuIcon(props?: IconProps) {
 }
 
 export function MenuCollapseIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -247,6 +272,7 @@ export function MenuCollapseIcon(props?: IconProps) {
 }
 
 export function ChevronDownIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -257,6 +283,7 @@ export function ChevronDownIcon(props?: IconProps) {
 }
 
 export function ChevronRightIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -267,6 +294,7 @@ export function ChevronRightIcon(props?: IconProps) {
 }
 
 export function ChevronLeftIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -277,6 +305,7 @@ export function ChevronLeftIcon(props?: IconProps) {
 }
 
 export function ChevronUpIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -287,6 +316,7 @@ export function ChevronUpIcon(props?: IconProps) {
 }
 
 export function GitHubIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -297,6 +327,7 @@ export function GitHubIcon(props?: IconProps) {
 }
 
 export function FolderIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -307,6 +338,7 @@ export function FolderIcon(props?: IconProps) {
 }
 
 export function DocumentIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -317,6 +349,7 @@ export function DocumentIcon(props?: IconProps) {
 }
 
 export function HeartIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -327,6 +360,7 @@ export function HeartIcon(props?: IconProps) {
 }
 
 export function SuccessCircleIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -337,6 +371,7 @@ export function SuccessCircleIcon(props?: IconProps) {
 }
 
 export function InfoCircleIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -347,6 +382,7 @@ export function InfoCircleIcon(props?: IconProps) {
 }
 
 export function WarningIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -357,6 +393,7 @@ export function WarningIcon(props?: IconProps) {
 }
 
 export function ErrorCircleIcon(props?: IconProps) {
+    if (props?.render === false) return null;
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (

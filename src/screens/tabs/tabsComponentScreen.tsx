@@ -1,16 +1,18 @@
 import * as UECA from "ueca-react";
 import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Col, Block, TabModel, useTab } from "@components";
-import { TabsScreenModel, useTabsScreen, Breadcrumb, asyncSafe } from "@core";
+import { TabsScreenModel, useTabsScreen, asyncSafe } from "@core";
+import { PropertiesTabModel, usePropertiesTab } from "./propertiesTab";
 
 type TabsComponentScreenStruct = ScreenBaseStruct<{
     props: {
-        routeParams: { tab?: string };
+        routeParams: { tab?: string }; // Redeclare routeParams to include 'tab' for route management
     };
 
     children: {
         tabsScreen: TabsScreenModel;
         propertiesTab: TabModel;
         examplesTab: TabModel;
+        propertiesTabContent: PropertiesTabModel;
     };
 }>;
 
@@ -20,8 +22,7 @@ type TabsComponentScreenModel = ScreenBaseModel<TabsComponentScreenStruct>;
 function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsComponentScreenModel {
     const struct: TabsComponentScreenStruct = {
         props: {
-            id: useTabsComponentScreen.name,
-            routeParams: { tab: "properties" }
+            id: useTabsComponentScreen.name            
         },
 
         children: {
@@ -29,24 +30,19 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
                 intent: "none",
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
-                    { route: { path: "/tabs" }, label: "Tabs Components" }
-                ] as Breadcrumb[],
+                    { route: { path: "/tabs?:tab" }, label: "Tabs Components" }
+                ],
                 tabs: () => [model.propertiesTab, model.examplesTab],
                 selectedTabId: UECA.bind(() => model.routeParams, "tab"),
                 onChangeSelectedTabId: (tab) => asyncSafe(async () => await model.updateRouteParams({ tab }, true))
             }),
 
+            propertiesTabContent: usePropertiesTab(),
+
             propertiesTab: useTab({
                 tabId: "properties",
                 labelView: "Properties",
-                contentView: () => (
-                    <Col fill overflow="auto" padding="medium">
-                        <Block>
-                            <h2>Properties</h2>
-                            <p>Properties editor coming soon...</p>
-                        </Block>
-                    </Col>
-                )
+                contentView: () => <model.propertiesTabContent.View />
             }),
 
             examplesTab: useTab({

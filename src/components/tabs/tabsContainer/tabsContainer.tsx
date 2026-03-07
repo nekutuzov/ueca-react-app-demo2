@@ -16,6 +16,8 @@ type TabsContainerStruct = EditBaseStruct<{
         centered: boolean;
         __defaultTabId: string;
         __scrollerRef: React.RefObject<HTMLDivElement>;
+        __hasOverflow: boolean;
+        __resizeCleanup: () => void;
     };
 
     methods: {
@@ -23,6 +25,7 @@ type TabsContainerStruct = EditBaseStruct<{
         getTabIndex: (tabId: string) => number;
         scrollLeft: () => void;
         scrollRight: () => void;
+        checkOverflow: () => void;
     };
 
     events: {
@@ -59,7 +62,9 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             variant: undefined,
             scrollButtons: undefined,
             centered: false,
-            __scrollerRef: scrollerRef
+            __scrollerRef: scrollerRef,
+            __hasOverflow: false,
+            __resizeCleanup: undefined
         },
 
         events: {
@@ -73,6 +78,14 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                 if (model.onChange) {
                     asyncSafe(() => model.onChange(model));
                 }
+            },
+
+            onChangeOrientation: () => {
+                setTimeout(() => model.checkOverflow(), 0);
+            },
+
+            onChangeVariant: () => {
+                setTimeout(() => model.checkOverflow(), 0);
             }
         },
 
@@ -103,10 +116,41 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                         scroller.scrollTop += scrollAmount;
                     }
                 }
+            },
+
+            checkOverflow: () => {
+                const scroller = model.__scrollerRef.current;
+                if (scroller) {
+                    if (model.orientation === "horizontal") {
+                        model.__hasOverflow = scroller.scrollWidth > scroller.clientWidth;
+                    } else {
+                        model.__hasOverflow = scroller.scrollHeight > scroller.clientHeight;
+                    }
+                }
             }
         },
 
         init: () => _initTabs(),
+
+        mount: () => {
+            // Check overflow on window resize
+            const handleResize = () => model.checkOverflow();
+            window.addEventListener('resize', handleResize);
+            // Store cleanup function
+            model.__resizeCleanup = () => window.removeEventListener('resize', handleResize);
+        },
+
+        unmount: () => {
+            // Cleanup resize listener
+            if (model.__resizeCleanup) {
+                model.__resizeCleanup();
+            }
+        },
+
+        draw: () => {
+            // Check overflow after render
+            setTimeout(() => model.checkOverflow(), 0);
+        },
 
         View: () => {
             const containerClasses = [
@@ -127,7 +171,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             ].filter(Boolean).join(" ");
 
             const showScrollButtons = model.variant === "scrollable" && 
-                (model.scrollButtons === true || model.scrollButtons === "auto");
+                (model.scrollButtons === true || (model.scrollButtons === "auto" && model.__hasOverflow));
 
             return (
                 <div id={model.htmlId()} className={containerClasses}>
@@ -206,6 +250,9 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
         if (model.selectedTab) {
             model.selectedTab.selected = true;
         }
+
+        // Check overflow after tabs initialization
+        setTimeout(() => model.checkOverflow(), 0);
     }
 }
 

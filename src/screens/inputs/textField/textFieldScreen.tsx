@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { TextFieldPropertiesEditorModel, useTextFieldPropertiesEditor } from "./textFieldPropertiesEditor";
 import { TextFieldPreviewModel, useTextFieldPreview } from "./textFieldPreview";
 
@@ -31,11 +31,11 @@ function useTextFieldScreen(params?: TextFieldScreenParams): TextFieldScreenMode
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
                     { route: { path: "/text-field" }, label: "TextField Component" }
-                ] as Breadcrumb[],
+                ],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
-                            <h1>TextField Component</h1>                            
+                            <h1>TextField Component</h1>
                         </Col>
                         <Row spacing="large" fill flexWrap="wrap">
                             <model.properties.View />

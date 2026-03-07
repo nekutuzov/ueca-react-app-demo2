@@ -66,7 +66,7 @@ function useTab(params?: TabParams): TabModel {
                 <button
                     id={model.htmlId()}
                     className={classNames}
-                    disabled={model.disabled}
+                    disabled={model.disabled}                                        
                     onClick={() => {
                         if (model.disabled) return;
                         model.container.selectedTab = model;

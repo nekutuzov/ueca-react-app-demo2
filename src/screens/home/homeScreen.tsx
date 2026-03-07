@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Button, Row, Col, Block, NavLink, NavItem, useTab, useTabsContainer, Breadcrumbs } from "@components";
 import { DetailedError } from "@core";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { CheckIcon, SettingsIcon, PersonIcon, AccountIcon, SecurityIcon, HomeIcon, ClipboardIcon, InfoIcon, BlockIcon, GitHubIcon, FolderIcon, DocumentIcon } from "@core";
 
 type HomeScreenStruct = ScreenBaseStruct<{
@@ -49,7 +49,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                 intent: "none",
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" }
-                ] as Breadcrumb[],
+                ],
                 contentView: () => _homeContent()
             }),
 

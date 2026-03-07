@@ -86,6 +86,8 @@
 /* Wrapped text */
 .ueca-tab.wrapped {
     white-space: normal;
+    max-width: 160px;
+    flex-shrink: 1;
 }
 
 /* Vertical orientation adjustments */

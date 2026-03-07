@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Col, Row, Block, ButtonModel, useButton } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 
 type ToastScreenStruct = ScreenBaseStruct<{
     props: {};
@@ -37,8 +37,8 @@ function useToastScreen(params?: ToastScreenParams): ToastScreenModel {
                 intent: "none",
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
-                    { route: { path: "/popups" }, label: "Popup Components" }
-                ] as Breadcrumb[],
+                    { route: { path: "/toast" }, label: "Popup Components" }
+                ],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="small">

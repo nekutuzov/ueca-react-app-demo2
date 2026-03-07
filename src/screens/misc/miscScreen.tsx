@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { MiscPropertiesEditorModel, useMiscPropertiesEditor } from "./miscPropertiesEditor";
 import { MiscPreviewModel, useMiscPreview } from "./miscPreview";
 
@@ -31,7 +31,7 @@ function useMiscScreen(params?: MiscScreenParams): MiscScreenModel {
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
                     { route: { path: "/misc" }, label: "Miscellaneous Components" }
-                ] as Breadcrumb[],
+                ],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">

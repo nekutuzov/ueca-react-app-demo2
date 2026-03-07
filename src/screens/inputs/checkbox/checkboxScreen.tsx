@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { CheckboxPropertiesEditorModel, useCheckboxPropertiesEditor } from "./checkboxPropertiesEditor";
 import { CheckboxPreviewModel, useCheckboxPreview } from "./checkboxPreview";
 
@@ -31,7 +31,7 @@ function useCheckboxScreen(params?: CheckboxScreenParams): CheckboxScreenModel {
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
                     { route: { path: "/checkbox" }, label: "Checkbox Component" }
-                ] as Breadcrumb[],
+                ],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">

@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { RadioGroupPropertiesEditorModel, useRadioGroupPropertiesEditor } from "./radioGroupPropertiesEditor";
 import { RadioGroupPreviewModel, useRadioGroupPreview } from "./radioGroupPreview";
 
@@ -31,7 +31,7 @@ function useRadioGroupScreen(params?: RadioGroupScreenParams): RadioGroupScreenM
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
                     { route: { path: "/radio-group" }, label: "RadioGroup Component" }
-                ] as Breadcrumb[],
+                ],
                 contentView: () => (
                     <Col fill overflow="auto" padding="medium" spacing="large">
                         <Col spacing="medium">
