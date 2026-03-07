@@ -135,7 +135,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
             }),
             tabsMenuItem: _useMenuItem({
                 text: "Tabs",
-                route: { path: "/tabs" },
+                route: { path: "/tabs?:tab" },
                 icon: <TabsIcon />
             }),
             miscMenuItem: _useMenuItem({

@@ -1,11 +1,16 @@
 import * as UECA from "ueca-react";
-import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Col, Block } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Col, Block, TabModel, useTab } from "@components";
+import { TabsScreenModel, useTabsScreen, Breadcrumb, asyncSafe } from "@core";
 
 type TabsComponentScreenStruct = ScreenBaseStruct<{
-    props: {};
+    props: {
+        routeParams: { tab?: string };
+    };
+
     children: {
-        crudScreen: CRUDScreenModel;
+        tabsScreen: TabsScreenModel;
+        propertiesTab: TabModel;
+        examplesTab: TabModel;
     };
 }>;
 
@@ -16,27 +21,49 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
     const struct: TabsComponentScreenStruct = {
         props: {
             id: useTabsComponentScreen.name,
+            routeParams: { tab: "properties" }
         },
 
         children: {
-            crudScreen: useCRUDScreen({
+            tabsScreen: useTabsScreen({
                 intent: "none",
                 breadcrumbs: [
                     { route: { path: "/" }, label: "Home" },
                     { route: { path: "/tabs" }, label: "Tabs Components" }
                 ] as Breadcrumb[],
+                tabs: () => [model.propertiesTab, model.examplesTab],
+                selectedTabId: UECA.bind(() => model.routeParams, "tab"),
+                onChangeSelectedTabId: (tab) => asyncSafe(async () => await model.updateRouteParams({ tab }, true))
+            }),
+
+            propertiesTab: useTab({
+                tabId: "properties",
+                labelView: "Properties",
                 contentView: () => (
-                    <Col fill overflow={"auto"} padding={"medium"}>
+                    <Col fill overflow="auto" padding="medium">
                         <Block>
-                            <h1>Tabs Components</h1>
-                            <p>Demonstration screens coming soon...</p>
+                            <h2>Properties</h2>
+                            <p>Properties editor coming soon...</p>
+                        </Block>
+                    </Col>
+                )
+            }),
+
+            examplesTab: useTab({
+                tabId: "examples",
+                labelView: "Examples",
+                contentView: () => (
+                    <Col fill overflow="auto" padding="medium">
+                        <Block>
+                            <h2>Examples</h2>
+                            <p>Examples coming soon...</p>
                         </Block>
                     </Col>
                 )
             })
         },
 
-        View: () => <model.crudScreen.View />
+        View: () => <model.tabsScreen.View />
     }
 
     const model = useScreenBase(struct, params);

@@ -38,7 +38,7 @@ const screenRoutes = {
     "/toast": () => <ToastScreen id={"toastScreen"} />,
     "/navlink": () => <NavLinkScreen id={"navLinkScreen"} />,
     "/navitem": () => <NavItemScreen id={"navItemScreen"} />,
-    "/tabs": () => <TabsComponentScreen id={"tabsComponentScreen"} />,
+    "/tabs?:tab": (p: { tab?: string }) => <TabsComponentScreen id={"tabsComponentScreen"} routeParams={p} />,
     "/misc": () => <MiscScreen id={"miscScreen"} />,
 };
 
