@@ -1,26 +1,10 @@
 import * as UECA from "ueca-react";
 import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb, Palette } from "@core";
+import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 import { RadioGroupPropertiesEditorModel, useRadioGroupPropertiesEditor } from "./radioGroupPropertiesEditor";
 import { RadioGroupPreviewModel, useRadioGroupPreview } from "./radioGroupPreview";
 
-type RadioOrientation = "row" | "column";
-type RadioSize = "small" | "medium" | "large";
-
 type RadioGroupScreenStruct = ScreenBaseStruct<{
-    props: {
-        labelText: string;
-        orientation: RadioOrientation;
-        size: RadioSize;
-        color: Palette;
-        disabled: boolean;
-        required: boolean;
-        fullWidth: boolean;
-        helperText: string;
-        optionsText: string;
-        selectedValue: string;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         properties: RadioGroupPropertiesEditorModel;
@@ -38,17 +22,7 @@ type RadioGroupScreenModel = ScreenBaseModel<RadioGroupScreenStruct>;
 function useRadioGroupScreen(params?: RadioGroupScreenParams): RadioGroupScreenModel {
     const struct: RadioGroupScreenStruct = {
         props: {
-            id: useRadioGroupScreen.name,
-            labelText: "Select an Option",
-            orientation: "column",
-            size: "medium",
-            color: "primary.main",
-            disabled: false,
-            required: false,
-            fullWidth: false,
-            helperText: "",
-            optionsText: "Option 1=1, Option 2=2, Option 3=3",
-            selectedValue: ""
+            id: useRadioGroupScreen.name
         },
 
         children: {
@@ -72,45 +46,39 @@ function useRadioGroupScreen(params?: RadioGroupScreenParams): RadioGroupScreenM
             }),
 
             properties: useRadioGroupPropertiesEditor({
-                labelText: UECA.bind(() => model, "labelText"),
-                orientation: UECA.bind(() => model, "orientation"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color"),
-                disabled: UECA.bind(() => model, "disabled"),
-                required: UECA.bind(() => model, "required"),
-                fullWidth: UECA.bind(() => model, "fullWidth"),
-                helperText: UECA.bind(() => model, "helperText"),
-                optionsText: UECA.bind(() => model, "optionsText"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useRadioGroupPreview({
-                labelText: UECA.bind(() => model, "labelText"),
-                orientation: UECA.bind(() => model, "orientation"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color"),
-                disabled: UECA.bind(() => model, "disabled"),
-                required: UECA.bind(() => model, "required"),
-                fullWidth: UECA.bind(() => model, "fullWidth"),
-                helperText: UECA.bind(() => model, "helperText"),
-                optionsText: UECA.bind(() => model, "optionsText"),
-                selectedValue: UECA.bind(() => model, "selectedValue")
+                labelText: UECA.bind(() => model.properties, "labelText"),
+                orientation: UECA.bind(() => model.properties, "orientation"),
+                size: UECA.bind(() => model.properties, "size"),
+                color: UECA.bind(() => model.properties, "color"),
+                disabled: UECA.bind(() => model.properties, "disabled"),
+                required: UECA.bind(() => model.properties, "required"),
+                fullWidth: UECA.bind(() => model.properties, "fullWidth"),
+                helperText: UECA.bind(() => model.properties, "helperText"),
+                optionsText: UECA.bind(() => model.properties, "optionsText")
             })
         },
 
         methods: {
             resetProperties: () => {
-                model.labelText = "Select an Option";
-                model.orientation = "column";
-                model.size = "medium";
-                model.color = "primary.main";
-                model.disabled = false;
-                model.required = false;
-                model.fullWidth = false;
-                model.helperText = "";
-                model.optionsText = "Option 1=1, Option 2=2, Option 3=3";
-                model.selectedValue = "";
+                model.properties.labelText = "Select an Option";
+                model.properties.orientation = "column";
+                model.properties.size = "medium";
+                model.properties.color = "primary.main";
+                model.properties.disabled = false;
+                model.properties.required = false;
+                model.properties.fullWidth = false;
+                model.properties.helperText = "";
+                model.properties.optionsText = "Option 1=1, Option 2=2, Option 3=3";
+                model.preview.selectedValue = "";
             }
+        },
+
+        constr: () => {
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />

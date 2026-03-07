@@ -7,18 +7,7 @@ import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { DrawerPropertiesEditorModel, useDrawerPropertiesEditor } from "./drawerPropertiesEditor";
 import { DrawerPreviewModel, useDrawerPreview } from "./drawerPreview";
 
-type DrawerAnchor = "left" | "top" | "right" | "bottom";
-type DrawerSeverity = "success" | "info" | "warning" | "error" | undefined;
-type DrawerButtonType = "ok" | "cancel" | "okCancel" | "none";
-
 type DrawerScreenStruct = ScreenBaseStruct<{
-    props: {
-        anchor: DrawerAnchor;
-        severity: DrawerSeverity;
-        buttonType: DrawerButtonType;
-        width: number;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         propertiesEditor: DrawerPropertiesEditorModel;
@@ -36,11 +25,7 @@ type DrawerScreenModel = ScreenBaseModel<DrawerScreenStruct>;
 function useDrawerScreen(params?: DrawerScreenParams): DrawerScreenModel {
     const struct: DrawerScreenStruct = {
         props: {
-            id: useDrawerScreen.name,
-            anchor: "right",
-            severity: undefined,
-            buttonType: "cancel",
-            width: 600
+            id: useDrawerScreen.name
         },
 
         children: {
@@ -64,29 +49,28 @@ function useDrawerScreen(params?: DrawerScreenParams): DrawerScreenModel {
             }),
 
             propertiesEditor: useDrawerPropertiesEditor({
-                anchor: UECA.bind(() => model, "anchor"),
-                severity: UECA.bind(() => model, "severity"),
-                buttonType: UECA.bind(() => model, "buttonType"),
-                width: UECA.bind(() => model, "width"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useDrawerPreview({
-                anchor: UECA.bind(() => model, "anchor"),
-                severity: UECA.bind(() => model, "severity"),
-                buttonType: UECA.bind(() => model, "buttonType"),
-                width: UECA.bind(() => model, "width")
+                anchor: UECA.bind(() => model.propertiesEditor, "anchor"),
+                severity: UECA.bind(() => model.propertiesEditor, "severity"),
+                buttonType: UECA.bind(() => model.propertiesEditor, "buttonType"),
+                width: UECA.bind(() => model.propertiesEditor, "width")
             })
         },
 
         methods: {
             resetProperties: () => {
-                model.anchor = "right";
-                model.severity = undefined;
-                model.buttonType = "cancel";
-                model.width = 600;
-                model.alertInformation("Properties reset to defaults");
+                model.propertiesEditor.anchor = "right";
+                model.propertiesEditor.severity = undefined;
+                model.propertiesEditor.buttonType = "cancel";
+                model.propertiesEditor.width = 600;
             }
+        },
+
+        constr: () => {
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />

@@ -1,8 +1,7 @@
 import * as UECA from "ueca-react";
 import {
     ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase,
-    Row, Col,
-    NavItemMode
+    Row, Col
 } from "@components";
 import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { NavItemPropertiesEditorModel, useNavItemPropertiesEditor } from "./navItemPropertiesEditor";
@@ -10,14 +9,6 @@ import { NavItemPreviewModel, useNavItemPreview } from "./navItemPreview";
 import { NavItemExamplesModel, useNavItemExamples } from "./navItemExamples";
 
 type NavItemScreenStruct = ScreenBaseStruct<{
-    props: {
-        text: string;
-        mode: NavItemMode;
-        disabled: boolean;
-        newTab: boolean;
-        active: boolean;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         propertiesEditor: NavItemPropertiesEditorModel;
@@ -36,12 +27,7 @@ type NavItemScreenModel = ScreenBaseModel<NavItemScreenStruct>;
 function useNavItemScreen(params?: NavItemScreenParams): NavItemScreenModel {
     const struct: NavItemScreenStruct = {
         props: {
-            id: useNavItemScreen.name,
-            text: "Navigation Item",
-            mode: "icon-text",
-            disabled: false,
-            newTab: false,
-            active: false
+            id: useNavItemScreen.name
         },
 
         children: {
@@ -66,20 +52,15 @@ function useNavItemScreen(params?: NavItemScreenParams): NavItemScreenModel {
             }),
 
             propertiesEditor: useNavItemPropertiesEditor({
-                text: UECA.bind(() => model, "text"),
-                mode: UECA.bind(() => model, "mode"),
-                disabled: UECA.bind(() => model, "disabled"),
-                newTab: UECA.bind(() => model, "newTab"),
-                active: UECA.bind(() => model, "active"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useNavItemPreview({
-                text: UECA.bind(() => model, "text"),
-                mode: UECA.bind(() => model, "mode"),
-                disabled: UECA.bind(() => model, "disabled"),
-                newTab: UECA.bind(() => model, "newTab"),
-                active: UECA.bind(() => model, "active")
+                text: UECA.bind(() => model.propertiesEditor, "text"),
+                mode: UECA.bind(() => model.propertiesEditor, "mode"),
+                disabled: UECA.bind(() => model.propertiesEditor, "disabled"),
+                newTab: UECA.bind(() => model.propertiesEditor, "newTab"),
+                active: UECA.bind(() => model.propertiesEditor, "active")
             }),
 
             examples: useNavItemExamples()
@@ -87,13 +68,16 @@ function useNavItemScreen(params?: NavItemScreenParams): NavItemScreenModel {
 
         methods: {
             resetProperties: () => {
-                model.text = "Navigation Item";
-                model.mode = "icon-text";
-                model.disabled = false;
-                model.newTab = false;
-                model.active = false;
-                model.alertInformation("Properties reset to defaults");
+                model.propertiesEditor.text = "Navigation Item";
+                model.propertiesEditor.mode = "icon-text";
+                model.propertiesEditor.disabled = false;
+                model.propertiesEditor.newTab = false;
+                model.propertiesEditor.active = false;
             }
+        },
+
+        constr: () => {
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />

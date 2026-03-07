@@ -1,21 +1,10 @@
 import * as UECA from "ueca-react";
 import { Row, Col, ScreenBaseStruct, ScreenBaseParams, ScreenBaseModel, useScreenBase } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { ButtonPropertiesEditorModel, useButtonPropertiesEditor } from "./buttonPropertiesEditor";
 import { ButtonPreviewModel, useButtonPreview } from "./buttonPreview";
 
 type ButtonScreenStruct = ScreenBaseStruct<{
-    props: {
-        // Button properties
-        buttonText: string;
-        variant: "text" | "outlined" | "contained";
-        size: "small" | "medium" | "large";
-        color: Palette;
-        disabled: boolean;
-        fullWidth: boolean;
-        clickCount: number;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         propertiesEditor: ButtonPropertiesEditorModel;
@@ -34,14 +23,7 @@ type ButtonScreenModel = ScreenBaseModel<ButtonScreenStruct>;
 function useButtonScreen(params?: ButtonScreenParams): ButtonScreenModel {
     const struct: ButtonScreenStruct = {
         props: {
-            id: useButtonScreen.name,
-            buttonText: "Test Button",
-            variant: "contained",
-            size: "medium",
-            color: "primary.main",
-            disabled: false,
-            fullWidth: false,
-            clickCount: 0
+            id: useButtonScreen.name
         },
 
         children: {
@@ -65,43 +47,39 @@ function useButtonScreen(params?: ButtonScreenParams): ButtonScreenModel {
             }),
 
             propertiesEditor: useButtonPropertiesEditor({
-                buttonText: UECA.bind(() => model, "buttonText"),
-                variant: UECA.bind(() => model, "variant"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color") as UECA.Bond<Palette>,
-                disabled: UECA.bind(() => model, "disabled"),
-                fullWidth: UECA.bind(() => model, "fullWidth"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useButtonPreview({
-                buttonText: UECA.bind(() => model, "buttonText"),
-                variant: UECA.bind(() => model, "variant"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color") as UECA.Bond<Palette>,
-                disabled: UECA.bind(() => model, "disabled"),
-                fullWidth: UECA.bind(() => model, "fullWidth"),
-                clickCount: UECA.bind(() => model, "clickCount"),
+                buttonText: UECA.bind(() => model.propertiesEditor, "buttonText"),
+                variant: UECA.bind(() => model.propertiesEditor, "variant"),
+                size: UECA.bind(() => model.propertiesEditor, "size"),
+                color: UECA.bind(() => model.propertiesEditor, "color"),
+                disabled: UECA.bind(() => model.propertiesEditor, "disabled"),
+                fullWidth: UECA.bind(() => model.propertiesEditor, "fullWidth"),               
                 onButtonClick: () => model.handleTestButtonClick()
             })
         },
 
         methods: {
             resetProperties: () => {
-                model.buttonText = "Test Button";
-                model.variant = "contained";
-                model.size = "medium";
-                model.color = "primary.main";
-                model.disabled = false;
-                model.fullWidth = false;
-                model.clickCount = 0;
-                model.alertInformation("Properties reset to defaults");
+                model.propertiesEditor.buttonText = "Test Button";
+                model.propertiesEditor.variant = "contained";
+                model.propertiesEditor.size = "medium";
+                model.propertiesEditor.color = "primary.main";
+                model.propertiesEditor.disabled = false;
+                model.propertiesEditor.fullWidth = false;
+                model.preview.clickCount = 0;
             },
 
             handleTestButtonClick: () => {
-                model.clickCount++;
-                model.alertSuccess(`Button clicked! Count: ${model.clickCount}`);
+                model.preview.clickCount++;
+                model.alertSuccess(`Button clicked! Count: ${model.preview.clickCount}`);
             }
+        },
+
+        constr: () => {
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />

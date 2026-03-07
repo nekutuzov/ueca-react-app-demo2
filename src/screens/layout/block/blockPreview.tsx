@@ -66,6 +66,7 @@ function useBlockPreview(params?: BlockPreviewParams): BlockPreviewModel {
                         overflow={model.overflow}
                         horizontalAlign={model.horizontalAlign}
                         fill={model.fill}
+                        border="dashed"
                     >
                         <pre>{model.content}</pre>
                     </Block>

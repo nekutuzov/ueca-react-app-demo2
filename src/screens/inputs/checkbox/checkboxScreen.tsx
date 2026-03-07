@@ -1,23 +1,10 @@
 import * as UECA from "ueca-react";
 import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Row, Col } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Breadcrumb, Palette } from "@core";
+import { CRUDScreenModel, useCRUDScreen, Breadcrumb } from "@core";
 import { CheckboxPropertiesEditorModel, useCheckboxPropertiesEditor } from "./checkboxPropertiesEditor";
 import { CheckboxPreviewModel, useCheckboxPreview } from "./checkboxPreview";
 
-type CheckboxSize = "small" | "medium" | "large";
-
 type CheckboxScreenStruct = ScreenBaseStruct<{
-    props: {
-        labelText: string;
-        size: CheckboxSize;
-        color: Palette;
-        disabled: boolean;
-        required: boolean;
-        indeterminate: boolean;
-        helperText: string;
-        checked: boolean;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         properties: CheckboxPropertiesEditorModel;
@@ -35,15 +22,7 @@ type CheckboxScreenModel = ScreenBaseModel<CheckboxScreenStruct>;
 function useCheckboxScreen(params?: CheckboxScreenParams): CheckboxScreenModel {
     const struct: CheckboxScreenStruct = {
         props: {
-            id: useCheckboxScreen.name,
-            labelText: "I agree to terms and conditions",
-            size: "medium",
-            color: "primary.main",
-            disabled: false,
-            required: false,
-            indeterminate: false,
-            helperText: "",
-            checked: false
+            id: useCheckboxScreen.name
         },
 
         children: {
@@ -67,39 +46,35 @@ function useCheckboxScreen(params?: CheckboxScreenParams): CheckboxScreenModel {
             }),
 
             properties: useCheckboxPropertiesEditor({
-                labelText: UECA.bind(() => model, "labelText"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color"),
-                disabled: UECA.bind(() => model, "disabled"),
-                required: UECA.bind(() => model, "required"),
-                indeterminate: UECA.bind(() => model, "indeterminate"),
-                helperText: UECA.bind(() => model, "helperText"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useCheckboxPreview({
-                labelText: UECA.bind(() => model, "labelText"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color"),
-                disabled: UECA.bind(() => model, "disabled"),
-                required: UECA.bind(() => model, "required"),
-                indeterminate: UECA.bind(() => model, "indeterminate"),
-                helperText: UECA.bind(() => model, "helperText"),
-                checked: UECA.bind(() => model, "checked")
+                labelText: UECA.bind(() => model.properties, "labelText"),
+                size: UECA.bind(() => model.properties, "size"),
+                color: UECA.bind(() => model.properties, "color"),
+                disabled: UECA.bind(() => model.properties, "disabled"),
+                required: UECA.bind(() => model.properties, "required"),
+                indeterminate: UECA.bind(() => model.properties, "indeterminate"),
+                helperText: UECA.bind(() => model.properties, "helperText")
             })
         },
 
         methods: {
             resetProperties: () => {
-                model.labelText = "I agree to terms and conditions";
-                model.size = "medium";
-                model.color = "primary.main";
-                model.disabled = false;
-                model.required = false;
-                model.indeterminate = false;
-                model.helperText = "";
-                model.checked = false;
+                model.properties.labelText = "I agree to terms and conditions";
+                model.properties.size = "medium";
+                model.properties.color = "primary.main";
+                model.properties.disabled = false;
+                model.properties.required = false;
+                model.properties.indeterminate = false;
+                model.properties.helperText = "";
+                model.preview.checked = false;
             }
+        },
+
+        constr: () => {
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />

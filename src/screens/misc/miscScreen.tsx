@@ -5,12 +5,6 @@ import { MiscPropertiesEditorModel, useMiscPropertiesEditor } from "./miscProper
 import { MiscPreviewModel, useMiscPreview } from "./miscPreview";
 
 type MiscScreenStruct = ScreenBaseStruct<{
-    props: {
-        busyDuration: number;
-        fileMask: string;
-        multiselect: boolean;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         properties: MiscPropertiesEditorModel;
@@ -28,10 +22,7 @@ type MiscScreenModel = ScreenBaseModel<MiscScreenStruct>;
 function useMiscScreen(params?: MiscScreenParams): MiscScreenModel {
     const struct: MiscScreenStruct = {
         props: {
-            id: useMiscScreen.name,
-            busyDuration: 2000,
-            fileMask: ".pdf,.jpg,.png",
-            multiselect: true
+            id: useMiscScreen.name
         },
 
         children: {
@@ -56,25 +47,26 @@ function useMiscScreen(params?: MiscScreenParams): MiscScreenModel {
             }),
 
             properties: useMiscPropertiesEditor({
-                busyDuration: UECA.bind(() => model, "busyDuration"),
-                fileMask: UECA.bind(() => model, "fileMask"),
-                multiselect: UECA.bind(() => model, "multiselect"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useMiscPreview({
-                busyDuration: UECA.bind(() => model, "busyDuration"),
-                fileMask: UECA.bind(() => model, "fileMask"),
-                multiselect: UECA.bind(() => model, "multiselect")
+                busyDuration: UECA.bind(() => model.properties, "busyDuration"),
+                fileMask: UECA.bind(() => model.properties, "fileMask"),
+                multiselect: UECA.bind(() => model.properties, "multiselect")
             })
         },
 
         methods: {
             resetProperties: () => {
-                model.busyDuration = 2000;
-                model.fileMask = ".pdf,.jpg,.png";
-                model.multiselect = true;
+                model.properties.busyDuration = 2000;
+                model.properties.fileMask = ".pdf,.jpg,.png";
+                model.properties.multiselect = true;
             }
+        },
+
+        constr: () => {
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />

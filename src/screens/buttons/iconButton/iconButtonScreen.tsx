@@ -2,23 +2,11 @@ import * as UECA from "ueca-react";
 import {
     Row, Col, ScreenBaseStruct, ScreenBaseParams, ScreenBaseModel, useScreenBase
 } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { IconButtonPropertiesEditorModel, useIconButtonPropertiesEditor } from "./iconButtonPropertiesEditor";
 import { IconButtonPreviewModel, useIconButtonPreview } from "./iconButtonPreview";
 
-type IconKind = "ok" | "cancel" | "delete" | "refresh" | "close";
-
 type IconButtonScreenStruct = ScreenBaseStruct<{
-    props: {
-        // IconButton properties
-        kind: IconKind;
-        size: "small" | "medium" | "large";
-        color: Palette | "inherit";
-        disabled: boolean;
-        useCustomIcon: boolean;
-        clickCount: number;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         propertiesEditor: IconButtonPropertiesEditorModel;
@@ -37,13 +25,7 @@ type IconButtonScreenModel = ScreenBaseModel<IconButtonScreenStruct>;
 function useIconButtonScreen(params?: IconButtonScreenParams): IconButtonScreenModel {
     const struct: IconButtonScreenStruct = {
         props: {
-            id: useIconButtonScreen.name,
-            kind: "ok",
-            size: "medium",
-            color: "primary.main",
-            disabled: false,
-            useCustomIcon: false,
-            clickCount: 0
+            id: useIconButtonScreen.name
         },
 
         children: {
@@ -67,40 +49,37 @@ function useIconButtonScreen(params?: IconButtonScreenParams): IconButtonScreenM
             }),
 
             propertiesEditor: useIconButtonPropertiesEditor({
-                kind: UECA.bind(() => model, "kind"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color") as UECA.Bond<Palette | "inherit">,
-                disabled: UECA.bind(() => model, "disabled"),
-                useCustomIcon: UECA.bind(() => model, "useCustomIcon"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useIconButtonPreview({
-                kind: UECA.bind(() => model, "kind"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color") as UECA.Bond<Palette | "inherit">,
-                disabled: UECA.bind(() => model, "disabled"),
-                useCustomIcon: UECA.bind(() => model, "useCustomIcon"),
-                clickCount: UECA.bind(() => model, "clickCount"),
+                kind: UECA.bind(() => model.propertiesEditor, "kind"),
+                size: UECA.bind(() => model.propertiesEditor, "size"),
+                color: UECA.bind(() => model.propertiesEditor, "color"),
+                disabled: UECA.bind(() => model.propertiesEditor, "disabled"),
+                useCustomIcon: UECA.bind(() => model.propertiesEditor, "useCustomIcon"),
                 onIconButtonClick: () => model.handleTestIconButtonClick()
             })
         },
 
         methods: {
             resetProperties: () => {
-                model.kind = "ok";
-                model.size = "medium";
-                model.color = "primary.main";
-                model.disabled = false;
-                model.useCustomIcon = false;
-                model.clickCount = 0;
-                model.alertInformation("Properties reset to defaults");
+                model.propertiesEditor.kind = "ok";
+                model.propertiesEditor.size = "medium";
+                model.propertiesEditor.color = "primary.main";
+                model.propertiesEditor.disabled = false;
+                model.propertiesEditor.useCustomIcon = false;
+                model.preview.clickCount = 0;
             },
 
             handleTestIconButtonClick: () => {
-                model.clickCount++;
-                model.alertSuccess(`IconButton clicked! Count: ${model.clickCount}`);
+                model.preview.clickCount++;
+                model.alertSuccess(`IconButton clicked! Count: ${model.preview.clickCount}`);
             }
+        },
+
+        constr: () => {
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />

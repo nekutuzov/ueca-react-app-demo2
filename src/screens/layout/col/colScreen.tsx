@@ -3,27 +3,11 @@ import {
     ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase,
     Row, Col
 } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { ColPropertiesEditorModel, useColPropertiesEditor } from "./colPropertiesEditor";
 import { ColPreviewModel, useColPreview } from "./colPreview";
 
 type ColScreenStruct = ScreenBaseStruct<{
-    props: {
-        // Col properties
-        spacing: string;
-        horizontalAlign: string;
-        verticalAlign: string;
-        padding: string;
-        backgroundColor: Palette;
-        reverseItems: boolean;
-        divider: boolean;
-        flexWrap: string;
-        fill: boolean;
-        width: string;
-        height: string;
-        childrenCount: number;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         propertiesEditor: ColPropertiesEditorModel;
@@ -41,19 +25,7 @@ type ColScreenModel = ScreenBaseModel<ColScreenStruct>;
 function useColScreen(params?: ColScreenParams): ColScreenModel {
     const struct: ColScreenStruct = {
         props: {
-            id: useColScreen.name,
-            spacing: "medium",
-            horizontalAlign: "left",
-            verticalAlign: "top",
-            padding: "medium",
-            backgroundColor: "transparent",
-            reverseItems: false,
-            divider: false,
-            flexWrap: "nowrap",
-            fill: false,
-            width: "400px",
-            height: "",
-            childrenCount: 3
+            id: useColScreen.name
         },
 
         children: {
@@ -77,53 +49,44 @@ function useColScreen(params?: ColScreenParams): ColScreenModel {
             }),
 
             propertiesEditor: useColPropertiesEditor({
-                spacing: UECA.bind(() => model, "spacing"),
-                horizontalAlign: UECA.bind(() => model, "horizontalAlign"),
-                verticalAlign: UECA.bind(() => model, "verticalAlign"),
-                padding: UECA.bind(() => model, "padding"),
-                backgroundColor: UECA.bind(() => model, "backgroundColor") as UECA.Bond<Palette>,
-                reverseItems: UECA.bind(() => model, "reverseItems"),
-                divider: UECA.bind(() => model, "divider"),
-                flexWrap: UECA.bind(() => model, "flexWrap"),
-                fill: UECA.bind(() => model, "fill"),
-                width: UECA.bind(() => model, "width"),
-                height: UECA.bind(() => model, "height"),
-                childrenCount: UECA.bind(() => model, "childrenCount"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useColPreview({
-                spacing: UECA.bind(() => model, "spacing"),
-                horizontalAlign: UECA.bind(() => model, "horizontalAlign"),
-                verticalAlign: UECA.bind(() => model, "verticalAlign"),
-                padding: UECA.bind(() => model, "padding"),
-                backgroundColor: UECA.bind(() => model, "backgroundColor") as UECA.Bond<Palette>,
-                reverseItems: UECA.bind(() => model, "reverseItems"),
-                divider: UECA.bind(() => model, "divider"),
-                flexWrap: UECA.bind(() => model, "flexWrap"),
-                fill: UECA.bind(() => model, "fill"),
-                width: UECA.bind(() => model, "width"),
-                height: UECA.bind(() => model, "height"),
-                childrenCount: UECA.bind(() => model, "childrenCount")
+                spacing: UECA.bind(() => model.propertiesEditor, "spacing"),
+                horizontalAlign: UECA.bind(() => model.propertiesEditor, "horizontalAlign"),
+                verticalAlign: UECA.bind(() => model.propertiesEditor, "verticalAlign"),
+                padding: UECA.bind(() => model.propertiesEditor, "padding"),
+                backgroundColor: UECA.bind(() => model.propertiesEditor, "backgroundColor"),
+                reverseItems: UECA.bind(() => model.propertiesEditor, "reverseItems"),
+                divider: UECA.bind(() => model.propertiesEditor, "divider"),
+                flexWrap: UECA.bind(() => model.propertiesEditor, "flexWrap"),
+                fill: UECA.bind(() => model.propertiesEditor, "fill"),
+                width: UECA.bind(() => model.propertiesEditor, "width"),
+                height: UECA.bind(() => model.propertiesEditor, "height"),
+                childrenCount: UECA.bind(() => model.propertiesEditor, "childrenCount")
             })
         },
 
         methods: {
             resetProperties: () => {
-                model.spacing = "medium";
-                model.horizontalAlign = "left";
-                model.verticalAlign = "top";
-                model.padding = "medium";
-                model.backgroundColor = "transparent";
-                model.reverseItems = false;
-                model.divider = false;
-                model.flexWrap = "nowrap";
-                model.fill = false;
-                model.width = "400px";
-                model.height = "";
-                model.childrenCount = 3;
-                model.alertInformation("Properties reset to defaults");
+                model.propertiesEditor.spacing = "medium";
+                model.propertiesEditor.horizontalAlign = "left";
+                model.propertiesEditor.verticalAlign = "top";
+                model.propertiesEditor.padding = "medium";
+                model.propertiesEditor.backgroundColor = "transparent";
+                model.propertiesEditor.reverseItems = false;
+                model.propertiesEditor.divider = false;
+                model.propertiesEditor.flexWrap = "nowrap";
+                model.propertiesEditor.fill = false;
+                model.propertiesEditor.width = "400px";
+                model.propertiesEditor.height = "";
+                model.propertiesEditor.childrenCount = 3;
             }
+        },
+
+        constr: () => {
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />

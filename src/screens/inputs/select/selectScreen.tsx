@@ -3,26 +3,11 @@ import {
     ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase,
     Row, Col
 } from "@components";
-import { CRUDScreenModel, useCRUDScreen, Palette } from "@core";
+import { CRUDScreenModel, useCRUDScreen } from "@core";
 import { SelectPropertiesEditorModel, useSelectPropertiesEditor } from "./selectPropertiesEditor";
 import { SelectPreviewModel, useSelectPreview } from "./selectPreview";
 
 type SelectScreenStruct = ScreenBaseStruct<{
-    props: {
-        // Select properties
-        labelText: string;
-        placeholder: string;
-        variant: "filled" | "outlined" | "standard";
-        size: "small" | "medium";
-        color: Palette;
-        disabled: boolean;
-        required: boolean;
-        fullWidth: boolean;
-        helperText: string;
-        optionsText: string;
-        selectedValue: string;
-    };
-
     children: {
         crudScreen: CRUDScreenModel;
         propertiesEditor: SelectPropertiesEditorModel;
@@ -41,18 +26,7 @@ type SelectScreenModel = ScreenBaseModel<SelectScreenStruct>;
 function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
     const struct: SelectScreenStruct = {
         props: {
-            id: useSelectScreen.name,
-            labelText: "Select an Option",
-            placeholder: "Choose an option...",
-            variant: "outlined",
-            size: "medium",
-            color: "primary.main",
-            disabled: false,
-            required: false,
-            fullWidth: false,
-            helperText: "",
-            optionsText: "Option 1=1, Option 2=2, Option 3=3",
-            selectedValue: ""
+            id: useSelectScreen.name
         },
 
         children: {
@@ -76,55 +50,47 @@ function useSelectScreen(params?: SelectScreenParams): SelectScreenModel {
             }),
 
             propertiesEditor: useSelectPropertiesEditor({
-                labelText: UECA.bind(() => model, "labelText"),
-                placeholder: UECA.bind(() => model, "placeholder"),
-                variant: UECA.bind(() => model, "variant"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color"),
-                disabled: UECA.bind(() => model, "disabled"),
-                required: UECA.bind(() => model, "required"),
-                fullWidth: UECA.bind(() => model, "fullWidth"),
-                helperText: UECA.bind(() => model, "helperText"),
-                optionsText: UECA.bind(() => model, "optionsText"),
                 onReset: () => model.resetProperties()
             }),
 
             preview: useSelectPreview({
-                labelText: UECA.bind(() => model, "labelText"),
-                placeholder: UECA.bind(() => model, "placeholder"),
-                variant: UECA.bind(() => model, "variant"),
-                size: UECA.bind(() => model, "size"),
-                color: UECA.bind(() => model, "color"),
-                disabled: UECA.bind(() => model, "disabled"),
-                required: UECA.bind(() => model, "required"),
-                fullWidth: UECA.bind(() => model, "fullWidth"),
-                helperText: UECA.bind(() => model, "helperText"),
-                optionsText: UECA.bind(() => model, "optionsText"),
-                selectedValue: UECA.bind(() => model, "selectedValue"),
+                labelText: UECA.bind(() => model.propertiesEditor, "labelText"),
+                placeholder: UECA.bind(() => model.propertiesEditor, "placeholder"),
+                variant: UECA.bind(() => model.propertiesEditor, "variant"),
+                size: UECA.bind(() => model.propertiesEditor, "size"),
+                color: UECA.bind(() => model.propertiesEditor, "color"),
+                disabled: UECA.bind(() => model.propertiesEditor, "disabled"),
+                required: UECA.bind(() => model.propertiesEditor, "required"),
+                fullWidth: UECA.bind(() => model.propertiesEditor, "fullWidth"),
+                helperText: UECA.bind(() => model.propertiesEditor, "helperText"),
+                optionsText: UECA.bind(() => model.propertiesEditor, "optionsText"),
                 onSelectionChange: (value) => model.handleSelectionChange(value)
             })
         },
 
         methods: {
             resetProperties: () => {
-                model.labelText = "Select an Option";
-                model.placeholder = "Choose an option...";
-                model.variant = "outlined";
-                model.size = "medium";
-                model.color = "primary.main";
-                model.disabled = false;
-                model.required = false;
-                model.fullWidth = false;
-                model.helperText = "";
-                model.optionsText = "Option 1=1, Option 2=2, Option 3=3";
-                model.selectedValue = "";
-                model.alertInformation("Properties reset to defaults");
+                model.propertiesEditor.labelText = "Select an Option";
+                model.propertiesEditor.placeholder = "Choose an option...";
+                model.propertiesEditor.variant = "outlined";
+                model.propertiesEditor.size = "medium";
+                model.propertiesEditor.color = "primary.main";
+                model.propertiesEditor.disabled = false;
+                model.propertiesEditor.required = false;
+                model.propertiesEditor.fullWidth = false;
+                model.propertiesEditor.helperText = "";
+                model.propertiesEditor.optionsText = "Option 1=1, Option 2=2, Option 3=3";
+                model.preview.selectedValue = "";
             },
 
             handleSelectionChange: (value: string) => {
-                model.selectedValue = value;
+                model.preview.selectedValue = value;
                 model.alertSuccess(`Selected: ${value}`);
             }
+        },
+
+        constr: () => {
+            model.resetProperties();
         },
 
         View: () => <model.crudScreen.View />
