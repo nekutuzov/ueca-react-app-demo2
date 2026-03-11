@@ -14,10 +14,9 @@ type TabsContainerStruct = EditBaseStruct<{
         variant: "standard" | "scrollable" | "fullWidth";
         scrollButtons: "auto" | true | false;
         centered: boolean;
+        _hasOverflow: boolean;
         __defaultTabId: string;
         __scrollerRef: React.RefObject<HTMLDivElement>;
-        __hasOverflow: boolean;
-        __resizeCleanup: () => void;
     };
 
     methods: {
@@ -38,7 +37,7 @@ type TabsContainerModel = EditBaseModel<TabsContainerStruct>;
 
 function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
     const scrollerRef = React.useRef<HTMLDivElement>(null);
-    
+
     const struct: TabsContainerStruct = {
         props: {
             id: useTabsContainer.name,
@@ -62,9 +61,8 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             variant: undefined,
             scrollButtons: undefined,
             centered: false,
+            _hasOverflow: false,
             __scrollerRef: scrollerRef,
-            __hasOverflow: false,
-            __resizeCleanup: undefined
         },
 
         events: {
@@ -122,9 +120,9 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                 const scroller = model.__scrollerRef.current;
                 if (scroller) {
                     if (model.orientation === "horizontal") {
-                        model.__hasOverflow = scroller.scrollWidth > scroller.clientWidth;
+                        model._hasOverflow = scroller.scrollWidth > scroller.clientWidth;
                     } else {
-                        model.__hasOverflow = scroller.scrollHeight > scroller.clientHeight;
+                        model._hasOverflow = scroller.scrollHeight > scroller.clientHeight;
                     }
                 }
             }
@@ -133,18 +131,13 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
         init: () => _initTabs(),
 
         mount: () => {
-            // Check overflow on window resize
-            const handleResize = () => model.checkOverflow();
-            window.addEventListener('resize', handleResize);
-            // Store cleanup function
-            model.__resizeCleanup = () => window.removeEventListener('resize', handleResize);
+            // Check overflow on window resize            
+            window.addEventListener('resize', model.checkOverflow);
         },
 
         unmount: () => {
             // Cleanup resize listener
-            if (model.__resizeCleanup) {
-                model.__resizeCleanup();
-            }
+            window.removeEventListener('resize', model.checkOverflow);
         },
 
         draw: () => {
@@ -170,15 +163,15 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                 model.orientation === "vertical" ? "ueca-tabs-vertical" : ""
             ].filter(Boolean).join(" ");
 
-            const showScrollButtons = model.variant === "scrollable" && 
-                (model.scrollButtons === true || (model.scrollButtons === "auto" && model.__hasOverflow));
+            const showScrollButtons = model.variant === "scrollable" &&
+                (model.scrollButtons === true || (model.scrollButtons === "auto" && model._hasOverflow));
 
             return (
                 <div id={model.htmlId()} className={containerClasses}>
                     <div className={`ueca-tabs-header ${model.orientation === "vertical" ? "ueca-tabs-vertical" : ""}`}>
                         <div className="ueca-tabs-wrapper">
                             {showScrollButtons && (
-                                <button 
+                                <button
                                     type="button"
                                     className="ueca-tabs-scroll-button ueca-tabs-scroll-start"
                                     onClick={(e) => {
@@ -200,7 +193,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                                 </div>
                             </div>
                             {showScrollButtons && (
-                                <button 
+                                <button
                                     type="button"
                                     className="ueca-tabs-scroll-button ueca-tabs-scroll-end"
                                     onClick={(e) => {
