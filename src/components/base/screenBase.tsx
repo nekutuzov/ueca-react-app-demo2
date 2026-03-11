@@ -7,7 +7,7 @@ type ScreenBasePartialStruct = UIBaseStruct<{
     },
 
     methods: {
-        updateRouteParams: (params: Record<string, unknown>, patch: boolean) => Promise<void>;
+        updateRouteParams: (params: Record<string, unknown>, patch?: boolean) => Promise<void>;
     }
 }>;
 
@@ -24,7 +24,7 @@ function useScreenBase<T extends ScreenBasePartialStruct>(extStruct: T, params?:
 
         methods: {
             updateRouteParams: async (params, patch) => {
-                await model.setRouteParams(params, patch);
+                await model.setRouteParams(params, !!patch);
                 const route = await model.getRoute();
                 model.routeParams = route.params;
             }

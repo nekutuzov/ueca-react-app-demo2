@@ -22,7 +22,7 @@ type TabsComponentScreenModel = ScreenBaseModel<TabsComponentScreenStruct>;
 function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsComponentScreenModel {
     const struct: TabsComponentScreenStruct = {
         props: {
-            id: useTabsComponentScreen.name            
+            id: useTabsComponentScreen.name,
         },
 
         children: {
@@ -34,7 +34,7 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
                 ],
                 tabs: () => [model.propertiesTab, model.examplesTab],
                 selectedTabId: UECA.bind(() => model.routeParams, "tab"),
-                onChangeSelectedTabId: (tab) => asyncSafe(async () => await model.updateRouteParams({ tab }, true))
+                onChangeSelectedTabId: (tab) => asyncSafe(async () => await model.updateRouteParams({ tab }, true)) // Update route params when tab changes, using patch to preserve other params
             }),
 
             propertiesTabContent: usePropertiesTab(),
@@ -57,6 +57,10 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
                     </Col>
                 )
             })
+        },
+
+        init: async () => {
+            await model.updateRouteParams({ tab: model.tabsScreen.selectedTabId }); // Ensure route params are in sync with the screen state on initial load
         },
 
         View: () => <model.tabsScreen.View />

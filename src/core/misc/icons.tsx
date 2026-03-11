@@ -288,7 +288,7 @@ export function ChevronRightIcon(props?: IconProps) {
     const color = props?.color ?? "currentColor";
     return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M9.29 6.71a.996.996 0 000 1.41L13.17 12l-3.88 3.88a.996.996 0 101.41 1.41l4.59-4.59a.996.996 0 000-1.41L10.7 6.7c-.38-.38-1.02-.38-1.41.01z" />
+            <path d="M10 7l5 5-5 5z" />
         </svg>
     );
 }
@@ -299,7 +299,7 @@ export function ChevronLeftIcon(props?: IconProps) {
     const color = props?.color ?? "currentColor";
     return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+            <path d="M14 7l-5 5 5 5z" />
         </svg>
     );
 }
@@ -310,7 +310,7 @@ export function ChevronUpIcon(props?: IconProps) {
     const color = props?.color ?? "currentColor";
     return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z" />
+            <path d="M7 14l5-5 5 5z" />
         </svg>
     );
 }
