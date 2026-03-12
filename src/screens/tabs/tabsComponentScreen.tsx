@@ -11,8 +11,8 @@ type TabsComponentScreenStruct = ScreenBaseStruct<{
 
     children: {
         tabsScreen: TabsScreenModel;
-        propertiesTab: TabModel;
-        examplesTab: TabModel;
+        staticTab: TabModel;
+        dynamicTab: TabModel;
         propertiesTabContent: PropertiesTabModel;
         examplesTabContent: TabExamplesModel;
     };
@@ -34,7 +34,7 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
                     { route: { path: "/" }, label: "Home" },
                     { route: { path: "/tabs?:tab" }, label: "Tabs Components" }
                 ],
-                tabs: () => [model.propertiesTab, model.examplesTab],
+                tabs: () => [model.staticTab, model.dynamicTab],
                 selectedTabId: UECA.bind(() => model.routeParams, "tab"),
                 onChangeSelectedTabId: (tab) => asyncSafe(async () => await model.updateRouteParams({ tab }, true)) // Update route params when tab changes, using patch to preserve other params
             }),
@@ -43,15 +43,15 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
 
             examplesTabContent: useTabExamples(),
 
-            propertiesTab: useTab({
-                tabId: "properties",
-                labelView: "Properties",
+            staticTab: useTab({
+                tabId: "static",
+                labelView: "Static Tabs",
                 contentView: () => <model.propertiesTabContent.View />
             }),
 
-            examplesTab: useTab({
-                tabId: "examples",
-                labelView: "Examples",                
+            dynamicTab: useTab({
+                tabId: "dynamic",
+                labelView: "Dynamic Tabs",                
                 contentView: () => <model.examplesTabContent.View />
             })
         },

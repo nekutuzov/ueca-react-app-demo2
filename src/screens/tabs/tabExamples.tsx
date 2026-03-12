@@ -41,7 +41,7 @@ function useTabExamples(params?: TabExamplesParams): TabExamplesModel {
                 model.tabCounter++;
                 const tabId = `tab${model.tabCounter}`;
 
-                // Create tab configuration with inline JSX (no hooks needed!)
+                // Create tab configuration (no hooks needed!)
                 const newTabConfig: TabParams = {
                     id: tabId,
                     tabId: tabId,
@@ -82,14 +82,13 @@ function useTabExamples(params?: TabExamplesParams): TabExamplesModel {
                             <ul>
                                 <li><strong>Declarative</strong>: Tabs defined as configuration objects</li>
                                 <li><strong>No manual hooks</strong>: TabsContainer handles model creation</li>
-                                <li><strong>Pure JSX</strong>: labelView and contentView are direct JSX (not functions)</li>
                                 <li><strong>Clean state</strong>: Just manage an array of TabParams</li>
                             </ul>
                         </Block>
                         <Block padding="small" backgroundColor="info.light" border="rounded">
                             <p><strong>How it works:</strong></p>
                             <ol style={{ margin: "8px 0", paddingLeft: "20px" }}>
-                                <li>Create TabParams config objects with inline JSX content</li>
+                                <li>Create TabParams config object</li>
                                 <li>Add configs to a reactive array (e.g., <code>_tabsConfig</code>)</li>
                                 <li>Pass array to TabsContainer via <code>tabsConfig</code> prop</li>
                                 <li>TabsContainer renders <code>&lt;Tab /&gt;</code> components automatically</li>
@@ -113,7 +112,7 @@ function useTabExamples(params?: TabExamplesParams): TabExamplesModel {
                     <Block>
                         <h3>Dynamic Tabs Example</h3>
                         <p>This example demonstrates the <strong>tabsConfig</strong> pattern for creating tabs dynamically.</p>
-                        <p>Click "Add Tab" to create new tabs with inline JSX content. Each tab has a close button (×) to remove it.</p>
+                        <p>Click "Add Tab" to create new tabs. Each tab has a close button (×) to remove it.</p>
                     </Block >
 
                     <Row spacing="small">
@@ -166,7 +165,7 @@ function useTabExamples(params?: TabExamplesParams): TabExamplesModel {
 
     // Helper function to generate code example
     function _getCodeExample(tabId: string): string {
-        return `// 1. Create tab configuration with inline JSX
+        return `// 1. Create tab configuration
 const newTabConfig: TabParams = {
     id: "${tabId}",
     tabId: "${tabId}",

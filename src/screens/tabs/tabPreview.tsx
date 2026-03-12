@@ -27,8 +27,7 @@ type TabPreviewStruct = UIBaseStruct<{
         homeTab: TabModel;
         userTab: TabModel;
         documentsTab: TabModel;
-        tabCodeSample: CodeSampleModel;
-        tabsContainerCodeSample: CodeSampleModel;
+        staticTabsCodeSample: CodeSampleModel;
         validationCheckbox: CheckboxModel;
     };
 }>;
@@ -58,22 +57,22 @@ function useTabPreview(params?: TabPreviewParams): TabPreviewModel {
                 iconPosition: () => model.iconPosition,
                 disabled: () => model.disabled,
                 wrapped: () => model.wrapped,
-                onValidate: async () => model.validationCheckbox.checked ? "Demo validation error: This tab is not valid." : "",
                 contentView: () => (
                     <Col padding="medium" spacing="small">
-                        <p>This is the {model.labelText} tab content.</p>
+                        <p>{model.labelText} content.</p>
                         <model.validationCheckbox.View />
                     </Col>
-                )
+                ),
+                onValidate: async () => model.validationCheckbox.checked ? "This tab is not valid" : ""
             }),
 
             userTab: useTab({
                 labelView: "User",
                 iconView: () => <PersonIcon render={model.showIcon} />,
-                iconPosition: () => model.iconPosition,                
+                iconPosition: () => model.iconPosition,
                 contentView: () => (
                     <Block padding="medium">
-                        <p>This is the User tab content.</p>
+                        <p>User content.</p>
                     </Block>
                 )
             }),
@@ -84,7 +83,7 @@ function useTabPreview(params?: TabPreviewParams): TabPreviewModel {
                 iconPosition: () => model.iconPosition,
                 contentView: () => (
                     <Block padding="medium">
-                        <p>This is the Documents tab content.</p>
+                        <p>Documents content.</p>
                     </Block>
                 )
             }),
@@ -97,28 +96,9 @@ function useTabPreview(params?: TabPreviewParams): TabPreviewModel {
                 centered: () => model.centered
             }),
 
-            tabCodeSample: useCodeSample({
-                title: "JSX Code Tab",
-                componentName: "Tab",
-                sourceObject: () => model,
-                properties: () => [
-                    "labelText",
-                    ...(model.showIcon ? ["iconView", "iconPosition"] : []),
-                    "disabled",
-                    "wrapped"
-                ]
-            }),
-
-            tabsContainerCodeSample: useCodeSample({
-                title: "JSX Code TabsContainer",
-                componentName: "TabsContainer",
-                sourceObject: () => model,
-                properties: () => [
-                    "orientation",
-                    "variant",
-                    "scrollButtons",
-                    "centered"
-                ]
+            staticTabsCodeSample: useCodeSample({
+                title: "Static Tabs Creation",
+                content: () => _getStaticTabsCode()
             }),
 
             validationCheckbox: useCheckbox({
@@ -135,12 +115,11 @@ function useTabPreview(params?: TabPreviewParams): TabPreviewModel {
                 minWidth={400}
                 overflow="auto"
             >
-                <Col spacing="medium" fill>
-                    <Col spacing="medium" height={180}>
+                <Col spacing="small" fill>
+                    <Block height={180}>
                         <model.tabsContainer.View />
-                    </Col>
-                    <model.tabCodeSample.View />
-                    <model.tabsContainerCodeSample.View />
+                    </Block>
+                    <model.staticTabsCodeSample.View />
                 </Col>
             </Card>
         )
@@ -148,6 +127,51 @@ function useTabPreview(params?: TabPreviewParams): TabPreviewModel {
 
     const model = useUIBase(struct, params);
     return model;
+
+    // Helper function to generate static tabs code example
+    function _getStaticTabsCode(): string {
+        const iconCode = model.showIcon ? `\n        iconView: <HomeIcon />,\n        iconPosition: "${model.iconPosition}",` : '';
+        const disabledCode = model.disabled ? `\n        disabled: true,` : '';
+        const wrappedCode = model.wrapped ? `\n        wrapped: true,` : '';
+
+        return `// Create tabs using model hooks
+children: {
+    homeTab: useTab({
+        labelView: "${model.labelText}",${iconCode}${disabledCode}${wrappedCode}                
+        contentView: () => (
+            <Col padding="medium" spacing="small">
+                <p>{model.labelText} content.</p>
+                <model.validationCheckbox.View />
+            </Col>
+        ),
+        onValidate: async () => model.validationCheckbox.checked ? "This tab is not valid" : ""
+    }),
+
+    userTab: useTab({
+        labelView: "User",${model.showIcon ? `\n        iconView: <PersonIcon />,` : ''}${iconCode}${disabledCode}${wrappedCode}
+        contentView: <Block>User content.</Block>
+    }),
+
+    documentsTab: useTab({
+        labelView: "Documents",${model.showIcon ? `\n        iconView: <DocumentIcon />,` : ''}${iconCode}${disabledCode}${wrappedCode}
+        contentView: <Block>Documents content.</Block>
+    }),
+
+    tabsContainer: useTabsContainer({
+        tabs: () => [model.homeTab, model.userTab, model.documentsTab],
+        orientation: "${model.orientation}",
+        variant: "${model.variant}",
+        scrollButtons: "${model.scrollButtons === "auto" ? "auto" : model.scrollButtons === "true" ? "true" : "false"}",
+        centered: ${model.centered}
+    }),
+
+    validationCheckbox: useCheckbox({
+        labelView: "Invalid Tab",
+        checked: false,
+        onChange: () => model.tabsContainer.validate() // Trigger validation when checkbox changes
+    })
+}`;
+    }
 }
 
 const TabPreview = UECA.getFC(useTabPreview);
