@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { Col, EditBaseModel, EditBaseParams, EditBaseStruct, TabModel, useEditBase } from "@components";
+import { Col, EditBaseModel, EditBaseParams, EditBaseStruct, Tab, TabModel, TabParams, useEditBase } from "@components";
 import { asyncSafe, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ChevronDownIcon } from "@core";
 import React from "react";
 import "./tabsContainer.css";
@@ -7,6 +7,7 @@ import "./tabsContainer.css";
 type TabsContainerStruct = EditBaseStruct<{
     props: {
         tabs: TabModel[];
+        tabsConfig: TabParams[]; // For direct configuration of tabs without expecting Tab models, if needed
         selectedTab: TabModel;
         selectedTabId: string;
         selectedTabIndex: number;
@@ -24,7 +25,10 @@ type TabsContainerStruct = EditBaseStruct<{
         getTabIndex: (tabId: string) => number;
         scrollLeft: () => void;
         scrollRight: () => void;
-        checkOverflow: () => void;
+        _checkOverflow: () => void;
+        _tabsView: () => React.JSX.Element;
+        _scrollBackwardView: () => React.JSX.Element;
+        _scrollForwardView: () => React.JSX.Element;
     };
 
     events: {
@@ -36,12 +40,11 @@ type TabsContainerParams = EditBaseParams<TabsContainerStruct>;
 type TabsContainerModel = EditBaseModel<TabsContainerStruct>;
 
 function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
-    const scrollerRef = React.useRef<HTMLDivElement>(null);
-
     const struct: TabsContainerStruct = {
         props: {
             id: useTabsContainer.name,
             tabs: [],
+            tabsConfig: [],
             selectedTab: undefined,
             selectedTabId: UECA.bind(
                 () => model.__defaultTabId ?? model.selectedTab?.getTabId(),
@@ -62,11 +65,19 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             scrollButtons: undefined,
             centered: false,
             _hasOverflow: false,
-            __scrollerRef: scrollerRef,
+            __scrollerRef: React.useRef<HTMLDivElement>(null),
         },
 
         events: {
-            onChangeTabs: () => _initTabs(),
+            onChangeTabs: () => {
+                _initTabs();
+            },
+
+            onChangeTabsConfig: () => {
+                // Reset tabs to capture new tab models from tabViews
+                model.clearModelCache();
+                model.tabs = [];
+            },
 
             onChangeSelectedTab: () => {
                 model.tabs?.map(x => x.selected = false);
@@ -79,11 +90,11 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             },
 
             onChangeOrientation: () => {
-                setTimeout(() => model.checkOverflow(), 0);
+                setTimeout(() => model._checkOverflow(), 0);
             },
 
             onChangeVariant: () => {
-                setTimeout(() => model.checkOverflow(), 0);
+                setTimeout(() => model._checkOverflow(), 0);
             }
         },
 
@@ -116,7 +127,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                 }
             },
 
-            checkOverflow: () => {
+            _checkOverflow: () => {
                 const scroller = model.__scrollerRef.current;
                 if (scroller) {
                     if (model.orientation === "horizontal") {
@@ -125,24 +136,109 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                         model._hasOverflow = scroller.scrollHeight > scroller.clientHeight;
                     }
                 }
+            },
+
+            _tabsView: () => {
+                let tabs: React.JSX.Element[] = [];
+                if (model.tabsConfig?.length) {
+                    tabs = model.tabsConfig.map(p => {
+                        const params = { ...p };
+                        params.constr = (tabModel) => { model.tabs.push(tabModel) };
+                        return <Tab key={p.id as string} {...params} />;
+                    });
+                } else if (model.tabs?.length) {
+                    tabs = model.tabs?.map(t => <t.View key={t.getTabId()} />);
+                }
+
+                const listClasses = [
+                    "ueca-tabs-list",
+                    model.variant === "fullWidth" ? "fullWidth" : "",
+                    model.centered ? "centered" : "",
+                    model.orientation === "vertical" ? "ueca-tabs-vertical" : ""
+                ].filter(Boolean).join(" ");
+
+                const scrollerClasses = [
+                    "ueca-tabs-scroller",
+                    model.variant === "scrollable" ? "scrollable" : ""
+                ].filter(Boolean).join(" ");
+
+                return (
+                    <div ref={model.__scrollerRef} className={scrollerClasses}>
+                        <div className={listClasses}>
+                            {tabs}
+                        </div>
+                    </div>
+                );
+            },
+
+            _scrollBackwardView: () => {
+                const showScrollButtons = model.variant === "scrollable" &&
+                    (model.scrollButtons === true || (model.scrollButtons === "auto" && model._hasOverflow));
+                if (!showScrollButtons) return null;
+
+                return (
+                    <button
+                        type="button"
+                        className="ueca-tabs-scroll-button"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            model.scrollLeft();
+                        }}
+                    >
+                        {model.orientation === "horizontal" ? (
+                            <ChevronLeftIcon />
+                        ) : (
+                            <ChevronUpIcon />
+                        )}
+                    </button>
+                );
+            },
+
+            _scrollForwardView: () => {
+                const showScrollButtons = model.variant === "scrollable" &&
+                    (model.scrollButtons === true || (model.scrollButtons === "auto" && model._hasOverflow));
+                if (!showScrollButtons) return null;
+
+                return (
+                    <button
+                        type="button"
+                        className="ueca-tabs-scroll-button"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            model.scrollRight();
+                        }}
+                    >
+                        {model.orientation === "horizontal" ? (
+                            <ChevronRightIcon />
+                        ) : (
+                            <ChevronDownIcon />
+                        )}
+                    </button>
+                );
             }
         },
 
-        init: () => _initTabs(),
+        init: () => {
+            _initTabs();
+        },
 
         mount: () => {
             // Check overflow on window resize            
-            window.addEventListener('resize', model.checkOverflow);
+            window.addEventListener('resize', model._checkOverflow);
         },
 
         unmount: () => {
             // Cleanup resize listener
-            window.removeEventListener('resize', model.checkOverflow);
+            window.removeEventListener('resize', model._checkOverflow);
         },
 
         draw: () => {
-            // Check overflow after render
-            setTimeout(() => model.checkOverflow(), 0);
+            setTimeout(() => {
+                // Check overflow after render
+                model._checkOverflow();
+            }, 0);
         },
 
         View: () => {
@@ -151,64 +247,13 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                 model.orientation
             ].filter(Boolean).join(" ");
 
-            const scrollerClasses = [
-                "ueca-tabs-scroller",
-                model.variant === "scrollable" ? "scrollable" : ""
-            ].filter(Boolean).join(" ");
-
-            const listClasses = [
-                "ueca-tabs-list",
-                model.variant === "fullWidth" ? "fullWidth" : "",
-                model.centered ? "centered" : "",
-                model.orientation === "vertical" ? "ueca-tabs-vertical" : ""
-            ].filter(Boolean).join(" ");
-
-            const showScrollButtons = model.variant === "scrollable" &&
-                (model.scrollButtons === true || (model.scrollButtons === "auto" && model._hasOverflow));
-
             return (
                 <div id={model.htmlId()} className={containerClasses}>
                     <div className={`ueca-tabs-header ${model.orientation === "vertical" ? "ueca-tabs-vertical" : ""}`}>
                         <div className="ueca-tabs-wrapper">
-                            {showScrollButtons && (
-                                <button
-                                    type="button"
-                                    className="ueca-tabs-scroll-button ueca-tabs-scroll-start"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        model.scrollLeft();
-                                    }}
-                                >
-                                    {model.orientation === "horizontal" ? (
-                                        <ChevronLeftIcon />
-                                    ) : (
-                                        <ChevronUpIcon />
-                                    )}
-                                </button>
-                            )}
-                            <div ref={model.__scrollerRef} className={scrollerClasses}>
-                                <div className={listClasses}>
-                                    {model.tabs?.map(t => <t.View key={t.getTabId()} />)}
-                                </div>
-                            </div>
-                            {showScrollButtons && (
-                                <button
-                                    type="button"
-                                    className="ueca-tabs-scroll-button ueca-tabs-scroll-end"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        model.scrollRight();
-                                    }}
-                                >
-                                    {model.orientation === "horizontal" ? (
-                                        <ChevronRightIcon />
-                                    ) : (
-                                        <ChevronDownIcon />
-                                    )}
-                                </button>
-                            )}
+                            <model._scrollBackwardView />
+                            <model._tabsView />
+                            <model._scrollForwardView />
                         </div>
                     </div>
                     <Col fill overflow="auto">
@@ -245,7 +290,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
         }
 
         // Check overflow after tabs initialization
-        setTimeout(() => model.checkOverflow(), 0);
+        setTimeout(() => model._checkOverflow(), 0);
     }
 }
 

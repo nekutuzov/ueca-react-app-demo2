@@ -1,7 +1,8 @@
 import * as UECA from "ueca-react";
-import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Col, Block, TabModel, useTab } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, TabModel, useTab } from "@components";
 import { TabsScreenModel, useTabsScreen, asyncSafe } from "@core";
 import { PropertiesTabModel, usePropertiesTab } from "./propertiesTab";
+import { TabExamplesModel, useTabExamples } from "./tabExamples";
 
 type TabsComponentScreenStruct = ScreenBaseStruct<{
     props: {
@@ -13,6 +14,7 @@ type TabsComponentScreenStruct = ScreenBaseStruct<{
         propertiesTab: TabModel;
         examplesTab: TabModel;
         propertiesTabContent: PropertiesTabModel;
+        examplesTabContent: TabExamplesModel;
     };
 }>;
 
@@ -39,6 +41,8 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
 
             propertiesTabContent: usePropertiesTab(),
 
+            examplesTabContent: useTabExamples(),
+
             propertiesTab: useTab({
                 tabId: "properties",
                 labelView: "Properties",
@@ -48,14 +52,7 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
             examplesTab: useTab({
                 tabId: "examples",
                 labelView: "Examples",
-                contentView: () => (
-                    <Col fill overflow="auto" padding="medium">
-                        <Block>
-                            <h2>Examples</h2>
-                            <p>Examples coming soon...</p>
-                        </Block>
-                    </Col>
-                )
+                contentView: () => <model.examplesTabContent.View />
             })
         },
 
