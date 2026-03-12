@@ -51,7 +51,7 @@ function useTabsComponentScreen(params?: TabsComponentScreenParams): TabsCompone
 
             examplesTab: useTab({
                 tabId: "examples",
-                labelView: "Examples",
+                labelView: "Examples",                
                 contentView: () => <model.examplesTabContent.View />
             })
         },

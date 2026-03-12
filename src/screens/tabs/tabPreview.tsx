@@ -3,7 +3,9 @@ import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
     Col, Block, Card,
     TabsContainerModel, useTabsContainer,
-    TabModel, useTab
+    TabModel, useTab,
+    CheckboxModel,
+    useCheckbox
 } from "@components";
 import { CodeSampleModel, DocumentIcon, HomeIcon, PersonIcon, useCodeSample } from "@core";
 
@@ -22,15 +24,12 @@ type TabPreviewStruct = UIBaseStruct<{
 
     children: {
         tabsContainer: TabsContainerModel;
-        demoTab: TabModel;
-        otherTab1: TabModel;
-        otherTab2: TabModel;
+        homeTab: TabModel;
+        userTab: TabModel;
+        documentsTab: TabModel;
         tabCodeSample: CodeSampleModel;
         tabsContainerCodeSample: CodeSampleModel;
-    };
-
-    methods: {
-        _PreviewBlockView: () => React.ReactElement;
+        validationCheckbox: CheckboxModel;
     };
 }>;
 
@@ -53,43 +52,45 @@ function useTabPreview(params?: TabPreviewParams): TabPreviewModel {
         },
 
         children: {
-            demoTab: useTab({
+            homeTab: useTab({
                 labelView: () => model.labelText,
                 iconView: () => <HomeIcon render={model.showIcon} />,
                 iconPosition: () => model.iconPosition,
                 disabled: () => model.disabled,
                 wrapped: () => model.wrapped,
+                onValidate: async () => model.validationCheckbox.checked ? "Demo validation error: This tab is not valid." : "",
                 contentView: () => (
-                    <Block padding="medium">
-                        <p>This is the demo tab content.</p>
-                    </Block>
+                    <Col padding="medium" spacing="small">
+                        <p>This is the {model.labelText} tab content.</p>
+                        <model.validationCheckbox.View />
+                    </Col>
                 )
             }),
 
-            otherTab1: useTab({
+            userTab: useTab({
                 labelView: "User",
                 iconView: () => <PersonIcon render={model.showIcon} />,
-                iconPosition: () => model.iconPosition,
+                iconPosition: () => model.iconPosition,                
                 contentView: () => (
                     <Block padding="medium">
-                        <p>Content for User tab</p>
+                        <p>This is the User tab content.</p>
                     </Block>
                 )
             }),
 
-            otherTab2: useTab({
+            documentsTab: useTab({
                 labelView: "Documents",
                 iconView: () => <DocumentIcon render={model.showIcon} />,
                 iconPosition: () => model.iconPosition,
                 contentView: () => (
                     <Block padding="medium">
-                        <p>Content for Documents Tab</p>
+                        <p>This is the Documents tab content.</p>
                     </Block>
                 )
             }),
 
             tabsContainer: useTabsContainer({
-                tabs: () => [model.demoTab, model.otherTab1, model.otherTab2],
+                tabs: () => [model.homeTab, model.userTab, model.documentsTab],
                 orientation: () => model.orientation,
                 variant: () => model.variant,
                 scrollButtons: () => model.scrollButtons === "auto" ? "auto" : model.scrollButtons === "true",
@@ -118,15 +119,13 @@ function useTabPreview(params?: TabPreviewParams): TabPreviewModel {
                     "scrollButtons",
                     "centered"
                 ]
-            })
-        },
+            }),
 
-        methods: {
-            _PreviewBlockView: () => (
-                <Col spacing="medium" height={120}>
-                    <model.tabsContainer.View />
-                </Col>
-            )
+            validationCheckbox: useCheckbox({
+                labelView: "Invalid Tab",
+                checked: false,
+                onChange: () => model.tabsContainer.validate() // Trigger validation when checkbox changes
+            })
         },
 
         View: () => (
@@ -137,7 +136,9 @@ function useTabPreview(params?: TabPreviewParams): TabPreviewModel {
                 overflow="auto"
             >
                 <Col spacing="medium" fill>
-                    <model._PreviewBlockView />
+                    <Col spacing="medium" height={180}>
+                        <model.tabsContainer.View />
+                    </Col>
                     <model.tabCodeSample.View />
                     <model.tabsContainerCodeSample.View />
                 </Col>

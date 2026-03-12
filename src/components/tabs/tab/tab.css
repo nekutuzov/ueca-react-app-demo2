@@ -40,12 +40,12 @@
 }
 
 .ueca-tab.invalid {
-    color: #d32f2f;
+    color: var(--tab-error-color, #d32f2f);
 }
 
 .ueca-tab.selected.invalid {
-    color: #d32f2f;
-    border-bottom-color: #d32f2f;
+    color: var(--tab-error-color, #d32f2f);
+    border-bottom-color: var(--tab-error-color, #d32f2f);
 }
 
 /* Icon positioning */
