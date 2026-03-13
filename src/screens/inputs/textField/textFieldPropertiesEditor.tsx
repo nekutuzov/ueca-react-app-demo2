@@ -6,12 +6,11 @@ import {
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
-    ButtonModel, useButton
+    ButtonModel, useButton,
+    TextFieldVariant,
+    TextFieldType
 } from "@components";
 import { Palette } from "@core";
-
-type TextFieldVariant = "outlined" | "filled" | "standard";
-type TextFieldType = "text" | "email" | "password" | "number" | "tel" | "url" | "search";
 
 type TextFieldPropertiesEditorStruct = UIBaseStruct<{
     props: {

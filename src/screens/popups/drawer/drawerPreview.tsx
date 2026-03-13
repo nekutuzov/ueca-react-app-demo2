@@ -3,11 +3,11 @@ import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
     Col, Block, Card,
     ButtonModel, useButton,
-    AlertDrawerModel, useAlertDrawer
+    AlertDrawerModel, useAlertDrawer,
+    DrawerAnchor,
+    DrawerSeverity
 } from "@components";
 
-type DrawerAnchor = "left" | "top" | "right" | "bottom";
-type DrawerSeverity = "success" | "info" | "warning" | "error" | undefined;
 type DrawerButtonType = "ok" | "cancel" | "okCancel" | "none";
 
 type DrawerPreviewStruct = UIBaseStruct<{
@@ -207,4 +207,4 @@ drawer.open = true;`}
 
 const DrawerPreview = UECA.getFC(useDrawerPreview);
 
-export { DrawerPreviewParams, DrawerPreviewModel, useDrawerPreview, DrawerPreview };
+export { DrawerPreviewParams, DrawerPreviewModel, DrawerButtonType, useDrawerPreview, DrawerPreview };

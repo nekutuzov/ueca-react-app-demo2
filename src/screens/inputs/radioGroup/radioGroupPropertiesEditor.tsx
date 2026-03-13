@@ -6,12 +6,11 @@ import {
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
-    ButtonModel, useButton
+    ButtonModel, useButton,
+    RadioOrientation,
+    RadioSize
 } from "@components";
 import { Palette } from "@core";
-
-type RadioOrientation = "row" | "column";
-type RadioSize = "small" | "medium" | "large";
 
 type RadioGroupPropertiesEditorStruct = UIBaseStruct<{
     props: {

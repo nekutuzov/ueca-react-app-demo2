@@ -2,12 +2,11 @@ import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
     Col, Block, Card,
-    RadioGroupModel, useRadioGroup, RadioOption
+    RadioGroupModel, useRadioGroup, RadioOption,
+    RadioOrientation,
+    RadioSize
 } from "@components";
 import { Palette, CodeSampleModel, useCodeSample } from "@core";
-
-type RadioOrientation = "row" | "column";
-type RadioSize = "small" | "medium" | "large";
 
 type RadioGroupPreviewStruct = UIBaseStruct<{
     props: {
@@ -76,7 +75,7 @@ function useRadioGroupPreview(params?: RadioGroupPreviewParams): RadioGroupPrevi
             codeSample: useCodeSample({
                 componentName: "RadioGroup",
                 sourceObject: () => model,
-                properties: () => ["labelText", "orientation", "size", "color", "disabled", "required", "fullWidth", "helperText", "selectedValue"],                
+                properties: () => ["labelText", "orientation", "size", "color", "disabled", "required", "fullWidth", "helperText", "selectedValue"],
             })
         },
 

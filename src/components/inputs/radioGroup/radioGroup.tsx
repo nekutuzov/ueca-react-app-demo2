@@ -9,6 +9,9 @@ type RadioOption<T = string> = {
     disabled?: boolean;
 };
 
+type RadioOrientation = "row" | "column";
+type RadioSize = "small" | "medium" | "large";
+
 type RadioGroupStruct<T = string> = EditBaseStruct<{
     props: {
         labelView: React.ReactNode;
@@ -16,8 +19,8 @@ type RadioGroupStruct<T = string> = EditBaseStruct<{
         options: RadioOption<T>[];
         disabled: boolean;
         helperTextView: string;
-        orientation: "row" | "column";
-        size: "small" | "medium" | "large";
+        orientation: RadioOrientation;
+        size: RadioSize;
         required: boolean;
         fullWidth: boolean;
         color: Palette;
@@ -145,4 +148,4 @@ function useRadioGroup<T = string>(params?: RadioGroupParams<T>): RadioGroupMode
 
 const RadioGroup = UECA.getFC(useRadioGroup);
 
-export { RadioGroupModel, RadioOption, RadioGroupParams, useRadioGroup, RadioGroup };
+export { RadioGroupModel, RadioOption, RadioGroupParams, RadioOrientation, RadioSize, useRadioGroup, RadioGroup };

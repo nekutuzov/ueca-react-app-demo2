@@ -4,12 +4,11 @@ import {
     Col, Block, Card,
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
-    ButtonModel, useButton
+    ButtonModel, useButton,
+    DrawerAnchor,
+    DrawerSeverity
 } from "@components";
-
-type DrawerAnchor = "left" | "top" | "right" | "bottom";
-type DrawerSeverity = "success" | "info" | "warning" | "error" | undefined;
-type DrawerButtonType = "ok" | "cancel" | "okCancel" | "none";
+import { DrawerButtonType } from "./drawerPreview";
 
 type DrawerPropertiesEditorStruct = UIBaseStruct<{
     props: {
@@ -21,7 +20,7 @@ type DrawerPropertiesEditorStruct = UIBaseStruct<{
 
     children: {
         anchorRadioGroup: RadioGroupModel<DrawerAnchor>;
-        severitySelect: SelectModel<string>;
+        severitySelect: SelectModel<DrawerSeverity>;
         buttonTypeRadioGroup: RadioGroupModel<DrawerButtonType>;
         widthSlider: RadioGroupModel<number>;
         resetButton: ButtonModel;
@@ -60,9 +59,9 @@ function useDrawerPropertiesEditor(params?: DrawerPropertiesEditorParams): Drawe
 
             severitySelect: useSelect({
                 labelView: "Severity Icon",
-                value: UECA.bind(() => model, "severity") as UECA.Bond<string>,
+                value: UECA.bind(() => model, "severity"),
                 options: [
-                    { value: "", label: "None" },
+                    { value: undefined, label: "None" },
                     { value: "success", label: "Success" },
                     { value: "info", label: "Info" },
                     { value: "warning", label: "Warning" },

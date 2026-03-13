@@ -6,11 +6,10 @@ import {
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
-    ButtonModel, useButton
+    ButtonModel, useButton,
+    CheckboxSize
 } from "@components";
 import { Palette } from "@core";
-
-type CheckboxSize = "small" | "medium" | "large";
 
 type CheckboxPropertiesEditorStruct = UIBaseStruct<{
     props: {

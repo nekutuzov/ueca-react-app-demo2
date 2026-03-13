@@ -2,14 +2,17 @@ import * as UECA from "ueca-react";
 import { Row, ButtonModel, DrawerModel, SeverityIcon, UIBaseModel, UIBaseParams, UIBaseStruct, useButton, useDrawer, useUIBase } from "@components";
 import { resolvePaletteColor } from "@core";
 
+type DrawerAnchor = "left" | "top" | "right" | "bottom";
+type DrawerSeverity = "success" | "info" | "warning" | "error" | undefined;
+
 // Alert Drawer component
 type AlertDrawerStruct = UIBaseStruct<{
     props: {
-        anchor: "left" | "top" | "right" | "bottom";
+        anchor: DrawerAnchor;
         contentView: React.ReactNode;
         customActionView: React.ReactNode;
         open: boolean;
-        severity?: "success" | "info" | "warning" | "error";
+        severity?: DrawerSeverity;
         titleView: React.ReactNode;
         width?: number;
         buttons: {
@@ -120,4 +123,4 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
 
 const AlertDrawer = UECA.getFC(useAlertDrawer);
 
-export { AlertDrawerModel, AlertDrawerParams, useAlertDrawer, AlertDrawer };
+export { AlertDrawerModel, AlertDrawerParams, DrawerAnchor, DrawerSeverity, useAlertDrawer, AlertDrawer };

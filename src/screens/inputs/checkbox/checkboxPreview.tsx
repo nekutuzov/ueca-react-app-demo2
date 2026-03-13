@@ -2,11 +2,10 @@ import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
     Col, Block, Button, Card,
-    CheckboxModel, useCheckbox
+    CheckboxModel, useCheckbox,
+    CheckboxSize
 } from "@components";
 import { Palette, CodeSampleModel, useCodeSample } from "@core";
-
-type CheckboxSize = "small" | "medium" | "large";
 
 type CheckboxPreviewStruct = UIBaseStruct<{
     props: {

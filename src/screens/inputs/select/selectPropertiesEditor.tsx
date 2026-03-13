@@ -6,12 +6,11 @@ import {
     RadioGroupModel, useRadioGroup,
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
-    ButtonModel, useButton
+    ButtonModel, useButton,
+    SelectVariant,
+    SelectSize
 } from "@components";
 import { Palette } from "@core";
-
-type SelectVariant = "filled" | "outlined" | "standard";
-type SelectSize = "small" | "medium";
 
 type SelectPropertiesEditorStruct = UIBaseStruct<{
     props: {

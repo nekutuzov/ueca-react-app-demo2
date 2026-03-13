@@ -6,12 +6,11 @@ import {
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
     ButtonModel, useButton,
-    Col
+    Col,
+    IconKind,
+    IconSize
 } from "@components";
 import { Palette } from "@core";
-
-type IconKind = "ok" | "cancel" | "delete" | "refresh" | "close";
-type IconSize = "small" | "medium" | "large";
 
 type IconButtonPropertiesEditorStruct = UIBaseStruct<{
     props: {

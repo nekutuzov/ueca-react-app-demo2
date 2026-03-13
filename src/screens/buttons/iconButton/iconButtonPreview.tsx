@@ -2,16 +2,16 @@ import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
     Col, Block, Card,
-    IconButtonModel, useIconButton
+    IconButtonModel, useIconButton,
+    IconKind,
+    IconSize
 } from "@components";
 import { Palette, HeartIcon, CodeSampleModel, useCodeSample } from "@core";
-
-type IconKind = "ok" | "cancel" | "delete" | "refresh" | "close";
 
 type IconButtonPreviewStruct = UIBaseStruct<{
     props: {
         kind: IconKind;
-        size: "small" | "medium" | "large";
+        size: IconSize;
         color: Palette | "inherit";
         disabled: boolean;
         useCustomIcon: boolean;

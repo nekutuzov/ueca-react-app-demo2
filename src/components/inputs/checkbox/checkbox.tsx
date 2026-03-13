@@ -3,6 +3,8 @@ import { EditBaseModel, EditBaseParams, EditBaseStruct, useEditBase } from "@com
 import { Palette, resolvePaletteColor } from "@core";
 import "./checkbox.css";
 
+type CheckboxSize = "small" | "medium" | "large";
+
 type CheckboxStruct = EditBaseStruct<{
     props: {
         checked: boolean;
@@ -11,7 +13,7 @@ type CheckboxStruct = EditBaseStruct<{
         indeterminate: boolean;
         required: boolean;
         color: Palette;
-        size: "small" | "medium" | "large";
+        size: CheckboxSize;
         helperTextView: React.ReactNode;
     };
 
@@ -107,4 +109,4 @@ function useCheckbox(params?: CheckboxParams): CheckboxModel {
 
 const Checkbox = UECA.getFC(useCheckbox);
 
-export { CheckboxModel, CheckboxParams, useCheckbox, Checkbox };
+export { CheckboxModel, CheckboxParams, CheckboxSize, useCheckbox, Checkbox };

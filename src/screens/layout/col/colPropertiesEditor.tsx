@@ -7,20 +7,25 @@ import {
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
     ButtonModel, useButton,
-    Col
+    Col,
+    Spacing,
+    ColHorizontalAlign,
+    ColVerticalAlign,
+    PaddingSize,
+    FlexWrap
 } from "@components";
 import { Palette } from "@core";
 
 type ColPropertiesEditorStruct = UIBaseStruct<{
     props: {
-        spacing: string;
-        horizontalAlign: string;
-        verticalAlign: string;
-        padding: string;
+        spacing: Spacing;
+        horizontalAlign: ColHorizontalAlign;
+        verticalAlign: ColVerticalAlign;
+        padding: PaddingSize;
         backgroundColor: Palette;
         reverseItems: boolean;
         divider: boolean;
-        flexWrap: string;
+        flexWrap: FlexWrap;
         fill: boolean;
         width: string;
         height: string;
@@ -28,14 +33,14 @@ type ColPropertiesEditorStruct = UIBaseStruct<{
     };
 
     children: {
-        spacingRadioGroup: RadioGroupModel;
-        horizontalAlignRadioGroup: RadioGroupModel;
-        verticalAlignRadioGroup: RadioGroupModel;
-        paddingRadioGroup: RadioGroupModel;
+        spacingRadioGroup: RadioGroupModel<Spacing>;
+        horizontalAlignRadioGroup: RadioGroupModel<ColHorizontalAlign>;
+        verticalAlignRadioGroup: RadioGroupModel<ColVerticalAlign>;
+        paddingRadioGroup: RadioGroupModel<PaddingSize>;
         backgroundColorSelect: SelectModel;
         reverseItemsCheckbox: CheckboxModel;
         dividerCheckbox: CheckboxModel;
-        flexWrapRadioGroup: RadioGroupModel;
+        flexWrapRadioGroup: RadioGroupModel<FlexWrap>;
         fillCheckbox: CheckboxModel;
         widthField: TextFieldModel;
         heightField: TextFieldModel;
@@ -70,9 +75,9 @@ function useColPropertiesEditor(params?: ColPropertiesEditorParams): ColProperti
         },
 
         children: {
-            spacingRadioGroup: useRadioGroup({
+            spacingRadioGroup: useRadioGroup<Spacing>({
                 labelView: "Spacing",
-                value: UECA.bind(() => model, "spacing") as UECA.Bond<string>,
+                value: UECA.bind(() => model, "spacing"),
                 options: [
                     { value: "none", label: "None" },
                     { value: "tiny", label: "Tiny" },
@@ -86,9 +91,9 @@ function useColPropertiesEditor(params?: ColPropertiesEditorParams): ColProperti
                 orientation: "row"
             }),
 
-            horizontalAlignRadioGroup: useRadioGroup({
+            horizontalAlignRadioGroup: useRadioGroup<ColHorizontalAlign>({
                 labelView: "Horizontal Align",
-                value: UECA.bind(() => model, "horizontalAlign") as UECA.Bond<string>,
+                value: UECA.bind(() => model, "horizontalAlign"),
                 options: [
                     { value: "left", label: "Left" },
                     { value: "center", label: "Center" },
@@ -98,9 +103,9 @@ function useColPropertiesEditor(params?: ColPropertiesEditorParams): ColProperti
                 orientation: "row"
             }),
 
-            verticalAlignRadioGroup: useRadioGroup({
+            verticalAlignRadioGroup: useRadioGroup<ColVerticalAlign>({
                 labelView: "Vertical Align",
-                value: UECA.bind(() => model, "verticalAlign") as UECA.Bond<string>,
+                value: UECA.bind(() => model, "verticalAlign"),
                 options: [
                     { value: "top", label: "Top" },
                     { value: "center", label: "Center" },
@@ -112,11 +117,11 @@ function useColPropertiesEditor(params?: ColPropertiesEditorParams): ColProperti
                 orientation: "row"
             }),
 
-            paddingRadioGroup: useRadioGroup({
+            paddingRadioGroup: useRadioGroup<PaddingSize>({
                 labelView: "Padding",
-                value: UECA.bind(() => model, "padding") as UECA.Bond<string>,
+                value: UECA.bind(() => model, "padding"),
                 options: [
-                    { value: "", label: "None" },
+                    { value: "none", label: "None" },
                     { value: "tiny", label: "Tiny" },
                     { value: "small", label: "Small" },
                     { value: "medium", label: "Medium" },
@@ -152,9 +157,9 @@ function useColPropertiesEditor(params?: ColPropertiesEditorParams): ColProperti
                 checked: UECA.bind(() => model, "divider")
             }),
 
-            flexWrapRadioGroup: useRadioGroup({
+            flexWrapRadioGroup: useRadioGroup<FlexWrap>({
                 labelView: "Flex Wrap",
-                value: UECA.bind(() => model, "flexWrap") as UECA.Bond<string>,
+                value: UECA.bind(() => model, "flexWrap"),
                 options: [
                     { value: "nowrap", label: "No Wrap" },
                     { value: "wrap", label: "Wrap" },

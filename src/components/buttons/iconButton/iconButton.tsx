@@ -5,6 +5,7 @@ import { asyncSafe, Palette, resolvePaletteColor } from "@core";
 import "./iconButton.css";
 
 type IconKind = "ok" | "cancel" | "delete" | "refresh" | "close";
+type IconSize = "small" | "medium" | "large";
 
 type IconButtonStruct = UIBaseStruct<{
     props: {
@@ -12,7 +13,7 @@ type IconButtonStruct = UIBaseStruct<{
         color: Palette | "inherit";
         disabled: boolean;
         iconView: React.ReactNode;
-        size: "small" | "medium" | "large";
+        size: IconSize;
     };
 
     events: {
@@ -108,4 +109,4 @@ function useCloseIconButton(params?: CloseIconButtonParams): IconButtonModel {
 
 const CloseIconButton = UECA.getFC(useCloseIconButton);
 
-export { IconKind, IconButtonModel, IconButtonParams, useIconButton, IconButton, useCloseIconButton, CloseIconButton };
+export { IconKind, IconSize, IconButtonModel, IconButtonParams, useIconButton, IconButton, useCloseIconButton, CloseIconButton };

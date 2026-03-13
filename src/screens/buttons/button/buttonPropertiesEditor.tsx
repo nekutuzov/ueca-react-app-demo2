@@ -7,12 +7,11 @@ import {
     SelectModel, useSelect,
     CheckboxModel, useCheckbox,
     ButtonModel, useButton,
-    Col
+    Col,
+    ButtonVariant,
+    ButtonSize
 } from "@components";
 import { Palette } from "@core";
-
-type ButtonVariant = "text" | "outlined" | "contained";
-type ButtonSize = "small" | "medium" | "large";
 
 type ButtonPropertiesEditorStruct = UIBaseStruct<{
     props: {

@@ -1,20 +1,25 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Row, Col, Block, Card
+    Row, Col, Block, Card,
+    Spacing,
+    ColHorizontalAlign,
+    ColVerticalAlign,
+    PaddingSize,
+    FlexWrap
 } from "@components";
 import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
 type ColPreviewStruct = UIBaseStruct<{
     props: {
-        spacing: string;
-        horizontalAlign: string;
-        verticalAlign: string;
-        padding: string;
+        spacing: Spacing;
+        horizontalAlign: ColHorizontalAlign;
+        verticalAlign: ColVerticalAlign;
+        padding: PaddingSize;
         backgroundColor: Palette;
         reverseItems: boolean;
         divider: boolean;
-        flexWrap: string;
+        flexWrap: FlexWrap;
         fill: boolean;
         width: string;
         height: string;
@@ -72,20 +77,18 @@ function useColPreview(params?: ColPreviewParams): ColPreviewModel {
                 return (
                     <Row horizontalAlign="center" minHeight={"400px"}>
                         <Col
-                            spacing={model.spacing as any}
-                            horizontalAlign={model.horizontalAlign as any}
-                            verticalAlign={model.verticalAlign as any}
-                            padding={model.padding as any || undefined}
+                            border={"dashed"}                            
+                            spacing={model.spacing}
+                            horizontalAlign={model.horizontalAlign}
+                            verticalAlign={model.verticalAlign}
+                            padding={model.padding}
                             backgroundColor={model.backgroundColor}
                             reverseItems={model.reverseItems}
                             divider={model.divider}
-                            flexWrap={model.flexWrap as any}
+                            flexWrap={model.flexWrap}
                             fill={model.fill}
                             width={model.width || undefined}
                             height={model.height || undefined}
-                            sx={{
-                                border: "2px dashed #999",
-                            }}
                         >
                             {children}
                         </Col>

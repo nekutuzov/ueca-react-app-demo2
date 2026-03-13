@@ -1,9 +1,9 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block, Button, Card, TextFieldModel, useTextField } from "@components";
+import {
+    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block, Button, Card, TextFieldModel, useTextField, TextFieldVariant,
+    TextFieldType
+} from "@components";
 import { Palette, CodeSampleModel, useCodeSample } from "@core";
-
-type TextFieldVariant = "outlined" | "filled" | "standard";
-type TextFieldType = "text" | "email" | "password" | "number" | "tel" | "url" | "search";
 
 type TextFieldPreviewStruct = UIBaseStruct<{
     props: {
@@ -75,7 +75,7 @@ function useTextFieldPreview(params?: TextFieldPreviewParams): TextFieldPreviewM
             codeSample: useCodeSample({
                 componentName: "TextField",
                 sourceObject: () => model,
-                properties: () => ["labelText", "placeholder", "variant", "type", "color", "disabled", "required", "error", "fullWidth", "multiline", "rows", "helperText", "value"],                
+                properties: () => ["labelText", "placeholder", "variant", "type", "color", "disabled", "required", "error", "fullWidth", "multiline", "rows", "helperText", "value"],
             })
         },
 

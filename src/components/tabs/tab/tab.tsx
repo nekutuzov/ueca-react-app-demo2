@@ -3,6 +3,8 @@ import { EditBaseModel, EditBaseParams, EditBaseStruct, TabsContainerModel, useE
 import { asyncSafe } from "@core";
 import "./tab.css";
 
+type TabIconPosition = "top" | "bottom" | "start" | "end";
+
 // Tab component
 type TabStruct = EditBaseStruct<{
     props: {
@@ -13,8 +15,8 @@ type TabStruct = EditBaseStruct<{
         visible: boolean;
         labelView: React.ReactNode;
         disabled: boolean;
-        iconView: React.ReactElement<unknown>;
-        iconPosition: "top" | "bottom" | "start" | "end";
+        iconView: React.ReactNode;
+        iconPosition: TabIconPosition;
         wrapped: boolean;
     };
 
@@ -90,4 +92,4 @@ function useTab(params?: TabParams): TabModel {
 
 const Tab = UECA.getFC(useTab);
 
-export { TabModel, TabParams, useTab, Tab };
+export { TabModel, TabParams, TabIconPosition, useTab, Tab };

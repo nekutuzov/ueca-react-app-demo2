@@ -2,15 +2,17 @@ import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
     Col, Block, Card,
-    ButtonModel, useButton
+    ButtonModel, useButton,
+    ButtonSize,
+    ButtonVariant
 } from "@components";
 import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
 type ButtonPreviewStruct = UIBaseStruct<{
     props: {
         buttonText: string;
-        variant: "text" | "outlined" | "contained";
-        size: "small" | "medium" | "large";
+        variant: ButtonVariant;
+        size: ButtonSize;
         color: Palette;
         disabled: boolean;
         fullWidth: boolean;
@@ -69,7 +71,7 @@ function useButtonPreview(params?: ButtonPreviewParams): ButtonPreviewModel {
                     "color",
                     "disabled",
                     "fullWidth"
-                ]                
+                ]
             })
         },
 

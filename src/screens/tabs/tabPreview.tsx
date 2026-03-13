@@ -5,20 +5,24 @@ import {
     TabsContainerModel, useTabsContainer,
     TabModel, useTab,
     CheckboxModel,
-    useCheckbox
+    useCheckbox,
+    TabOrientation,
+    TabScrollButtons,
+    TabVariant,
+    TabIconPosition
 } from "@components";
 import { CodeSampleModel, DocumentIcon, HomeIcon, PersonIcon, useCodeSample } from "@core";
 
 type TabPreviewStruct = UIBaseStruct<{
     props: {
         labelText: string;
-        iconPosition: "top" | "bottom" | "start" | "end";
+        iconPosition: TabIconPosition;
         disabled: boolean;
         wrapped: boolean;
         showIcon: boolean;
-        orientation: "horizontal" | "vertical";
-        variant: "standard" | "scrollable" | "fullWidth";
-        scrollButtons: "auto" | "true" | "false";
+        orientation: TabOrientation;
+        variant: TabVariant;
+        scrollButtons: TabScrollButtons;
         centered: boolean;
     };
 
@@ -92,7 +96,7 @@ function useTabPreview(params?: TabPreviewParams): TabPreviewModel {
                 tabs: () => [model.homeTab, model.userTab, model.documentsTab],
                 orientation: () => model.orientation,
                 variant: () => model.variant,
-                scrollButtons: () => model.scrollButtons === "auto" ? "auto" : model.scrollButtons === "true",
+                scrollButtons: () => model.scrollButtons,
                 centered: () => model.centered
             }),
 
@@ -161,7 +165,7 @@ children: {
         tabs: () => [model.homeTab, model.userTab, model.documentsTab],
         orientation: "${model.orientation}",
         variant: "${model.variant}",
-        scrollButtons: "${model.scrollButtons === "auto" ? "auto" : model.scrollButtons === "true" ? "true" : "false"}",
+        scrollButtons: "${model.scrollButtons?.toString()}",
         centered: ${model.centered}
     }),
 

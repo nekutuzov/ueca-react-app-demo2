@@ -6,36 +6,35 @@ import {
     RadioGroupModel, useRadioGroup,
     CheckboxModel, useCheckbox,
     ButtonModel, useButton,
-    Col, Row
+    Col, Row,
+    TabOrientation,
+    TabScrollButtons,
+    TabVariant,
+    TabIconPosition
 } from "@components";
-
-type IconPosition = "top" | "bottom" | "start" | "end";
-type Orientation = "horizontal" | "vertical";
-type Variant = "standard" | "scrollable" | "fullWidth";
-type ScrollButtons = "auto" | "true" | "false";
 
 type TabPropertiesEditorStruct = UIBaseStruct<{
     props: {
         labelText: string;
-        iconPosition: IconPosition;
+        iconPosition: TabIconPosition;
         disabled: boolean;
         wrapped: boolean;
         showIcon: boolean;
-        orientation: Orientation;
-        variant: Variant;
-        scrollButtons: ScrollButtons;
+        orientation: TabOrientation;
+        variant: TabVariant;
+        scrollButtons: TabScrollButtons;
         centered: boolean;
     };
 
     children: {
         labelTextField: TextFieldModel<string>;
-        iconPositionRadioGroup: RadioGroupModel<IconPosition>;
+        iconPositionRadioGroup: RadioGroupModel<TabIconPosition>;
         disabledCheckbox: CheckboxModel;
         wrappedCheckbox: CheckboxModel;
         showIconCheckbox: CheckboxModel;
-        orientationRadioGroup: RadioGroupModel<Orientation>;
-        variantRadioGroup: RadioGroupModel<Variant>;
-        scrollButtonsRadioGroup: RadioGroupModel<ScrollButtons>;
+        orientationRadioGroup: RadioGroupModel<TabOrientation>;
+        variantRadioGroup: RadioGroupModel<TabVariant>;
+        scrollButtonsRadioGroup: RadioGroupModel<TabScrollButtons>;
         centeredCheckbox: CheckboxModel;
         resetButton: ButtonModel;
     };
@@ -124,8 +123,8 @@ function useTabPropertiesEditor(params?: TabPropertiesEditorParams): TabProperti
                 value: UECA.bind(() => model, "scrollButtons"),
                 options: [
                     { value: "auto", label: "Auto" },
-                    { value: "true", label: "Always" },
-                    { value: "false", label: "Never" }
+                    { value: true, label: "Always" },
+                    { value: false, label: "Never" }
                 ],
                 orientation: "row"
             }),

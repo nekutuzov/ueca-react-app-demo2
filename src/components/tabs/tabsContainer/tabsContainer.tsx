@@ -4,6 +4,10 @@ import { asyncSafe, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ChevronDow
 import React from "react";
 import "./tabsContainer.css";
 
+type TabOrientation = "horizontal" | "vertical";
+type TabVariant = "standard" | "scrollable" | "fullWidth";
+type TabScrollButtons = "auto" | true | false;
+
 type TabsContainerStruct = EditBaseStruct<{
     props: {
         tabs: TabModel[];
@@ -11,9 +15,9 @@ type TabsContainerStruct = EditBaseStruct<{
         selectedTab: TabModel;
         selectedTabId: string;
         selectedTabIndex: number;
-        orientation: "horizontal" | "vertical";
-        variant: "standard" | "scrollable" | "fullWidth";
-        scrollButtons: "auto" | true | false;
+        orientation: TabOrientation;
+        variant: TabVariant;
+        scrollButtons: TabScrollButtons;
         centered: boolean;
         _hasOverflow: boolean;
         __defaultTabId: string;
@@ -296,4 +300,4 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
 
 const TabsContainer = UECA.getFC(useTabsContainer);
 
-export { TabsContainerModel, TabsContainerParams, useTabsContainer, TabsContainer };
+export { TabsContainerModel, TabsContainerParams, TabOrientation, TabVariant, TabScrollButtons, useTabsContainer, TabsContainer };

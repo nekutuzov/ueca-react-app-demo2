@@ -9,6 +9,9 @@ type SelectOption<T = string> = {
     disabled?: boolean;
 };
 
+type SelectVariant = "filled" | "outlined" | "standard";
+type SelectSize = "small" | "medium";
+
 type SelectStruct<T = string> = EditBaseStruct<{
     props: {
         labelView: React.ReactNode;
@@ -17,8 +20,8 @@ type SelectStruct<T = string> = EditBaseStruct<{
         placeholder: string;
         disabled: boolean;
         helperTextView: string;
-        variant: "filled" | "outlined" | "standard";
-        size: "small" | "medium";
+        variant: SelectVariant;
+        size: SelectSize;
         required: boolean;
         fullWidth: boolean;
         color: Palette;
@@ -144,4 +147,4 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
 
 const Select = UECA.getFC(useSelect);
 
-export { SelectModel, SelectOption, SelectParams, useSelect, Select };
+export { SelectModel, SelectOption, SelectParams, SelectVariant, SelectSize, useSelect, Select };

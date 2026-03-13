@@ -3,8 +3,6 @@ import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Col
 import { CRUDScreenModel, useCRUDScreen } from "@core";
 
 type DialogScreenStruct = ScreenBaseStruct<{
-    props: {};
-
     children: {
         crudScreen: CRUDScreenModel;
         informationButton: ButtonModel;

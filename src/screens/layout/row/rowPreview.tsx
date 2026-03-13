@@ -1,20 +1,25 @@
 import * as UECA from "ueca-react";
 import {
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase,
-    Row, Col, Block, Card
+    Row, Col, Block, Card,
+    Spacing,
+    RowHorizontalAlign,
+    RowVerticalAlign,
+    PaddingSize,
+    FlexWrap
 } from "@components";
 import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
 type RowPreviewStruct = UIBaseStruct<{
     props: {
-        spacing: string;
-        horizontalAlign: string;
-        verticalAlign: string;
-        padding: string;
+        spacing: Spacing;
+        horizontalAlign: RowHorizontalAlign;
+        verticalAlign: RowVerticalAlign;
+        padding: PaddingSize;
         backgroundColor: Palette;
         reverseItems: boolean;
         divider: boolean;
-        flexWrap: string;
+        flexWrap: FlexWrap;
         fill: boolean;
         width: string;
         height: string;
@@ -74,14 +79,14 @@ function useRowPreview(params?: RowPreviewParams): RowPreviewModel {
                 return (
                     <Col horizontalAlign="center" minHeight={"300px"}>
                         <Row
-                            spacing={model.spacing as any}
-                            horizontalAlign={model.horizontalAlign as any}
-                            verticalAlign={model.verticalAlign as any}
-                            padding={model.padding as any || undefined}
+                            spacing={model.spacing}
+                            horizontalAlign={model.horizontalAlign}
+                            verticalAlign={model.verticalAlign}
+                            padding={model.padding || undefined}
                             backgroundColor={model.backgroundColor}
                             reverseItems={model.reverseItems}
                             divider={model.divider}
-                            flexWrap={model.flexWrap as any}
+                            flexWrap={model.flexWrap}
                             fill={model.fill}
                             width={model.width || undefined}
                             height={model.height || undefined}

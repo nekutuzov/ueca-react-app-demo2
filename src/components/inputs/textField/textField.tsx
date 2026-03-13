@@ -3,17 +3,20 @@ import { EditBaseModel, EditBaseParams, EditBaseStruct, useEditBase } from "@com
 import { Palette, resolvePaletteColor } from "@core";
 import "./textField.css";
 
+type TextFieldType = "text" | "email" | "password" | "number" | "tel" | "url" | "search";
+type TextFieldVariant = "outlined" | "filled" | "standard";
+
 type TextFieldStruct<T = string> = EditBaseStruct<{
     props: {
         value: T;
         labelView: React.ReactNode;
         placeholder: string;
-        type: "text" | "email" | "password" | "number" | "tel" | "url" | "search";
+        type: TextFieldType;
         disabled: boolean;
         required: boolean;
         error: boolean;
         helperTextView: React.ReactNode;
-        variant: "outlined" | "filled" | "standard";
+        variant: TextFieldVariant;
         fullWidth: boolean;
         multiline: boolean;
         rows: number;
@@ -184,4 +187,4 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
 
 const TextField = UECA.getFC(useTextField);
 
-export { TextFieldModel, TextFieldParams, useTextField, TextField };
+export { TextFieldModel, TextFieldParams, TextFieldType, TextFieldVariant, useTextField, TextField };

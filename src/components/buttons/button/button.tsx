@@ -3,15 +3,18 @@ import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components"
 import { asyncSafe, Palette, resolvePaletteColor } from "@core";
 import "./button.css";
 
+type ButtonVariant = "text" | "outlined" | "contained";
+type ButtonSize = "small" | "medium" | "large";
+
 type ButtonStruct = UIBaseStruct<{
     props: {
         color: Palette | "inherit";
         disabled: boolean;
         contentView: React.ReactNode;
         endIconView: React.ReactNode;
-        size: "small" | "medium" | "large";
+        size: ButtonSize;
         startIconView: React.ReactNode;
-        variant: "text" | "outlined" | "contained";
+        variant: ButtonVariant;
         fullWidth: boolean;
     };
 
@@ -77,4 +80,4 @@ function useButton(params?: ButtonParams): ButtonModel {
 
 const Button = UECA.getFC(useButton);
 
-export { ButtonModel, ButtonParams, useButton, Button };
+export { ButtonModel, ButtonParams, ButtonSize, ButtonVariant, useButton, Button };
