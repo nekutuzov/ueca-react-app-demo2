@@ -48,7 +48,8 @@ function useNavItemPreview(params?: NavItemPreviewParams): NavItemPreviewModel {
         },
 
         View: () => (
-            <Card title="👁️ Preview" fill minWidth={400} overflow="auto">
+            <Card id={model.htmlId()}
+                title="👁️ Preview" fill minWidth={400} overflow="auto">
                 <Col spacing="medium" fill>
                     <Block sx={{
                         padding: "24px",

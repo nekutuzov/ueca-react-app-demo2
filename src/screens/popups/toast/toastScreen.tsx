@@ -54,8 +54,8 @@ function useToastScreen(params?: ToastScreenParams): ToastScreenModel {
                             borderRadius: "4px",
                             backgroundColor: "#f5f5f5"
                         }}>
-                            <h3 style={{ margin: "0 0 10px 0" }}>ℹ️ Usage Guidelines</h3>
-                            <ul style={{ margin: "0", paddingLeft: "20px", color: "#666", fontSize: "14px" }}>
+                            <Block padding={{ bottom: "small" }}><h3>ℹ️ Usage Guidelines</h3></Block>
+                            <ul style={{ paddingLeft: "20px", color: "#666", fontSize: "14px" }}>
                                 <li>Toast notifications automatically disappear after a few seconds</li>
                                 <li>Use Success for completed actions (saved, deleted, updated)</li>
                                 <li>Use Information for neutral updates and tips</li>
@@ -122,10 +122,12 @@ function useToastScreen(params?: ToastScreenParams): ToastScreenModel {
                     borderRadius: "8px",
                     backgroundColor: "white"
                 }}>
-                    <h2 style={{ margin: "0 0 15px 0" }}>🔔 Toast Notification Types</h2>
-                    <p style={{ margin: "0 0 20px 0", color: "#666", fontSize: "14px" }}>
-                        Click buttons below to display toast notifications. They appear at the top-center of the screen and auto-dismiss.
-                    </p>
+                    <Block padding={{ bottom: "small" }}><h2>🔔 Toast Notification Types</h2></Block>
+                    <Block padding={{ bottom: "medium" }}>
+                        <p style={{ color: "#666", fontSize: "14px" }}>
+                            Click buttons below to display toast notifications. They appear at the top-center of the screen and auto-dismiss.
+                        </p>
+                    </Block>
 
                     <Row spacing="large" flexWrap="wrap">
                         <Col spacing="small" sx={{ flex: "1 1 300px" }}>

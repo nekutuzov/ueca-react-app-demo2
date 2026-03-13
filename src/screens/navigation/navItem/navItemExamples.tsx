@@ -87,7 +87,8 @@ function useNavItemExamples(params?: NavItemExamplesParams): NavItemExamplesMode
         },
 
         View: () => (
-            <Card title="📚 Examples" fill minWidth={400}>
+            <Card id={model.htmlId()}
+                title="📚 Examples" fill minWidth={400}>
                 <Row spacing="medium" flexWrap="wrap">
                     {/* Different States */}
                     <Block fill
@@ -145,10 +146,12 @@ function useNavItemExamples(params?: NavItemExamplesParams): NavItemExamplesMode
                             border: "1px solid #ffb74d",
                             borderRadius: "4px"
                         }}>
-                        <h4 style={{ margin: "0 0 10px 0", fontSize: "14px", color: "#e65100" }}>📋 Usage in Menu Systems</h4>
-                        <p style={{ margin: "0 0 10px 0", fontSize: "13px", color: "#555" }}>
-                            NavItem is designed for sidebar menus. Set <code>active</code> based on current route:
-                        </p>
+                        <Block padding={{ bottom: "small" }}><h4>📋 Usage in Menu Systems</h4></Block>
+                        <Block padding={{ bottom: "small" }}>
+                            <p style={{ fontSize: "13px", color: "#555" }}>
+                                NavItem is designed for sidebar menus. Set <code>active</code> based on current route:
+                            </p>
+                        </Block>
                         <model.menuSystemCodeSample.View />
                     </Block>
                 </Row>

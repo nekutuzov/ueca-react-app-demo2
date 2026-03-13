@@ -107,7 +107,7 @@ function useTabExamples(params?: TabExamplesParams): TabExamplesModel {
         },
 
         View: () => (
-            <Col fill overflow="auto" padding="medium">
+            <Col id={model.htmlId()} fill overflow="auto" padding="medium">
                 <Col fill overflow="auto" spacing="medium">
                     <Block>
                         <h3>Dynamic Tabs Example</h3>

@@ -153,8 +153,8 @@ function useTabPropertiesEditor(params?: TabPropertiesEditorParams): TabProperti
             >
                 <Row spacing="large" flexWrap="wrap" divider>
                     <Col spacing="medium" fill minWidth={300}>
-                        <Block>
-                            <h3 style={{ margin: "0 0 12px 0", fontSize: "0.875rem", fontWeight: 600 }}>Tab Properties</h3>
+                        <Block padding={{ bottom: "small" }}>
+                            <h3>Tab Properties</h3>
                         </Block>
                         <model.labelTextField.View />
                         <model.showIconCheckbox.View />
@@ -165,8 +165,8 @@ function useTabPropertiesEditor(params?: TabPropertiesEditorParams): TabProperti
                         <model.wrappedCheckbox.View />
                     </Col>
                     <Col spacing="medium" fill minWidth={300}>
-                        <Block>
-                            <h3 style={{ margin: "0 0 12px 0", fontSize: "0.875rem", fontWeight: 600 }}>TabsContainer Properties</h3>
+                        <Block padding={{ bottom: "small" }}>
+                            <h3>TabsContainer Properties</h3>
                         </Block>
                         <model.orientationRadioGroup.View />
                         <model.variantRadioGroup.View />

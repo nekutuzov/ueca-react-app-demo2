@@ -90,7 +90,8 @@ function useNavItemPropertiesEditor(params?: NavItemPropertiesEditorParams): Nav
         },
 
         View: () => (
-            <Card title="⚙️ Properties" fill minWidth={400} overflow="auto">
+            <Card id={model.htmlId()}
+                title="⚙️ Properties" fill minWidth={400} overflow="auto">
                 <Col spacing="medium" fill>
                     <model.textField.View />
                     <model.modeRadioGroup.View />

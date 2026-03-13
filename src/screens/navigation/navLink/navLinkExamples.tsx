@@ -72,7 +72,8 @@ function useNavLinkExamples(params?: NavLinkExamplesParams): NavLinkExamplesMode
         },
 
         View: () => (
-            <Card title="📚 Examples" fill minWidth={400}>
+            <Card id={model.htmlId()}
+                title="📚 Examples" fill minWidth={400}>
                 <Row spacing="medium" flexWrap="wrap">
                     {/* Internal Routes */}
                     <Block fill

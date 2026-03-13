@@ -78,7 +78,7 @@ function useDrawerPreview(params?: DrawerPreviewParams): DrawerPreviewModel {
 
             _PreviewBlockView: () => (
                 <Col spacing="medium" horizontalAlign="center" verticalAlign="center" minHeight={"200px"}>
-                    <h3 style={{ margin: 0 }}>Preview</h3>
+                    <h3>Preview</h3>
                     <model.openDrawerButton.View />
                     <Block sx={{ fontSize: "14px", color: "#666", textAlign: "center", maxWidth: "400px" }}>
                         Click the button to open the AlertDrawer. Modify properties on the left to see the changes.
@@ -88,7 +88,7 @@ function useDrawerPreview(params?: DrawerPreviewParams): DrawerPreviewModel {
         },
 
         View: () => (
-            <Card title="👁️ Preview" fill minWidth={400} overflow="auto">
+            <Card id={model.htmlId()} title="👁️ Preview" fill minWidth={400} overflow="auto">
                 <Col spacing="medium" fill>
                     <model._PreviewBlockView />
                     <model.alertDrawer.View />
@@ -115,7 +115,7 @@ function useDrawerPreview(params?: DrawerPreviewParams): DrawerPreviewModel {
         return (
             <Col spacing="large">
                 <Block>
-                    <h3 style={{ marginTop: 0 }}>Welcome to AlertDrawer!</h3>
+                    <h3>Welcome to AlertDrawer!</h3>
                     <p>
                         This is an <strong>AlertDrawer</strong> component demonstrating side panel functionality.
                         It's perfect for displaying additional information, forms, settings, or any supplementary
@@ -129,8 +129,8 @@ function useDrawerPreview(params?: DrawerPreviewParams): DrawerPreviewModel {
                     borderRadius: "4px",
                     border: "1px solid rgba(0, 0, 0, 0.12)"
                 }}>
-                    <h4 style={{ marginTop: 0 }}>Current Configuration</h4>
-                    <ul style={{ margin: 0, paddingLeft: "20px" }}>
+                    <h4>Current Configuration</h4>
+                    <ul style={{ paddingLeft: "20px" }}>
                         <li><strong>Anchor:</strong> {model.anchor}</li>
                         <li><strong>Severity:</strong> {model.severity || "None"}</li>
                         <li><strong>Button Type:</strong> {model.buttonType}</li>

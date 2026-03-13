@@ -357,7 +357,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         marginBottom: "20px",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
                     }}>
-                        <h2 style={{ marginTop: 0 }}>🧪 Dialog Component Tests</h2>
+                        <h2>🧪 Dialog Component Tests</h2>
                         <p>Test the newly implemented dialog system with plain HTML/CSS (no Material-UI):</p>
 
                         <Row spacing="small" sx={{ flexWrap: "wrap", marginBottom: "10px" }}>
@@ -459,7 +459,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         marginBottom: "20px",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
                     }}>
-                        <h2 style={{ marginTop: 0 }}>🔗 NavLink Component Tests</h2>
+                        <h2>🔗 NavLink Component Tests</h2>
                         <p>Test the NavLink component with different colors and underline styles (no Material-UI):</p>
 
                         <h3>Different Colors</h3>
@@ -566,7 +566,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         marginBottom: "20px",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
                     }}>
-                        <h2 style={{ marginTop: 0 }}>📱 NavItem Component Tests</h2>
+                        <h2>📱 NavItem Component Tests</h2>
                         <p>Test the NavItem component with icon buttons and list items (no Material-UI):</p>
 
                         <h3>Icon Only Mode</h3>
@@ -679,7 +679,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         marginBottom: "20px",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
                     }}>
-                        <h2 style={{ marginTop: 0 }}>📑 Tabs Component Tests</h2>
+                        <h2>📑 Tabs Component Tests</h2>
                         <p>Test the TabsContainer and Tab components with different orientations and variants (no Material-UI):</p>
 
                         <h3>Standard Horizontal Tabs</h3>
@@ -720,10 +720,10 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                         marginBottom: "20px",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
                     }}>
-                        <h2 style={{ marginTop: 0 }}>🍞 Breadcrumbs Component Tests</h2>
+                        <h2>🍞 Breadcrumbs Component Tests</h2>
                         <p>Test the Breadcrumbs component for navigation trails (no Material-UI):</p>
 
-                        <h3>Simple Breadcrumbs with Text</h3>
+                        <Block padding={{ top: "medium" }}><h3>Simple Breadcrumbs with Text</h3></Block>
                         <Breadcrumbs childrenView={<>
                             <span>Home</span>
                             <span>Products</span>
@@ -731,7 +731,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                             <span>Laptops</span>
                         </>} />
 
-                        <h3 style={{ marginTop: "30px" }}>Breadcrumbs with NavLinks</h3>
+                        <Block padding={{ top: "medium" }}><h3>Breadcrumbs with NavLinks</h3></Block>
                         <Breadcrumbs childrenView={<>
                             <NavLink route={{ path: "/" }} linkView="Home" underline="hover" />
                             <NavLink route={{ path: "/" }} linkView="Category" underline="hover" />
@@ -739,7 +739,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                             <span style={{ color: "#666" }}>Current Page</span>
                         </>} />
 
-                        <h3 style={{ marginTop: "30px" }}>Breadcrumbs with Colored Links</h3>
+                        <Block padding={{ top: "medium" }}><h3>Breadcrumbs with Colored Links</h3></Block>
                         <Breadcrumbs childrenView={<>
                             <NavLink route={{ path: "/" }} linkView="Dashboard" color="secondary.main" underline="hover" />
                             <NavLink route={{ path: "/" }} linkView="Settings" color="info.main" underline="hover" />
@@ -747,7 +747,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                             <span style={{ fontWeight: 600, color: "#d32f2f" }}>Edit</span>
                         </>} />
 
-                        <h3 style={{ marginTop: "30px" }}>Breadcrumbs with Custom Separator</h3>
+                        <Block padding={{ top: "medium" }}><h3>Breadcrumbs with Custom Separator</h3></Block>
                         <Breadcrumbs 
                             separator={<span style={{ margin: "0 8px", color: "#999" }}>/</span>}
                             childrenView={<>
@@ -758,7 +758,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                             </>} 
                         />
 
-                        <h3 style={{ marginTop: "30px" }}>Breadcrumbs with Dot Separator</h3>
+                        <Block padding={{ top: "medium" }}><h3>Breadcrumbs with Dot Separator</h3></Block>
                         <Breadcrumbs 
                             separator={<span style={{ margin: "0 8px", color: "#ccc" }}>•</span>}
                             childrenView={<>
@@ -769,7 +769,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
                             </>} 
                         />
 
-                        <h3 style={{ marginTop: "30px" }}>Complex Breadcrumbs with Icons</h3>
+                        <Block padding={{ top: "medium" }}><h3>Complex Breadcrumbs with Icons</h3></Block>
                         <Breadcrumbs childrenView={<>
                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                                 <HomeIcon size={16} />

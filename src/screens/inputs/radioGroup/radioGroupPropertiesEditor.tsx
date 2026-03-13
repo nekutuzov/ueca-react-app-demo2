@@ -146,7 +146,8 @@ function useRadioGroupPropertiesEditor(params?: RadioGroupPropertiesEditorParams
         },
 
         View: () => (
-            <Card title="⚙️ Properties" fill minWidth={400} overflow="auto">
+            <Card id={model.htmlId()}
+                title="⚙️ Properties" fill minWidth={400} overflow="auto">
                 <Col spacing="medium" fill>
                     <model.labelField.View />
                     <model.colorSelect.View />

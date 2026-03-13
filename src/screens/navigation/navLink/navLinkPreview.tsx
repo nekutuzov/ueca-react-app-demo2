@@ -46,7 +46,8 @@ function useNavLinkPreview(params?: NavLinkPreviewParams): NavLinkPreviewModel {
         },
 
         View: () => (
-            <Card title="👁️ Preview" fill minWidth={400} overflow="auto">
+            <Card id={model.htmlId()}
+                title="👁️ Preview" fill minWidth={400} overflow="auto">
                 <Block sx={{
                     padding: "24px",
                     backgroundColor: "#f5f5f5",

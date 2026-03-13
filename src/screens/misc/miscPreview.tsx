@@ -186,7 +186,7 @@ if (files?.length) {
         },
 
         View: () => (
-            <Col fill spacing="medium" sx={{ minWidth: "500px", maxWidth: "700px" }}>
+            <Col id={model.htmlId()} fill spacing="medium" sx={{ minWidth: "500px", maxWidth: "700px" }}>
                 <Block sx={{
                     padding: "20px",
                     border: "2px solid #e0e0e0",

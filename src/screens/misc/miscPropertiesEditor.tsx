@@ -78,7 +78,8 @@ function useMiscPropertiesEditor(params?: MiscPropertiesEditorParams): MiscPrope
         },
 
         View: () => (
-            <Col spacing="medium" sx={{
+            <Col id={model.htmlId()}
+                spacing="medium" sx={{
                 minWidth: "300px",
                 maxWidth: "400px",
                 padding: "20px",
@@ -87,22 +88,22 @@ function useMiscPropertiesEditor(params?: MiscPropertiesEditorParams): MiscPrope
                 backgroundColor: "white"
             }}>
                 <Col spacing="medium" divider>
-                    <Block>
-                        <h2 style={{ margin: "0 0 10px 0" }}>Configuration</h2>
-                        <p style={{ margin: "0", color: "#666", fontSize: "14px" }}>
+                    <Block padding={{ bottom: "small" }}>
+                        <h2>Configuration</h2>
+                        <p style={{ color: "#666", fontSize: "14px" }}>
                             Adjust settings for infrastructure components.
                         </p>
                     </Block>
 
-                    <Block>
-                        <h3 style={{ margin: "0 0 10px 0", fontSize: "14px", fontWeight: 600 }}>
+                    <Block padding={{ bottom: "small" }}>
+                        <h3>
                             Busy Display Settings
                         </h3>
                         <model.durationField.View />
                     </Block>                    
 
-                    <Block>
-                        <h3 style={{ margin: "0 0 10px 0", fontSize: "14px", fontWeight: 600 }}>
+                    <Block padding={{ bottom: "small" }}>
+                        <h3>
                             File Selector Settings
                         </h3>
                         <Col spacing="medium">
