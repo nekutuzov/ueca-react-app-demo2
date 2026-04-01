@@ -22,7 +22,24 @@ function useMarkdownPreview(params?: MarkdownPreviewParams): MarkdownPreviewMode
         },
 
         View: () => (
-            <Col id={model.htmlId()} fill>
+            <Col 
+                id={model.htmlId()} 
+                fill
+                onClick={async (e: React.MouseEvent) => {
+                    const target = e.target as HTMLElement;
+                    const anchor = target.closest('a');
+                    
+                    if (anchor) {
+                        const href = anchor.getAttribute('href');
+                        if (href && href.startsWith('/')) {
+                            // Internal route - use UECA router
+                            e.preventDefault();
+                            await model.bus.unicast("App.Router.GoToRoute", { path: href as any });
+                        }
+                        // External links will use default behavior
+                    }
+                }}
+            >
                 <MarkdownPreview
                     source={model.source}
                     skipHtml={model.skipHtml}

@@ -6,9 +6,9 @@ Welcome to the **UECA React** application! This document provides a comprehensiv
 
 To better understand the application structure, view the comprehensive architecture diagram:
 
-**[Open Architecture Diagram →](./ueca_app_diagram.svg)**
+**[Open Architecture Diagram →](/home/diagram)**
 
-> Click the link above to open the diagram in a new browser tab for detailed exploration.
+> Click the link above to view the interactive diagram.
 
 ---
 

@@ -1,4 +1,5 @@
 export * from "./home/homeScreen";
+export * from "./home/architectureDiagramScreen";
 export * from "./buttons/button/buttonScreen";
 export * from "./buttons/iconButton/iconButtonScreen";
 export * from "./layout/block/blockScreen";

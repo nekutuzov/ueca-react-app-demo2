@@ -35,11 +35,7 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
             markdownPreview: useMarkdownPreview({
                 source: architectureContent
             })
-        },
-
-        init: () => {
-            console.log("HomeScreen initialized");
-        },
+        },   
 
         View: () => <model.crudScreen.View />
     };

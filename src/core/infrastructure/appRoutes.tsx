@@ -1,6 +1,7 @@
 import { Route } from "@components";
 import {
     HomeScreen,
+    ArchitectureDiagramScreen,
     ButtonScreen,
     IconButtonScreen,
     BlockScreen,
@@ -23,7 +24,8 @@ import {
 const screenRoutes = {
     // Add routes within the app layout
     "/": () => <HomeScreen id={"homeScreen"} />, // Default route, can be used for dashboard or welcome screen
-    "/home": () => <HomeScreen id={"homeScreen"} />, // TODO: after refactoring this screen add some general info about the app and its architecture.    
+    "/home": () => <HomeScreen id={"homeScreen"} />,
+    "/home/diagram": () => <ArchitectureDiagramScreen id={"architectureDiagramScreen"} />,
     "/block": () => <BlockScreen id={"blockScreen"} />,
     "/row": () => <RowScreen id={"rowScreen"} />,
     "/col": () => <ColScreen id={"colScreen"} />,
