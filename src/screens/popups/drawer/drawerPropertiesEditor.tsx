@@ -61,7 +61,7 @@ function useDrawerPropertiesEditor(params?: DrawerPropertiesEditorParams): Drawe
                 labelView: "Severity Icon",
                 value: UECA.bind(() => model, "severity"),
                 options: [
-                    { value: undefined, label: "None" },
+                    { value: "none", label: "None" },
                     { value: "success", label: "Success" },
                     { value: "info", label: "Info" },
                     { value: "warning", label: "Warning" },

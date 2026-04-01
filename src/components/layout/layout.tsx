@@ -28,7 +28,7 @@ type Border = "solid" | "dashed" | "dotted" | "rounded";
 
 type BlockProps = {
     id?: string;
-    key?: string | number;
+    reactKey?: string | number;
     ref?: React.Ref<HTMLDivElement>;
     render?: boolean;
     children?: React.ReactNode;
@@ -106,7 +106,7 @@ function Block(props: BlockProps): UECA.ReactElement {
     return (
         <div
             id={props?.id}
-            key={props?.key}
+            key={props?.reactKey}
             ref={props?.ref}
             className={props?.className}
             style={style}
@@ -171,7 +171,7 @@ function Row(props: RowProps): UECA.ReactElement {
     return (
         <div
             id={props?.id}
-            key={props?.key}
+            key={props?.reactKey}
             ref={props?.ref}
             className={props?.className}
             style={style}
@@ -239,7 +239,7 @@ function Col(props: ColProps): UECA.ReactElement {
     return (
         <div
             id={props?.id}
-            key={props?.key}
+            key={props?.reactKey}
             ref={props?.ref}
             className={props?.className}
             style={style}

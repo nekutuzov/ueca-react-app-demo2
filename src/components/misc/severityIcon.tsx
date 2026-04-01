@@ -4,7 +4,7 @@ import { SuccessCircleIcon, InfoCircleIcon, WarningIcon, ErrorCircleIcon } from 
 
 type SeverityIconStruct = UIBaseStruct<{
     props: {
-        severity: "success" | "info" | "warning" | "error";
+        severity: "success" | "info" | "warning" | "error" | "none";
         size: number;
         color?: string;
     };
@@ -17,7 +17,7 @@ function useSeverityIcon(params?: SeverityIconParams): SeverityIconModel {
     const struct: SeverityIconStruct = {
         props: {
             id: useSeverityIcon.name,
-            severity: "info",
+            severity: "none",
             size: 22,
             color: undefined,
         },

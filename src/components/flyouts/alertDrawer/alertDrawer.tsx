@@ -3,7 +3,7 @@ import { Row, ButtonModel, DrawerModel, SeverityIcon, UIBaseModel, UIBaseParams,
 import { resolvePaletteColor } from "@core";
 
 type DrawerAnchor = "left" | "top" | "right" | "bottom";
-type DrawerSeverity = "success" | "info" | "warning" | "error" | undefined;
+type DrawerSeverity = "success" | "info" | "warning" | "error" | "none";
 
 // Alert Drawer component
 type AlertDrawerStruct = UIBaseStruct<{

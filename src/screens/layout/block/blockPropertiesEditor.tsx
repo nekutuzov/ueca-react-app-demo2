@@ -112,7 +112,7 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                 labelView: "Padding",
                 value: UECA.bind(() => model, "padding"),
                 options: [
-                    { value: undefined, label: "None" },
+                    { value: "none", label: "None" },
                     { value: "tiny", label: "Tiny" },
                     { value: "small", label: "Small" },
                     { value: "medium", label: "Medium" },
@@ -125,7 +125,6 @@ function useBlockPropertiesEditor(params?: BlockPropertiesEditorParams): BlockPr
                 labelView: "Background Color",
                 value: UECA.bind(() => model, "backgroundColor"),
                 options: [
-                    { value: undefined, label: "None" },
                     { value: "transparent", label: "Transparent" },
                     { value: "primary.main", label: "Primary" },
                     { value: "secondary.main", label: "Secondary" },
