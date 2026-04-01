@@ -8,6 +8,7 @@ export * from "./misc/notebook";
 export * from "./misc/severityIcon";
 export * from "./misc/spinner";
 export * from "./misc/errorFallback";
+export * from "./misc/markdownPreview/markdownPreview";
 export * from "./buttons/button/button";
 export * from "./buttons/iconButton/iconButton";
 export * from "./inputs/textField/textField";

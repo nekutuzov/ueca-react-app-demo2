@@ -16,7 +16,7 @@
 - `@components` → `src/components`
 - `@core` → `src/core`
 - `@api` → `src/api`
-- `@screens` → `src/screens`
+- `@screens` → `src/screens` (optional, for application-specific screens)
 
 ## Application Architecture
 
@@ -46,6 +46,13 @@ Application
 ## Component Inventory
 
 **Layout** (`layout/`): Block, Row, Col - flexbox containers with spacing, alignment, fill, cursor props
+
+**Note**: Use `reactKey` prop (not `key`) for dynamic lists to avoid React's reserved prop warning:
+```tsx
+{items.map((item, index) => (
+    <Block reactKey={index}>{item.name}</Block>
+))}
+```
 
 **Input** (`input/`):
 - Button: variants (text/outlined/contained), sizes (small/medium/large), fullWidth
@@ -192,7 +199,7 @@ function useMyComponent(params?: MyParams): MyModel {
             _DemoView: () => (
                 <Block>
                     <pre>{_getCodeExample()}</pre>
-                    {_getItems().map(item => <div key={item}>{item}</div>)}
+                    {_getItems().map((item, index) => <div reactKey={index}>{item}</div>)}
                 </Block>
             )
         },
@@ -345,9 +352,9 @@ messages: {
 
 // Define routes (appRoutes.tsx)
 const screenRoutes = {
-    "/": () => <HomeScreen id="homeScreen" />,
-    "/users/:id": () => <UserDetailScreen id="userDetailScreen" />,
-    "/settings?:tab": () => <SettingsScreen id="settingsScreen" />
+    "/": () => <DashboardScreen id="dashboardScreen" />,
+    "/items/:id": () => <ItemDetailScreen id="itemDetailScreen" />,
+    "/config?:tab": () => <ConfigScreen id="configScreen" />
 };
 ```
 
@@ -432,7 +439,6 @@ TextField, Select, and RadioGroup accept a generic type parameter `<T>` for bett
 />
 
 // Only use type casting when component explicitly requires broader type
-// (e.g., RadioGroup/Select internal implementation expects string | number)
 <RadioGroup
     labelView="Variant"
     value={UECA.bind(() => model, "variant") as UECA.Bond<string | number>}
@@ -440,11 +446,20 @@ TextField, Select, and RadioGroup accept a generic type parameter `<T>` for bett
 />
 ```
 
-Benefits of generic types:
+Benefits:
 - Type-safe bindings without manual casting in most cases
 - Better IDE autocomplete and error detection
 - Cleaner, more maintainable code
 - Automatic type inference from model properties
+
+**Important**: RadioGroup and Select options must have non-empty values (React key requirement):
+```tsx
+// ❌ BAD: Empty string causes React key warning
+options: [{ value: undefined, label: "None" }]
+
+// ✅ GOOD: Use valid non-empty values
+options: [{ value: "none", label: "None" }]
+```
 
 ## Critical Conventions
 
@@ -461,6 +476,11 @@ Benefits of generic types:
 **Exports**: Always export `XxxModel`, `XxxParams`, `useXxx`, `Xxx`
 
 **IDs**: `id: useXxx.name` in props, `model.htmlId()` for root element
+
+**React Key**: Use `reactKey` prop for dynamic lists (React's `key` is reserved):
+```tsx
+{items.map((item, index) => <Block reactKey={index}>{item}</Block>)}
+```
 
 **Helper Functions**: Private helper functions (prefixed with `_`) should be defined after `return model` using function declarations for hoisting. Use them to:
 - Extract complex data/strings/logic from View methods (keep Views pure JSX only)
