@@ -5,6 +5,7 @@ import "./button.css";
 
 type ButtonVariant = "text" | "outlined" | "contained";
 type ButtonSize = "small" | "medium" | "large";
+type ButtonAlign = "left" | "center" | "right";
 
 type ButtonStruct = UIBaseStruct<{
     props: {
@@ -16,6 +17,7 @@ type ButtonStruct = UIBaseStruct<{
         startIconView: React.ReactNode;
         variant: ButtonVariant;
         fullWidth: boolean;
+        align: ButtonAlign;
     };
 
     events: {
@@ -42,6 +44,7 @@ function useButton(params?: ButtonParams): ButtonModel {
             contentView: undefined,
             variant: "text",
             fullWidth: false,
+            align: "center",
         },
 
         methods: {
@@ -54,6 +57,7 @@ function useButton(params?: ButtonParams): ButtonModel {
 
         View: () => {
             const colorClass = model.color === "inherit" ? "inherit" : resolvePaletteColor(model.color as Palette);
+            const justifyContent = model.align === "left" ? "flex-start" : model.align === "right" ? "flex-end" : "center";
             return (
                 <button
                     id={model.htmlId()}
@@ -61,6 +65,7 @@ function useButton(params?: ButtonParams): ButtonModel {
                     disabled={model.disabled}
                     onClick={model.click}
                     style={{
+                        justifyContent,
                         ...(model.color !== "inherit" ? {
                             "--button-color": colorClass
                         } as React.CSSProperties : {})
@@ -80,4 +85,4 @@ function useButton(params?: ButtonParams): ButtonModel {
 
 const Button = UECA.getFC(useButton);
 
-export { ButtonModel, ButtonParams, ButtonSize, ButtonVariant, useButton, Button };
+export { ButtonModel, ButtonParams, ButtonSize, ButtonVariant, ButtonAlign, useButton, Button };

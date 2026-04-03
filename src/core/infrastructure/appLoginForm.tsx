@@ -9,17 +9,18 @@ type AppLoginFormStruct = UIBaseStruct<{
     props: {
         user: string;
         password: string;
+        keepMeSignedIn: boolean;
     },
 
     children: {
         userInput: TextFieldModel;
         passwordInput: TextFieldModel;
-        keepMeSignInChekbox: CheckboxModel;
+        keepMeSignedInCheckbox: CheckboxModel;
         signInButton: ButtonModel;
     },
 
     events: {
-        onLogin: (user: string, password: string) => UECA.MaybePromise;
+        onLogin: (user: string, password: string, keepMeSignedIn: boolean) => UECA.MaybePromise;
     }
 }>;
 
@@ -31,7 +32,8 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
         props: {
             id: useAppLoginForm.name,
             user: "",
-            password: ""
+            password: "",
+            keepMeSignedIn: true
         },
 
         children: {
@@ -52,15 +54,16 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
                 autoComplete: "current-password"
             }),
 
-            keepMeSignInChekbox: useCheckbox({
-                labelView: "Keep me signed in"
+            keepMeSignedInCheckbox: useCheckbox({
+                labelView: "Keep me signed in",
+                checked: UECA.bind(() => model, "keepMeSignedIn")
             }),
 
             signInButton: useButton({
                 contentView: "Sign in",
                 variant: "contained",
                 fullWidth: true,
-                onClick: async () => await _nativeLogin(model.user, model.password),
+                onClick: async () => await _nativeLogin(),
             })
         },
 
@@ -70,7 +73,7 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
                     <h1 className="login-heading">Sign in</h1>
                     <model.userInput.View />
                     <model.passwordInput.View />
-                    <model.keepMeSignInChekbox.View />
+                    <model.keepMeSignedInCheckbox.View />
                     <model.signInButton.View />
                 </div>
             </Col>
@@ -81,9 +84,14 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
     return model;
 
     // Private methods
-    async function _nativeLogin(user: string, password: string) {
+    async function _nativeLogin() {
         try {
-            await model.runWithBusyDisplay(async () => await model.bus.unicast("App.Security.AuthorizeNative", { user, password }));
+            await model.runWithBusyDisplay(
+                async () => await model.bus.unicast(
+                    "App.Security.AuthorizeNative",
+                    { user: model.user, password: model.password, keepMeSignedIn: model.keepMeSignedIn }
+                )
+            );
             // Erase fields for security reason
             model.userInput.value = "";
             model.passwordInput.value = "";
@@ -91,6 +99,14 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
             await model.dialogError("Login Error", (e as Error).message);
         }
     }
+
+
+    // Placeholder for future login methods
+    // async function _azureLogin() {
+    // }
+
+    // async function _googleLogin() {
+    // }    
 }
 
 const AppLoginForm = UECA.getFC(useAppLoginForm);

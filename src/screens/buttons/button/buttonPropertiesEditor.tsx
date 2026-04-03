@@ -9,7 +9,8 @@ import {
     ButtonModel, useButton,
     Col,
     ButtonVariant,
-    ButtonSize
+    ButtonSize,
+    ButtonAlign
 } from "@components";
 import { Palette } from "@core";
 
@@ -21,12 +22,14 @@ type ButtonPropertiesEditorStruct = UIBaseStruct<{
         color: Palette;
         disabled: boolean;
         fullWidth: boolean;
+        align: ButtonAlign;
     };
 
     children: {
         textField: TextFieldModel<string>;
         variantRadioGroup: RadioGroupModel<ButtonVariant>;
         sizeRadioGroup: RadioGroupModel<ButtonSize>;
+        alignRadioGroup: RadioGroupModel<ButtonAlign>;
         colorSelect: SelectModel<Palette>;
         disabledCheckbox: CheckboxModel;
         fullWidthCheckbox: CheckboxModel;
@@ -50,7 +53,8 @@ function useButtonPropertiesEditor(params?: ButtonPropertiesEditorParams): Butto
             size: "medium",
             color: "primary.main",
             disabled: false,
-            fullWidth: false
+            fullWidth: false,
+            align: "center"
         },
 
         children: {
@@ -81,6 +85,18 @@ function useButtonPropertiesEditor(params?: ButtonPropertiesEditorParams): Butto
                     { value: "large", label: "Large" }
                 ],
                 orientation: "row"
+            }),
+
+            alignRadioGroup: useRadioGroup({
+                labelView: "Align",
+                value: UECA.bind(() => model, "align"),
+                options: [
+                    { value: "left", label: "Left" },
+                    { value: "center", label: "Center" },
+                    { value: "right", label: "Right" }
+                ],
+                orientation: "row",
+                disabled: () => !model.fullWidth
             }),
 
             colorSelect: useSelect({
@@ -130,6 +146,7 @@ function useButtonPropertiesEditor(params?: ButtonPropertiesEditorParams): Butto
                     <model.colorSelect.View />
                     <model.disabledCheckbox.View />
                     <model.fullWidthCheckbox.View />
+                    <model.alignRadioGroup.View />
                     <Block padding={{ top: "medium" }}>
                         <model.resetButton.View />
                     </Block>

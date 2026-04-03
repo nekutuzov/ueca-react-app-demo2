@@ -68,6 +68,7 @@ The application follows a hierarchical structure starting from the root `Applica
 Application
 ├─ AppBrowsingHistory (history management)
 ├─ AppSecurity (authentication & authorization)
+├─ AppLocalStorage (browser localStorage wrapper)
 └─ AppUI (infrastructure)
     ├─ ErrorFallback (error boundaries)
     ├─ AppBusyDisplay (loading spinner)
@@ -125,6 +126,14 @@ Global loading indicator:
 - `BusyDisplay.Set` - Show/hide spinner
 - `BusyDisplay.SetVisibility` - Control visibility
 
+#### 6. **AppLocalStorage**
+Browser localStorage wrapper:
+- **Messages**:
+  - `App.LocalStorage.Read` - Read value by key
+  - `App.LocalStorage.Write` - Write value to key
+  - `App.LocalStorage.Clear` - Clear value by key
+- Storage keys defined as union type in `appTypes.ts`
+
 ---
 
 ## 🧩 Component Inventory
@@ -143,7 +152,7 @@ Global loading indicator:
 
 ### Input Components
 
-- **Button**: Variants (`text`, `outlined`, `contained`), sizes, colors
+- **Button**: Variants (`text`, `outlined`, `contained`), sizes, align (`left`, `center`, `right`), colors
 - **IconButton**: Predefined kinds or custom SVG icons
 - **TextField\<T\>**: Multiple variants, types, built-in validation
 - **RadioGroup\<T\>**: Type-safe options, orientation control
@@ -154,7 +163,7 @@ Global loading indicator:
 
 - **Router**: Regex-based routing with type-safe routes
 - **NavLink**: Styled links with underline variants
-- **NavItem**: List items with modes (`icon-only`, `text-only`, `icon-text`)
+- **NavItem**: List items with modes (`icon-only`, `text-only`, `icon-text`), supports onClick for non-navigation actions
 - **Breadcrumbs**: Navigation trails with custom separators
 
 ### Dialog Components

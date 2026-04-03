@@ -56,7 +56,8 @@ function useButtonScreen(params?: ButtonScreenParams): ButtonScreenModel {
                 size: UECA.bind(() => model.propertiesEditor, "size"),
                 color: UECA.bind(() => model.propertiesEditor, "color"),
                 disabled: UECA.bind(() => model.propertiesEditor, "disabled"),
-                fullWidth: UECA.bind(() => model.propertiesEditor, "fullWidth"),               
+                fullWidth: UECA.bind(() => model.propertiesEditor, "fullWidth"),
+                align: UECA.bind(() => model.propertiesEditor, "align"),
                 onButtonClick: () => model.handleTestButtonClick()
             })
         },
@@ -69,6 +70,7 @@ function useButtonScreen(params?: ButtonScreenParams): ButtonScreenModel {
                 model.propertiesEditor.color = "primary.main";
                 model.propertiesEditor.disabled = false;
                 model.propertiesEditor.fullWidth = false;
+                model.propertiesEditor.align = "center";
                 model.preview.clickCount = 0;
             },
 

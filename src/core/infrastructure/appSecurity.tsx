@@ -5,11 +5,11 @@ import { UserContext } from "@core";
 type AppSecurityStruct = UIBaseStruct<{
     props: {
         _userContext: UserContext;
-    }
+    },
 
     methods: {
         isAuthorized: () => boolean;
-        authorize: (user: string, password: string) => Promise<void>;
+        authorize: (user: string, password: string, keepMeSignedIn: boolean) => Promise<void>;
         unauthorize: () => Promise<void>;
         getUserContext: () => UserContext;
     }
@@ -28,16 +28,21 @@ function useAppSecurity(params?: AppSecurityParams): AppSecurityModel {
         methods: {
             isAuthorized: () => !!model._userContext?.apiToken,
 
-            authorize: async (user, _password) => {
+            authorize: async (user, _password, keepMeSignedIn) => {
                 // Implement your authorization logic here, e.g. call an API to verify credentials and get user context
                 // model._userContext = await model.bus.unicast("Api.Authorize", { user, password })
                 model._userContext = { user, apiToken: "MOCK-TOKEN" }; // Mock authorization, replace with real API call
-                model.bus.unicast("App.LocalStorage.Write", { key: "user-context", value: JSON.stringify(model._userContext) });
+
+                if (keepMeSignedIn) {
+                    await model.bus.unicast("App.LocalStorage.Write", { key: "user-context", value: JSON.stringify(model._userContext) });
+                } else {
+                    await model.bus.unicast("App.LocalStorage.Clear", "user-context");
+                }
             },
 
             unauthorize: async () => {
                 model._userContext = undefined;
-                model.bus.unicast("App.LocalStorage.Clear", "user-context");
+                await model.bus.unicast("App.LocalStorage.Clear", "user-context");
             },
 
             getUserContext: () => ({ ...model._userContext })
@@ -46,7 +51,7 @@ function useAppSecurity(params?: AppSecurityParams): AppSecurityModel {
         messages: {
             "App.Security.IsAuthorized": async () => model.isAuthorized(),
 
-            "App.Security.AuthorizeNative": async (p) => await model.authorize(p.user, p.password),
+            "App.Security.AuthorizeNative": async (p) => await model.authorize(p.user, p.password, p.keepMeSignedIn),
 
             "App.Security.Unauthorize": async () => await model.unauthorize(),
         },

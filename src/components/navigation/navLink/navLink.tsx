@@ -18,6 +18,7 @@ type NavLinkStruct = UIBaseStruct<{
 
     events: {
         beforeNavigate: (route: AppRoute) => Promise<AppRoute>
+        onClick: (source: NavLinkModel) => UECA.MaybePromise;
     }
 
     methods: {
@@ -43,6 +44,8 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
 
         methods: {
             click: async () => {
+                model.onClick && await model.onClick(model);
+
                 if (!model.route) {
                     return;
                 }

@@ -20,6 +20,10 @@ type NavItemStruct = UIBaseStruct<{
         navLink: NavLinkModel;
     },
 
+    events: {
+        onClick: (source: NavItemModel) => UECA.MaybePromise;
+    }
+
     methods: {
         _linkView: () => React.JSX.Element;
     }
@@ -45,6 +49,9 @@ function useNavItem(params?: NavItemParams): NavItemModel {
             navLink: useNavLink({
                 underline: "none",
                 linkView: () => <model._linkView />,
+                onClick: async () => {
+                    await model.onClick?.(model);
+                },
                 beforeNavigate: async (route) => {
                     const currentRoute = await model.getRoute();
                     if (currentRoute.path != route.path) {

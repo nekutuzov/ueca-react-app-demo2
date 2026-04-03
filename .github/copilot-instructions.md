@@ -24,6 +24,7 @@
 Application
   ├─ AppBrowsingHistory (history management)
   ├─ AppSecurity (auth: isAuthorized, authorize, unauthorize)
+  ├─ AppLocalStorage (browser localStorage wrapper)
   └─ AppUI (infrastructure)
       ├─ ErrorFallback (error boundaries)
       ├─ AppBusyDisplay (spinner)
@@ -55,7 +56,7 @@ Application
 ```
 
 **Input** (`input/`):
-- Button: variants (text/outlined/contained), sizes (small/medium/large), fullWidth
+- Button: variants (text/outlined/contained), sizes (small/medium/large), align (left/center/right), fullWidth
 - IconButton: predefined kinds (ok/cancel/delete/refresh/close) or custom SVG, CloseIconButton factory
 - TextField`<T>`: variants (outlined/filled/standard), types (text/email/password/number/tel/url/search), multiline, built-in validation
 - RadioGroup`<T>`: orientation (row/column), sizes (small/medium/large), color palette, built-in validation
@@ -83,7 +84,7 @@ Application
 **Navigation** (`navigation/`):
 - Router: regex-based, path params `/:id`, query params `?:tab`, type-safe routes
 - NavLink: palette colors, underline variants, beforeNavigate hook
-- NavItem: modes (icon-only/text-only/icon-text), active state, wraps NavLink
+- NavItem: modes (icon-only/text-only/icon-text), active state, wraps NavLink, supports onClick for non-navigation actions
 - Breadcrumbs: arrow separator (customizable), NavLink integration
 
 **Tabs** (`tabs/`):
@@ -99,6 +100,7 @@ Application
 - **AppBusyDisplay**: `BusyDisplay.Set/Clear/SetVisibility`
 - **AppDialogManager**: `Dialog.Information/Warning/Error/Exception/Confirmation/ActionConfirmation`
 - **AppAlertManager**: `Alert.Success/Information/Warning/Error`, position via `anchorOrigin` (top/bottom × left/center/right)
+- **AppLocalStorage**: Browser localStorage wrapper, messages: `App.LocalStorage.Read/Write/Clear`, storage keys defined as union type in `appTypes.ts`
 - **appTheme.ts**: Palette system, `resolvePaletteColor()` helper
 
 **Routing**:
@@ -304,6 +306,24 @@ const authorized = await model.bus.unicast("App.Security.IsAuthorized");
 await model.bus.unicast("App.Security.Unauthorize");
 ```
 
+**LocalStorage**:
+```tsx
+// Read
+const userContext = await model.bus.unicast("App.LocalStorage.Read", "user-context");
+
+// Write
+await model.bus.unicast("App.LocalStorage.Write", { 
+    key: "user-context", 
+    value: JSON.stringify({ user: "admin" })
+});
+
+// Clear
+await model.bus.unicast("App.LocalStorage.Clear", "last-used-route");
+
+// Add custom storage keys by editing appTypes.ts:
+type AppStorageKey = "user-context" | "last-used-route" | "custom-key";
+```
+
 **Dialogs**:
 ```tsx
 await model.bus.unicast("Dialog.Information", { title, message });
@@ -377,6 +397,7 @@ const files = await model.bus.unicast("App.SelectFiles", {
 ```tsx
 // Button
 <Button contentView="Save" variant="contained" fullWidth onClick={save} />
+<Button contentView="Menu Item" variant="text" align="left" onClick={action} />
 
 // TextField with built-in validation (type-specific: email, url, tel, number)
 <TextField labelView="Email" type="email" value={UECA.bind(() => model, "email")} required />
@@ -401,6 +422,12 @@ const files = await model.bus.unicast("App.SelectFiles", {
 
 // NavLink
 <NavLink route={{ path: "/home" }} linkView="Home" color="primary.main" underline="hover" />
+
+// NavItem (for navigation)
+<NavItem text="Home" route={{ path: "/home" }} icon={<HomeIcon />} mode="icon-text" />
+
+// NavItem (for actions without navigation)
+<NavItem text="Logout" icon={<LogoutIcon />} mode="icon-text" onClick={handleLogout} />
 
 // Tabs
 <TabsContainer tabs={model.tabs} selectedTabId={model.currentTab} 

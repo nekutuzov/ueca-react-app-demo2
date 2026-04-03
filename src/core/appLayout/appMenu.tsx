@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
-import { Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel, useNavItem, NavItemExpandableModel, useNavItemExpandable } from "@components";
+import { Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel, useNavItem, NavItemExpandableModel, useNavItemExpandable, ButtonModel, useButton } from "@components";
 import { AppRoute } from "@core";
-import { HomeIcon, LayoutIcon, ButtonsIcon, InputsIcon, PopupsIcon, NavigationIcon, TabsIcon, MiscIcon } from "../misc/icons";
+import { HomeIcon, LayoutIcon, ButtonsIcon, InputsIcon, PopupsIcon, NavigationIcon, TabsIcon, MiscIcon, LogoutIcon } from "../misc/icons";
 
 type AppMenuStruct = UIBaseStruct<{
     props: {
@@ -32,6 +32,7 @@ type AppMenuStruct = UIBaseStruct<{
         navItemMenuItem: NavItemModel;
         tabsMenuItem: NavItemModel;
         miscMenuItem: NavItemModel;
+        logoutMenuItem: NavItemModel;
     }
 }>;
 
@@ -143,6 +144,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 route: { path: "/misc" },
                 icon: <MiscIcon />
             }),
+            logoutMenuItem: _useLogoutMenuItem(),
         },
 
         messages: {
@@ -165,6 +167,9 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
                 <model.navigationMenuItem.View />
                 <model.tabsMenuItem.View />
                 <model.miscMenuItem.View />
+                <Col fill verticalAlign="bottom">
+                    <model.logoutMenuItem.View />
+                </Col>
             </Col>
     }
 
@@ -196,6 +201,17 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
             }
         });
         return menuItem;
+    }
+
+    function _useLogoutMenuItem(): NavItemModel {
+        return useNavItem({
+            text: "Logout",
+            icon: <LogoutIcon />,
+            mode: () => model.iconsOnly ? "icon-only" : "icon-text",
+            onClick: async () => {
+                await model.bus.unicast("App.Security.Unauthorize", undefined);
+            }
+        });
     }
 }
 

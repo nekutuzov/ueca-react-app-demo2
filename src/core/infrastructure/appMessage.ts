@@ -51,7 +51,7 @@ type MiscMessages = {
     "App.Router.OpenNewTab": { in: AppRoute };
 
     "App.Security.IsAuthorized": { out: boolean };
-    "App.Security.AuthorizeNative": { in: { user?: string, password?: string } };
+    "App.Security.AuthorizeNative": { in: { user: string, password: string; keepMeSignedIn: boolean } };
     "App.Security.Unauthorize": NoParamsNoReturn;
     "App.Security.GetSecurityInfo": { out: { user: string; securityRules: string[] } };
 

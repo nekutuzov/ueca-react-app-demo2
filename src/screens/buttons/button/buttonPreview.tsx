@@ -4,7 +4,8 @@ import {
     Col, Block, Card,
     ButtonModel, useButton,
     ButtonSize,
-    ButtonVariant
+    ButtonVariant,
+    ButtonAlign
 } from "@components";
 import { Palette, CodeSampleModel, useCodeSample } from "@core";
 
@@ -16,6 +17,7 @@ type ButtonPreviewStruct = UIBaseStruct<{
         color: Palette;
         disabled: boolean;
         fullWidth: boolean;
+        align: ButtonAlign;
         clickCount: number;
     };
 
@@ -47,6 +49,7 @@ function useButtonPreview(params?: ButtonPreviewParams): ButtonPreviewModel {
             color: "primary.main",
             disabled: false,
             fullWidth: false,
+            align: "center",
             clickCount: 0
         },
 
@@ -58,6 +61,7 @@ function useButtonPreview(params?: ButtonPreviewParams): ButtonPreviewModel {
                 color: () => model.color,
                 disabled: () => model.disabled,
                 fullWidth: () => model.fullWidth,
+                align: () => model.align,
                 onClick: () => model.onButtonClick?.()
             }),
 
@@ -70,7 +74,8 @@ function useButtonPreview(params?: ButtonPreviewParams): ButtonPreviewModel {
                     "size",
                     "color",
                     "disabled",
-                    "fullWidth"
+                    "fullWidth",
+                    "align"
                 ]
             })
         },
