@@ -1,7 +1,6 @@
 import * as UECA from "ueca-react";
 import { BaseModel, BaseParams, BaseStruct, useBase } from "@components";
-
-type AppStorageKey = "sessionId" | "auto-login";
+import { AppStorageKey } from "./appTypes";
 
 type Struct = BaseStruct<{
     methods: {
@@ -47,4 +46,4 @@ function useAppLocalStorage(params?: BaseParams<Struct>): AppLocalStorageModel {
 
 const AppLocalStorage = UECA.getFC(useAppLocalStorage);
 
-export { AppLocalStorageModel, useAppLocalStorage, AppLocalStorage, AppStorageKey }
+export { AppLocalStorageModel, useAppLocalStorage, AppLocalStorage }

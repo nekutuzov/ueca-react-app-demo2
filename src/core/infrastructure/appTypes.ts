@@ -3,6 +3,8 @@ type UserContext = {
     apiToken?: string;
 }
 
+type AppStorageKey = "sessionId" | "auto-login";
+
 type Intent = "success" | "info" | "warning" | "error";
 
-export { UserContext, Intent }
+export { UserContext, AppStorageKey, Intent }
