@@ -14,7 +14,7 @@ type AppLoginFormStruct = UIBaseStruct<{
     children: {
         userInput: TextFieldModel;
         passwordInput: TextFieldModel;
-        rememberMeChekbox: CheckboxModel;
+        keepMeSignInChekbox: CheckboxModel;
         signInButton: ButtonModel;
     },
 
@@ -52,8 +52,8 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
                 autoComplete: "current-password"
             }),
 
-            rememberMeChekbox: useCheckbox({
-                labelView: "Remember me"
+            keepMeSignInChekbox: useCheckbox({
+                labelView: "Keep me signed in"
             }),
 
             signInButton: useButton({
@@ -70,7 +70,7 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
                     <h1 className="login-heading">Sign in</h1>
                     <model.userInput.View />
                     <model.passwordInput.View />
-                    <model.rememberMeChekbox.View />
+                    <model.keepMeSignInChekbox.View />
                     <model.signInButton.View />
                 </div>
             </Col>

@@ -3,7 +3,7 @@ type UserContext = {
     apiToken?: string;
 }
 
-type AppStorageKey = "sessionId" | "auto-login";
+type AppStorageKey = "user-context" | "last-used-route";
 
 type Intent = "success" | "info" | "warning" | "error";
 
