@@ -13,6 +13,7 @@ export * from "./infrastructure/appAlertManager";
 export * from "./infrastructure/appTheme";
 export * from "./infrastructure/appSecurity";
 export * from "./infrastructure/appLoginForm";
+export * from "./infrastructure/appLocalStorage";
 export * from "./appLayout/appLayout";
 export * from "./appLayout/otherLayout";
 export * from "./appLayout/appMenu";

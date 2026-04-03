@@ -1,6 +1,7 @@
 import * as UECA from "ueca-react";
 import { AnyRoute } from "@components";
 import { AppRoute } from "./appRoutes";
+import { AppStorageKey } from "./appLocalStorage";
 
 // Application Messages: "message-type": { in: <parameter-type>, out: <parameter-type> }
 // Properties "in" and "out" describe value type of input and output parameters. Both properties are optional.
@@ -22,7 +23,9 @@ type DialogMessage = {
     "Alert.Warning": { in: { message: React.ReactNode } };
 }
 
-type ScreenMessages = UECA.EmptyObject;
+type ScreenMessages = {
+    // Add your screen specific messages here
+}
 
 type MiscMessages = {
     "App.UnhandledException": { in: Error };
@@ -55,6 +58,10 @@ type MiscMessages = {
     "App.GetInfo": { out: { appName: string, appVersion: string } };
 
     "App.SelectFiles": { in: { fileMask?: string; multiselect?: boolean }, out: File[] };
+
+    "App.LocalStorage.Read": { in: AppStorageKey, out: string };
+    "App.LocalStorage.Write": { in: { key: AppStorageKey; value: string } };
+    "App.LocalStorage.Clear": { in: AppStorageKey };
 
     "App.GetSideBarState": { out: { collapsed: boolean } };
     "App.SetSideBarState": { in: { collapsed: boolean } };

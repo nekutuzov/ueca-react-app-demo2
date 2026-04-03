@@ -6,7 +6,9 @@ import {
     AppUIModel,
     useAppUI,
     AppSecurityModel,
-    useAppSecurity
+    useAppSecurity,
+    AppLocalStorageModel,
+    useAppLocalStorage
 } from "@core";
 
 type ApplicationStruct = UIBaseStruct<{
@@ -18,6 +20,7 @@ type ApplicationStruct = UIBaseStruct<{
     children: {
         browsingHistory: AppBrowsingHistoryModel;
         security: AppSecurityModel;
+        localStorage: AppLocalStorageModel;
         ui: AppUIModel;
     }
 }>;
@@ -37,6 +40,8 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
             browsingHistory: useAppBrowsingHistory(),
 
             security: useAppSecurity(),
+
+            localStorage: useAppLocalStorage(),
 
             ui: useAppUI({
                 authorizedMode: () => model.security.isAuthorized()
