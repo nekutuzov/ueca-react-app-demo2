@@ -1,7 +1,6 @@
 import { Route } from "@components";
 import {
     HomeScreen,
-    ArchitectureDiagramScreen,
     ButtonScreen,
     IconButtonScreen,
     BlockScreen,
@@ -25,7 +24,8 @@ const screenRoutes = {
     // Add routes within the app layout
     "/": () => <HomeScreen id={"homeScreen"} />, // Default route, can be used for dashboard or welcome screen
     "/home": () => <HomeScreen id={"homeScreen"} />,
-    "/home/diagram": () => <ArchitectureDiagramScreen id={"architectureDiagramScreen"} />,
+    "/home/architecture": () => <HomeScreen id={"homeScreen-architecture"} page={"architecture"} />, // Placeholder for architecture overview screen
+    "/home/diagram": () => <HomeScreen id={"homeScreen-diagram"} page={"diagram"} />,
     "/block": () => <BlockScreen id={"blockScreen"} />,
     "/row": () => <RowScreen id={"rowScreen"} />,
     "/col": () => <ColScreen id={"colScreen"} />,
