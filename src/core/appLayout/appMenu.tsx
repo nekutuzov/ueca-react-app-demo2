@@ -48,103 +48,103 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
         },
 
         children: {
-            layoutMenuItem: _useGroupMenuItem({
+            layoutMenuItem: useGroupMenuItem({
                 text: "Layout",
                 icon: <LayoutIcon />,
                 subItems: () => [model.layoutBlockMenuItem, model.layoutRowMenuItem, model.layoutColMenuItem]
             }),
-            buttonsMenuItem: _useGroupMenuItem({
+            buttonsMenuItem: useGroupMenuItem({
                 text: "Buttons",
                 icon: <ButtonsIcon />,
                 subItems: () => [model.buttonMenuItem, model.iconButtonMenuItem]
             }),
-            inputsMenuItem: _useGroupMenuItem({
+            inputsMenuItem: useGroupMenuItem({
                 text: "Inputs",
                 icon: <InputsIcon />,
                 subItems: () => [model.textFieldMenuItem, model.selectMenuItem, model.radioGroupMenuItem, model.checkboxMenuItem]
             }),
-            popupsMenuItem: _useGroupMenuItem({
+            popupsMenuItem: useGroupMenuItem({
                 text: "Popups",
                 icon: <PopupsIcon />,
                 subItems: () => [model.dialogMenuItem, model.drawerMenuItem, model.toastMenuItem]
             }),
-            navigationMenuItem: _useGroupMenuItem({
+            navigationMenuItem: useGroupMenuItem({
                 text: "Navigation",
                 icon: <NavigationIcon />,
                 subItems: () => [model.navLinkMenuItem, model.navItemMenuItem]
             }),
-            homeMenuItem: _useMenuItem({
+            homeMenuItem: useMenuItem({
                 text: "Home",
                 route: { path: "/home" },
                 icon: <HomeIcon />
             }),
-            layoutBlockMenuItem: _useMenuItem({
+            layoutBlockMenuItem: useMenuItem({
                 text: "Block",
                 route: { path: "/block" }
             }),
-            layoutRowMenuItem: _useMenuItem({
+            layoutRowMenuItem: useMenuItem({
                 text: "Row",
                 route: { path: "/row" }
             }),
-            layoutColMenuItem: _useMenuItem({
+            layoutColMenuItem: useMenuItem({
                 text: "Col",
                 route: { path: "/col" }
             }),
-            buttonMenuItem: _useMenuItem({
+            buttonMenuItem: useMenuItem({
                 text: "Button",
                 route: { path: "/button" }
             }),
-            iconButtonMenuItem: _useMenuItem({
+            iconButtonMenuItem: useMenuItem({
                 text: "IconButton",
                 route: { path: "/icon-button" }
             }),
-            textFieldMenuItem: _useMenuItem({
+            textFieldMenuItem: useMenuItem({
                 text: "TextField",
                 route: { path: "/text-field" }
             }),
-            selectMenuItem: _useMenuItem({
+            selectMenuItem: useMenuItem({
                 text: "Select",
                 route: { path: "/select" }
             }),
-            radioGroupMenuItem: _useMenuItem({
+            radioGroupMenuItem: useMenuItem({
                 text: "RadioGroup",
                 route: { path: "/radio-group" }
             }),
-            checkboxMenuItem: _useMenuItem({
+            checkboxMenuItem: useMenuItem({
                 text: "Checkbox",
                 route: { path: "/checkbox" }
             }),
-            dialogMenuItem: _useMenuItem({
+            dialogMenuItem: useMenuItem({
                 text: "Dialog",
                 route: { path: "/dialogs" }
             }),
-            drawerMenuItem: _useMenuItem({
+            drawerMenuItem: useMenuItem({
                 text: "Drawer",
                 route: { path: "/drawer" }
             }),
-            toastMenuItem: _useMenuItem({
+            toastMenuItem: useMenuItem({
                 text: "Toast",
                 route: { path: "/toast" }
             }),
-            navLinkMenuItem: _useMenuItem({
+            navLinkMenuItem: useMenuItem({
                 text: "NavLink",
                 route: { path: "/navlink" }
             }),
-            navItemMenuItem: _useMenuItem({
+            navItemMenuItem: useMenuItem({
                 text: "NavItem",
                 route: { path: "/navitem" }
             }),
-            tabsMenuItem: _useMenuItem({
+            tabsMenuItem: useMenuItem({
                 text: "Tabs",
                 route: { path: "/tabs?:tab" },
                 icon: <TabsIcon />
             }),
-            miscMenuItem: _useMenuItem({
+            miscMenuItem: useMenuItem({
                 text: "Misc",
                 route: { path: "/misc" },
                 icon: <MiscIcon />
             }),
-            logoutMenuItem: _useLogoutMenuItem(),
+            logoutMenuItem: useLogoutMenuItem(),
         },
 
         messages: {
@@ -177,7 +177,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
     return model;
 
     //Private methods
-    function _useMenuItem(params: { text: string; route: AppRoute; icon?: React.ReactNode }): NavItemModel {
+    function useMenuItem(params: { text: string; route: AppRoute; icon?: React.ReactNode }): NavItemModel {
         return useNavItem({
             text: params.text,
             route: params.route,
@@ -187,7 +187,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
         });
     }
 
-    function _useGroupMenuItem(params: { text: string; icon?: React.ReactNode, subItems?: () => NavItemModel[] }): NavItemExpandableModel {
+    function useGroupMenuItem(params: { text: string; icon?: React.ReactNode, subItems?: () => NavItemModel[] }): NavItemExpandableModel {
         const menuItem = useNavItemExpandable({
             text: params.text,
             icon: params.icon,
@@ -203,7 +203,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
         return menuItem;
     }
 
-    function _useLogoutMenuItem(): NavItemModel {
+    function useLogoutMenuItem(): NavItemModel {
         return useNavItem({
             text: "Logout",
             icon: <LogoutIcon />,

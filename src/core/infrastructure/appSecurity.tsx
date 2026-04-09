@@ -51,7 +51,7 @@ function useAppSecurity(params?: AppSecurityParams): AppSecurityModel {
         messages: {
             "App.Security.IsAuthorized": async () => model.isAuthorized(),
 
-            "App.Security.AuthorizeNative": async (p) => await model.authorize(p.user, p.password, p.keepMeSignedIn),
+            "App.Security.Authorize": async (p) => await model.authorize(p.user, p.password, p.keepMeSignedIn),
 
             "App.Security.Unauthorize": async () => await model.unauthorize(),
         },

@@ -2,13 +2,15 @@
 
 Welcome to the **UECA React** application! This document provides a comprehensive overview of the application's architecture, structure, and key concepts.
 
+**[← Back to Welcome](/home)**
+
+---
+
 ## 📊 Architecture Diagram
 
 To better understand the application structure, view the comprehensive architecture diagram:
 
-**[Open Architecture Diagram →](/home/diagram)**
-
-> Click the link above to view the interactive diagram.
+**[Architecture Diagram →](/home/diagram)**
 
 ---
 
@@ -29,6 +31,8 @@ The UECA React application follows a well-structured architecture built on the U
 ## 📂 Project Structure
 
 ```
+.github/
+└── copilot-instructions.md # AI coding assistant instructions
 src/
 ├── api/                    # API client and mock services
 │   ├── restApiClient.ts
@@ -90,7 +94,7 @@ Manages authentication and authorization:
 - **UserContext**: Stores user info and API token
 - **Messages**:
   - `App.Security.IsAuthorized` - Check auth status
-  - `App.Security.AuthorizeNative` - Login
+  - `App.Security.Authorize` - Login
   - `App.Security.Unauthorize` - Logout
 
 #### 2. **AppRouter**
@@ -231,8 +235,6 @@ disabled: () => model.isLoading
 
 // Bidirectional
 value: UECA.bind(() => model, "username")
-
-// Critical: Always use UECA.bind() for inputs to prevent focus loss
 ```
 
 ### Message Bus Communication
@@ -306,10 +308,26 @@ npm run lint     # Run linter
 
 ---
 
+## 🤖 AI Development Support
+
+### Copilot Instructions
+
+The project includes comprehensive AI coding assistant instructions in `.github/copilot-instructions.md`. This file provides:
+
+- **Quick Reference**: Core principles, path aliases, and architecture overview
+- **Component Inventory**: Complete list of available components with usage patterns
+- **Component Patterns**: Standard structure, bindings, message bus, and helper functions
+- **Common Usage**: Code examples for authentication, routing, dialogs, alerts, and more
+- **Critical Conventions**: Lifecycle hooks, state management, and UECA-specific patterns
+
+This enables AI assistants like GitHub Copilot to generate accurate, idiomatic UECA-React code following the project's conventions and patterns.
+
+---
+
 ## 🔗 Resources
 
 - **UECA Documentation**: `node_modules/ueca-react/docs/index.md`
-- **Example Project**: [UECA React App](https://github.com/nekutuzov/ueca-react-app)
+- **MUI Based Example Project**: [UECA React App](https://github.com/nekutuzov/ueca-react-app)
 - **Official Website**: [ueca-react.carrd.co](https://ueca-react.carrd.co/)
 
 ---
@@ -335,3 +353,6 @@ npm run lint     # Run linter
 ---
 
 **Happy Coding with UECA React! 🚀**
+
+
+**[← Back to Welcome](/home)**

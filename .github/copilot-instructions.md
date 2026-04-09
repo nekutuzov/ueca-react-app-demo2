@@ -46,7 +46,9 @@ Application
 
 ## Component Inventory
 
-**Layout** (`layout/`): Block, Row, Col - flexbox containers with spacing, alignment, fill, cursor props
+**Layout** (`layout/`): 
+- Block, Row, Col: flexbox containers with spacing, alignment, fill, cursor props
+- Card: container with title, elevation, and padding
 
 **Note**: Use `reactKey` prop (not `key`) for dynamic lists to avoid React's reserved prop warning:
 ```tsx
@@ -91,11 +93,11 @@ Application
 - TabsContainer: orientation (horizontal/vertical), variants (standard/scrollable/fullWidth), manages selection
 - Tab: label, icon (4 positions), wrapped text, disabled/invalid states
 
-**Utility** (`misc/`): SeverityIcon, Spinner, FileSelector
+**Utility** (`misc/`): SeverityIcon, Spinner, FileSelector, MarkdownPreview
 
 **Infrastructure** (`src/core/infrastructure/`):
-- **AppSecurity**: UserContext (user, apiToken), messages: `App.Security.IsAuthorized/AuthorizeNative/Unauthorize`
-- **AppLoginForm**: TextField/Checkbox inputs, calls `App.Security.AuthorizeNative`
+- **AppSecurity**: UserContext (user, apiToken), messages: `App.Security.IsAuthorized/Authorize/Unauthorize`
+- **AppLoginForm**: TextField/Checkbox inputs, calls `App.Security.Authorize`
 - **AppRouter**: Orchestrates AppLayout/OtherLayout, messages: `App.Router.GetRoute/GoToRoute/SetRoute/SetRouteParams/OpenNewTab/BeforeRouteChange/AfterRouteChange`
 - **AppBusyDisplay**: `BusyDisplay.Set/Clear/SetVisibility`
 - **AppDialogManager**: `Dialog.Information/Warning/Error/Exception/Confirmation/ActionConfirmation`
@@ -242,7 +244,7 @@ props: {
 }
 
 // Helper creates menu items with computed active state
-function _useMenuItem(params: { text: string; route: AppRoute; icon?: React.ReactNode }): NavItemModel {
+function useMenuItem(params: { text: string; route: AppRoute; icon?: React.ReactNode }): NavItemModel {
     return useNavItem({
         text: params.text,
         route: params.route,
@@ -253,7 +255,7 @@ function _useMenuItem(params: { text: string; route: AppRoute; icon?: React.Reac
 }
 
 // Helper for expandable groups - auto-detects active state from children
-function _useGroupMenuItem(params: { text: string; icon?: React.ReactNode; subItems?: () => NavItemModel[] }): NavItemExpandableModel {
+function useGroupMenuItem(params: { text: string; icon?: React.ReactNode; subItems?: () => NavItemModel[] }): NavItemExpandableModel {
     const menuItem = useNavItemExpandable({
         text: params.text,
         icon: params.icon,
@@ -270,8 +272,8 @@ function _useGroupMenuItem(params: { text: string; icon?: React.ReactNode; subIt
 
 // Usage - clean, declarative
 children: {
-    homeMenuItem: _useMenuItem({ text: "Home", route: { path: "/home" }, icon: homeIcon }),
-    layoutMenuItem: _useGroupMenuItem({ 
+    homeMenuItem: useMenuItem({ text: "Home", route: { path: "/home" }, icon: homeIcon }),
+    layoutMenuItem: useGroupMenuItem({ 
         text: "Layout", 
         icon: layoutIcon,
         subItems: () => [model.blockMenuItem, model.rowMenuItem] 
@@ -297,7 +299,7 @@ messages: {
 **Authentication**:
 ```tsx
 // Login
-await model.bus.unicast("App.Security.AuthorizeNative", { user, password });
+await model.bus.unicast("App.Security.Authorize", { user, password });
 
 // Check
 const authorized = await model.bus.unicast("App.Security.IsAuthorized");

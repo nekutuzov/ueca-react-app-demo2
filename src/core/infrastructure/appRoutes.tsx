@@ -22,10 +22,10 @@ import {
 
 const screenRoutes = {
     // Add routes within the app layout
-    "/": () => <HomeScreen id={"homeScreen"} />, // Default route, can be used for dashboard or welcome screen
-    "/home": () => <HomeScreen id={"homeScreen"} />,
-    "/home/architecture": () => <HomeScreen id={"homeScreen-architecture"} page={"architecture"} />, // Placeholder for architecture overview screen
-    "/home/diagram": () => <HomeScreen id={"homeScreen-diagram"} page={"diagram"} />,
+    "/": () => <HomeScreen id={"homeScreen"} page={"welcome"} />, // Default route, can be used for dashboard or welcome screen
+    "/home": () => <HomeScreen id={"homeScreen"} page={"welcome"} />,
+    "/home/architecture": () => <HomeScreen id={"homeScreen"} page={"architecture"} />, // Placeholder for architecture overview screen
+    "/home/diagram": () => <HomeScreen id={"homeScreen"} page={"diagram"} />,
     "/block": () => <BlockScreen id={"blockScreen"} />,
     "/row": () => <RowScreen id={"rowScreen"} />,
     "/col": () => <ColScreen id={"colScreen"} />,

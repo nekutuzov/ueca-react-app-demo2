@@ -196,7 +196,7 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 try {
                     model.setScreenState({ dataValidating: true });
                     await model.validator.validate();
-                    let customRulesValid = (model.onValidate ? await model.onValidate() : true);
+                    const customRulesValid = (model.onValidate ? await model.onValidate() : true);
                     if (!customRulesValid && (customRulesValid ?? true)) {
                         result = false; // Don't display the warning if custom validation returned undefined/null
                     } else {

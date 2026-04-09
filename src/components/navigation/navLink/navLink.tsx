@@ -44,7 +44,9 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
 
         methods: {
             click: async () => {
-                model.onClick && await model.onClick(model);
+                if (model.onClick) {
+                    await model.onClick(model);
+                }
 
                 if (!model.route) {
                     return;
@@ -64,7 +66,7 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
         View: () => {
             const colorStyle = resolvePaletteColor(model.color);
             const underlineClass = `nav-link-underline-${model.underline}`;
-            
+
             if (model.disabled) {
                 return (
                     <span
@@ -75,7 +77,7 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
                     </span>
                 );
             }
-            
+
             return (
                 <a
                     id={model.htmlId()}

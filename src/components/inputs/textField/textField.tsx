@@ -66,10 +66,11 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                 // Type-specific validation (only if value is not empty)
                 if (model.value && model.value.toString().trim() !== "") {
                     const valueStr = model.value.toString();
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    const phoneRegex = /^[\d\s\-+()]+$/;
 
                     switch (model.type) {
-                        case "email":
-                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        case "email":                    
                             if (!emailRegex.test(valueStr)) {
                                 return `${fieldName} must be a valid email address`;
                             }
@@ -83,8 +84,7 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                             }
                             break;
 
-                        case "tel":
-                            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+                        case "tel":                            
                             if (!phoneRegex.test(valueStr)) {
                                 return `${fieldName} must be a valid phone number`;
                             }

@@ -3,7 +3,7 @@ import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Blo
 import { Breadcrumb, CRUDScreenModel, useCRUDScreen } from "@core";
 import welcome from "./welcome.md?raw";
 import architectureContent from "./architecture.md?raw";
-import diagramSvg from "./ueca_app_diagram.svg";
+import diagram from "./diagram.md?raw";
 
 type HomeScreenStruct = ScreenBaseStruct<{
     props: {
@@ -14,10 +14,6 @@ type HomeScreenStruct = ScreenBaseStruct<{
         crudScreen: CRUDScreenModel;
         markdownPreview: MarkdownPreviewModel;
     };
-
-    methods: {
-        _pageView: () => React.ReactElement;
-    }
 }>;
 
 type HomeScreenParams = ScreenBaseParams<HomeScreenStruct>;
@@ -27,7 +23,6 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
     const struct: HomeScreenStruct = {
         props: {
             id: useHomeScreen.name,
-            cacheable: false,
             page: "welcome"
         },
 
@@ -35,45 +30,25 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
             crudScreen: useCRUDScreen({
                 intent: "none",
                 breadcrumbs: () => _breadCrumbs(),
-                contentView: () => <model._pageView />
+                contentView: () => (
+                    <Block fill padding="large" sx={{ maxWidth: "1200px", margin: "0 auto" }}>
+                        <model.markdownPreview.View />
+                    </Block>
+                )
             }),
 
             markdownPreview: useMarkdownPreview({
-                source: () => model.page === "welcome" ? welcome : architectureContent
-            })
-        },
-
-        methods: {
-            _pageView: () => {
-                switch (model.page) {
-                    case "welcome":
-                        return (
-                            <Block fill padding="large" sx={{ maxWidth: "1200px", margin: "0 auto" }}>
-                                <model.markdownPreview.View />
-                            </Block>
-                        );
-                    case "architecture":
-                        return (
-                            <Block fill padding="large" sx={{ maxWidth: "1200px", margin: "0 auto" }}>
-                                <model.markdownPreview.View />
-                            </Block>
-                        );
-                    case "diagram":
-                        return (
-                            <Col fill horizontalAlign={"center"} overflow={"auto"}>
-                                <img
-                                    src={diagramSvg}
-                                    alt="UECA Application Architecture Diagram"
-                                    style={{
-                                        maxWidth: "100%",
-                                        height: "auto",
-                                        display: "block"
-                                    }}
-                                />
-                            </Col>
-                        );
+                source: () => {
+                    switch (model.page) {
+                        case "welcome":
+                            return welcome;
+                        case "architecture":
+                            return architectureContent;
+                        case "diagram":
+                            return diagram;
+                    }
                 }
-            }
+            })
         },
 
         View: () => <model.crudScreen.View />

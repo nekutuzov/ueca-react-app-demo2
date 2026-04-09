@@ -63,7 +63,7 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
                 contentView: "Sign in",
                 variant: "contained",
                 fullWidth: true,
-                onClick: async () => await _nativeLogin(),
+                onClick: async () => await _basicLogin(),
             })
         },
 
@@ -84,11 +84,11 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
     return model;
 
     // Private methods
-    async function _nativeLogin() {
+    async function _basicLogin() {
         try {
             await model.runWithBusyDisplay(
                 async () => await model.bus.unicast(
-                    "App.Security.AuthorizeNative",
+                    "App.Security.Authorize",
                     { user: model.user, password: model.password, keepMeSignedIn: model.keepMeSignedIn }
                 )
             );

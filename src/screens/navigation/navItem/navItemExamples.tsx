@@ -230,13 +230,13 @@ messages: {
 
 // Menu items
 children: {
-    homeMenuItem: _useMenuItem({ 
+    homeMenuItem: useMenuItem({ 
         text: "Home", 
         icon: <HomeIcon />,
         route: { path: "/home" }
     }),
 
-    dialogMenuItem: _useMenuItem({
+    dialogMenuItem: useMenuItem({
         text: "Dialog",
         icon: <DialogIcon />,
         route: { path: "/dialogs" }
@@ -245,7 +245,7 @@ children: {
 
 // Optional but recommended to avoid boilerplate
 // Private helper to create menu items with auto-active detection
-function _useMenuItem(params: { 
+function useMenuItem(params: { 
     text: string; 
     route: AppRoute; 
     icon?: React.ReactNode 
