@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { AlertDrawerModel, BlockProps, Col, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useAlertDrawer, useUIBase } from "@components";
-import { Breadcrumb, LocationBreadcrumbsModel, useLocationBreadcrumbs } from "@core";
+import { Breadcrumb, LocationBreadcrumbsModel, useLocationBreadcrumbs, UECAContactsModel, useUECAContacts } from "@core";
 
 type ScreenLayoutStruct = UIBaseStruct<{
     props: {
@@ -14,6 +14,7 @@ type ScreenLayoutStruct = UIBaseStruct<{
     children: {
         breadcrumbsControl: LocationBreadcrumbsModel;
         drawerPanel: AlertDrawerModel;
+        contacts: UECAContactsModel;
     };
 }>;
 
@@ -40,6 +41,10 @@ function useScreenLayout(params?: ScreenParams): ScreenLayoutModel {
                 titleView: "Alert",
                 contentView: "This is an alert drawer.",
                 width: 1000,
+            }),
+
+            contacts: useUECAContacts({
+                orientation: "horizontal"
             })
         },
 
@@ -58,8 +63,9 @@ function useScreenLayout(params?: ScreenParams): ScreenLayoutModel {
                 <Col id={model.htmlId()} fill divider overflow={"hidden"}>
                     <Row verticalAlign={"center"} horizontalAlign={"spaceBetween"} padding={{ leftRight: "medium" }} height={"40px"}>
                         <model.breadcrumbsControl.View />
-                        <Row>
+                        <Row spacing={"small"}>
                             {model.toolsView}
+                            <model.contacts.View />
                             {/* <HiddenToolsButton items={model.hiddenToolsView} /> */}
                         </Row>
                     </Row>

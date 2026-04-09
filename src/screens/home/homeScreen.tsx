@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Block, useMarkdownPreview, Col, MarkdownPreviewModel } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Block, useMarkdownPreview, MarkdownPreviewModel } from "@components";
 import { Breadcrumb, CRUDScreenModel, useCRUDScreen } from "@core";
 import welcome from "./welcome.md?raw";
 import architectureContent from "./architecture.md?raw";

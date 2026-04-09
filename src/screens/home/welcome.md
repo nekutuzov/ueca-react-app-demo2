@@ -1,6 +1,6 @@
-# Welcome to UECA-React Demo
+# Welcome to UECA-React Demo Application
 
-This application serves as a comprehensive template and showcase for building production-ready web applications with UECA-React. It demonstrates:
+This application serves as a comprehensive template and showcase for building production-ready web applications with [UECA-React](https://www.npmjs.com/package/ueca-react). It demonstrates:
 
 - **Complete UECA-React implementation**: Every component follows UECA-React principles and patterns consistently
 - **Vite-powered development**: Fast, modern build tooling with Vite for optimal development experience and production builds
@@ -53,3 +53,14 @@ Each demo screen includes:
 - **Code Sample**: View the generated code for the configured component
 
 Every feature you see follows the UECA-React way.
+
+---
+
+## 📬 Get in Touch
+
+We'd love to hear from you! Whether you have questions, feedback, need a development consultation, or just want to connect, feel free to reach out through any of these channels:
+
+- **Email**: [cranesoft@protonmail.com](mailto:cranesoft@protonmail.com)
+- **GitHub**: [https://github.com/nekutuzov/ueca-react-app](https://github.com/nekutuzov/ueca-react-app)
+- **npm**: [https://www.npmjs.com/package/ueca-react](https://www.npmjs.com/package/ueca-react)
+- **YouTube**: [https://youtu.be/SQl8f-qGxwU?si=-YTWPpPB7ExBZ6L0](https://youtu.be/SQl8f-qGxwU?si=-YTWPpPB7ExBZ6L0)

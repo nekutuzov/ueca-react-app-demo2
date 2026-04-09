@@ -413,3 +413,36 @@ export function LogoutIcon(props?: IconProps) {
         </svg>
     );
 }
+
+export function YouTubeIcon(props?: IconProps) {
+    if (props?.render === false) return null;
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+        </svg>
+    );
+}
+
+export function NpmIcon(props?: IconProps) {
+    if (props?.render === false) return null;
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+            <path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.332h-2.669v-.001zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z" />
+        </svg>
+    );
+}
+
+export function EmailIcon(props?: IconProps) {
+    if (props?.render === false) return null;
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+        </svg>
+    );
+}

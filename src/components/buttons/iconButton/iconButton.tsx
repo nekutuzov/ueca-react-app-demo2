@@ -14,6 +14,7 @@ type IconButtonStruct = UIBaseStruct<{
         disabled: boolean;
         iconView: React.ReactNode;
         size: IconSize;
+        title: string;
     };
 
     events: {
@@ -38,6 +39,7 @@ function useIconButton(params?: IconButtonParams): IconButtonModel {
             disabled: false,
             iconView: undefined,
             size: "medium",
+            title: undefined,
         },
 
         methods: {
@@ -79,6 +81,7 @@ function useIconButton(params?: IconButtonParams): IconButtonModel {
                     className={`ueca-icon-button ueca-icon-button-${model.size}`}
                     disabled={model.disabled}
                     onClick={model.click}
+                    title={model.title}
                     style={{
                         ...(model.color !== "inherit" ? {
                             "--icon-button-color": colorClass

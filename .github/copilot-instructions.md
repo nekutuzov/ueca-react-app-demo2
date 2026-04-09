@@ -59,7 +59,7 @@ Application
 
 **Input** (`input/`):
 - Button: variants (text/outlined/contained), sizes (small/medium/large), align (left/center/right), fullWidth
-- IconButton: predefined kinds (ok/cancel/delete/refresh/close) or custom SVG, CloseIconButton factory
+- IconButton: predefined kinds (ok/cancel/delete/refresh/close) or custom SVG, title prop for tooltips, CloseIconButton factory
 - TextField`<T>`: variants (outlined/filled/standard), types (text/email/password/number/tel/url/search), multiline, built-in validation
 - RadioGroup`<T>`: orientation (row/column), sizes (small/medium/large), color palette, built-in validation
 - Select`<T>`: variants (filled/outlined/standard), sizes (small/medium), fullWidth, built-in validation
@@ -95,6 +95,9 @@ Application
 
 **Utility** (`misc/`): SeverityIcon, Spinner, FileSelector, MarkdownPreview
 
+**App Components** (`src/core/appComponents/`):
+- UECAContacts: Four icon buttons (email, GitHub, npm, YouTube) for contact links, supports horizontal/vertical orientation
+
 **Infrastructure** (`src/core/infrastructure/`):
 - **AppSecurity**: UserContext (user, apiToken), messages: `App.Security.IsAuthorized/Authorize/Unauthorize`
 - **AppLoginForm**: TextField/Checkbox inputs, calls `App.Security.Authorize`
@@ -108,6 +111,7 @@ Application
 **Routing**:
 - `appRoutes.tsx`: `screenRoutes` (main app), `otherRoutes` (external/docs)
 - Types: `ScreenRoute`, `OtherRoute`, `AppRoute`, `AppRouteParams<T>`
+- **IMPORTANT**: External URLs opened via `openNewTab` MUST be registered in `otherRoutes` with `() => null` handler
 
 ## Component Patterns
 
@@ -378,6 +382,12 @@ const screenRoutes = {
     "/items/:id": () => <ItemDetailScreen id="itemDetailScreen" />,
     "/config?:tab": () => <ConfigScreen id="configScreen" />
 };
+
+// Register external URLs (required for openNewTab)
+const otherRoutes = {
+    "https://example.com": () => null,
+    "https://github.com/user/repo": () => null
+};
 ```
 
 **Busy State**:
@@ -400,6 +410,9 @@ const files = await model.bus.unicast("App.SelectFiles", {
 // Button
 <Button contentView="Save" variant="contained" fullWidth onClick={save} />
 <Button contentView="Menu Item" variant="text" align="left" onClick={action} />
+
+// IconButton with tooltip
+<IconButton iconView={<CustomIcon />} title="Click to perform action" onClick={handleClick} />
 
 // TextField with built-in validation (type-specific: email, url, tel, number)
 <TextField labelView="Email" type="email" value={UECA.bind(() => model, "email")} required />
@@ -434,6 +447,10 @@ const files = await model.bus.unicast("App.SelectFiles", {
 // Tabs
 <TabsContainer tabs={model.tabs} selectedTabId={model.currentTab} 
     onChange={(c) => model.currentTab = c.selectedTab.getTabId()} />
+
+// UECAContacts (horizontal or vertical layout)
+<UECAContacts orientation="horizontal" />
+<UECAContacts orientation="vertical" />
 ```
 
 **Generic Type Parameters for Input Components**:

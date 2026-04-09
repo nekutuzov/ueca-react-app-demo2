@@ -101,10 +101,12 @@ Manages authentication and authorization:
 Orchestrates routing and navigation:
 - Supports path parameters: `/users/:id`
 - Supports query parameters: `/config?:tab`
+- **IMPORTANT**: External URLs opened via `openNewTab` MUST be registered in `otherRoutes` with `() => null` handler
 - **Messages**:
   - `App.Router.GoToRoute` - Navigate with history
   - `App.Router.SetRoute` - Navigate without history
   - `App.Router.SetRouteParams` - Update parameters
+  - `App.Router.OpenNewTab` - Open URL in new tab
   - `App.Router.BeforeRouteChange` - Intercept navigation
   - `App.Router.AfterRouteChange` - Post-navigation hook
 
@@ -157,7 +159,7 @@ Browser localStorage wrapper:
 ### Input Components
 
 - **Button**: Variants (`text`, `outlined`, `contained`), sizes, align (`left`, `center`, `right`), colors
-- **IconButton**: Predefined kinds or custom SVG icons
+- **IconButton**: Predefined kinds or custom SVG icons, title prop for tooltips
 - **TextField\<T\>**: Multiple variants, types, built-in validation
 - **RadioGroup\<T\>**: Type-safe options, orientation control
 - **Select\<T\>**: Dropdown with variants and validation
@@ -193,6 +195,10 @@ Browser localStorage wrapper:
 - **FileSelector**: File upload dialog
 - **SeverityIcon**: Icons for alert severities
 - **MarkdownPreview**: Markdown content renderer
+
+### App Components
+
+- **UECAContacts**: Four icon buttons (email, GitHub, npm, YouTube) for contact links with horizontal/vertical orientation
 
 ---
 
