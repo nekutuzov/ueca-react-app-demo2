@@ -27,7 +27,7 @@ These files will be copied to the root of the build output.
 Reference assets from the public folder using absolute paths:
 
 ```tsx
-<img src="/myapp/logo.png" alt="Logo" />
+<img src="/ueca-react-app-demo2/logo.png" alt="Logo" />
 ```
 
-Note: Include the base path (`/myapp/`) as configured in `vite.config.ts`.
+Note: Include the base path (`/ueca-react-app-demo2/`) as configured in `vite.config.ts`.

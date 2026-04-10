@@ -281,7 +281,7 @@ Available color options:
 ### Commands
 
 ```bash
-npm run dev      # Development server (port 5001, base /myapp)
+npm run dev      # Development server (port 5001, base /ueca-react-app-demo2)
 npm run build    # Production build
 npm run lint     # Run linter
 ```
@@ -333,7 +333,7 @@ This enables AI assistants like GitHub Copilot to generate accurate, idiomatic U
 ## 🔗 Resources
 
 - **UECA Documentation**: `node_modules/ueca-react/docs/index.md`
-- **MUI Based Example Project**: [UECA React App](https://github.com/nekutuzov/ueca-react-app)
+- **MUI Based Example Project**: [UECA React App](https://github.com/nekutuzov/ueca-react-app-demo2)
 - **Official Website**: [ueca-react.carrd.co](https://ueca-react.carrd.co/)
 
 ---

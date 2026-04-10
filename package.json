@@ -1,17 +1,17 @@
 {
-  "name": "ueca-react-vite",
+  "name": "ueca-react-app-demo2",
   "private": true,
   "version": "1.0.0",
-  "description": "UECA-React Vite Application",
+  "description": "UECA-React App Demo 2",
   "author": "Aleksey Suvorov <cranesoft@protonmail.com>",
   "license": "ISC",
   "homepage": "https://cranesoft.net",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nekutuzov/ueca-react-vite.git"
+    "url": "https://github.com/nekutuzov/ueca-react-app-demo2.git"
   },
   "bugs": {
-    "url": "https://github.com/nekutuzov/ueca-react-vite/issues"
+    "url": "https://github.com/nekutuzov/ueca-react-app-demo2/issues"
   },
   "type": "module",
   "scripts": {

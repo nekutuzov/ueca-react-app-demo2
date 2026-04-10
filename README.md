@@ -41,7 +41,7 @@ npm install
 npm run dev
 ```
 
-Visit `http://localhost:5001/myapp/` to see your application.
+Visit `http://localhost:5001/ueca-react-app-demo2/` to see your application.
 
 ### Build for Production
 
@@ -224,7 +224,7 @@ The project uses TypeScript path aliases configured in `tsconfig.app.json`:
 ## Documentation
 
 - **Framework Docs**: `node_modules/ueca-react/docs/index.md`
-- **Example Project**: https://github.com/nekutuzov/ueca-react-app
+- **Example Project**: https://github.com/nekutuzov/ueca-react-app-demo2
 - **Copilot Instructions**: `.github/copilot-instructions.md` for AI coding assistance
 - **Architecture Documentation**: Available in-app at `/home/architecture`
 - **Component Demos**: Navigate through the app menu to explore all components
@@ -272,8 +272,8 @@ To use this as a foundation for your own application:
 ## Contact & Resources
 
 - **Email**: [cranesoft@protonmail.com](mailto:cranesoft@protonmail.com)
-- **GitHub Repository**: [nekutuzov/ueca-react-vite](https://github.com/nekutuzov/ueca-react-vite)
-- **Example Project**: [nekutuzov/ueca-react-app](https://github.com/nekutuzov/ueca-react-app)
+- **GitHub Repository**: [nekutuzov/ueca-react-app-demo2](https://github.com/nekutuzov/ueca-react-app-demo2)
+- **Example Project**: [nekutuzov/ueca-react-app-demo2](https://github.com/nekutuzov/ueca-react-app-demo2)
 - **UECA-React Package**: [npm](https://www.npmjs.com/package/ueca-react)
 - **Video Introduction**: [YouTube](https://youtu.be/SQl8f-qGxwU?si=-YTWPpPB7ExBZ6L0)
 - **Author**: Aleksey Suvorov

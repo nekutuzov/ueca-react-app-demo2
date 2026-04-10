@@ -51,7 +51,7 @@ function useNavLinkExamples(params?: NavLinkExamplesParams): NavLinkExamplesMode
             }),
 
             githubNavLink: useNavLink({
-                route: { path: "https://github.com/nekutuzov/ueca-react-app" },
+                route: { path: "https://github.com/nekutuzov/ueca-react-app-demo2" },
                 linkView: "GitHub Example App",
                 color: "text.primary",
                 underline: "hover",
@@ -162,7 +162,7 @@ function useNavLinkExamples(params?: NavLinkExamplesParams): NavLinkExamplesMode
 />
 
 <NavLink
-    route={{ path: "https://github.com/nekutuzov/ueca-react-app" }}
+    route={{ path: "https://github.com/nekutuzov/ueca-react-app-demo2" }}
     linkView="GitHub Example App"
     color="text.primary"
     underline="hover"

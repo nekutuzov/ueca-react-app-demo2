@@ -446,3 +446,14 @@ export function EmailIcon(props?: IconProps) {
         </svg>
     );
 }
+
+export function WebsiteIcon(props?: IconProps) {
+    if (props?.render === false) return null;
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.93 9h-3.1a15.55 15.55 0 0 0-1.38-5.01A8.03 8.03 0 0 1 18.93 11zM12 4c1.25 1.54 2.16 4.04 2.48 7H9.52C9.84 8.04 10.75 5.54 12 4zM4.24 13h3.1c.11 1.8.57 3.48 1.28 4.9A8.02 8.02 0 0 1 4.24 13zm3.1-2h-3.1a8.02 8.02 0 0 1 4.38-4.9A14.13 14.13 0 0 0 7.34 11zM12 20c-1.25-1.54-2.16-4.04-2.48-7h4.96C14.16 15.96 13.25 18.46 12 20zm2.83-2.1c.71-1.42 1.17-3.1 1.28-4.9h3.1a8.02 8.02 0 0 1-4.38 4.9z" />
+        </svg>
+    );
+}

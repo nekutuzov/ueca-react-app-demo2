@@ -28,52 +28,29 @@ This creates the `public/mockServiceWorker.js` file needed for API mocking.
 npm run dev
 ```
 
-Visit: `http://localhost:5001/myapp/`
+Visit: `http://localhost:5001/ueca-react-app-demo2/`
 
-## What Was Created
+## Current Project Structure
 
-### Project Files (30+ files)
+This repository already contains a complete demo application with many components and screens.
+Use this high-level map instead of fixed file counts.
 
-#### Configuration (7 files)
-- `package.json` - Dependencies and scripts
-- `vite.config.ts` - Vite configuration
-- `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json` - TypeScript configs
+### Core Config Files
+- `package.json` - Dependencies and npm scripts (`dev`, `build`, `lint`, `preview`)
+- `vite.config.ts` - Vite configuration (base path and dev server port)
+- `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json` - TypeScript configs and path aliases
 - `eslint.config.js` - Linting rules
-- `.gitignore` - Git ignore patterns
 
-#### Source Code Structure
+### Source Directories
+- `src/components/` - Reusable UI components (layout, inputs, navigation, dialogs, tabs, flyouts)
+- `src/core/` - Application infrastructure (routing, app shell, security, dialogs, alerts, theme, icons)
+- `src/api/` - API client and MSW mocks
+- `src/screens/` - Demo screens for each component area
 
-**src/components/** (4 files)
-- `base/base.tsx` - Root base component with shortcuts
-- `base/uiBase.tsx` - UI component base
-- `base/editBase.tsx` - Form/editing base with validation
-- `index.ts` - Exports
-
-**src/core/** (8 files)
-- `infrastructure/application.tsx` - Main app component
-- `infrastructure/appStart.tsx` - Bootstrap utilities
-- `infrastructure/appMessage.ts` - Message bus definitions
-- `infrastructure/appRoutes.tsx` - Route definitions
-- `infrastructure/appBrowsingHistory.ts` - Browser history
-- `infrastructure/appTypes.ts` - Common types
-- `infrastructure/appUtils.ts` - Utility functions
-- `index.ts` - Exports
-
-**src/api/** (3 files)
-- `restApiClient.ts` - REST API client
-- `mocks/handlers.ts` - MSW mock handlers
-- `index.ts` - Exports
-
-**src/screens/** (2 files)
-- `homeScreen.tsx` - Welcome screen
-- `index.ts` - Exports
-
-**Root Files**
-- `src/main.tsx` - Application entry point
-- `src/vite-env.d.ts` - Vite type definitions
-- `index.html` - HTML entry point
-- `README.md` - Project documentation
-- `.github/copilot-instructions.md` - AI coding assistant guide
+### Important Entry Points
+- `src/main.tsx` - Application startup and MSW initialization
+- `src/core/infrastructure/appRoutes.tsx` - App routes and external-link routes
+- `src/screens/index.ts` - Exported screens
 
 ## TypeScript Errors Before npm install
 
@@ -96,9 +73,14 @@ node_modules/ueca-react/docs/index.md
 
 ### 2. Check Out Examples
 
-Reference project with full examples:
+Official UECA example project:
 ```
-https://github.com/nekutuzov/ueca-react-app
+https://nekutuzov.github.io/ueca-react-app-demo2/
+```
+
+This repository is also a full demo/reference:
+```
+https://github.com/nekutuzov/ueca-react-app-demo2
 ```
 
 ### 3. Create Your First Component
@@ -146,11 +128,11 @@ export { MyScreenModel, MyScreenParams, useMyScreen, MyScreen };
 Edit `src/core/infrastructure/appRoutes.tsx`:
 
 ```tsx
-import { MyScreen } from "@screens";
+import { HomeScreen, MyScreen } from "@screens";
 
 const screenRoutes = {
-    "/": () => <HomeScreen id={"homeScreen"} />,
-    "/home": () => <HomeScreen id={"homeScreen"} />,
+    "/": () => <HomeScreen id={"homeScreen"} page={"welcome"} />,
+    "/home": () => <HomeScreen id={"homeScreen"} page={"welcome"} />,
     "/myscreen": () => <MyScreen id={"myScreen"} />,  // Add this
 }
 ```
@@ -177,7 +159,7 @@ server: {
 
 ### Base Path Configuration
 
-To change the base path from `/myapp/`, edit:
+To change the base path from `/ueca-react-app-demo2/`, edit:
 
 1. `vite.config.ts`:
 ```typescript
@@ -209,23 +191,25 @@ Comment out in `src/main.tsx`:
 2. **UECA Docs**: `node_modules/ueca-react/docs/index.md`
 3. **Copilot Guide**: `.github/copilot-instructions.md`
 4. **Base Components**: Study `src/components/base/`
-5. **Example Project**: https://github.com/nekutuzov/ueca-react-app
-6. **Build Something**: Create your first screen!
+5. **Example Project**: https://nekutuzov.github.io/ueca-react-app-demo2/
+6. **This Demo Repository**: https://github.com/nekutuzov/ueca-react-app-demo2
+7. **Build Something**: Create your first screen!
 
 ## Key Concepts to Master
 
-- ✅ Component structure (props, children, methods, events)
-- ✅ Message bus communication
-- ✅ Lifecycle hooks (init, mount, draw, erase, unmount, deinit)
-- ✅ Property bindings (unidirectional, bidirectional, custom)
-- ✅ Direct state assignment (no useState/setState)
-- ✅ Base component hierarchy
-- ✅ Component encapsulation principles
+- [x] Component structure (props, children, methods, events)
+- [x] Message bus communication
+- [x] Lifecycle hooks (init, mount, draw, erase, unmount, deinit)
+- [x] Property bindings (unidirectional, bidirectional, custom)
+- [x] Direct state assignment (no useState/setState)
+- [x] Base component hierarchy
+- [x] Component encapsulation principles
 
 ## Getting Help
 
 - **Documentation**: `node_modules/ueca-react/docs/`
-- **Example Project**: https://github.com/nekutuzov/ueca-react-app
+- **Example Project**: https://nekutuzov.github.io/ueca-react-app-demo2/
+- **This Demo Repository**: https://github.com/nekutuzov/ueca-react-app-demo2
 - **Copilot Instructions**: Use `.github/copilot-instructions.md` for AI assistance
 
-Happy coding with UECA-React! 🚀
+Happy coding with UECA-React!

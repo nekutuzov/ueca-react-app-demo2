@@ -16,7 +16,7 @@ export function initMocks() {
         const worker = setupWorker(...handlers);
         await worker.start({
             serviceWorker: {
-                url: "/myapp/mockServiceWorker.js",
+                url: "/ueca-react-app-demo2/mockServiceWorker.js",
             },
             onUnhandledRequest: "bypass",
         })

@@ -4,7 +4,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'; // For resolving Typescript pat
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/myapp/',
+  base: '/ueca-react-app-demo2/',
   plugins: [react(), tsconfigPaths()],
   server: {
     port: 5001,

@@ -49,7 +49,7 @@ const otherRoutes = {
     // Add routes without the app layout like document viewers and external links
     "https://cranesoft.net": () => null,
     "https://ueca-react.carrd.co/": () => null,
-    "https://github.com/nekutuzov/ueca-react-app": () => null,    
+    "https://github.com/nekutuzov/ueca-react-app-demo2": () => null,    
     "https://youtu.be/SQl8f-qGxwU?si=-YTWPpPB7ExBZ6L0": () => null,
     "https://www.npmjs.com/package/ueca-react": () => null,
     "mailto:cranesoft@protonmail.com": () => null

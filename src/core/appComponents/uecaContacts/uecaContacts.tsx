@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { Row, Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, IconButtonModel, useIconButton } from "@components";
-import { YouTubeIcon, GitHubIcon, NpmIcon, EmailIcon } from "@core";
+import { YouTubeIcon, GitHubIcon, NpmIcon, WebsiteIcon, EmailIcon } from "@core";
 
 type Orientation = "horizontal" | "vertical";
 
@@ -13,6 +13,7 @@ type UECAContactsStruct = UIBaseStruct<{
         youtubeIconButton: IconButtonModel;
         githubIconButton: IconButtonModel;
         npmIconButton: IconButtonModel;
+        websiteIconButton: IconButtonModel;
         emailIconButton: IconButtonModel;
     };
 }>;
@@ -38,13 +39,19 @@ function useUECAContacts(params?: UECAContactsParams): UECAContactsModel {
                 iconView: <GitHubIcon />,
                 color: "inherit",
                 title: "GitHub Repository",
-                onClick: async () => await model.openNewTab({ path: "https://github.com/nekutuzov/ueca-react-app" })
+                onClick: async () => await model.openNewTab({ path: "https://github.com/nekutuzov/ueca-react-app-demo2" })
             }),
             npmIconButton: useIconButton({
                 iconView: <NpmIcon />,
                 color: "inherit",
                 title: "NPM Package",
                 onClick: async () => await model.openNewTab({ path: "https://www.npmjs.com/package/ueca-react" })
+            }),
+            websiteIconButton: useIconButton({
+                iconView: <WebsiteIcon />,
+                color: "inherit",
+                title: "UECA Website",
+                onClick: async () => await model.openNewTab({ path: "https://cranesoft.net" })
             }),
             emailIconButton: useIconButton({
                 iconView: <EmailIcon />,
@@ -59,6 +66,7 @@ function useUECAContacts(params?: UECAContactsParams): UECAContactsModel {
             
             return (
                 <Container id={model.htmlId()} spacing="small">
+                    <model.websiteIconButton.View />
                     <model.emailIconButton.View />
                     <model.githubIconButton.View />
                     <model.npmIconButton.View />
