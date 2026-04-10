@@ -27,7 +27,7 @@
     "mobx-utils": "^6.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "ueca-react": "^2.0.4"
+    "ueca-react": "^2.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
