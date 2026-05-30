@@ -101,7 +101,7 @@ function useMiscPreview(params?: MiscPreviewParams): MiscPreviewModel {
                             Selected Files ({model._selectedFiles.length}):
                         </Block>
                         {model._selectedFiles.map((file, index) => (
-                            <Block reactKey={index} sx={{
+                            <Block key={index} sx={{
                                 padding: "8px",
                                 backgroundColor: "#f0f7ff",
                                 border: "1px solid #90caf9",

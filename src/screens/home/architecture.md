@@ -291,8 +291,7 @@ npm run lint     # Run linter
 1. **Lifecycle**: Use `constr`, `init`, `mount`, `draw`, `erase`, `unmount`, `deinit` instead of React hooks
 2. **State**: Direct assignment (`model.count++`) - MobX makes it reactive
 3. **IDs**: Use `id: useXxx.name` in props, `model.htmlId()` for root element
-4. **React Key**: Use `reactKey` prop (not `key`) for dynamic lists
-5. **No React.StrictMode**: Conflicts with UECA lifecycle
+4. **No React.StrictMode**: Conflicts with UECA lifecycle
 
 ### Helper Functions
 
