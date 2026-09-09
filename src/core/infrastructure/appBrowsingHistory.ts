@@ -73,9 +73,12 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
                 if (UECA.isObject(route)) {
                     route = _routeToURL(route);
                 }
-                history.replaceState({ index: history.state.index }, "", route);
+                // An entry this app didn't create carries no state. Replacing doesn't move within
+                // the history, so the index the app already tracks still applies.
+                const index = history.state?.index ?? model.__currentHistoryIndex;
+                history.replaceState({ index }, "", route);
                 // history.state isn't ready yet due to async logic
-                runAsync(() => { model.__currentHistoryIndex = history.state.index });
+                runAsync(() => { model.__currentHistoryIndex = history.state?.index ?? index });
                 _syncCurrentPath();
             }
         },
@@ -102,7 +105,10 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
     }
 
     async function _browserNavigation() {
-        const state_index = history.state.index;
+        // Entries this app didn't create (an external pushState, a hash link, location.assign)
+        // carry no state, so history.state is null. Fall back to the last known index, the same
+        // way syncWithBrowser() seeds it.
+        const state_index = history.state?.index ?? model.__currentHistoryIndex;
         if (model.__currentHistoryIndex === state_index) {
             let path = window.location.pathname.substring(model.__baseURL.length);
             path = path + decodeURIComponent(window.location.search);
@@ -120,7 +126,14 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
             _syncCurrentPath();
         } else {
             const rollbackDelta = model.__currentHistoryIndex - state_index;
-            history.go(rollbackDelta);
+            if (rollbackDelta !== 0) {
+                history.go(rollbackDelta);
+            } else {
+                // No distance to travel back, which is always the case for an entry that carried
+                // no index of its own. history.go(0) would reload the page and discard the very
+                // state the denial protects, so restore the URL in place instead.
+                history.replaceState({ index: model.__currentHistoryIndex }, "", model.__baseURL + model.__activePath);
+            }
         }
     }
 
