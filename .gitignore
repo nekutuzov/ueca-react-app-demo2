@@ -24,3 +24,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Agent skills copied from node_modules/ueca-react/skills by the postinstall script.
+# Generated - do not edit in place; re-run "npm install" after upgrading ueca-react.
+.claude/skills/

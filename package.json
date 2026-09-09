@@ -19,7 +19,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "powershell -ExecutionPolicy Bypass -File ./deploy.ps1"
+    "deploy": "powershell -ExecutionPolicy Bypass -File ./deploy.ps1",
+    "postinstall": "node -e \"const fs=require('fs'),s='node_modules/ueca-react/skills';if(fs.existsSync(s))for(const d of fs.readdirSync(s,{withFileTypes:true}).filter(e=>e.isDirectory()))fs.cpSync(s+'/'+d.name,'.claude/skills/'+d.name,{recursive:true})\""
   },
   "dependencies": {
     "@uiw/react-markdown-preview": "^5.2.0",
