@@ -209,7 +209,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
             icon: <LogoutIcon />,
             mode: () => model.iconsOnly ? "icon-only" : "icon-text",
             onClick: async () => {
-                await model.bus.unicast("App.Security.Unauthorize", undefined);
+                await model.bus.unicast("App.Security.Unauthorize");
             }
         });
     }

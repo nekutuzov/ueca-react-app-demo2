@@ -331,7 +331,7 @@ This enables AI assistants like GitHub Copilot to generate accurate, idiomatic U
 
 ## 🔗 Resources
 
-- **UECA Documentation**: `node_modules/ueca-react/docs/index.md`
+- **UECA Documentation**: `node_modules/ueca-react/docs/raw/index.md`
 - **MUI Based Example Project**: [UECA React App](https://github.com/nekutuzov/ueca-react-app-demo2)
 - **Official Website**: [ueca-react.carrd.co](https://ueca-react.carrd.co/)
 

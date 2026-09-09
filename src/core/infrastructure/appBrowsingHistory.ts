@@ -81,7 +81,7 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
         },
 
         init: async () => {
-            const appInfo = await model.bus.unicast("App.GetInfo", undefined);
+            const appInfo = await model.bus.unicast("App.GetInfo");
             model.__appTitle = appInfo?.appName;
             model.syncWithBrowser();
         }

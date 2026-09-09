@@ -109,7 +109,7 @@ function useAppRouter(params?: AppRouterParams): AppRouterModel {
     }
 
     async function _syncCurrentRoute() {
-        const activePath = await model.bus.unicast("App.BrowsingHistory.GetActivePath", undefined);
+        const activePath = await model.bus.unicast("App.BrowsingHistory.GetActivePath");
         const otherLayoutRoute = model.otherLayout.lookupRoute(activePath);
         if (otherLayoutRoute) {
             _changeRoute(otherLayoutRoute, true);

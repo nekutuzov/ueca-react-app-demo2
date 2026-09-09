@@ -2,7 +2,7 @@
 
 ## Quick Reference
 
-**UECA Documentation**: `node_modules/ueca-react/docs/index.md` - Complete framework documentation  
+**UECA Documentation**: `node_modules/ueca-react/docs/raw/index.md` - Complete framework documentation  
 **Example Project**: `https://github.com/nekutuzov/ueca-react-app`
 
 **Core Principles**:

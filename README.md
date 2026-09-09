@@ -223,7 +223,7 @@ The project uses TypeScript path aliases configured in `tsconfig.app.json`:
 
 ## Documentation
 
-- **Framework Docs**: `node_modules/ueca-react/docs/index.md`
+- **Framework Docs**: `node_modules/ueca-react/docs/raw/index.md`
 - **Example Project**: https://github.com/nekutuzov/ueca-react-app-demo2
 - **Copilot Instructions**: `.github/copilot-instructions.md` for AI coding assistance
 - **Architecture Documentation**: Available in-app at `/home/architecture`

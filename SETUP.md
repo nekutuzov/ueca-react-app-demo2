@@ -9,7 +9,7 @@ npm install
 ```
 
 This will install all required packages including:
-- `ueca-react@^2.0.4` - The UECA framework
+- `ueca-react@^3.0.1` - The UECA framework
 - React 19, MobX, Vite, TypeScript, MSW, and more
 
 ### 2. Initialize MSW (Mock Service Worker)
@@ -68,7 +68,7 @@ These are expected and will resolve automatically.
 Read the UECA documentation:
 ```bash
 # After npm install
-node_modules/ueca-react/docs/index.md
+node_modules/ueca-react/docs/raw/index.md
 ```
 
 ### 2. Check Out Examples
@@ -188,7 +188,7 @@ Comment out in `src/main.tsx`:
 ## Learning Path
 
 1. **Start Here**: Read `README.md`
-2. **UECA Docs**: `node_modules/ueca-react/docs/index.md`
+2. **UECA Docs**: `node_modules/ueca-react/docs/raw/index.md`
 3. **Copilot Guide**: `.github/copilot-instructions.md`
 4. **Base Components**: Study `src/components/base/`
 5. **Example Project**: https://nekutuzov.github.io/ueca-react-app-demo2/

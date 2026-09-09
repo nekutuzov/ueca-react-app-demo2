@@ -52,7 +52,7 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
             // Shorthand Methods
 
             // Routing
-            getRoute: async () => await model.bus.unicast("App.Router.GetRoute", undefined),
+            getRoute: async () => await model.bus.unicast("App.Router.GetRoute"),
             goToRoute: async (route) => await model.bus.unicast("App.Router.GoToRoute", route),
             setRoute: async (route) => await model.bus.unicast("App.Router.SetRoute", route),
             setRouteParams: async (params, patch) => await model.bus.unicast("App.Router.SetRouteParams", { params, patch }),
@@ -74,7 +74,7 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
 
             // Busy indicator
             setAppBusy: async (value) => await model.bus.unicast("BusyDisplay.Set", value),
-            clearAppBusy: async () => await model.bus.unicast("BusyDisplay.Clear", undefined),
+            clearAppBusy: async () => await model.bus.unicast("BusyDisplay.Clear"),
 
             // Misc
             runWithErrorDisplay: async (p) => await _runWithErrorDisplay(p),

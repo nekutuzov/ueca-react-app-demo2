@@ -70,6 +70,7 @@ function useAppUI(params?: AppUIParams): AppUIModel {
                     <model.alertManager.View />
                     <model.fileSelector.View />
                 </Col>
+                <UECA.TraceViewerButton />
             </ErrorFallback>
     };
 
