@@ -78,9 +78,14 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             },
 
             onChangeTabsConfig: () => {
-                // Reset tabs to capture new tab models from tabViews
-                model.clearModelCache();
-                model.tabs = [];
+                // Tab models announce themselves through their constr hook, which runs only for a
+                // model that is actually created. Cached tabs are reused and never re-announce, so
+                // emptying the list here would leave it holding just the newly created tab, and the
+                // "clear every tab, then select one" logic below would stop clearing the rest.
+                // Reconcile instead: drop the models whose config is gone and keep the others,
+                // letting constr append the ones that are genuinely new.
+                const configIds = model.tabsConfig?.map(c => _configTabId(c)) ?? [];
+                model.tabs = model.tabs?.filter(t => configIds.includes(t.getTabId())) ?? [];
             },
 
             onChangeSelectedTab: () => {
@@ -283,7 +288,11 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             model.selectedTab = model.getTab(defaultTabId);
         }
 
-        if (model.selectedTabIndex === -1) {
+        // Fall back to the first tab when nothing is selected, or when the selected tab is no longer
+        // among the tabs because its config was removed. Tested against the list directly: going
+        // through selectedTabIndex reads a binding that has not necessarily settled at this point,
+        // which left a removed tab selected and its content on screen.
+        if (!model.selectedTab || !model.tabs?.includes(model.selectedTab)) {
             model.selectedTab = model.tabs?.length ? model.tabs[0] : undefined;
         }
 
@@ -295,6 +304,13 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
 
         // Check overflow after tabs initialization
         setTimeout(() => model._checkOverflow(), 0);
+    }
+
+    // The id a config entry will produce, matching Tab.getTabId(). A param may be given as a plain
+    // value or as a getter, so resolve it before comparing.
+    function _configTabId(config: TabParams): string {
+        const id = config?.tabId ?? config?.id;
+        return (typeof id === "function" ? id() : id) as string;
     }
 }
 
