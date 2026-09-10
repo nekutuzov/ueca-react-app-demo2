@@ -9,7 +9,7 @@ npm install
 ```
 
 This will install all required packages including:
-- `ueca-react@^3.0.1` - The UECA framework
+- `ueca-react@^3.0.2` - The UECA framework
 - React 19, MobX, Vite, TypeScript, MSW, and more
 
 ### 2. Initialize MSW (Mock Service Worker)
