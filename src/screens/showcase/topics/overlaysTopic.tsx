@@ -148,6 +148,9 @@ function useOverlaysTopic(params?: OverlaysTopicParams): OverlaysTopicModel {
                 // The drawer validates what its owner lists here before it will save.
                 modelsToValidate: () => [model.editDrawerField],
                 contentView: () => <model.editDrawerField.View />,
+                // This topic asks its own question before deleting, so the drawer's built-in
+                // confirmation is off — with both, one Delete asked twice.
+                deleteConfirmation: false,
                 onDelete: async () => await model.dialogYesNo("Confirmation", "Delete the specimen?")
             }),
 

@@ -286,7 +286,6 @@ describe("OverlaysTopic", () => {
 
         it("closes after the delete is confirmed", async () => {
             await stubMessages({
-                "Dialog.ActionConfirmation": vi.fn(async () => true),
                 "Dialog.Confirmation": vi.fn(async () => true)
             });
             await mount(OverlaysTopic, { id: TOPIC });
@@ -301,7 +300,6 @@ describe("OverlaysTopic", () => {
 
         it("stays open when the topic's own delete question is answered no", async () => {
             const bus = await stubMessages({
-                "Dialog.ActionConfirmation": vi.fn(async () => true),
                 "Dialog.Confirmation": vi.fn(async () => false)
             });
             await mount(OverlaysTopic, { id: TOPIC });
@@ -315,11 +313,11 @@ describe("OverlaysTopic", () => {
             expect(readout("last result")).toBe("last result: —");
         });
 
-        // BUG: EditDrawer confirms before raising onDelete unless deleteConfirmation is turned off
-        // ("off only when the owner asks in its own way"). This topic asks in its own way — onDelete
-        // opens "Delete the specimen?" — but leaves deleteConfirmation on, so one delete puts two
-        // confirmation dialogs in front of the user (overlaysTopic.tsx, editDrawer).
-        it.fails("asks for confirmation only once before deleting", async () => {
+        // Regression: EditDrawer confirms before raising onDelete unless deleteConfirmation is turned
+        // off ("off only when the owner asks in its own way"). This topic asks in its own way —
+        // onDelete opens "Delete the specimen?" — but left deleteConfirmation on, so one delete put
+        // two confirmation dialogs in front of the user.
+        it("asks for confirmation only once before deleting", async () => {
             const bus = await stubMessages({
                 "Dialog.ActionConfirmation": vi.fn(async () => true),
                 "Dialog.Confirmation": vi.fn(async () => true)
@@ -330,8 +328,9 @@ describe("OverlaysTopic", () => {
             await userEvent.click(within(panel).getByRole("button", { name: "Delete" }));
             await settle();
 
-            const questions = bus["Dialog.ActionConfirmation"].mock.calls.length + bus["Dialog.Confirmation"].mock.calls.length;
-            expect(questions).toBe(1);
+            expect(bus["Dialog.ActionConfirmation"]).not.toHaveBeenCalled();
+            expect(bus["Dialog.Confirmation"]).toHaveBeenCalledOnce();
+            expect(drawer()).toBeNull();
         });
     });
 });
