@@ -183,10 +183,10 @@ describe("TabsScreen", () => {
         expect(within(screen.getByRole("menu")).getAllByRole("menuitem").map((i) => i.textContent)).toEqual(["Export", "Delete"]);
     });
 
-    // BUG: TabsScreen declares onAdd (CRUDScreenEvents) and accepts the add-* intents that show the
-    // Add button, but forwards every CRUD event to its crudScreen except onAdd — the button does
-    // nothing and the screen's handler never runs (tabsScreen.tsx:45-54).
-    it.fails("raises onAdd from the Add button of an add intent", async () => {
+    // Regression: TabsScreen declares onAdd (CRUDScreenEvents) and accepts the add-* intents that show
+    // the Add button, but forwarded every CRUD event to its crudScreen except onAdd — the button did
+    // nothing and the screen's handler never ran.
+    it("raises onAdd from the Add button of an add intent", async () => {
         await stubServices();
         const onAdd = vi.fn(async () => { });
         await mountTabsScreen({ intent: "add-record", onAdd });

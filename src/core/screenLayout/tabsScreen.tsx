@@ -44,6 +44,9 @@ function useTabsScreen(params?: TabsScreenParams): TabsScreenModel {
         children: {
             crudScreen: useCRUDScreen({
                 modelsToValidate: () => [model.tabsContainer],
+                // Every CRUD event is forwarded. onAdd was missing, so the Add button an add intent
+                // shows did nothing and the screen's handler never ran.
+                onAdd: async () => await model.onAdd?.(),
                 onRefresh: async () => await model.onRefresh?.(),
                 onSave: async () => await model.onSave?.(),
                 onValidate: async () => await model.onValidate?.(),
