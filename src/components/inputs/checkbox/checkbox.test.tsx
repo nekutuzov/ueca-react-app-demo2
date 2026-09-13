@@ -211,13 +211,33 @@ describe("Checkbox", () => {
     });
 
     describe("accessibility", () => {
-        // BUG: `indeterminate` only swaps the drawn glyph. The input's DOM `indeterminate` property is
-        // never set (React has no attribute for it) and there is no aria-checked="mixed", so assistive
-        // technology announces a mixed checkbox as plain "not checked".
-        it.fails("exposes the indeterminate state as partially checked", async () => {
+        // Regression: `indeterminate` only swapped the drawn glyph. The input's DOM `indeterminate`
+        // property was never set (React has no attribute for it), so assistive technology announced a
+        // mixed checkbox as plain "not checked".
+        it("exposes the indeterminate state as partially checked", async () => {
             await mount(Checkbox, { id: "all", labelView: "Select all", indeterminate: true });
 
             expect(screen.getByRole("checkbox", { name: "Select all" })).toBePartiallyChecked();
+        });
+
+        it("follows indeterminate and checked after mounting, as the glyph does", async () => {
+            const { model } = await mount(Checkbox, { id: "all", labelView: "Select all" });
+            const box = () => screen.getByRole("checkbox", { name: "Select all" }) as HTMLInputElement;
+            expect(box().indeterminate).toBe(false);
+
+            model.indeterminate = true;
+            await settle();
+            expect(box()).toBePartiallyChecked();
+
+            model.checked = true;
+            await settle();
+            expect(box().indeterminate).toBe(false);
+            expect(box()).toBeChecked();
+
+            model.checked = false;
+            model.indeterminate = false;
+            await settle();
+            expect(box().indeterminate).toBe(false);
         });
     });
 });
