@@ -1,0 +1,161 @@
+/* ============================================================
+   The Playground workbench — a live instance on a canvas, its source, and a properties panel.
+   ============================================================ */
+
+.playground-workbench {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: var(--space-medium);
+    align-items: start;
+}
+
+/* One column once the panel would squeeze the canvas below a usable width. */
+@media (max-width: 1100px) {
+    .playground-workbench {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.playground-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-medium);
+    min-width: 0;
+}
+
+/* ---- The stage ---- */
+
+.playground-stage {
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    overflow: hidden;
+    min-width: 0;
+}
+
+.playground-stage-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-small);
+    min-height: var(--control-h-md);
+    padding: 0 var(--space-small);
+    border-bottom: var(--hairline) solid var(--border);
+    color: var(--ink-dim);
+}
+
+.playground-stage-status {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--ink-dim);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* A dotted grid, so the canvas reads as a workspace the component sits on rather than as more
+   page. The dots mix from --ink, so they stay faint in both themes. */
+.playground-canvas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    padding: var(--space-large);
+    background-color: var(--bg);
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) 13%, transparent) 1px, transparent 1px);
+    background-size: 18px 18px;
+    background-position: -1px -1px;
+}
+
+/* A control that asks for full width, or a form field, stretches across the canvas. */
+.playground-canvas > * {
+    max-width: 100%;
+}
+
+/* A stage that lays out its own content: no centring, and no padding stealing the table's room. */
+.playground-canvas-fill {
+    display: block;
+    min-height: 0;
+    padding: var(--space-small);
+}
+
+/* ---- The properties panel ---- */
+
+/* Sticky, so the editors stay beside the preview while a long table or listing scrolls. */
+.playground-panel {
+    position: sticky;
+    top: var(--space-small);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    min-width: 0;
+}
+
+@media (max-width: 1100px) {
+    .playground-panel {
+        position: static;
+    }
+}
+
+.playground-panel-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-small);
+    min-height: var(--control-h-md);
+    padding: 0 var(--space-tiny) 0 var(--space-small);
+    border-bottom: var(--hairline) solid var(--border);
+    color: var(--ink-dim);
+}
+
+.playground-panel-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.playground-group {
+    padding: var(--space-small);
+}
+
+.playground-group + .playground-group {
+    border-top: var(--hairline) solid var(--border);
+}
+
+.playground-group-title {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--ink);
+    margin-bottom: var(--space-small);
+}
+
+.playground-group-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-small);
+    min-width: 0;
+}
+
+/* A form field is as wide as its container, so on a wide canvas it gets a realistic form width
+   rather than stretching edge to edge. */
+.playground-field-stage {
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Bounds the table so its sticky header, scrolling and windowing have a height to work within. */
+.playground-table-frame {
+    display: flex;
+    height: 420px;
+    overflow: hidden;
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.playground-table-frame > * {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+}

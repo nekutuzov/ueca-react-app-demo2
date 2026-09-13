@@ -260,11 +260,13 @@
 }
 
 /* Helper text */
+/* The same helper type every input uses. --ink-dim, not the placeholder's --tf-muted: helper text
+   is content someone has to read, and the placeholder grey sits near 2.4:1 on a light surface. */
 .textfield-helper-text {
-    font-size: var(--text-2xs);
-    font-family: var(--input-font, var(--font-mono));
-    color: var(--tf-muted);
-    margin-top: var(--space-tiny);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--ink-dim);
 }
 
 .textfield-helper-text-error {

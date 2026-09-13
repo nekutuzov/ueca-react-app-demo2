@@ -78,7 +78,7 @@ function useRadioGroup<T = string>(params?: RadioGroupParams<T>): RadioGroupMode
                     } as React.CSSProperties}
                 >
                     {model.labelView && (
-                        <div className="ueca-radio-group-label">
+                        <div className="ueca-radio-group-label ueca-label">
                             {model.labelView}
                             {model.required && <span className="ueca-radio-group-required"> *</span>}
                         </div>

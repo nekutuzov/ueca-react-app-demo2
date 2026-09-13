@@ -11,11 +11,11 @@
 }
 
 /* Label */
+/* Type comes from .ueca-label, the same micro-label TextField and Select wear, so a form of mixed
+   inputs reads as one set; the colour matches theirs too. */
 .ueca-radio-group-label {
-    font-size: var(--text-md);
-    font-weight: var(--weight-medium);
-    color: var(--ink);
-    margin-bottom: 8px;
+    color: var(--label-ink, var(--accent-dim));
+    margin-bottom: var(--space-tiny);
 }
 
 .ueca-radio-group-required {
@@ -47,8 +47,10 @@
     cursor: pointer;
     user-select: none;
     position: relative;
-    font-family: inherit;
-    font-size: var(--icon-md);
+    font-family: var(--font-ui);
+    /* The option text is the same control-label type Checkbox and Switch use, so a form mixing
+       the three reads as one set. */
+    font-size: var(--control-label-font, var(--text-md));
     color: var(--ink);
 }
 

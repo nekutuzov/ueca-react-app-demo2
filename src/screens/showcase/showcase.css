@@ -5,53 +5,7 @@
    non-colour tokens in tokens.css.
    ============================================================ */
 
-/* ---- The page frame ---- */
-
-/* The content band every screen shares, not a width of its own: it keeps the content from jumping
-   sideways between pages, and it is what the top bar's breadcrumb aligns to. width:100% is
-   load-bearing — an auto cross-axis margin opts a flex item out of stretching, so without it the
-   page shrink-wraps to its content. Stretch first, then cap, then centre. */
-.showcase-page {
-    width: 100%;
-    max-width: var(--band-w);
-    margin: 0 auto;
-    padding: var(--space-large) var(--page-pad) var(--space-huge);
-}
-
-.showcase-page-header {
-    margin-bottom: var(--space-large);
-    padding-bottom: var(--space-medium);
-    border-bottom: var(--hairline) solid var(--border);
-}
-
-/* Amber: the eyebrow reports where the page sits in the showcase, which is structure, not action. */
-.showcase-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: var(--space-default);
-    color: var(--marker);
-    margin-bottom: var(--space-small);
-}
-
-.showcase-page-title {
-    font-family: var(--font-display);
-    font-size: var(--text-4xl);
-    font-weight: var(--weight-semibold);
-    letter-spacing: -0.02em;
-    line-height: var(--leading-tight);
-    color: var(--ink);
-    margin: 0 0 var(--space-small);
-}
-
-.showcase-page-lead {
-    font-size: var(--text-base);
-    line-height: var(--leading-relaxed);
-    color: var(--ink-dim);
-    max-width: var(--measure);
-    margin: 0;
-}
-
-.showcase-page-lead code,
+/* Inline code in a note. The page frame styles its own lead (common/screenPage.css). */
 .showcase-note code {
     font-family: var(--font-mono);
     font-size: 0.86em;
@@ -62,82 +16,6 @@
     padding: 1px 5px;
     /* A file path is one unbreakable word, and on a phone it pushed the whole page sideways. */
     overflow-wrap: anywhere;
-}
-
-/* ---- Previous / next ---- */
-
-.showcase-pager {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-small);
-    margin-top: var(--space-huge);
-    padding-top: var(--space-medium);
-    border-top: var(--hairline) solid var(--border);
-}
-
-.showcase-pager-link {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-tiny);
-    flex: 0 1 auto;
-    min-width: 200px;
-    max-width: 48%;
-    appearance: none;
-    text-align: left;
-    cursor: pointer;
-    font: inherit;
-    background: var(--surface);
-    border: var(--hairline) solid var(--border);
-    border-radius: var(--radius-md);
-    padding: var(--space-default) var(--space-small);
-    transition: border-color var(--motion-base) var(--ease),
-                background-color var(--motion-base) var(--ease);
-}
-
-.showcase-pager-link:hover {
-    border-color: var(--accent);
-    background: var(--hover);
-}
-
-.showcase-pager-link:focus-visible {
-    outline: var(--stroke-emphasis) solid var(--focus-ring);
-    outline-offset: 2px;
-}
-
-/* The "next" card aligns to its own right edge so the pair reads outward from the middle. */
-.showcase-pager-next {
-    text-align: right;
-    align-items: flex-end;
-}
-
-.showcase-pager-dir {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--ink-disabled);
-}
-
-.showcase-pager-link:hover .showcase-pager-dir {
-    color: var(--accent);
-}
-
-.showcase-pager-title {
-    font-family: var(--font-display);
-    font-size: var(--text-md);
-    font-weight: var(--weight-medium);
-    color: var(--ink);
-    line-height: var(--leading-snug);
-}
-
-@media (max-width: 640px) {
-    .showcase-page {
-        padding-top: var(--space-medium);
-    }
-
-    .showcase-pager-link {
-        min-width: 0;
-        max-width: 100%;
-    }
 }
 
 /* ---- Sections ---- */

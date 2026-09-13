@@ -1,19 +1,24 @@
 import * as UECA from "ueca-react";
 import {
-    UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, Col, Block
+    Icon, IconButtonModel, MarkdownPreviewModel, UIBaseModel, UIBaseParams, UIBaseStruct,
+    useIconButton, useMarkdownPreview, useUIBase
 } from "@components";
+import "./codeSample.css";
 
+// A read-only code listing with a copy button. The code is handed to the markdown preview as a
+// fenced block, so it is syntax-highlighted by the same Prism theme as every other code block in
+// the app — and follows a theme switch with it, because that theme is built on the theme tokens.
 type CodeSampleStruct = UIBaseStruct<{
     props: {
         title: string;
-        componentName: string;
-        sourceObject: unknown;
-        properties: string[];
-        content: string;
+        code: string;
+        // The fence's language tag: "tsx", "ts", "css"…
+        language: string;
     };
 
-    methods: {
-        _generateJsxCode: () => string;
+    children: {
+        listing: MarkdownPreviewModel;
+        copyButton: IconButtonModel;
     };
 }>;
 
@@ -24,58 +29,37 @@ function useCodeSample(params?: CodeSampleParams): CodeSampleModel {
     const struct: CodeSampleStruct = {
         props: {
             id: useCodeSample.name,
-            title: "JSX Code",
-            componentName: "Component",
-            sourceObject: {},
-            properties: [],
-            content: ""
+            title: "Code",
+            code: "",
+            language: "tsx"
         },
 
-        methods: {
-            _generateJsxCode: () => {
-                const obj = model.sourceObject;
+        children: {
+            listing: useMarkdownPreview({
+                source: () => _fenced(model.code, model.language)
+            }),
 
-                if (!obj || model.properties?.length === 0) {
-                    return model.content;
+            copyButton: useIconButton({
+                iconView: <Icon name="copy" size="md" />,
+                title: "Copy code",
+                size: "small",
+                onClick: async () => {
+                    await model.copyToClipboard(model.code);
+                    await model.alertSuccess("Code copied to the clipboard");
                 }
-
-                const propAssignment = (prop: string, value: unknown) => {
-                    if (!UECA.isUndefined(value) && obj[prop]) {
-                        return `    ${prop}="${obj[prop]}"`;
-                    }
-                    return "";
-                };
-
-                const propAssignments = model.properties
-                    .map(prop => propAssignment(prop, obj[prop]))
-                    .filter(Boolean)
-                    .join("\n");
-
-                if (model.content) {
-                    return `<${model.componentName}\n${propAssignments}\n>\n    ${model.content}\n</${model.componentName}>`;
-                } else {
-                    return `<${model.componentName}\n${propAssignments}\n/>`;
-                }
-            }
+            })
         },
 
         View: () => (
-            <Col spacing="tiny" padding={{ top: "medium" }}>
-                <h4>{model.title}</h4>
-                <Block
-                    backgroundColor="background.default"
-                    padding="medium"
-                    sx={{
-                        border: "1px solid #e0e0e0",
-                        borderRadius: "4px",
-                        fontFamily: "monospace",
-                        fontSize: "12px",
-                        overflowX: "auto"
-                    }}
-                >
-                    <pre><code>{model._generateJsxCode()}</code></pre>
-                </Block>
-            </Col>
+            <div id={model.htmlId()} className="code-sample">
+                <div className="code-sample-header">
+                    <span className="code-sample-title ueca-eyebrow">{model.title}</span>
+                    <model.copyButton.View />
+                </div>
+                <div className="code-sample-body">
+                    <model.listing.View />
+                </div>
+            </div>
         )
     };
 
@@ -86,3 +70,13 @@ function useCodeSample(params?: CodeSampleParams): CodeSampleModel {
 const CodeSample = UECA.getFC(useCodeSample);
 
 export { CodeSampleParams, CodeSampleModel, useCodeSample, CodeSample };
+
+
+// Private helpers
+// A fence one backtick longer than the longest backtick run in the code, so a snippet that itself
+// contains a fence cannot close the block early.
+function _fenced(code: string, language: string): string {
+    const longest = Math.max(2, ...(code.match(/`+/g) ?? []).map((run) => run.length));
+    const fence = "`".repeat(longest + 1);
+    return `${fence}${language}\n${code}\n${fence}`;
+}

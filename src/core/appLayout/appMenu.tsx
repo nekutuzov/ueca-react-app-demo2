@@ -4,7 +4,7 @@ import {
     NavItemExpandableModel, useNavItemExpandable
 } from "@components";
 import { AppRoute, IconName, runAsync } from "@core";
-import { SHOWCASE_TOPICS, ShowcaseTopicKey, showcaseTopic } from "@screens";
+import { PLAYGROUND_TOPICS, PlaygroundTopicKey, SHOWCASE_TOPICS, ShowcaseTopicKey, playgroundTopic, showcaseTopic } from "@screens";
 import "./appMenu.css";
 
 type AppMenuStruct = UIBaseStruct<{
@@ -28,6 +28,11 @@ type AppMenuStruct = UIBaseStruct<{
         dataMenuItem: NavItemModel;
         listsMenuItem: NavItemModel;
         dynamicMenuItem: NavItemModel;
+
+        playgroundMenuItem: NavItemExpandableModel;
+        buttonPlaygroundMenuItem: NavItemModel;
+        textFieldPlaygroundMenuItem: NavItemModel;
+        tablePlaygroundMenuItem: NavItemModel;
     }
 }>;
 
@@ -67,7 +72,17 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
             overlaysMenuItem: useTopicMenuItem("overlays"),
             dataMenuItem: useTopicMenuItem("data"),
             listsMenuItem: useTopicMenuItem("lists"),
-            dynamicMenuItem: useTopicMenuItem("dynamic")
+            dynamicMenuItem: useTopicMenuItem("dynamic"),
+
+            playgroundMenuItem: useGroupMenuItem({
+                text: "Playground",
+                icon: "code",
+                expanded: true,
+                subItems: () => _playgroundItems()
+            }),
+            buttonPlaygroundMenuItem: usePlaygroundMenuItem("button"),
+            textFieldPlaygroundMenuItem: usePlaygroundMenuItem("textField"),
+            tablePlaygroundMenuItem: usePlaygroundMenuItem("table")
         },
 
         messages: {
@@ -88,6 +103,7 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
             <Col id={model.htmlId()} fill overflow={"visible"} padding={{ top: "small" }} spacing={"none"}>
                 <model.homeMenuItem.View />
                 <model.showcaseMenuItem.View />
+                <model.playgroundMenuItem.View />
             </Col>
     };
 
@@ -114,9 +130,19 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
         return SHOWCASE_TOPICS.map((t) => byKey[t.key]);
     }
 
+    // The playground items in the order the topic list gives them — checked the same way.
+    function _playgroundItems(): NavItemModel[] {
+        const byKey: Record<PlaygroundTopicKey, NavItemModel> = {
+            button: model.buttonPlaygroundMenuItem,
+            textField: model.textFieldPlaygroundMenuItem,
+            table: model.tablePlaygroundMenuItem
+        };
+        return PLAYGROUND_TOPICS.map((t) => byKey[t.key]);
+    }
+
     // Every leaf item, in rail order — what _revealActiveItem searches for the active one.
     function _allItems(): NavItemModel[] {
-        return [model.homeMenuItem, ..._showcaseItems()];
+        return [model.homeMenuItem, ..._showcaseItems(), ..._playgroundItems()];
     }
 
     // Keeps the active item in sight after a deep link or a jump from elsewhere in the app.
@@ -163,6 +189,15 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
 
     function useTopicMenuItem(key: ShowcaseTopicKey): NavItemModel {
         const topic = showcaseTopic(key);
+        return useMenuItem({
+            text: topic.title,
+            route: { path: topic.path } as AppRoute,
+            icon: topic.icon
+        });
+    }
+
+    function usePlaygroundMenuItem(key: PlaygroundTopicKey): NavItemModel {
+        const topic = playgroundTopic(key);
         return useMenuItem({
             text: topic.title,
             route: { path: topic.path } as AppRoute,

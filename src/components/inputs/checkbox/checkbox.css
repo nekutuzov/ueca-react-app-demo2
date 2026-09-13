@@ -150,8 +150,7 @@
 /* Helper text */
 .checkbox-helper-text {
     font-size: var(--text-sm);
-    line-height: var(--leading-relaxed);
-    letter-spacing: var(--tracking-wide);
+    line-height: var(--leading-snug);
     color: var(--ink-dim);
     margin-top: 4px;
     margin-left: 0;

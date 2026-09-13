@@ -1,5 +1,5 @@
 import { Route } from "@components";
-import { HomeScreen, ShowcaseScreen } from "@screens";
+import { ButtonPlayground, HomeScreen, ShowcaseScreen, TablePlayground, TextFieldPlayground } from "@screens";
 
 
 const screenRoutes = {
@@ -18,6 +18,11 @@ const screenRoutes = {
     "/showcase/data": () => <ShowcaseScreen id={"showcase-data"} topic={"data"} />,
     "/showcase/lists": () => <ShowcaseScreen id={"showcase-lists"} topic={"lists"} />,
     "/showcase/dynamic-content": () => <ShowcaseScreen id={"showcase-dynamic"} topic={"dynamic"} />,
+
+    // The Playground. Paths, titles and order live in screens/playground/playgroundTopics.tsx.
+    "/playground/button": () => <ButtonPlayground id={"playground-button"} />,
+    "/playground/text-field": () => <TextFieldPlayground id={"playground-text-field"} />,
+    "/playground/table": () => <TablePlayground id={"playground-table"} />,
 };
 
 

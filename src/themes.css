@@ -81,6 +81,44 @@
     --primary-border: color-mix(in srgb, var(--accent) 40%, var(--surface));
     --primary-ink: color-mix(in srgb, var(--accent) 45%, var(--status-ink-anchor));
 
+    /* Control voice — the type every field, label and button speaks. The components' built-in
+       default is a tracked micro-caps readout (11px mono values, uppercase labels and buttons);
+       this app reads as documentation, so its controls take the docs site's plain sentence-case
+       UI type instead: labels one step below the value, buttons in the weight of the site's CTAs.
+       The same in both themes, so it is set once here rather than per theme block. */
+    --label-size: var(--text-sm);
+    --label-weight: var(--weight-medium);
+    --label-tracking: normal;
+    --label-transform: none;
+    --label-leading: var(--leading-snug);
+    --label-ink: var(--ink);
+
+    --input-font: var(--font-ui);
+    --input-size: var(--text-md);
+    /* A select sized to its padding came out 35px beside a 40px text field; pinning both to the
+       control ladder puts every field in a form on one rung. */
+    --input-height: var(--control-h-md);
+    --select-size: var(--text-md);
+    --select-weight: var(--weight-regular);
+    --control-label-font: var(--text-md);
+
+    --btn-case: none;
+    --btn-tracking: normal;
+    --btn-weight: var(--weight-medium);
+    --btn-radius: var(--radius-md);
+    --btn-font-xs: var(--text-xs);
+    --btn-font-sm: var(--text-sm);
+    --btn-font-md: var(--text-md);
+    --btn-font-lg: var(--text-base);
+
+    --tab-case: none;
+    --tab-tracking: normal;
+
+    --table-header-font: var(--text-sm);
+    --table-header-weight: var(--weight-semibold);
+    --table-header-tracking: normal;
+    --table-header-case: none;
+
     /* Shell chrome — the sidebar rail and the top bar. A theme that wants a
        branded bar overrides these in its own block. */
     --sidebar-bg: var(--surface);
@@ -144,6 +182,9 @@
     --info: #1c5c8c;
     --success: #4e9e74;
 
+    /* A data URI cannot read a custom property, so the chevron's fill is --ink-dim baked in. */
+    --select-arrow: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235d6b7e'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+
     /* Inverted: an ink chip reads unambiguously above a pale page, and needs no edge. */
     --tooltip-bg: var(--ink);
     --tooltip-ink: var(--bg);
@@ -179,6 +220,8 @@
     --warning: #e8b33c;
     --info: #5aa9dc;
     --success: #74bf95;
+
+    --select-arrow: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2393a3b4'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
 
     /* A drop shadow is nearly invisible on a dark ground, so raised surfaces
        lean on the hairline ring instead. */

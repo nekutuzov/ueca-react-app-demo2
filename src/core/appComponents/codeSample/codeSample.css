@@ -1,0 +1,53 @@
+/* A read-only code listing: a slim title bar over a syntax-highlighted block. */
+
+.code-sample {
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface-code);
+    overflow: hidden;
+    min-width: 0;
+}
+
+.code-sample-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-default);
+    padding: var(--space-tiny) var(--space-tiny) var(--space-tiny) var(--space-small);
+    background: var(--surface);
+    border-bottom: var(--hairline) solid var(--border);
+}
+
+.code-sample-title {
+    color: var(--ink-dim);
+}
+
+.code-sample-header .ueca-icon-button {
+    color: var(--ink-dim);
+}
+
+.code-sample-header .ueca-icon-button:hover:not(:disabled) {
+    color: var(--accent);
+}
+
+/* The markdown preview brings its own article chrome; inside a code sample only the block is
+   wanted, flush against the frame, which already draws the edge and the ground. */
+.code-sample-body .wmde-markdown {
+    background: transparent;
+    padding: 0;
+}
+
+.code-sample-body .wmde-markdown pre {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: var(--space-small);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+}
+
+/* The preview's own hover copy chip would duplicate the header's button. */
+.code-sample-body .wmde-markdown pre .copied {
+    display: none;
+}

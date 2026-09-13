@@ -199,11 +199,12 @@
 }
 
 /* Helper text */
+/* The same helper type every input uses — see textField.css. */
 .ueca-select-helper-text {
-    font-size: var(--text-2xs);
-    font-family: var(--font-mono);
-    color: var(--sel-muted);
-    margin-top: 4px;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--ink-dim);
 }
 
 .ueca-select-helper-text-error {

@@ -1,9 +1,9 @@
 import {
     AccountIcon, AddCircleIcon, AddIcon, AngleDownIcon, AngleUpIcon, ArrowLeftIcon, ArrowRightIcon,
-    BoltIcon, CalendarIcon, CancelIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon,
+    BoltIcon, ButtonsIcon, CalendarIcon, CancelIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon,
     ChevronRightIcon, ChevronUpIcon, ClipboardIcon, CloseIcon, CodeIcon, DashboardIcon, DatabaseIcon,
     DeleteIcon, DocumentIcon, DownloadIcon, EditIcon, EmailIcon, ErrorCircleIcon, ExportFileIcon,
-    EyeIcon, EyeSlashIcon, FilterIcon, FolderIcon, GridIcon, HeartIcon, HelpIcon, HomeIcon, IconProps,
+    EyeIcon, EyeSlashIcon, FilterIcon, FolderIcon, GridIcon, HeartIcon, HelpIcon, HomeIcon, IconProps, InputsIcon,
     InfoCircleIcon, LayersIcon, LayoutIcon, ListIcon, LockIcon, LogoutIcon, MenuCollapseIcon, MenuIcon,
     MoonIcon, MoreIcon, PrintIcon, PulseIcon, RefreshIcon, SearchIcon, SecurityIcon, SettingsIcon,
     ShapesIcon, SlidersIcon, SortIcon, SuccessCircleIcon, SunIcon, SwatchIcon, TableIcon, ThemeIcon,
@@ -116,7 +116,11 @@ const ICONS = {
     icons: { kind: "svg", component: ShapesIcon },
     overlays: { kind: "svg", component: LayersIcon },
     dynamic: { kind: "svg", component: BoltIcon },
-    code: { kind: "svg", component: CodeIcon }
+    code: { kind: "svg", component: CodeIcon },
+
+    // Playground components
+    button: { kind: "svg", component: ButtonsIcon },
+    textField: { kind: "svg", component: InputsIcon }
 } as const satisfies Record<string, IconSource>;
 
 type IconName = keyof typeof ICONS;

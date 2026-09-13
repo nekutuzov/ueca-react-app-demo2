@@ -44,10 +44,9 @@ function useControlsTopic(params?: ControlsTopicParams): ControlsTopicModel {
                     <ShowcaseSection
                         title="Button — variant × size"
                         description="Heights come from --control-h-xs/sm/md/lg (24/32/40/48) and label type from
-                                     --text-2xs/xs/sm — there is no step below 2xs, so xsmall shares the small
-                                     rung's type and differs in height alone. A button is tracked one step
-                                     tighter than .ueca-label, so it keeps its own tracking rather than sharing
-                                     that class."
+                                     --text-xs/sm/md/base, in sentence case at the medium weight — the control
+                                     voice set once in themes.css, and the same type as the docs site's calls
+                                     to action."
                     >
                         <Col spacing="small">
                             {BUTTON_VARIANTS.map((variant) => (
@@ -135,9 +134,9 @@ function useControlsTopic(params?: ControlsTopicParams): ControlsTopicModel {
                 <Col spacing="medium">
                 <ShowcaseSection
                     title="TextField and Select"
-                    description="Labels use the shared .ueca-label; the inputs use --text-2xs/xs, --radius-md and
-                                 --motion-base. Error and disabled states included — they are the ones that
-                                 usually rot."
+                    description="Labels use the shared .ueca-label; values use --text-md in the UI face on the
+                                 40px rung, with --radius-md and --motion-base. Error and disabled states
+                                 included — they are the ones that usually rot."
                 >
                     {/* Sizing contract, same as Select: `fullWidth` (the default) fills the container;
                         `fullWidth={false}` + `extent={{ width }}` fixes the control's own size — no

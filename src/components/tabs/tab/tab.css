@@ -17,7 +17,7 @@
     font-family: inherit;
     font-size: var(--tab-font, var(--text-md));
     font-weight: var(--tab-weight, var(--weight-medium));
-    text-transform: uppercase;
+    text-transform: var(--tab-case, uppercase);
     letter-spacing: var(--tab-tracking, var(--tracking-wide));
     color: var(--ink-dim);
     /* NAMED, never `all` — see the note in checkbox.css. */

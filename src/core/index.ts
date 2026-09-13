@@ -33,3 +33,4 @@ export * from "./misc/overlayStack";
 export * from "./misc/routeURL";
 export * from "./appComponents/uecaContacts/uecaContacts";
 export * from "./appComponents/themeToggle/themeToggle";
+export * from "./appComponents/codeSample/codeSample";

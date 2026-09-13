@@ -64,7 +64,8 @@ function useTokensTopic(params?: TokensTopicParams): TokensTopicModel {
                     <ShowcaseSection
                         title="Type scale"
                         description="Ten steps, each one something the app actually renders: md is control text, base is
-                                     prose, 2xs is the uppercase micro-label, and the two display steps are fluid."
+                                     prose, sm is the field label, 2xs the uppercase eyebrow, and the two display
+                                     steps are fluid."
                     >
                         <Col spacing="tiny">
                             {TYPE_STEPS.map((step) => (

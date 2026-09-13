@@ -1,6 +1,7 @@
 import * as UECA from "ueca-react";
-import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Icon } from "@components";
-import { AppRoute, ArrowLeftIcon, ArrowRightIcon, Breadcrumb, CRUDScreenModel, ScreenRoute, useCRUDScreen } from "@core";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase } from "@components";
+import { AppRoute, Breadcrumb, CRUDScreenModel, ScreenRoute, useCRUDScreen } from "@core";
+import { ScreenPage, ScreenPager } from "../common/screenPage";
 import { ShowcaseTopic, ShowcaseTopicKey, showcaseNeighbours, showcaseTopic } from "./showcaseTopics";
 import { ControlsTopic } from "./topics/controlsTopic";
 import { DataTopic } from "./topics/dataTopic";
@@ -15,8 +16,7 @@ import { TokensTopic } from "./topics/tokensTopic";
 import "./showcase.css";
 
 // One showcase page. Each topic is its own route and its own entry in the main menu; this screen
-// is the frame they share — the header, the content band and the previous/next links — with the
-// topic's specimens in the middle.
+// puts the topic's specimens in the shared page frame, with the previous/next links at its foot.
 //
 // The topic is rendered as JSX from a switch rather than declared as a child. Children are built
 // with their owner, so declaring all ten would construct every topic on every visit — the data and
@@ -34,7 +34,6 @@ type ShowcaseScreenStruct = ScreenBaseStruct<{
     methods: {
         go: (path: string) => Promise<void>;
         _PageView: () => UECA.ReactElement;
-        _PagerView: () => UECA.ReactElement;
     };
 }>;
 
@@ -64,29 +63,23 @@ function useShowcaseScreen(params?: ShowcaseScreenParams): ShowcaseScreenModel {
             },
 
             _PageView: () => (
-                <div className="showcase-page">
-                    <header className="showcase-page-header">
-                        <div className="showcase-eyebrow ueca-eyebrow">
-                            <Icon name={_topic().icon} size="sm" />
-                            Showcase
-                        </div>
-                        <h1 className="showcase-page-title">{_topic().title}</h1>
-                        <p className="showcase-page-lead">{_topic().lead}</p>
-                    </header>
+                <ScreenPage
+                    eyebrow={"Showcase"}
+                    icon={_topic().icon}
+                    title={_topic().title}
+                    lead={_topic().lead}
+                    footerView={
+                        <ScreenPager
+                            label={"Showcase pages"}
+                            prev={showcaseNeighbours(model.topic).prev}
+                            next={showcaseNeighbours(model.topic).next}
+                            onGo={(path) => model.go(path)}
+                        />
+                    }
+                >
                     {_topicView(model.topic)}
-                    <model._PagerView />
-                </div>
-            ),
-
-            _PagerView: () => {
-                const { prev, next } = showcaseNeighbours(model.topic);
-                return (
-                    <nav className="showcase-pager" aria-label="Showcase pages">
-                        {prev ? _pagerLink(prev, "prev") : <span />}
-                        {next ? _pagerLink(next, "next") : <span />}
-                    </nav>
-                );
-            }
+                </ScreenPage>
+            )
         },
 
         View: () => <model.crudScreen.View />
@@ -130,21 +123,6 @@ function useShowcaseScreen(params?: ShowcaseScreenParams): ShowcaseScreenModel {
             case "dynamic":
                 return <DynamicContentTopic id={"dynamicContentTopic"} />;
         }
-    }
-
-    function _pagerLink(topic: ShowcaseTopic, direction: "prev" | "next"): React.ReactNode {
-        return (
-            <button
-                type="button"
-                className={`showcase-pager-link${direction === "next" ? " showcase-pager-next" : ""}`}
-                onClick={() => model.go(topic.path)}
-            >
-                <span className="showcase-pager-dir ueca-eyebrow">
-                    {direction === "prev" ? <><ArrowLeftIcon size={13} /> Previous</> : <>Next <ArrowRightIcon size={13} /></>}
-                </span>
-                <span className="showcase-pager-title">{topic.title}</span>
-            </button>
-        );
     }
 }
 
