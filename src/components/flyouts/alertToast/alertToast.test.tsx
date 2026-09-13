@@ -68,11 +68,10 @@ describe("AlertToast", () => {
         expect(onOpen).toHaveBeenLastCalledWith(model);
     });
 
-    // BUG: AppAlertManager creates every toast already open. The bound `open` reaches the snackbar
-    // before its `init` hook runs, so onChangeOpen raises onOpen, and then `init`, finding the
-    // snackbar open, raises it again — one opening reported twice. (Dialog and Drawer take that
-    // path in `constr`, before the binding delivers, and report once.)
-    it.fails("raises onOpen once for a toast created open", async () => {
+    // Regression: AppAlertManager creates every toast already open. The bound `open` reached the
+    // snackbar before its `init` hook ran, so onChangeOpen raised onOpen, and then `init`, finding the
+    // snackbar open, raised it again — one opening reported twice.
+    it("raises onOpen once for a toast created open", async () => {
         const onOpen = vi.fn();
 
         await mount(AlertToast, { id: "toast", open: true, contentView: "Hi", anchorOrigin: bottomCenter, onOpen });

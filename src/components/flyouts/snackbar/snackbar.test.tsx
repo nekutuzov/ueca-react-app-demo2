@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { act, fireEvent, screen } from "@testing-library/react";
-import { Snackbar } from "@components";
+import * as UECA from "ueca-react";
+import { Snackbar, SnackbarModel } from "@components";
 import { mount, settle } from "@test";
 
 function snackbar(): HTMLElement {
@@ -141,9 +142,9 @@ describe("Snackbar", () => {
             expect(onClose).toHaveBeenCalledOnce();
         });
 
-        // BUG: the auto-hide timer is never cleared. A snackbar closed and reopened within four
-        // seconds is shut by the FIRST opening's timer, cutting the second showing short.
-        it.fails("gives a reopened snackbar its full four seconds", async () => {
+        // Regression: the auto-hide timer was never cleared. A snackbar closed and reopened within four
+        // seconds was shut by the FIRST opening's timer, cutting the second showing short.
+        it("gives a reopened snackbar its full four seconds", async () => {
             const { model } = await mount(Snackbar, { id: "sb", messageView: "Hi", closeReasons: { timeout: true } });
             vi.useFakeTimers({ shouldAdvanceTime: true });
             model.open = true;
@@ -159,6 +160,58 @@ describe("Snackbar", () => {
             await advance(1000);
 
             expect(model.open).toBe(true);
+        });
+
+        // A snackbar created open never hears onChangeOpen for that first value, so its timer used to
+        // start only when `open` next changed — it never hid on its own.
+        it("hides on time when it is created open", async () => {
+            const onClose = vi.fn();
+            vi.useFakeTimers({ shouldAdvanceTime: true });
+            const { model } = await mount(Snackbar, { id: "sb", open: true, messageView: "Hi", closeReasons: { timeout: true }, onClose });
+
+            await advance(3500);
+            expect(model.open).toBe(true);
+            await advance(600);
+
+            expect(model.open).toBe(false);
+            expect(onClose).toHaveBeenCalledOnce();
+        });
+
+        it("cancels a pending auto-hide when it unmounts", async () => {
+            const onClose = vi.fn();
+            const { model, unmount } = await mount(Snackbar, { id: "sb", messageView: "Hi", closeReasons: { timeout: true }, onClose });
+            vi.useFakeTimers({ shouldAdvanceTime: true });
+            model.open = true;
+            await settle();
+
+            unmount();
+            await settle();
+            await advance(5000);
+
+            expect(model.open).toBe(true);
+            expect(onClose).not.toHaveBeenCalled();
+        });
+
+        // A model outlives its element: brought back open from the cache, it gets a fresh four
+        // seconds, rather than a timer that ran on while it was away or none at all.
+        it("restarts its auto-hide when brought back open from the model cache", async () => {
+            let snackbarModel: SnackbarModel;
+            vi.useFakeTimers({ shouldAdvanceTime: true });
+            const { model: host } = await mount(SnackbarHost, { id: "host", onSnackbarInit: (m) => { snackbarModel = m; } });
+
+            await advance(1000);
+            host.shown = false;
+            await settle();
+            await advance(5000);
+            expect(snackbarModel.open).toBe(true);
+
+            host.shown = true;
+            await settle();
+            await advance(3500);
+            expect(document.getElementById("host.sb")).not.toBeNull();
+            await advance(600);
+
+            expect(snackbarModel.open).toBe(false);
         });
     });
 
@@ -216,27 +269,61 @@ describe("Snackbar", () => {
             expect(model.open).toBe(true);
         });
 
-        // BUG: `mount` adds document keydown and mousedown listeners that nothing ever removes (there
-        // is no `unmount` hook, unlike Popover's). Every mount leaks another pair for the session,
-        // and a snackbar removed while open still answers Escape and clicks on its detached model.
-        it.fails("stops listening to the document once unmounted", async () => {
+        // Regression: `mount` added document keydown and mousedown listeners that nothing removed.
+        // Every mount leaked another pair for the session, and a snackbar removed while open still
+        // answered Escape and clicks on its detached model.
+        it("stops listening to the document once unmounted", async () => {
             const { model, unmount } = await mount(Snackbar, {
                 id: "sb", open: true, messageView: "Hi", closeReasons: { escapeKeyDown: true, clickaway: true }
             });
 
             unmount();
             await settle();
+            fireEvent.keyDown(document.body, { key: "Escape" });
+            fireEvent.mouseDown(document.body);
+            await settle();
 
-            try {
-                fireEvent.keyDown(document.body, { key: "Escape" });
-                fireEvent.mouseDown(document.body);
-                await settle();
-                expect(model.open).toBe(true);
-            } finally {
-                // Leaves the leaked handlers with nothing to act on in later tests.
-                model.open = false;
-                await settle();
-            }
+            expect(model.open).toBe(true);
         });
     });
 });
+
+// Shows or hides an open, self-hiding Snackbar child. A JSX child with an id is cached by its owner,
+// so hiding and showing it again parks the model and brings it back.
+type SnackbarHostStruct = UECA.ComponentStruct<{
+    props: {
+        shown: boolean;
+    };
+
+    events: {
+        onSnackbarInit: (snackbar: SnackbarModel) => void;
+    };
+}>;
+
+function useSnackbarHost(params?: UECA.ComponentParams<SnackbarHostStruct>) {
+    const struct: SnackbarHostStruct = {
+        props: {
+            id: useSnackbarHost.name,
+            shown: true
+        },
+
+        View: () => (
+            <div id={model.htmlId()}>
+                {model.shown && (
+                    <Snackbar
+                        id="sb"
+                        open
+                        messageView="Hi"
+                        closeReasons={{ timeout: true }}
+                        init={(m) => { model.onSnackbarInit?.(m); }}
+                    />
+                )}
+            </div>
+        )
+    };
+
+    const model = UECA.useComponent(struct, params);
+    return model;
+}
+
+const SnackbarHost = UECA.getFC(useSnackbarHost);

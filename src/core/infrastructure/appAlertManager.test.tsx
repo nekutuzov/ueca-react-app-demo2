@@ -170,5 +170,27 @@ describe("AppAlertManager", () => {
             expect(screen.queryByText("fleeting")).toBeNull();
             expect(model._alerts).toEqual([]);
         });
+
+        // Regression: an alert closed and replaced within four seconds hands its id — and so its
+        // cached toast model — to the next one, and the first alert's timer used to close the second
+        // early. Copying code twice in the Playground did exactly this.
+        it("gives an alert shown under a reused id its full four seconds", async () => {
+            const { model } = await mount(AppAlertManager, { id: "alerts" });
+            vi.useFakeTimers();
+
+            await act(async () => { model.addAlert("first", "success"); });
+            await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+            fireEvent.click(screen.getByRole("button", { name: "Close" }));
+            await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+            await act(async () => { model.addAlert("second", "success"); });
+            expect(snackbarOf("second").id).toBe("alerts.alert1.snackbar");
+
+            // Four and a half seconds after the first alert opened, three and a half after the second.
+            await act(async () => { await vi.advanceTimersByTimeAsync(3500); });
+            expect(screen.getByText("second")).toBeInTheDocument();
+
+            await act(async () => { await vi.advanceTimersByTimeAsync(600); });
+            expect(screen.queryByText("second")).toBeNull();
+        });
     });
 });

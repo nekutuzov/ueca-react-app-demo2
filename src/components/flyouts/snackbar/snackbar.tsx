@@ -3,6 +3,9 @@ import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components"
 import { asyncSafe } from "@core";
 import "./snackbar.css";
 
+// How long a snackbar with the `timeout` close reason stays up.
+const AUTO_HIDE_MS = 4000;
+
 type SnackbarStruct = UIBaseStruct<{
     props: {
         open: boolean;
@@ -14,6 +17,11 @@ type SnackbarStruct = UIBaseStruct<{
         simple: boolean;
         closeReasons: { timeout?: boolean; clickaway?: boolean; escapeKeyDown?: boolean; };
         disablePortal: boolean;
+        // The pending auto-hide of the current opening, so closing can cancel it.
+        __hideTimer: number;
+        // Whether onOpen has been raised for the current opening. A snackbar created open hears of
+        // that opening twice — from its bound `open` arriving and again from `init`.
+        __openRaised: boolean;
     };
 
     events: {
@@ -37,56 +45,40 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
             transition: true,
             simple: false,
             closeReasons: undefined,
-            disablePortal: false
+            disablePortal: false,
+            __hideTimer: undefined,
+            __openRaised: false
         },
 
         events: {
             onChangeOpen: () => {
                 if (model.open) {
-                    asyncSafe(() => model.onOpen?.(model));
-                    // Auto-hide after 4 seconds if timeout is not disabled                    
-                    if (model.closeReasons?.timeout) {
-                        setTimeout(() => {
-                            if (model.open) {
-                                model.open = false;
-                            }
-                        }, 4000);
-                    }
+                    _opened();
                 } else {
-                    asyncSafe(() => model.onClose?.(model));
+                    _closed();
                 }
             }
         },
 
+        // A snackbar created open never hears onChangeOpen for that first value, and one brought
+        // back open from the model cache had its auto-hide cancelled when it unmounted.
         init: () => {
             if (model.open) {
-                asyncSafe(() => model.onOpen?.(model));
+                _opened();
             }
         },
 
+        // Paired with unmount. The listeners used to be added here and never removed, so every
+        // mount leaked a pair, and a snackbar removed while open still answered Escape and clicks.
         mount: () => {
-            // Handle escape key
-            const handleKeyDown = (e: KeyboardEvent) => {
-                if (e.key === "Escape" && model.open) {                    
-                    if (model.closeReasons?.escapeKeyDown) {
-                        model.open = false;
-                    }
-                }
-            };
-            document.addEventListener("keydown", handleKeyDown);
+            document.addEventListener("keydown", _handleKeyDown);
+            document.addEventListener("mousedown", _handleClickAway);
+        },
 
-            // Handle click outside
-            const handleClickAway = (e: MouseEvent) => {
-                if (!model.open || !model.closeReasons?.clickaway) {
-                    return;
-                }
-                
-                const snackbarElement = document.getElementById(model.htmlId());
-                if (snackbarElement && !snackbarElement.contains(e.target as Node)) {
-                    model.open = false;
-                }
-            };
-            document.addEventListener("mousedown", handleClickAway);
+        unmount: () => {
+            document.removeEventListener("keydown", _handleKeyDown);
+            document.removeEventListener("mousedown", _handleClickAway);
+            _cancelHide();
         },
 
         View: () => {
@@ -115,6 +107,55 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
 
     const model = useUIBase(struct, params);
     return model;
+
+    // Private methods
+    function _opened() {
+        if (!model.__openRaised) {
+            model.__openRaised = true;
+            asyncSafe(() => model.onOpen?.(model));
+        }
+        _scheduleHide();
+    }
+
+    function _closed() {
+        _cancelHide();
+        model.__openRaised = false;
+        asyncSafe(() => model.onClose?.(model));
+    }
+
+    // Always restarts: a timer left over from an earlier opening would otherwise close this one
+    // early. AppAlertManager reuses a toast's model for the next alert under the same id, so a toast
+    // closed and replaced within four seconds was shut by its predecessor's timer.
+    function _scheduleHide() {
+        _cancelHide();
+        if (model.open && model.closeReasons?.timeout) {
+            model.__hideTimer = window.setTimeout(() => {
+                model.__hideTimer = undefined;
+                model.open = false;
+            }, AUTO_HIDE_MS);
+        }
+    }
+
+    function _cancelHide() {
+        window.clearTimeout(model.__hideTimer);
+        model.__hideTimer = undefined;
+    }
+
+    function _handleKeyDown(e: KeyboardEvent) {
+        if (e.key === "Escape" && model.open && model.closeReasons?.escapeKeyDown) {
+            model.open = false;
+        }
+    }
+
+    function _handleClickAway(e: MouseEvent) {
+        if (!model.open || !model.closeReasons?.clickaway) {
+            return;
+        }
+        const snackbarElement = document.getElementById(model.htmlId());
+        if (snackbarElement && !snackbarElement.contains(e.target as Node)) {
+            model.open = false;
+        }
+    }
 }
 
 const Snackbar = UECA.getFC(useSnackbar);
