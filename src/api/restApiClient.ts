@@ -113,8 +113,11 @@ class RestApiClient implements IRestApiClient {
         const { updatedUrl, updatedParams } = this._replaceDynamicParams(url, params);
         const searchParams = new URLSearchParams();
         for (const param in updatedParams) {
-            if (updatedParams[param]) {
-                searchParams.append(param, JSON.stringify(updatedParams[param]));
+            // Only null and undefined mean "no value". The loop tested truthiness, so 0, false and ""
+            // were dropped too — { page: 0 } or { active: false } never reached the server.
+            const value = updatedParams[param];
+            if (value != null) {
+                searchParams.append(param, JSON.stringify(value));
             }
         }
         const fullUrl = new URL(this._baseUrl + updatedUrl);

@@ -146,14 +146,20 @@ describe("RestApiClient", () => {
             expect(requestOf(fetch).url).toBe(`${BASE}/users`);
         });
 
-        // BUG: the query loop tests values for truthiness (restApiClient.ts:116), so 0, false and ""
-        // are dropped as if they were absent — { page: 0 } or { active: false } never reach the server.
-        it.fails.each([0, false, ""])("sends the query value %j", async (value) => {
+        // Regression: the query loop tested values for truthiness, so 0, false and "" were dropped as if
+        // they were absent — { page: 0 } or { active: false } never reached the server.
+        it.each([0, false, ""])("sends the query value %j", async (value) => {
             const fetch = serve();
 
             await createRestAPIClient(BASE).get("/items", { value });
 
             expect(new URL(requestOf(fetch).url).searchParams.get("value")).toBe(JSON.stringify(value));
+        });
+
+        it("getUrl keeps 0 and false among the query values while still omitting null", () => {
+            const client = createRestAPIClient(BASE);
+
+            expect(client.getUrl("/users", { page: 0, sort: null, archived: false })).toBe(`${BASE}/users?page=0&archived=false`);
         });
 
         // BUG: _replaceDynamicParams deletes each consumed key from the params object it was handed
@@ -261,7 +267,7 @@ describe("RestApiClient", () => {
         });
 
         // BUG: _getFileName returns undefined when nothing names the file, and `new File([blob],
-        // undefined)` stringifies it (restApiClient.ts:168): the download is literally named "undefined".
+        // undefined)` stringifies it (restApiClient.ts:171): the download is literally named "undefined".
         it.fails.each([
             ["no content-disposition", {}],
             ["a disposition without a filename", { "content-disposition": "inline" }],
