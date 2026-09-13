@@ -219,6 +219,8 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
             )
         },
 
+        // The opening render: when _openMenu runs, the list is not on screen yet, so the flag it sets
+        // waits for this. Keyboard moves inside an open list scroll at once, in _setActive.
         draw: () => {
             _scrollActiveIntoView();
         },
@@ -329,6 +331,11 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
         }
         model._activeIndex = index;
         model._scrollActive = true;
+        // Now, not on the next draw. `draw` follows only the main View, which deliberately does not
+        // re-render while the list is open, so a move left for it never scrolled: arrowing past the
+        // visible rows left the active row out of sight. The rows are already on screen, and moving
+        // the active class does not move them.
+        _scrollActiveIntoView();
     }
 
     // Takes the value without closing — what type-ahead does on a CLOSED select, matching native.

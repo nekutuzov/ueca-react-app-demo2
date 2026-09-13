@@ -626,11 +626,11 @@ describe("Select", () => {
             expect(listbox().scrollTop).toBe(0);
         });
 
-        // BUG: _scrollActiveIntoView runs from `draw`, which follows only the MAIN View's renders —
-        // and the main View deliberately reads nothing that changes while the list is open (see the
-        // hover test above). Keyboard moves set _scrollActive but no draw follows, so arrowing past
-        // the visible rows leaves the active row out of sight.
-        it.fails("scrolls the active row into view as the keyboard moves it", async () => {
+        // Regression: _scrollActiveIntoView ran only from `draw`, which follows only the MAIN View's
+        // renders — and the main View deliberately reads nothing that changes while the list is open
+        // (see the hover test above). Keyboard moves set _scrollActive but no draw followed, so
+        // arrowing past the visible rows left the active row out of sight.
+        it("scrolls the active row into view as the keyboard moves it", async () => {
             stubListLayout();
             await mount(Select, { id: "s", options: THIRTY });
             await openByClick();
@@ -640,6 +640,44 @@ describe("Select", () => {
 
             // Row 8 spans 160–180px.
             expect(listbox().scrollTop).toBe(180 - 100);
+        });
+
+        it("scrolls back up when the keyboard moves above the visible rows", async () => {
+            stubListLayout();
+            await mount(Select, { id: "s", options: THIRTY, value: "v25" });
+            await openByClick();
+            expect(listbox().scrollTop).toBe(520 - 100);
+
+            await userEvent.keyboard("{Home}");
+
+            expect(trigger()).toHaveAttribute("aria-activedescendant", "s-option-0");
+            expect(listbox().scrollTop).toBe(0);
+        });
+
+        it("follows a type-ahead jump in the open list", async () => {
+            stubListLayout();
+            freezeClock();
+            await mount(Select, { id: "s", options: THIRTY });
+            await openByClick();
+
+            await userEvent.keyboard("option 25");
+
+            expect(trigger()).toHaveAttribute("aria-activedescendant", "s-option-25");
+            expect(listbox().scrollTop).toBe(520 - 100);
+        });
+
+        // Hovering moves the active row too, but the pointer is already over it: scrolling would
+        // pull the list out from under the pointer.
+        it("does not scroll when the pointer moves the active row", async () => {
+            stubListLayout();
+            await mount(Select, { id: "s", options: THIRTY });
+            await openByClick();
+
+            fireEvent.mouseEnter(document.getElementById("s-option-8"));
+            await settle();
+
+            expect(trigger()).toHaveAttribute("aria-activedescendant", "s-option-8");
+            expect(listbox().scrollTop).toBe(0);
         });
     });
 
