@@ -58,6 +58,15 @@ describe("Snackbar", () => {
         expect(snackbar()).toHaveClass(`snackbar-${vertical}-${horizontal}`);
     });
 
+    // Regression: an undefined anchorOrigin replaces the default rather than falling back to it, and the
+    // View read anchorOrigin.vertical unguarded — AlertToast, which hands on its own unset position,
+    // threw instead of showing.
+    it("sits at the top right when anchorOrigin is passed unset", async () => {
+        await mount(Snackbar, { id: "sb", open: true, messageView: "Hi", anchorOrigin: undefined });
+
+        expect(snackbar()).toHaveClass("ueca-snackbar", "snackbar-top-right");
+    });
+
     it("drops the transition when transition is off", async () => {
         await mount(Snackbar, { id: "sb", open: true, messageView: "Hi", transition: false });
 

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { act, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AlertToast } from "@components";
-import { mount, settle, takeUecaErrors } from "@test";
+import { mount, settle } from "@test";
 
 const bottomCenter = { vertical: "bottom", horizontal: "center" } as const;
 
@@ -120,24 +120,18 @@ describe("AlertToast", () => {
         expect(snackbar()).not.toHaveClass("snackbar-transition");
     });
 
-    // BUG: anchorOrigin defaults to undefined — AlertToast even derives `simple` from its absence —
-    // but Snackbar reads anchorOrigin.vertical unguarded, so a local toast opened with the default
-    // position throws in its View and shows nothing, while onOpen still reports it opened. Only
-    // AppAlertManager's disablePortal path avoids the read.
-    it.fails("opens with its default position when no anchorOrigin is given", async () => {
-        vi.spyOn(console, "error").mockImplementation(() => { });
-        const { model } = await mount(AlertToast, { id: "toast", contentView: "Saved" });
+    // Regression: anchorOrigin defaults to undefined here, and Snackbar read anchorOrigin.vertical
+    // unguarded, so a local toast opened without a position threw in its View and showed nothing,
+    // while onOpen still reported it opened. Only AppAlertManager's disablePortal path avoided the read.
+    it("opens at the top right, like a Snackbar, when no anchorOrigin is given", async () => {
+        const onOpen = vi.fn();
+        const { model } = await mount(AlertToast, { id: "toast", contentView: "Saved", onOpen });
 
         model.open = true;
         await settle();
 
-        try {
-            expect(takeUecaErrors()).toEqual([]);
-            expect(screen.getByText("Saved")).toBeInTheDocument();
-        } finally {
-            model.open = false;
-            await settle();
-            takeUecaErrors();
-        }
+        expect(screen.getByText("Saved")).toBeInTheDocument();
+        expect(snackbar()).toHaveClass("snackbar-top-right", "snackbar-transition");
+        expect(onOpen).toHaveBeenCalledOnce();
     });
 });

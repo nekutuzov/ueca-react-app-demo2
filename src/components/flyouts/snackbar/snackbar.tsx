@@ -6,6 +6,9 @@ import "./snackbar.css";
 // How long a snackbar with the `timeout` close reason stays up.
 const AUTO_HIDE_MS = 4000;
 
+// Where a snackbar sits unless it is given an anchorOrigin.
+const DEFAULT_ANCHOR_ORIGIN = { vertical: "top", horizontal: "right" } as const;
+
 type SnackbarStruct = UIBaseStruct<{
     props: {
         open: boolean;
@@ -41,7 +44,7 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
             contentView: undefined,
             messageView: undefined,
             actionView: undefined,
-            anchorOrigin: { vertical: "top", horizontal: "right" },
+            anchorOrigin: DEFAULT_ANCHOR_ORIGIN,
             transition: true,
             simple: false,
             closeReasons: undefined,
@@ -86,7 +89,11 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
                 return null;
             }
 
-            const positionClass = model.disablePortal ? "" : `snackbar-${model.anchorOrigin.vertical}-${model.anchorOrigin.horizontal}`;
+            // Unset means the default corner. An undefined param or binding replaces the default rather
+            // than falling back to it, and AlertToast hands on its own anchorOrigin, unset unless given —
+            // reading it unguarded threw, so a local toast without a position never showed.
+            const { vertical, horizontal } = model.anchorOrigin ?? DEFAULT_ANCHOR_ORIGIN;
+            const positionClass = model.disablePortal ? "" : `snackbar-${vertical}-${horizontal}`;
             const transitionClass = model.transition ? "snackbar-transition" : "";
             const portalClass = model.disablePortal ? "snackbar-relative" : "";
 
