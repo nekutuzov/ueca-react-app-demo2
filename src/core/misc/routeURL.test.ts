@@ -127,23 +127,30 @@ describe("resolveRouteURL", () => {
             expect(resolveRouteURL(route("https://api.example.com/search?:q", { q: "ueca" }), BASE)).toBe("https://api.example.com/search?q=ueca");
         });
 
-        // BUG: after deleting each placeholder, _buildURL runs decodeURIComponent over the WHOLE search
-        // string (routeURL.ts:72), so a value set for an earlier placeholder is decoded again: its "&"
-        // re-parses as a separator and "+" as a space, and q comes back as "tom ". The navigation
-        // path's private copy does the same (appBrowsingHistory.ts:302).
-        it.fails("keeps an earlier placeholder's value intact when another placeholder follows", () => {
+        // Regression: after deleting each placeholder, _buildURL ran decodeURIComponent over the WHOLE
+        // search string, so a value set for an earlier placeholder was decoded again: its "&" re-parsed
+        // as a separator and "+" as a space, and q came back as "tom ".
+        it("keeps an earlier placeholder's value intact when another placeholder follows", () => {
             const url = new URL(resolveRouteURL(route("/search?:q&:page", { q: "tom & jerry + co", page: 1 }), BASE));
 
             expect(url.searchParams.get("q")).toBe("tom & jerry + co");
             expect(url.searchParams.get("page")).toBe("1");
         });
 
-        // BUG: the same decodeURIComponent (routeURL.ts:72) decodes a literal query value on the path
-        // once the route also has a placeholder, although "?query survives every branch".
-        it.fails("keeps an encoded literal query value intact when the route has a placeholder", () => {
+        // Regression: the same decodeURIComponent decoded a literal query value on the path once the
+        // route also had a placeholder, although "?query survives every branch".
+        it("keeps an encoded literal query value intact when the route has a placeholder", () => {
             const url = new URL(resolveRouteURL(route("/list?filter=a%26b&:tab", { tab: "open" }), BASE));
 
             expect(url.searchParams.get("filter")).toBe("a&b");
+        });
+
+        it("encodes a placeholder value with query separators and a hash once", () => {
+            const url = new URL(resolveRouteURL(route("/search?:q&:page", { q: "a=1&b#2%", page: 3 }), BASE));
+
+            expect(url.searchParams.get("q")).toBe("a=1&b#2%");
+            expect(url.searchParams.get("page")).toBe("3");
+            expect(url.hash).toBe("");
         });
     });
 

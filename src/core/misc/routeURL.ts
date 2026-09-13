@@ -27,6 +27,15 @@ function _isAbsent(value: unknown): boolean {
     return UECA.isUndefined(value) || value === null;
 }
 
+// A query key as URLSearchParams reads it: "+" is a space, then percent-decoded.
+function _decodeQueryPart(text: string): string {
+    try {
+        return decodeURIComponent(text.replace(/\+/g, " "));
+    } catch {
+        return text;
+    }
+}
+
 function _buildURL(route: AnyRoute, baseURL: string): BuildResult {
     if (!route?.path) {
         return { url: "" };
@@ -62,20 +71,28 @@ function _buildURL(route: AnyRoute, baseURL: string): BuildResult {
     }
     url.pathname = parts.join("/"); // update dynamic path with processed path
 
-    // Process search params
-    const searchParams = new URLSearchParams(url.search);
-    searchParams.forEach((_v, p) => {
-        if (!p.startsWith(":")) {
-            return; // don't process non-placeholder parameters
+    // Process search params. The query is edited as raw text, pair by pair: every other pair stays
+    // exactly as written, and each "?:name" placeholder becomes name=value, encoded once, after them —
+    // or is dropped when absent. Re-serialised through searchParams after each placeholder, the whole
+    // query was decoded again: an earlier value's "&" split into a new pair and its "+" turned into a
+    // space, and a literal "%26" on the path became a separator too.
+    if (url.search) {
+        const literals: string[] = [];
+        const filled: string[] = [];
+        for (const pair of url.search.slice(1).split("&")) {
+            const key = _decodeQueryPart(pair.split("=")[0]);
+            if (!key.startsWith(":")) {
+                literals.push(pair); // don't process non-placeholder parameters
+                continue;
+            }
+            const name = key.slice(1); // strip symbol ':' from param placeholder
+            const value = routeParams[name];
+            if (!_isAbsent(value)) {
+                filled.push(`${encodeURIComponent(name)}=${encodeURIComponent(String(value))}`);
+            }
         }
-        url.searchParams.delete(p); // remove param placeholder
-        url.search = decodeURIComponent(url.search);
-        const name = p.slice(1); // strip symbol ':' from param placeholder
-        const value = routeParams[name];
-        if (!_isAbsent(value)) {
-            url.searchParams.set(name, String(value));
-        }
-    });
+        url.search = [...literals, ...filled].join("&");
+    }
 
     // Only ever set, never cleared. A route object built from a path carries no fragment of its
     // own, so there is nothing to clear; the one caller that arrives here with a hash already on
