@@ -176,7 +176,9 @@ class RestApiClient implements IRestApiClient {
 
     private async _processBlob(response: Response): Promise<File> {
         const blob = await response.blob();
-        const fileName = this._getFileName(response);
+        // Unnamed by the server, the file gets an empty name, which a caller can tell apart and a
+        // browser saves under its own default. new File([blob], undefined) named it "undefined".
+        const fileName = this._getFileName(response) ?? "";
         return new File([blob], fileName);
     }
 

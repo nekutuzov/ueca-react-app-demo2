@@ -291,9 +291,9 @@ describe("RestApiClient", () => {
             expect(file.name).toBe(name);
         });
 
-        // BUG: _getFileName returns undefined when nothing names the file, and `new File([blob],
-        // undefined)` stringifies it (restApiClient.ts:171): the download is literally named "undefined".
-        it.fails.each([
+        // Regression: _getFileName returns undefined when nothing names the file, and `new File([blob],
+        // undefined)` stringified it: the download was literally named "undefined".
+        it.each([
             ["no content-disposition", {}],
             ["a disposition without a filename", { "content-disposition": "inline" }],
             ["an empty disposition", { "content-disposition": "" }]
@@ -303,6 +303,8 @@ describe("RestApiClient", () => {
             const file = await createRestAPIClient(BASE).get<File>("/download", {}, true);
 
             expect(file.name).not.toBe("undefined");
+            expect(file.name).toBe("");
+            expect(await file.text()).toBe("data");
         });
     });
 
