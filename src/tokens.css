@@ -252,7 +252,7 @@
    labels, select labels and panel titles all share it.
 
    This one is token-driven where the others are not, because it is the single
-   place a theme's *voice* shows in a form. The MLAdmin theme's labels are 14px
+   place a theme's *voice* shows in a form. A theme's labels may be plain
    sentence case, not a tracked micro-caps — so the four properties that carry
    that difference read --label-* tokens, defaulting to the values above. Only
    themes.css sets them; nothing else should. */
@@ -301,7 +301,7 @@
 }
 
 /* Secondary heading, or a lead-in line under a title. Tokenized like .ueca-label: a theme can set
-   the voice of every section heading at once (MLAdmin's are 16/600, a step heavier than ours). */
+   the voice of every section heading at once (e.g. a step heavier than ours). */
 .ueca-subtitle {
     font-size: var(--subtitle-size, var(--text-lg));
     font-weight: var(--subtitle-weight, var(--weight-medium));

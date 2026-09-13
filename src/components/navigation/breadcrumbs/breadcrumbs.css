@@ -9,7 +9,7 @@
     font-size: var(--breadcrumb-font, inherit);
 }
 
-/* Theme hooks (MLAdmin: 14px trail, CURRENT crumb in full ink rather than the disabled wash,
+/* Theme hooks (e.g. trail size, CURRENT crumb in full ink rather than the disabled wash,
    crumb icons in the accent). Defaults keep the designed look. */
 .ueca-breadcrumbs .ueca-nav-link-disabled {
     color: var(--breadcrumb-current-ink, var(--disabled-ink));

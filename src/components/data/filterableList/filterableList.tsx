@@ -7,10 +7,10 @@ import "./filterableList.css";
 
 // FilterableList — a SearchField over a VirtualList: type to filter, click to select.
 //
-// The legacy version held the filtered array as separate state and re-seeded it from `items` in an
-// effect — which silently discarded the active search whenever the data refreshed (its own TODO
-// admitted it). Here filtering is a DERIVED read: `filteredItems()` computes from `items` + `search`
-// every time, so there is no second copy of the data to fall out of sync.
+// Filtering is a DERIVED read: `filteredItems()` computes from `items` + `search` every time, so
+// there is no second copy of the data to fall out of sync. Holding the filtered array as separate
+// state, re-seeded from `items` in an effect, would silently discard the active search whenever
+// the data refreshed.
 //
 // Rows: the list always renders the row shell itself — the div that carries hover/active styling,
 // the click handler, and the fixed height. `onRenderItem` customises the row's CONTENT only. That
@@ -20,8 +20,8 @@ import "./filterableList.css";
 // function-valued prop is evaluated as a reactive thunk by UECA. Falls back to the item's string
 // form, then to the index.
 //
-// TODO (deferred): a "create new item from the search text" row. In the legacy app that affordance
-// existed solely for SelectEx (the searchable dropdown); it belongs to that component's increment.
+// TODO (deferred): a "create new item from the search text" row. That affordance serves a
+// searchable dropdown; it belongs to that component's increment.
 // Keyboard row navigation is likewise deferred, same reasoning as Table's.
 
 type FilterableListStruct<T> = UIBaseStruct<{

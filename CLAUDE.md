@@ -2,7 +2,8 @@
 
 ## Quick Reference
 
-**UECA Documentation**: `node_modules/ueca-react/docs/raw/index.md` - Complete framework documentation  
+**UECA Documentation**: `node_modules/ueca-react/docs/raw/index.md` - Complete framework documentation (also https://nekutuzov.github.io/ueca-react-doc/)  
+**UECA Skills**: `.claude/skills/ueca-app-development`, `.claude/skills/ueca-app-architecture` - copied from the package on `npm install`  
 **Example Project**: `https://github.com/nekutuzov/ueca-react-app`
 
 **Core Principles**:
@@ -22,48 +23,56 @@
 
 ```
 Application
-  ├─ AppBrowsingHistory (history management)
+  ├─ AppBrowsingHistory (history management, document title)
   ├─ AppSecurity (auth: isAuthorized, authorize, unauthorize)
   ├─ AppLocalStorage (browser localStorage wrapper)
+  ├─ AppThemeManager (light/dark theme, persisted)
   └─ AppUI (infrastructure)
       ├─ ErrorFallback (error boundaries)
       ├─ AppBusyDisplay (spinner)
       ├─ AppDialogManager (dialog system)
       ├─ AppAlertManager (toast notifications, 6 positions)
+      ├─ AppTooltipManager (the one app-wide tooltip)
       ├─ FileSelector (file picker)
       └─ Conditional: AppLoginForm | AppRouter
           ├─ AppLayout (main layout)
-          │   ├─ AppSideBar (collapsible, 60px/200px)
-          │   └─ Router → Screens
+          │   ├─ AppSideBar (collapsible, 60px/280px) → AppMenu
+          │   └─ Router → Screens (each in ScreenLayout: top bar, breadcrumbs, theme toggle)
           └─ OtherLayout (minimal)
               └─ Router → External/Docs
 ```
 
 **Base Components** (`src/components/base/`):
-- `BaseModel` - Core UECA with routing/dialog shortcuts
+- `BaseModel` - Core UECA with routing/dialog/tooltip shortcuts
 - `UIBaseModel` - UI-focused components
 - `EditBaseModel` - Form/validation components
+- `ScreenBaseModel` - Route-mounted screens
 
 ## Component Inventory
 
-**Layout** (`layout/`): 
-- Block, Row, Col: flexbox containers with spacing, alignment, fill, cursor props
+**Layout** (`layout/`):
+- Block, Row, Col: flexbox containers with spacing, alignment, fill, cursor props. They write layout inline, so CSS cannot override their flex/gap/padding/overflow — use their props
+- Grid, GridCell: two-dimensional layout
 - Card: container with title, elevation, and padding
 
-**Note**: Use `reactKey` prop (not `key`) for dynamic lists to avoid React's reserved prop warning:
+**Note**: In dynamic lists, put React's `key` on the item and give each rendered UECA component an explicit, item-derived `id` (siblings may not share one):
 ```tsx
-{items.map((item, index) => (
-    <Block reactKey={index}>{item.name}</Block>
+{items.map((item) => (
+    <Button key={item.id} id={`item-${item.id}`} contentView={item.name} />
 ))}
 ```
 
-**Input** (`input/`):
-- Button: variants (text/outlined/contained), sizes (small/medium/large), align (left/center/right), fullWidth
-- IconButton: predefined kinds (ok/cancel/delete/refresh/close) or custom SVG, title prop for tooltips, CloseIconButton factory
-- TextField`<T>`: variants (outlined/filled/standard), types (text/email/password/number/tel/url/search), multiline, built-in validation
+**Buttons** (`buttons/`):
+- Button: variants (text/outlined/contained), sizes (xsmall/small/medium/large), align (left/center/right), fullWidth, selected, `tooltipView`
+- IconButton: predefined kinds (ok/cancel/delete/refresh/close) or custom icon; `title` becomes the app tooltip; CloseIconButton factory
+- Toolbar shorthands (`toolButtons.tsx`): AddNewButton, SaveButton, EditButton, CancelButton, DeleteButton, RefreshButton
+
+**Inputs** (`inputs/`):
+- TextField`<T>`: variants (outlined/filled/standard), types (text/email/password/number/tel/url/search), multiline, start/end adornments, built-in validation
+- NumberField: parsing, min/max clamping, spin buttons; SearchField: settled (debounced) search text
 - RadioGroup`<T>`: orientation (row/column), sizes (small/medium/large), color palette, built-in validation
-- Select`<T>`: variants (filled/outlined/standard), sizes (small/medium), fullWidth, built-in validation
-- Checkbox: sizes, indeterminate state, built-in validation
+- Select`<T>`: variants, sizes (small/medium), fullWidth, themed listbox, built-in validation
+- Checkbox, Switch: sizes, built-in `required` validation (Checkbox also indeterminate)
 
 **Note**: TextField, RadioGroup, Select, and Checkbox:
 - TextField, RadioGroup, and Select accept generic type parameter `<T>` for type-safe values
@@ -72,46 +81,75 @@ Application
 - Checkbox validates `required` state (must be checked)
 - All support `required` validation automatically
 
-**Dialog** (`dialog/`):
+**Data** (`data/`):
+- Table`<T>`: sorting, filter row, single/multi-select, sticky first column, resizable columns, virtualization (`rowKeyField`, `maxRows` cap when not virtualized)
+- VirtualList, FilterableList (SearchField + VirtualList)
+
+**Popups** (`popups/`):
 - Dialog: modal with backdrop, title, content, actions
 - AlertDialog: pre-built with severity icons, details drawer
-- Drawer: side panel (left/right/top/bottom), variants (temporary/persistent/permanent)
-- AlertDrawer: pre-built drawer for alert details
+- Popover: anchored, not a singleton (owns state); Menu/MenuItem (`menus/`) are built on it
 
-**Flyout** (`flyouts/`):
+**Flyouts** (`flyouts/`):
 - Snackbar: container with positioning, auto-hide, close reasons
 - Alert: severity icons (success/info/warning/error), variants (standard/filled/outlined)
 - AlertToast: Snackbar + Alert combo (global via AppAlertManager or local as child)
+- Drawer: side panel; EditDrawer: Drawer with a record editor's footer; AlertDrawer: alert details
 
 **Navigation** (`navigation/`):
 - Router: regex-based, path params `/:id`, query params `?:tab`, type-safe routes
-- NavLink: palette colors, underline variants, beforeNavigate hook
-- NavItem: modes (icon-only/text-only/icon-text), active state, wraps NavLink, supports onClick for non-navigation actions
+- NavLink: palette colors, underline variants, beforeNavigate hook, real `href` (resolved over the bus)
+- NavItem: modes (icon-only/text-only/icon-text), active state, wraps NavLink, supports onClick for non-navigation actions; NavItemExpandable for groups
 - Breadcrumbs: arrow separator (customizable), NavLink integration
 
 **Tabs** (`tabs/`):
 - TabsContainer: orientation (horizontal/vertical), variants (standard/scrollable/fullWidth), manages selection
 - Tab: label, icon (4 positions), wrapped text, disabled/invalid states
 
-**Utility** (`misc/`): SeverityIcon, Spinner, FileSelector, MarkdownPreview
+**Misc** (`misc/`): Icon, StatusLabel, ProgressBar, Spinner, SeverityIcon, MarkdownPreview, FileSelector, DropZone, FieldLabel, FieldHint, Notebook; **Panels** (`panels/`): Panel
 
 **App Components** (`src/core/appComponents/`):
 - UECAContacts: Four icon buttons (email, GitHub, npm, YouTube) for contact links, supports horizontal/vertical orientation
+- ThemeToggle: top-bar light/dark switch (`App.Theme.*` messages)
+- CodeSample: a titled, syntax-highlighted listing with a copy button
 
 **Infrastructure** (`src/core/infrastructure/`):
 - **AppSecurity**: UserContext (user, apiToken), messages: `App.Security.IsAuthorized/Authorize/Unauthorize`
-- **AppLoginForm**: TextField/Checkbox inputs, calls `App.Security.Authorize`
+- **AppLoginForm**: sign-in card (AppAuthForm shell); this demo accepts any credentials
 - **AppRouter**: Orchestrates AppLayout/OtherLayout, messages: `App.Router.GetRoute/GoToRoute/SetRoute/SetRouteParams/OpenNewTab/BeforeRouteChange/AfterRouteChange`
+- **AppBrowsingHistory**: `App.BrowsingHistory.*`; screens name themselves for the document title with `App.BrowsingHistory.SetPageTitle`
 - **AppBusyDisplay**: `BusyDisplay.Set/Clear/SetVisibility`
-- **AppDialogManager**: `Dialog.Information/Warning/Error/Exception/Confirmation/ActionConfirmation`
+- **AppDialogManager**: `Dialog.Information/Warning/Error/Exception/Confirmation/ActionConfirmation/Custom`
 - **AppAlertManager**: `Alert.Success/Information/Warning/Error`, position via `anchorOrigin` (top/bottom × left/center/right)
+- **AppTooltipManager**: the single tooltip; triggers spread `model.tooltipProps(contentView)` onto an element
+- **AppThemeManager**: `App.Theme.GetTheme/SetTheme/ToggleTheme/GetMode/SetMode/ListThemes`, broadcasts `App.Theme.Changed`
 - **AppLocalStorage**: Browser localStorage wrapper, messages: `App.LocalStorage.Read/Write/Clear`, storage keys defined as union type in `appTypes.ts`
-- **appTheme.ts**: Palette system, `resolvePaletteColor()` helper
+- **appTheme.ts**: Palette tokens → CSS variables (`resolvePaletteColor()` returns `var(--…)`), theme registry
 
 **Routing**:
 - `appRoutes.tsx`: `screenRoutes` (main app), `otherRoutes` (external/docs)
 - Types: `ScreenRoute`, `OtherRoute`, `AppRoute`, `AppRouteParams<T>`
 - **IMPORTANT**: External URLs opened via `openNewTab` MUST be registered in `otherRoutes` with `() => null` handler
+
+## Screens
+
+- `src/screens/showcase/showcaseTopics.tsx` and `src/screens/playground/playgroundTopics.tsx` list every Showcase and Playground page once — key, title, path, icon, summary, lead. The route table, the menu (`appMenu.tsx`), page headers, previous/next links and the Home page cards all read them. A new page is a new entry plus a route with its own stable screen id.
+- `src/screens/common/screenPage.tsx`: `ScreenPage` (eyebrow, title, lead, footer slot) and `ScreenPager` — the frame every content page shares.
+- Topic screens are rendered from a switch in `showcaseScreen.tsx`, not declared as children, so visiting one topic does not construct the other nine.
+- Playground editors (`buttonPlayground.tsx`, `textFieldPlayground.tsx`, `tablePlayground.tsx`) share `PlaygroundWorkbench` and generate their listing with `codeGen.ts`, omitting props equal to the component default.
+
+## Design System
+
+- **`src/tokens.css`**: everything that is not colour — type scale, weights, spacing (mirrors `layoutShared.ts`), control heights, icon sizes, radii, strokes, elevation, motion, z-index, plus typography role classes (`.ueca-label`, `.ueca-eyebrow`, `.ueca-title`…).
+- **`src/themes.css`**: one colour block per theme (`:root[data-theme="ueca-light"|"ueca-dark"]`) and theme-independent derived tokens (status ramps, shell chrome, the **control voice**: `--label-*`, `--input-*`, `--select-*`, `--btn-*`, `--tab-*`, `--table-header-*`). Change how all controls read here, not per component.
+- **`src/theme.css`**: page surface, markdown and code highlighting.
+- Component CSS never uses a hex value — only tokens. Blue `--accent` is action; amber `--marker` marks structure and is never clickable.
+- Theme restore without a flash: inline script in `index.html` (storage key `ueca-demo2-theme`, shared with `appTheme.ts`).
+- Fonts: Space Grotesk (`--font-display`), IBM Plex Sans (`--font-body`/`--font-ui`), IBM Plex Mono (`--font-mono`).
+- **Icons**: `<Icon name="delete" size="sm" />` names a ROLE; `src/core/misc/iconRegistry.ts` maps roles to glyphs from `icons.tsx`. Add a role there rather than importing a glyph at a call site.
+- **Tooltips**: never the native `title` attribute on plain elements — use `model.tooltipProps(...)`, `Button.tooltipView` or `IconButton.title`.
+- **JSX whitespace**: a line break next to an inline element drops the space — write `{" "}` at the end of the line.
+- Source files under `src/` use **CRLF** line endings — preserve them when editing.
 
 ## Component Patterns
 
@@ -537,7 +575,7 @@ options: [{ value: "none", label: "None" }]
 
 ## Development
 
-- **Dev**: `npm run dev` (port 5001, base `/myapp`)
+- **Dev**: `npm run dev` (port 5001, base `/ueca-react-app-demo2/`)
 - **Build**: `npm run build`
 - **Lint**: `npm run lint`
 - **MSW**: Toggle `initMocks()` in `src/main.tsx`

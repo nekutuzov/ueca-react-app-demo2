@@ -20,7 +20,7 @@ const STATUS_INTENT = { online: "success", degraded: "warning", offline: "error"
 // Deterministic sample data — no Math.random, so the specimen looks the same every reload and a
 // screenshot diff means something.
 function _sites(count: number): Site[] {
-    const names = ["Kellogg Dam", "North Shaft", "Ridge Cut", "Tailings Cell 2", "Bridge Pier 7", "Portal West"];
+    const names = ["Cedar Lake Dam", "North Shaft", "Ridge Cut", "Tailings Cell 2", "Bridge Pier 7", "Portal West"];
     const statuses: Site["status"][] = ["online", "degraded", "offline"];
     return Array.from({ length: count }, (_, i) => ({
         id: `site-${i + 1}`,

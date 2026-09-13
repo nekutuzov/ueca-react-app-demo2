@@ -9,8 +9,8 @@
     --sel-muted: var(--ink-disabled);
     --sel-accent: var(--select-color, var(--accent));
     --sel-accent-dim: var(--accent-dim);
-    /* Shared with TextField/SearchField so the whole input family answers in one accent — legacy
-       renders a select as a .bp6-input too, so it wears the same hover/focus outline. */
+    /* Shared with TextField/SearchField so the whole input family answers in one accent — a select
+       wears the same hover/focus outline as a text input. */
     --sel-line-active: var(--input-line-active, var(--sel-accent-dim));
     --sel-error: var(--error);
 
@@ -35,8 +35,8 @@
 }
 
 /* Select input base. Type, height and radius are token-driven for the same reason TextField's are:
-   a theme sets the voice of every control at once. MLAdmin's selects are plain 14px regular on the
-   32px rung, not the template's semibold micro-type. */
+   a theme sets the voice of every control at once, and can put selects on a smaller rung with plain
+   regular type rather than the template's semibold micro-type. */
 .ueca-select-input {
     font-family: var(--input-font, var(--font-ui));
     font-size: var(--select-size, var(--text-xs));
@@ -226,9 +226,7 @@
    under the dark theme it drew a near-white edge and a light-blue highlight that no page CSS could
    reach. See the header of select.tsx.
 
-   There is no legacy design to match here — legacy MLAdmin renders a native <select> too, and has
-   no dark theme — so the rows follow this app's OWN menu language (menuItem.css) rather than
-   imitating an OS widget.
+   The rows follow this app's OWN menu language (menuItem.css) rather than imitating an OS widget.
    ============================================================ */
 
 /* A panel for the list, not a card: the rows own the padding, and the width is set from the

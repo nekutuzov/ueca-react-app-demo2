@@ -34,9 +34,9 @@
 }
 
 /* Dialog container. The chrome is theme-overridable exactly as the
-   Drawer's is: MLAdmin's message box is a flat 4px card on Blueprint's grey ground, edged by a
-   hairline ring in the shadow rather than by a border. Every default below is the designed look,
-   so a theme that sets nothing changes nothing. */
+   Drawer's is: a theme can make it a flat card edged by a hairline ring in the shadow rather than
+   by a border. Every default below is the designed look, so a theme that sets nothing changes
+   nothing. */
 .ueca-dialog {
     background-color: var(--dialog-bg, var(--surface));
     color: var(--ink);
@@ -68,8 +68,8 @@
     max-width: 444px;
 }
 
-/* The rung the AlertDialog rides on, and the only one a theme currently retunes: MLAdmin's message
-   box is Blueprint's own 500px default width. */
+/* The rung the AlertDialog rides on, and the only one a theme can retune, e.g. to a narrower
+   message box. */
 .dialog-max-sm {
     max-width: var(--dialog-max-sm, 600px);
 }
@@ -100,11 +100,11 @@
     max-width: none;
 }
 
-/* Dialog sections. The three bands are separated by hairlines here and flush in MLAdmin, whose
-   message box is ONE padded column — so the separators and the paddings are tokens too. The
-   MLAdmin gaps are reproduced band-by-band: 16px below the title comes from the content's own
-   top padding, and the 16px above the actions from the content's bottom padding, which keeps a
-   dialog with no action bar correctly padded at the foot. */
+/* Dialog sections. The three bands are separated by hairlines here; a theme whose message box is
+   ONE padded column can run them flush — so the separators and the paddings are tokens too. Such a
+   theme's gaps are set band-by-band: the gap below the title comes from the content's own top
+   padding, and the gap above the actions from the content's bottom padding, which keeps a dialog
+   with no action bar correctly padded at the foot. */
 .dialog-title {
     padding: var(--dialog-title-pad, var(--space-small) var(--space-medium));
     flex-shrink: 0;
@@ -115,7 +115,7 @@
     letter-spacing: var(--dialog-title-tracking, var(--tracking-wide));
 }
 
-/* The × — its own size and ink, because MLAdmin's is a bare 20px grey glyph rather than the
+/* The × — its own size and ink, because a theme may want a bare grey glyph rather than the
    40px hit target the IconButton ladder gives it. Defaults repeat the medium rung exactly. */
 .dialog-title .ueca-icon-button {
     width: var(--dialog-close-box, var(--control-h-md));

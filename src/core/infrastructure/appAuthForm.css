@@ -1,56 +1,67 @@
-/* Shell of the pre-auth forms. Literal px values are the legacy MLAdmin AuthForm's own — do not
-   re-tokenize them. */
+/* Shell of the pre-auth forms: the docs site's card language — a surface card on the page ground,
+   the display face for the title, the marker for the eyebrow. */
 
+/* The same faint dot grid the Playground canvas uses, so the first screen already speaks the app's
+   visual language. The dots mix from --ink, so they stay faint in both themes. */
 .auth-backdrop {
+    padding: var(--space-small);
     background-color: var(--auth-backdrop);
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 1px);
+    background-size: 18px 18px;
 }
 
 .auth-card {
-    width: 420px;
-    max-width: calc(100vw - 2 * var(--space-small));
-    padding: 20px 50px;
-    border-radius: var(--auth-card-radius, var(--radius-sm));
+    width: 400px;
+    max-width: 100%;
+    padding: var(--space-large);
+    background-color: var(--surface);
+    border-radius: var(--radius-lg);
     box-shadow: var(--auth-card-shadow);
 }
 
+.auth-logo {
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin-bottom: var(--space-tiny);
+}
+
+.auth-eyebrow {
+    color: var(--marker);
+}
+
 .auth-title {
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: normal;
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
     line-height: var(--leading-tight);
-    text-align: center;
-    margin: 0;
     color: var(--ink);
+    margin: 0;
 }
 
-/* 220px centred column; the margins double the flex gap to the legacy 32px rhythm. */
-.auth-content {
-    width: 220px;
-    max-width: 100%;
-    align-self: center;
-    margin-top: var(--space-small);
+.auth-lead {
+    font-size: var(--text-md);
+    line-height: var(--leading-normal);
+    color: var(--ink-dim);
 }
 
+/* The button sits a step further from the last field than the fields sit from each other, so it
+   reads as the form's conclusion rather than a third field. */
 .auth-content .ueca-button {
-    margin-top: var(--space-small);
-}
-
-.auth-content .textfield-input {
-    font-family: var(--font-ui);
-    font-size: 14px;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-.auth-content .textfield-frame {
-    height: 32px;
-    border-radius: var(--radius-sm);
+    margin-top: var(--space-default);
 }
 
 .auth-footer {
-    border-top: var(--hairline) solid var(--auth-divider, var(--border));
     padding-top: var(--space-small);
+    border-top: var(--hairline) solid var(--auth-divider, var(--border));
     font-size: var(--text-sm);
-    line-height: var(--leading-tight);
+    line-height: var(--leading-normal);
     color: var(--ink-dim);
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: var(--space-medium);
+    }
 }

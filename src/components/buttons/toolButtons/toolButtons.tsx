@@ -4,9 +4,9 @@ import {
     useButton, useIconButton
 } from "@components";
 
-// The screen-toolbar shorthands, ported from the legacy toolActions/button set. Each is a use*
-// factory returning the base Button/IconButton model — content, icon, and (for destructive ones)
-// the confirmation dialog are the defaults; any of them can be overridden by the caller.
+// The screen-toolbar shorthands. Each is a use* factory returning the base Button/IconButton
+// model — content, icon, and (for destructive ones) the confirmation dialog are the defaults; any
+// of them can be overridden by the caller.
 
 function useSaveButton(params?: ButtonParams): ButtonModel {
     return useButton({
@@ -20,14 +20,14 @@ function useSaveButton(params?: ButtonParams): ButtonModel {
 const SaveButton = UECA.getFC(useSaveButton);
 
 function useAddNewButton(params?: ButtonParams): ButtonModel {
-    // Legacy addNewButton: outlined primary with the circled-plus glyph, lowercase "new". Size is
-    // deliberately NOT set here — every sibling tool button leaves it at the Button default, and
-    // pinning it would desynchronise this one from the rest of a toolbar under any theme. A
-    // caller matching the legacy 32px (one step down our control ladder) passes size="small".
+    // Outlined primary with the circled-plus glyph, lowercase "new". Size is deliberately NOT set
+    // here — every sibling tool button leaves it at the Button default, and pinning it would
+    // desynchronise this one from the rest of a toolbar under any theme. A caller that wants
+    // 32px (one step down our control ladder) passes size="small".
     return useButton({
         contentView: "Add new",
         variant: "outlined",
-        // 16px, matching the legacy glyph — its 20px advance is what makes the button's width.
+        // 16px — its 20px advance is what makes the button's width.
         startIconView: <Icon name="addCircle" size="md" />,
         ...params
     });

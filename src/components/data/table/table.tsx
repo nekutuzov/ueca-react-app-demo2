@@ -11,14 +11,13 @@ import "./table.css";
 
 // Table — a data grid built on CSS grid.
 //
-// The layout mechanism is the one part worth carrying over verbatim from the legacy app: the table
-// root owns `grid-template-columns`, and each header/body ROW is `display: contents` so its cells
-// become direct grid children. That is what keeps every column aligned down the table while still
-// letting a whole row hover and select as one unit. A table of nested flex rows cannot do both.
+// The layout mechanism: the table root owns `grid-template-columns`, and each header/body ROW is
+// `display: contents` so its cells become direct grid children. That is what keeps every column
+// aligned down the table while still letting a whole row hover and select as one unit. A table of
+// nested flex rows cannot do both.
 //
-// Everything else is a rebuild. Notably the legacy version consumed a stateful cursor (recNo /
-// next / eof / sliceAndMap) which could not tell MobX anything had changed, so sorting needed a
-// `_renderDataFlag` toggle to force a re-render. This one takes a plain array and derives the
+// The data is a plain array rather than a stateful cursor, which cannot tell MobX anything has
+// changed and so needs a render-flag toggle to force a re-render on sort. The table derives the
 // displayed set — rows → filteredRows() → sortedRows() → displayRows() → (window when virtualized) —
 // so a change to any input simply re-renders.
 //
@@ -506,8 +505,8 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
     function _columnTemplate(): string {
         const tracks = (model.columns ?? []).map((c) => _track(c));
         // The trailing filler column rendered in every row. A theme can collapse it to 0, which
-        // hands the free space to the auto-width columns instead — how the legacy table behaved,
-        // its columns stretching to fill the grid rather than shrink-wrapping their content.
+        // hands the free space to the auto-width columns instead — they stretch to fill the grid
+        // rather than shrink-wrapping their content.
         return [...tracks, "var(--table-filler-track, 1fr)"].join(" ");
     }
 

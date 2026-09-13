@@ -142,7 +142,7 @@ function useControlsTopic(params?: ControlsTopicParams): ControlsTopicModel {
                         `fullWidth={false}` + `extent={{ width }}` fixes the control's own size — no
                         wrapper Block needed. Leaving BOTH off shrink-wraps at the 200px CSS minimum. */}
                     <Row spacing="medium" flexWrap="wrap" verticalAlign="top">
-                        <TextField id="tf-normal" labelView="Site name" value="Kellogg dam" required
+                        <TextField id="tf-normal" labelView="Site name" value="Cedar Lake dam" required
                                    fullWidth={false} extent={{ width: 240 }} />
                         <TextField id="tf-placeholder" labelView="Operator" placeholder="not assigned"
                                    fullWidth={false} extent={{ width: 240 }} />
@@ -156,7 +156,7 @@ function useControlsTopic(params?: ControlsTopicParams): ControlsTopicModel {
                             fullWidth={false}
                             extent={{ width: 240 }}
                         />
-                        <TextField id="tf-disabled" labelView="Serial" value="CS-40213" disabled
+                        <TextField id="tf-disabled" labelView="Serial" value="SN-40213" disabled
                                    fullWidth={false} extent={{ width: 240 }} />
                         <Block width={240}>
                             <Select

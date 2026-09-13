@@ -15,10 +15,9 @@ const CHAR_PATTERNS: Record<NumberStyle, RegExp> = {
     hex: /^[0-9a-f]*$/i
 };
 
-// A numeric entry, ported from the legacy numericInput: int/float/hex styles, fixed fraction
-// digits, min/max clamping, optional spin buttons. Owns a TextField child for the frame and text
-// editing; this model owns the number — text is parsed, clamped, and reformatted on commit
-// (blur or a spin click), never per keystroke.
+// A numeric entry: int/float/hex styles, fixed fraction digits, min/max clamping, optional spin
+// buttons. Owns a TextField child for the frame and text editing; this model owns the number —
+// text is parsed, clamped, and reformatted on commit (blur or a spin click), never per keystroke.
 type NumberFieldStruct = EditBaseStruct<{
     props: {
         value: number;

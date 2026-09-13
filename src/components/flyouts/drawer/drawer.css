@@ -36,7 +36,8 @@
 
 /* Anchor positions */
 /* The `width` prop still wins (it is an inline style); the token is the theme default, and takes
-   any CSS length — MLAdmin's drawers are a share of the viewport rather than a fixed pixel width. */
+   any CSS length — a theme may size drawers as a share of the viewport rather than a fixed pixel
+   width. */
 .drawer-anchor-left {
     top: 0;
     left: 0;

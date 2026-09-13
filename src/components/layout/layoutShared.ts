@@ -91,7 +91,7 @@ type FlexProps = BlockProps & {
 
 // Maps for spacing and alignment.
 // Values are in 8px units (token * 8 = px). The `px*` tokens are exact pixels (px/8) for fine,
-// non-8px-grid layouts (e.g. the legacy MLAdmin metrics); the semantic tokens are the 8px-grid scale.
+// non-8px-grid layouts; the semantic tokens are the 8px-grid scale.
 const fineSteps = {
     px2: 0.25,
     px3: 0.375,

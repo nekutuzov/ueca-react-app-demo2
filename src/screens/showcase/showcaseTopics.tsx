@@ -25,6 +25,8 @@ type ShowcaseTopic = {
     title: string;
     path: string;
     icon: IconName;
+    // One line for a card that links to the page — the Home page lists every page this way.
+    summary: string;
     // The sentence or two under the heading: what the page is for, not a list of what is on it.
     lead: React.ReactNode;
 };
@@ -35,6 +37,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Overview",
         path: "/showcase/overview",
         icon: "overview",
+        summary: "What the showcase is for, and how a page is added to it.",
         lead: <>
             A live reference for the shared building blocks — every layout token, type step, colour role
             and control, rendered against whichever theme is active. Toggle the theme from the top bar and
@@ -46,6 +49,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Design tokens",
         path: "/showcase/tokens",
         icon: "tokens",
+        summary: "Type, spacing, control heights, radii, elevation and motion.",
         lead: <>
             Everything that is not colour: type, spacing, control heights, icon sizes, radii, elevation,
             motion and the overlay ladder. These scales are theme-independent and defined once in
@@ -57,6 +61,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Layout",
         path: "/showcase/layout",
         icon: "layout",
+        summary: "Block, Row, Col and Card: spacing, alignment and fill as props.",
         lead: <>
             Arrangement comes from Block, Row and Col props, never from CSS. Everything these components
             set is an inline style, so a CSS rule for flex, gap, padding or overflow on the same element
@@ -68,6 +73,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Controls",
         path: "/showcase/controls",
         icon: "controls",
+        summary: "Buttons, text and number fields, selects, checkboxes and switches.",
         lead: <>
             The shared inputs and buttons, rendered against the active theme. Every size, radius, duration
             and type step comes from a token — this page is where a change to one of them shows up, across
@@ -79,6 +85,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Status",
         path: "/showcase/status",
         icon: "status",
+        summary: "Intent ramps, status labels, progress bars and alerts.",
         lead: <>
             One ramp per intent, derived once from the theme's base status colours. Toggle the theme over
             this page — the text on every tinted surface has to stay readable in the light theme as well as
@@ -90,6 +97,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Icons",
         path: "/showcase/icons",
         icon: "icons",
+        summary: "One size scale, colour by intent, and the role registry.",
         lead: <>
             One component over every source. A call site names a <i>role</i> — "delete", "refresh" — and
             the registry decides which glyph, or which server image, backs it. Swapping the source is a
@@ -101,6 +109,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Overlays",
         path: "/showcase/overlays",
         icon: "overlays",
+        summary: "The app-wide tooltip, popovers, menus and drawers.",
         lead: <>
             The app has exactly one tooltip, owned by AppUI: triggers describe what to show and send it over
             the message bus. Popovers, menus and drawers are ordinary components, because they own state.
@@ -112,6 +121,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Data",
         path: "/showcase/data",
         icon: "table",
+        summary: "Grid layout, and a Table running 5,000 windowed rows.",
         lead: <>
             Grid is the two-dimensional layout primitive; Table is the data grid built on the same CSS grid
             mechanism — each row is <code>display: contents</code>, so its cells become direct grid children
@@ -123,6 +133,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Lists",
         path: "/showcase/lists",
         icon: "list",
+        summary: "SearchField, VirtualList and FilterableList over thousands of rows.",
         lead: <>
             The virtualised list family: <code>SearchField</code> settles what the user typed,{" "}
             <code>VirtualList</code> renders only the visible slice of a uniform-height list, and{" "}
@@ -134,6 +145,7 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Dynamic content",
         path: "/showcase/dynamic-content",
         icon: "dynamic",
+        summary: "Model caching, params on re-render and lists that come and go.",
         lead: <>
             A test bench for the parts of ueca-react that fail quietly: a model that survives unmount, a
             param that reaches an already-built child, a list that finds its models again by id. Each

@@ -5,16 +5,15 @@ import "./virtualList.css";
 
 // VirtualList — renders only the visible slice of a uniform-height list.
 //
-// The mechanism, carried over from the legacy app because it is the simplest one that works: a
-// spacer div is given the full height (`itemSize × itemCount`) so the scrollbar is honest, and the
-// rendered window is absolutely positioned at `startIndex × itemSize` inside it. Scrolling just
-// moves which slice is rendered.
+// The mechanism, chosen because it is the simplest one that works: a spacer div is given the full
+// height (`itemSize × itemCount`) so the scrollbar is honest, and the rendered window is absolutely
+// positioned at `startIndex × itemSize` inside it. Scrolling just moves which slice is rendered.
 //
-// What is deliberately NOT carried over:
-// - The 100ms scroll throttle. It was what made fast scrolling flash blank; a scroll event only
-//   re-renders the window view, which is cheap, so the throttle solved nothing worth having.
-// - `activeIndex` positioning the window without moving the element's real scrollTop — the legacy
-//   scroll-to-active was broken by that (it left you staring at blank spacer). Here it is an
+// What is deliberately avoided:
+// - A scroll throttle. A 100ms one makes fast scrolling flash blank; a scroll event only
+//   re-renders the window view, which is cheap, so a throttle solves nothing worth having.
+// - An active index that positions the window without moving the element's real scrollTop —
+//   scroll-to-active breaks that way (it leaves you staring at blank spacer). Here it is an
 //   imperative `scrollToIndex()`, which sets the element's actual scrollTop and lets the scroll
 //   event drive the window as usual.
 //

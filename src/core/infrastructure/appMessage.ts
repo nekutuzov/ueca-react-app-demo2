@@ -76,6 +76,10 @@ type MiscMessages = {
     // screen the same way they restore the screen.
     "App.BrowsingHistory.OnNavigate": { in: { path: string, section?: string }, out: boolean }
     "App.BrowsingHistory.ResolveRoute": { in: AnyRoute, out: string };
+    // The page's own name for the document title ("Table · Playground"), sent by the screen that is
+    // showing. It holds only while the browser stays at that address, so a screen that sends
+    // nothing gets the app name alone rather than the previous page's title.
+    "App.BrowsingHistory.SetPageTitle": { in: string };
 
     "App.Router.GetRoute": { out: AppRoute };
     "App.Router.GoToRoute": { in: AppRoute; out: boolean };

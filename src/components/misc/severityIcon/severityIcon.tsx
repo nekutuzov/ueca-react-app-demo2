@@ -27,10 +27,8 @@ function useSeverityIcon(params?: SeverityIconParams): SeverityIconModel {
             color: undefined,
         },
 
-        // The triangle is the ERROR glyph and the circled "!" the warning one — the MLAdmin
-        // mapping, which is the reverse of Material's. It is applied consistently across the
-        // legacy app (its tabs flag a failing tab with the same triangle), so the whole severity
-        // family follows it rather than only the dialog that revealed it.
+        // The triangle is the ERROR glyph and the circled "!" the warning one — the reverse of
+        // Material's mapping. The whole severity family follows it, not only the dialog.
         View: () => {
             const { size, severity, color } = model;
 

@@ -106,8 +106,7 @@ function useAppDialogManager(params?: AppDialogManagerParams): AppDialogManagerM
         await _openDialog("error", title, message, details);
     }
 
-    // Which buttons a dialog gets, by kind — the legacy `dialogSetups` table, which varies them
-    // rather than showing Cancel/OK on everything:
+    // Which buttons a dialog gets, by kind — varied rather than showing Cancel/OK on everything:
     //
     //   information            nothing but the × — it is an acknowledgement, not a choice
     //   warning / error        "Show details" when there ARE details, and the × otherwise

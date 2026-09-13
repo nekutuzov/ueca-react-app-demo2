@@ -4,8 +4,8 @@
 
 .ueca-button {
     /* theme tokens (see src/themes.css). --btn-outline-line is a PRIMARY outlined button's border
-       (MLAdmin's light readings: the accent); --btn-text-ink pins the label ink (legacy used its
-       textBase, not the body ink).
+       (e.g. a theme's accent); --btn-text-ink pins the label ink, for a theme whose button text is
+       not its body ink.
        A button given its own `color` outlines and hovers in THAT colour whatever the theme says.
        --button-color is read here, on the button, and never through a :root token: a :root
        var(--button-color) resolves at :root, where no button has set it. IconButton reads its
@@ -49,7 +49,7 @@
    box-shadow none, transparent border and background. That is a WCAG 2.4.7 failure on the app's
    most-used control, and one rule fixes every instance (CRUD toolbar, dialog and drawer footers,
    the toolButtons shorthands).
-   :focus-visible, so a pointer click still shows nothing and the legacy look is unchanged for a
+   :focus-visible, so a pointer click still shows nothing and the existing look is unchanged for a
    mouse user. */
 .ueca-button:focus-visible {
     outline: var(--stroke-emphasis) solid var(--focus-ring);
@@ -63,9 +63,9 @@
 }
 
 /* A theme that PAINTS its disabled state rather than fading it sets these three (and neutralises
-   the opacity/filter above). MLAdmin's disabled chip is a solid grey fill with a grey outline and
-   grey text, which fading a blue outline cannot produce. Every variant takes it — legacy's
-   `.cs-button:disabled` does — except that a text button keeps no fill or border, only the ink.
+   the opacity/filter above) — a solid grey fill with a grey outline and grey text, say, which
+   fading an accent outline cannot produce. Every variant takes it, except that a text button keeps
+   no fill or border, only the ink.
    Painting only the outlined variant left a disabled contained button a full accent fill.
    Defaults resolve to each variant's own colours, so a theme that says nothing sees no change. */
 .ueca-button-outlined:disabled {
@@ -90,10 +90,10 @@
    small and large rungs, so a Button rendered 34 and 53 where the ladder says 32 and 48 — and sat
    2px and 5px taller than the IconButton it is supposed to line up with in a toolbar. The rung now
    sets the height outright; `align-items: center` (base rule) does the centring padding was doing. */
-/* The 24px rung exists because a dialog's answers sit one step below a toolbar's buttons — the
-   legacy message box's own ladder — and because it is the rung IconButton already had, so a
-   Button and an IconButton still line up at every size. There is no type step below --text-2xs,
-   so the default shares the small rung's size and differs in height and padding alone. */
+/* The 24px rung exists because a dialog's answers sit one step below a toolbar's buttons, and
+   because it is the rung IconButton already had, so a Button and an IconButton still line up at
+   every size. There is no type step below --text-2xs, so the default shares the small rung's size
+   and differs in height and padding alone. */
 .ueca-button-xsmall {
     padding: 0 var(--btn-pad-x-xs, var(--space-default));
     font-size: var(--btn-font-xs, var(--text-2xs));
@@ -182,12 +182,11 @@
     font-size: 1.2em;
 }
 
-/* An icon in a bordered/borderless button can carry the ACCENT while the label stays body ink —
-   legacy's `.cs-button.primary.outlined .cs-button-icon` (and `.primary.link`), which is why its
-   "Add new" reads as a black label beside a blue plus. --btn-outline-icon-ink is that PRIMARY
-   glyph; a button with its own `color` puts the glyph in it (legacy `.danger.outlined` inherits its
-   red), read from --button-color here for the reason in the token block above — through the :root
-   token alone, Delete's trash can wore the theme accent. With neither, the icon follows its label.
+/* An icon in a bordered/borderless button can carry the ACCENT while the label stays body ink, so
+   "Add new" can pair a plain label with an accent plus. --btn-outline-icon-ink is that PRIMARY
+   glyph; a button with its own `color` puts the glyph in it, read from --button-color here for the
+   reason in the token block above — through the :root token alone, Delete's trash can wore the
+   theme accent. With neither, the icon follows its label.
    `:not(:disabled)` is load-bearing: without it a disabled button keeps a vivid accent glyph beside
    its greyed-out label. */
 .ueca-button-outlined:not(:disabled) .button-icon,

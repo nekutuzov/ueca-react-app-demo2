@@ -15,10 +15,10 @@
 
 /* ---- header ---- */
 
-/* The --table-* tokens let a theme reskin the table chrome (MLAdmin's grey header band, 14px
-   sentence-case headers, separator-less 46px rows) without touching this file — every one falls
-   back to the designed look. Header HEIGHT is deliberately not themable: the filter row's sticky
-   offset and the virtualisation math (HEADER_ROW_HEIGHT) count on it. */
+/* The --table-* tokens let a theme reskin the table chrome (a grey header band, sentence-case
+   headers, separator-less rows) without touching this file — every one falls back to the designed
+   look. Header HEIGHT is deliberately not themable: the filter row's sticky offset and the
+   virtualisation math (HEADER_ROW_HEIGHT) count on it. */
 .ueca-table-header-cell {
     display: flex;
     align-items: center;
@@ -78,9 +78,9 @@
     min-width: 0;
 }
 
-/* A focusable thing in a cell — the domain NavLink, a row action — sits flush inside the span
+/* A focusable thing in a cell — a NavLink, a row action — sits flush inside the span
    above, which has zero padding and clips. An outward ring is therefore cut on ALL FOUR sides and
-   is invisible: measured on /sites, the link filled the span exactly (0px on every edge) while its
+   is invisible: as measured, a link filled the span exactly (0px on every edge) while its
    ring asked for 4px. Padding cannot fix it (it would misalign every cell) and neither can dropping
    the clip, because the clip IS the ellipsis. Inset is the only mechanism left — which is the
    general rule, see css-practices.md#reserving-room-for-focus. */
@@ -158,8 +158,8 @@
 /* Rendered ONLY for the active row (table.tsx) — no display toggle here, because a hidden copy in
    every row would repeat the shared action button's DOM id down the table. Floated over the cell's
    right edge so they never change the column's width — the reason they are absolute rather than
-   part of the flex flow. The chip chrome is themable (--table-actions-*): MLAdmin de-chromes it
-   entirely because its action buttons carry their own outline. */
+   part of the flex flow. The chip chrome is themable (--table-actions-*): a theme whose action
+   buttons carry their own outline can de-chrome it entirely. */
 .ueca-table-cell-actions {
     display: flex;
     position: absolute;
@@ -174,8 +174,8 @@
 }
 
 /* Row-action buttons wear the shared chrome (.ueca-chromed-icon-buttons in iconButton.css), which
-   the actions element carries — under MLAdmin, the legacy outlined-primary squares. They keep
-   their OWN size, from the button's size class (xsmall), which is why no size rule lives here. */
+   the actions element carries. They keep their OWN size, from the button's size class (xsmall),
+   which is why no size rule lives here. */
 
 
 /* ---- filter row ---- */

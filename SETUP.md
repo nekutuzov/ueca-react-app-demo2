@@ -45,12 +45,14 @@ Use this high-level map instead of fixed file counts.
 - `src/components/` - Reusable UI components (layout, inputs, navigation, dialogs, tabs, flyouts)
 - `src/core/` - Application infrastructure (routing, app shell, security, dialogs, alerts, theme, icons)
 - `src/api/` - API client and MSW mocks
-- `src/screens/` - Demo screens for each component area
+- `src/screens/` - The landing page, the Showcase topic pages and the Playground editors
 
 ### Important Entry Points
 - `src/main.tsx` - Application startup and MSW initialization
 - `src/core/infrastructure/appRoutes.tsx` - App routes and external-link routes
 - `src/screens/index.ts` - Exported screens
+- `src/screens/showcase/showcaseTopics.tsx`, `src/screens/playground/playgroundTopics.tsx` - The page lists the menu, routes and page headers read
+- `src/tokens.css`, `src/themes.css` - Design tokens and the light and dark colour themes
 
 ## TypeScript Errors Before npm install
 
@@ -73,14 +75,14 @@ node_modules/ueca-react/docs/raw/index.md
 
 ### 2. Check Out Examples
 
-Official UECA example project:
+This app, deployed:
 ```
 https://nekutuzov.github.io/ueca-react-app-demo2/
 ```
 
-This repository is also a full demo/reference:
+The UECA-React documentation site:
 ```
-https://github.com/nekutuzov/ueca-react-app-demo2
+https://nekutuzov.github.io/ueca-react-doc/
 ```
 
 ### 3. Create Your First Component
@@ -131,8 +133,8 @@ Edit `src/core/infrastructure/appRoutes.tsx`:
 import { HomeScreen, MyScreen } from "@screens";
 
 const screenRoutes = {
-    "/": () => <HomeScreen id={"homeScreen"} page={"welcome"} />,
-    "/home": () => <HomeScreen id={"homeScreen"} page={"welcome"} />,
+    "/": () => <HomeScreen id={"homeScreen"} />,
+    "/home": () => <HomeScreen id={"homeScreen"} />,
     "/myscreen": () => <MyScreen id={"myScreen"} />,  // Add this
 }
 ```
@@ -189,10 +191,10 @@ Comment out in `src/main.tsx`:
 
 1. **Start Here**: Read `README.md`
 2. **UECA Docs**: `node_modules/ueca-react/docs/raw/index.md`
-3. **Copilot Guide**: `.github/copilot-instructions.md`
+3. **AI Instructions**: `CLAUDE.md`, and the UECA skills `npm install` copies into `.claude/skills/`
 4. **Base Components**: Study `src/components/base/`
-5. **Example Project**: https://nekutuzov.github.io/ueca-react-app-demo2/
-6. **This Demo Repository**: https://github.com/nekutuzov/ueca-react-app-demo2
+5. **The Showcase**: https://nekutuzov.github.io/ueca-react-app-demo2/
+6. **UECA-React Documentation**: https://nekutuzov.github.io/ueca-react-doc/
 7. **Build Something**: Create your first screen!
 
 ## Key Concepts to Master
@@ -207,9 +209,8 @@ Comment out in `src/main.tsx`:
 
 ## Getting Help
 
-- **Documentation**: `node_modules/ueca-react/docs/`
-- **Example Project**: https://nekutuzov.github.io/ueca-react-app-demo2/
+- **Documentation**: https://nekutuzov.github.io/ueca-react-doc/ (also in `node_modules/ueca-react/docs/`)
 - **This Demo Repository**: https://github.com/nekutuzov/ueca-react-app-demo2
-- **Copilot Instructions**: Use `.github/copilot-instructions.md` for AI assistance
+- **AI Instructions**: `CLAUDE.md`
 
 Happy coding with UECA-React!

@@ -112,7 +112,7 @@
    lives here is only what is genuinely the toolbar's own: its height and glyph size.
 
    --toolbar-btn-size pins EVERY rung to one height, because "the toolbar is 32px" is a property of
-   the toolbar, not a step on the control ladder — MLAdmin wants that. Each rung falls back to its
+   the toolbar, not a step on the control ladder — a theme may want that. Each rung falls back to its
    own control height, so with no theme token the ladder is intact and nothing changes. All four
    rungs are covered: overriding only some of them is how a `medium` button ends up a different
    height from its neighbours in one theme only. */

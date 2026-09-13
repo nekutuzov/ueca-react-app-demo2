@@ -91,8 +91,8 @@
 
 /* ---- chromed: icon buttons that sit ON a surface rather than floating in content ---- */
 
-/* The screen toolbar and a table row's action cluster want the same chrome — under MLAdmin, the
-   legacy outlined-primary squares. Applied by an ANCESTOR carrying .ueca-chromed-icon-buttons, so
+/* The screen toolbar and a table row's action cluster want the same chrome (a theme might make
+   both outlined-primary squares). Applied by an ANCESTOR carrying .ueca-chromed-icon-buttons, so
    the two contexts share one definition instead of a copy each; the copies had already drifted
    apart once, and a precedence fix had to be made twice.
    Every default repeats the bare icon-button look, so only a theme that sets --chrome-btn-* changes

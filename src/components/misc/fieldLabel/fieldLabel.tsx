@@ -3,11 +3,11 @@ import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components"
 import "./fieldLabel.css";
 
 // A field label carrying a dimmed qualifier after it — "Background Operations Limit (in hours)",
-// "Database Path (local path to .gdb file on Firebird host)". Legacy had this as a `secondaryLabel`
-// prop on every input wrapper; here it fills the `labelView` slot the inputs already expose, so no
-// input grows a second label prop and the qualifier can be any node:
+// "Database Path (local path on the database host)". Rather than a `secondaryLabel` prop on every
+// input wrapper, it fills the `labelView` slot the inputs already expose, so no input grows a
+// second label prop and the qualifier can be any node:
 //
-//     labelView: <FieldLabel labelView="Site Name" secondaryView={`(URL: /mlweb/${model.name})`} />
+//     labelView: <FieldLabel labelView="Site Name" secondaryView={`(URL: /sites/${model.name})`} />
 //     labelView: <FieldLabel labelView="Windows User Name"
 //                            hintView={<FieldHint id="userNameHint" contentView={TIP} />} />
 //
@@ -16,8 +16,7 @@ import "./fieldLabel.css";
 type FieldLabelStruct = UIBaseStruct<{
     props: {
         labelView: React.ReactNode;
-        // The "i" chip, between the label and its qualifier — legacy's own order
-        // (legacy:src/core/components/label/label.tsx:45-52). Fill it with a FieldHint.
+        // The "i" chip, between the label and its qualifier. Fill it with a FieldHint.
         hintView: React.ReactNode;
         secondaryView: React.ReactNode;
     };

@@ -87,7 +87,7 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
                     }
                 }
             }),
-            // A panel footer's buttons sit on the 32px rung, as the legacy editor panels' do — one
+            // A panel footer's buttons sit on the 32px rung, as EditDrawer's do — one
             // above the dialog's answers, which are 24px.
             okButton: useButton({
                 contentView: "OK",

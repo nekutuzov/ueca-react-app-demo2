@@ -11,7 +11,7 @@ type ColumnWidth = number | string | { min?: number | string; max?: number | str
 type SortDirection = "asc" | "desc";
 
 // What a cellView/actionView receives. `rowNumber` is 1-based and follows the DISPLAYED order, so it
-// renumbers when the table is sorted or filtered — which is what the legacy `recNo` column showed.
+// renumbers when the table is sorted or filtered.
 type TableCell<T> = {
     column: TableColumn<T>;
     row: T;
@@ -20,8 +20,8 @@ type TableCell<T> = {
 };
 
 type TableColumn<T> = {
-    // Stable identity: React key, sort target, and what onSortChange reports. Required, unlike the
-    // legacy version which keyed columns by their position in an object literal.
+    // Stable identity: React key, sort target, and what onSortChange reports. Required, rather than
+    // keying columns by their position in an object literal.
     key: string;
     titleView: React.ReactNode;
     // The row property this column reads. Omit for a computed column (a row number, an actions
@@ -168,8 +168,8 @@ type TableStruct<T> = UIBaseStruct<{
         onSelectionChange: (row: T, key: string, source: TableModel<T>) => UECA.MaybePromise;
         onRowClick: (row: T, key: string, source: TableModel<T>) => UECA.MaybePromise;
         onSortChange: (key: string, direction: SortDirection, source: TableModel<T>) => UECA.MaybePromise;
-        // Table-wide comparator, consulted before a column's own. Mirrors the legacy escape hatch
-        // for when ordering depends on more than the sorted column.
+        // Table-wide comparator, consulted before a column's own. An escape hatch for when ordering
+        // depends on more than the sorted column.
         onSortCompare: (a: T, b: T, column: TableColumn<T>) => number;
     };
 

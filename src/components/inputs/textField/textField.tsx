@@ -26,7 +26,7 @@ type TextFieldStruct<T = string> = EditBaseStruct<{
         multiline: boolean;
         rows: number;
         // Grow to the height the parent gives instead of sizing to `rows` — a template editor that
-        // owns the rest of its tab. Legacy's `fill` on TextArea; only meaningful with multiline.
+        // owns the rest of its tab. Only meaningful with multiline.
         fill: boolean;
         autoComplete: string;
         color: Palette;
@@ -160,8 +160,8 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                 >
                     {model.labelView && (
                         <label className="textfield-label ueca-label">
-                            {/* Leading, like the legacy mandatory-mark: the asterisk reads as part
-                                of the label rather than as punctuation trailing it. */}
+                            {/* Leading: the asterisk reads as part of the label rather than as
+                                punctuation trailing it. */}
                             {model.required && <span className="textfield-required">*</span>}
                             {model.labelView}
                         </label>
@@ -300,8 +300,8 @@ const TextField = UECA.getFC(useTextField);
 // component of its own; it returns a TextFieldModel and callers override any default.
 //
 // Deliberately BARE: no placeholder, no lock adornment, no autoComplete. Those belong to a sign-in
-// box, not to the many stored-secret fields on the configuration screens, and legacy factored it
-// the same way (its inputPassword defaults both to undefined and the auth form supplies them).
+// box, not to the many stored-secret fields on the configuration screens; the sign-in form
+// supplies its own.
 function usePasswordField(params?: TextFieldParams): TextFieldModel {
     return useTextField({
         type: "password",
@@ -317,9 +317,8 @@ const PasswordField = UECA.getFC(usePasswordField);
 // signal "leave the stored secret alone".
 const SECURED_PASSWORD_PLACEHOLDER = "PASSWORD_PLACEHOLDER";
 
-// Shorthand: a password field holding a secret that ALREADY EXISTS on the server — SMTP, database
-// and processing-user passwords, never a new password the user is choosing. Three behaviours, all
-// ported from legacy `securedVisiblity`:
+// Shorthand: a password field holding a secret that ALREADY EXISTS on the server — an SMTP or
+// database password, never a new password the user is choosing. Three behaviours:
 //   · the stored value is the placeholder above, not the secret;
 //   · focusing clears the placeholder, so an edit replaces the secret rather than appending to it;
 //   · the eye toggle stays disabled until the field is focused, so an unfocused field can never

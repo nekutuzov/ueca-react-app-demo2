@@ -14,8 +14,7 @@
 
 /* The dot carries the intent at full strength — it is the part that must stay identifiable at a
    glance in a dense list, where the label text may be truncated away entirely. Full strength means
-   the PURE status token, not the readability-mixed --*-ink the text wears (per-intent rules below);
-   the legacy MLAdmin dot was the pure colour too. */
+   the PURE status token, not the readability-mixed --*-ink the text wears (per-intent rules below). */
 .ueca-status-label-dot {
     flex: none;
     width: var(--status-dot-size, var(--space-default));
@@ -72,12 +71,12 @@
     background-color: transparent;
     padding: 0;
     /* Default equals the .ueca-caption size the chip already wears; a theme may step it up to its
-       table text size (MLAdmin's 14px). */
+       table text size. */
     font-size: var(--status-bare-font, var(--text-sm));
 }
 
 /* Themes may pin the bare label's TEXT to a fixed ink while the dot keeps carrying the intent —
-   the legacy MLAdmin style (green dot, body-ink "Active"). Default inherits the intent colour. */
+   a green dot beside a body-ink "Active", say. Default inherits the intent colour. */
 .ueca-status-label-bare .ueca-status-label-text { color: var(--status-bare-label, inherit); }
 .ueca-status-label-bare.ueca-status-label-success { color: var(--success-ink); }
 .ueca-status-label-bare.ueca-status-label-info    { color: var(--info-ink); }

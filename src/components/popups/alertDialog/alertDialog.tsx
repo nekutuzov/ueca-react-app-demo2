@@ -65,7 +65,7 @@ function useAlertDialog(params?: AlertDialogParams): AlertDialogModel {
             dialog: useDialog({
                 titleView: () => {
                     // The icon always carries the severity; the title text follows it only where a
-                    // theme wants that (MLAdmin's heading stays body ink). The colour is published
+                    // theme wants that (a heading may stay body ink). The colour is published
                     // as a custom property rather than set as `color`, so --alert-title-ink can win
                     // over it in CSS — an inline colour could not be overridden at all.
                     const sevColor = _severityColor();
@@ -105,9 +105,9 @@ function useAlertDialog(params?: AlertDialogParams): AlertDialogModel {
                     </Row>
                 ),
                 fullWidth: true,
-                // Stand aside while the details panel is up, as the legacy box does — it is the
-                // same message, continued. Hidden rather than closed: closing would settle the
-                // caller's promise and the panel's Cancel would have nothing to come back to.
+                // Stand aside while the details panel is up — it is the same message, continued.
+                // Hidden rather than closed: closing would settle the caller's promise and the
+                // panel's Cancel would have nothing to come back to.
                 hidden: () => model.detailsDrawer.open,
                 open: UECA.bind(() => model, "open"),
                 onOpen: () => {
@@ -125,10 +125,8 @@ function useAlertDialog(params?: AlertDialogParams): AlertDialogModel {
                 }
             }),
             // Every answer wears the same chip — outlined, and on the 24px rung, which is a step
-            // below the screen toolbar's buttons exactly as the legacy message box's are. Legacy
-            // renders them all outlined too: its four buttons ask for four different variants and
-            // every one comes out the same, so the box never sorts its answers by weight. Ours
-            // says so directly instead of arriving there by accident.
+            // below the screen toolbar's buttons. All of them are outlined, so the box never sorts
+            // its answers by weight.
             okButton: useButton({
                 contentView: "OK",
                 variant: "outlined",
@@ -171,8 +169,8 @@ function useAlertDialog(params?: AlertDialogParams): AlertDialogModel {
                     </span>
                 ),
                 contentView: () => _detailsContentView(),
-                // Two thirds of the viewport — the legacy "medium" slider, and the width a stack
-                // trace needs when it is rendered without wrapping.
+                // Two thirds of the viewport — the width a stack trace needs when it is rendered
+                // without wrapping.
                 width: "65%",
             }),
         },
@@ -199,10 +197,7 @@ function useAlertDialog(params?: AlertDialogParams): AlertDialogModel {
         return resolvePaletteColor(`${model.severity}.main` as Palette);
     }
 
-    // The details panel names what it is showing, as the legacy slider does. (Legacy's own version
-    // of this reads `intent === DANGER ? "Error Details" : Intent.WARNING ? …`, whose second test is
-    // a constant and therefore always true — so everything that is not an error is titled "Warning
-    // Details" there. This is the mapping it meant.)
+    // The details panel names what it is showing.
     function _detailsTitle(): string {
         switch (model.severity) {
             case "error":

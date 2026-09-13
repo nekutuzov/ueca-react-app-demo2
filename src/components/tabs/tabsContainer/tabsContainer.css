@@ -1,4 +1,4 @@
-/* MLAdmin insets the whole tab block by 4px top and bottom inside the screen's content area; the
+/* A theme can inset the whole tab block top and bottom inside the screen's content area; the
    template's sits flush. */
 .ueca-tabs-container {
     display: flex;
@@ -21,7 +21,7 @@
     display: flex;
     position: relative;
     border-bottom: var(--hairline) solid var(--tab-strip-line, var(--border));
-    /* The rule and the first row of content sit flush by default; MLAdmin puts 24px between them. */
+    /* The rule and the first row of content sit flush by default; a theme can space them apart. */
     margin-bottom: var(--tab-strip-gap, 0);
 }
 
@@ -73,7 +73,7 @@
 }
 
 /* Tabs list */
-/* Tabs that carry their own padding need no gap; MLAdmin's have none and are spaced from here. */
+/* Tabs that carry their own padding need no gap; a theme with unpadded tabs spaces them here. */
 .ueca-tabs-list {
     display: flex;
     gap: var(--tab-gap, 0);
@@ -140,7 +140,7 @@
 }
 
 /* The content panel scrolls, so it clips — and tab content starts flush against that edge, which
-   cut the focus ring off any control sitting there (measured on the site editor: the "Active"
+   cut the focus ring off any control sitting there (measured at that edge: a
    Switch lost all 4px of its ring on the left and 2.8px of the top). It therefore wears the shared
    `ueca-focus-bleed` class from theme.css; `flex` and `overflow` come from the Col's own props, so
    there is nothing left for this file to say about it. */

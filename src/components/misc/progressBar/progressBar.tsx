@@ -3,8 +3,8 @@ import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components"
 import { Palette, resolvePaletteColor } from "@core";
 import "./progressBar.css";
 
-// A determinate/indeterminate progress bar, ported from the legacy progressBar. `value` is 0–100;
-// undefined renders the indeterminate sweep.
+// A determinate/indeterminate progress bar. `value` is 0–100; undefined renders the indeterminate
+// sweep.
 type ProgressBarStruct = UIBaseStruct<{
     props: {
         value: number;

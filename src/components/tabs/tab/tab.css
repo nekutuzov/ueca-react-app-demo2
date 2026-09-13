@@ -1,6 +1,6 @@
 /* Geometry and type are token-driven so a theme can put the strip on its own rung: the template's
-   tabs are 48px chips that reserve a 90px slot each, while MLAdmin's are bare 43px labels with no
-   padding at all, spaced by the list's gap (measured on legacy /general). */
+   tabs are 48px chips that reserve a 90px slot each, while a theme can make them bare labels with
+   no padding at all, spaced by the list's gap. */
 .ueca-tab {
     display: inline-flex;
     align-items: center;
@@ -35,9 +35,8 @@
     background-color: var(--tab-hover-bg, var(--hover));
 }
 
-/* Legacy tints the label on hover rather than washing the whole tab. Excluded on the selected tab,
-   which keeps its own ink — the same outcome as the legacy cascade, where `li.selected .tab-text`
-   outranked `.tab-text:hover`. */
+/* A theme can tint the label on hover rather than washing the whole tab. Excluded on the selected
+   tab, which keeps its own ink. */
 .ueca-tab:hover:not(:disabled):not(.selected) {
     color: var(--tab-hover-ink, var(--ink-dim));
 }
@@ -48,9 +47,9 @@
     pointer-events: none;
 }
 
-/* Ink and underline are separate tokens because MLAdmin paints them differently — blue.Dark text
-   under a blue.Regular rule. --tab-selected-ink falls back to the underline colour, so a theme
-   that wants them the same still sets one token. */
+/* Ink and underline are separate tokens because a theme may paint them differently — darker text
+   under a lighter rule. --tab-selected-ink falls back to the underline colour, so a theme that
+   wants them the same still sets one token. */
 .ueca-tab.selected {
     color: var(--tab-selected-ink, var(--tab-selected-color, var(--accent)));
     border-bottom-color: var(--tab-selected-color, var(--accent));

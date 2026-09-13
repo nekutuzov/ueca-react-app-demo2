@@ -10,9 +10,8 @@
     gap: var(--space-tiny);
 }
 
-/* The qualifier is the same type as the label, one step dimmer — never smaller. Measured #B5B9BA
-   against a #002A52 label on legacy /settings, which is the placeholder ink rather than --ink-dim;
-   the mladmin theme sets the token accordingly. */
+/* The qualifier is the same type as the label, one step dimmer — never smaller. A theme whose
+   qualifier wears its placeholder ink rather than --ink-dim sets the token accordingly. */
 .ueca-field-label-secondary {
     color: var(--field-label-secondary-ink, var(--ink-dim));
     text-transform: none;

@@ -21,9 +21,9 @@ function useMarkdownPreview(params?: MarkdownPreviewParams): MarkdownPreviewMode
             skipHtml: false,
         },
 
-        // index.html sets <base href="/mladmin/">, and a bare "#id" resolves against THAT, not
+        // index.html sets a <base href>, and a bare "#id" resolves against THAT, not
         // against the page being read - so every in-page link, including the anchor
-        // rehype-autolink-headings puts on each heading, means "/mladmin/#id" and lands on Home.
+        // rehype-autolink-headings puts on each heading, means the base path + "#id" and lands on Home.
         // Rewriting the href to the current path makes it honest to the status bar, middle-click
         // and copy-link-address; data-section is what the click handler below routes on.
         // Synchronous, as draw requires.

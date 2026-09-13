@@ -3,8 +3,8 @@ import { Block, Icon, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from 
 import { Placement } from "@core";
 import "./fieldHint.css";
 
-// The small "i" chip beside a control that explains what the setting does — legacy's `info` prop on
-// every input wrapper, which rendered an outline info circle carrying a tooltip.
+// The small "i" chip beside a control that explains what the setting does — an info circle
+// carrying a tooltip.
 //
 // A UECA component rather than a bare glyph, because the tooltip is the whole point: the app has ONE
 // tooltip instance living on AppUI (see docs/raw/overlays.md), and reaching it means calling
@@ -31,9 +31,9 @@ function useFieldHint(params?: FieldHintParams): FieldHintModel {
             contentView: undefined,
             // Right, not the tooltip default of top: a hint sits on a form row with the next field
             // directly below it, and these explanations run to several lines — opening upward covers
-            // the label it belongs to. Legacy placed them the same way.
+            // the label it belongs to.
             placement: "right",
-            // 16px, matching the legacy fal circle-info that sits beside a label.
+            // 16px, to sit beside a label.
             size: "md"
         },
 

@@ -4,7 +4,7 @@ import {
     useCancelButton, useDeleteButton, useDrawer, useEditBase, useSaveButton
 } from "@components";
 
-// A Drawer with a record editor's footer — the legacy `slider`. Two ready-made footers:
+// A Drawer with a record editor's footer. Two ready-made footers:
 //
 //   mode="edit"  [Delete]            [Cancel] [Save]   validates before saving
 //   mode="view"                               [OK]
@@ -88,7 +88,7 @@ function useEditDrawer(params?: EditDrawerParams): EditDrawerModel {
                 actionView: () => <model._FooterView />,
                 onOpen: async () => await model.onOpen?.(),
                 // The close X and the backdrop both land here. An edit drawer treats that as a
-                // cancel, exactly as the legacy panel did.
+                // cancel.
                 onClose: async () => {
                     if (model.mode === "edit") {
                         await model.onCancel?.();

@@ -1,0 +1,341 @@
+/* Landing page. One loud element — the struct spine — and quiet everywhere else. */
+
+/* The content band every screen shares (see screenPage.css), so nothing jumps sideways between Home
+   and a Showcase page. width:100% is load-bearing: an auto cross-axis margin opts a flex item out of
+   stretching. Stretch first, then cap, then centre. */
+.home {
+    width: 100%;
+    max-width: var(--band-w);
+    margin: 0 auto;
+    padding: var(--space-huge) var(--page-pad);
+}
+
+/* ---- Hero ---- */
+
+.home-hero {
+    max-width: 820px;
+}
+
+.home-eyebrow {
+    color: var(--marker);
+    margin-bottom: var(--space-small);
+}
+
+.home-headline {
+    font-family: var(--font-display);
+    /* Scales with the column instead of stepping at a breakpoint. */
+    font-size: clamp(34px, 5.4vw, 56px);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--ink);
+    margin: 0 0 var(--space-medium);
+}
+
+.home-lead {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--ink-dim);
+    max-width: 60ch;
+    margin: 0 0 var(--space-medium);
+}
+
+.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-default);
+}
+
+/* ---- The signature: the fixed section order ---- */
+
+.home-spine-block {
+    max-width: 820px;
+    margin: var(--space-huge) 0;
+    padding: var(--space-medium);
+    background: var(--surface);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.home-spine-caption {
+    color: var(--ink-disabled);
+    margin-bottom: var(--space-small);
+}
+
+.home-spine {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 var(--space-medium);
+}
+
+/* The spine itself. Inset top and bottom so it starts and ends at the first and last marker rather
+   than floating past them. */
+.home-spine::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 0.85em;
+    bottom: 0.85em;
+    width: var(--hairline);
+    background: var(--border);
+}
+
+.home-spine-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: var(--space-small);
+    align-items: baseline;
+    padding: 7px 0;
+}
+
+/* The marker. Amber, like the eyebrow and the active page in the sidebar: all three report structure. */
+.home-spine-row::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--space-medium) * -1);
+    top: 0.7em;
+    width: 7px;
+    height: 7px;
+    border-radius: var(--radius-circle);
+    background: var(--marker);
+}
+
+.home-spine-name {
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    color: var(--ink);
+}
+
+.home-spine-role {
+    font-size: var(--text-md);
+    color: var(--ink-dim);
+}
+
+.home-spine-note {
+    margin: var(--space-small) 0 0;
+    padding-left: var(--space-medium);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--ink-dim);
+}
+
+/* ---- Sections ---- */
+
+.home-section {
+    margin-top: var(--space-huge);
+}
+
+.home-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-small);
+    margin-bottom: var(--space-default);
+    padding-bottom: var(--space-default);
+    border-bottom: var(--hairline) solid var(--border);
+}
+
+.home-h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
+    color: var(--ink);
+    margin: 0;
+}
+
+.home-section-count {
+    color: var(--ink-disabled);
+    white-space: nowrap;
+}
+
+.home-section-lead {
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    color: var(--ink-dim);
+    max-width: var(--measure);
+    margin: 0 0 var(--space-small);
+}
+
+/* ---- Page cards ---- */
+
+.home-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-small);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.home-card-item {
+    display: flex;
+    min-width: 0;
+}
+
+/* The NavLink is the card, so the whole card is one real link — middle-click and copy-link work.
+   NavLink's own hover fades the text, which on a card reads as disabled; the border answers instead. */
+.home-card-item > .ueca-nav-link {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    background: var(--surface);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--motion-base) var(--ease),
+                background-color var(--motion-base) var(--ease);
+}
+
+.home-card-item > .ueca-nav-link:hover {
+    opacity: 1;
+    border-color: var(--accent);
+}
+
+.home-card-item > .ueca-nav-link:focus-visible {
+    border-radius: var(--radius-md);
+}
+
+.home-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-small);
+    padding: var(--space-small);
+    min-width: 0;
+}
+
+.home-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+    border-radius: var(--radius-md);
+    color: var(--accent);
+    background: var(--primary-bg);
+    transition: color var(--motion-base) var(--ease),
+                background-color var(--motion-base) var(--ease);
+}
+
+.home-card-item > .ueca-nav-link:hover .home-card-icon {
+    color: var(--ink-on-accent);
+    background: var(--accent);
+}
+
+.home-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.home-card-title {
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-snug);
+    color: var(--ink);
+}
+
+.home-card-summary {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--ink-dim);
+}
+
+/* ---- Principles ---- */
+
+.home-principles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-small);
+}
+
+.home-principle {
+    padding: var(--space-small) var(--space-small) var(--space-small) var(--space-medium);
+    border-left: var(--stroke-emphasis) solid var(--marker);
+}
+
+.home-principle-title {
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
+    color: var(--ink);
+    margin: 0 0 var(--space-tiny);
+}
+
+.home-principle-body {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--ink-dim);
+    margin: 0;
+}
+
+/* ---- Demos ---- */
+
+.home-demos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.home-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-small);
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-small);
+    background: var(--surface);
+}
+
+.home-demo + .home-demo {
+    border-top: var(--hairline) solid var(--border);
+}
+
+.home-demo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.home-demo-name {
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    color: var(--ink);
+}
+
+.home-demo-note {
+    font-size: var(--text-sm);
+    color: var(--ink-dim);
+}
+
+.home-demo-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-default);
+}
+
+.home-demo-here {
+    color: var(--marker);
+    padding: 0 var(--space-default);
+}
+
+@media (max-width: 640px) {
+    .home {
+        padding: var(--space-large) var(--page-pad);
+    }
+
+    .home-spine-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}

@@ -11,6 +11,11 @@ type AppBrowsingHistoryStruct = BaseStruct<{
         __activeSection: string;
         __baseURL: string;
         __appTitle: string;
+        // The showing screen's name for itself, from App.BrowsingHistory.SetPageTitle, and the
+        // location it was given at. The title counts only while the browser is still there, so a
+        // page that names nothing never inherits the previous page's name.
+        __pageTitle: string;
+        __pageTitlePath: string;
         __currentHistoryIndex: number;
         // Held so the popstate listener can be detached: syncWithBrowser is callable more than
         // once and there is no destroy hook.
@@ -51,7 +56,16 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
             // resolution navigation uses: an unresolvable route yields undefined, so a link renders
             // without an href instead of raising. Without this handler every NavLink lost its href —
             // a unicast with no subscriber returns undefined rather than failing.
-            "App.BrowsingHistory.ResolveRoute": async (route) => resolveRouteURL(route, model.__baseURL)
+            "App.BrowsingHistory.ResolveRoute": async (route) => resolveRouteURL(route, model.__baseURL),
+
+            // Keyed to window.location rather than to the synced active path: on Back and Forward
+            // the router renders the new screen BEFORE the path is synced, so the new screen can name
+            // itself while __activePath still holds the page being left.
+            "App.BrowsingHistory.SetPageTitle": async (title) => {
+                model.__pageTitle = title;
+                model.__pageTitlePath = window.location.pathname;
+                _syncDocumentTitle();
+            }
         },
 
         methods: {
@@ -167,10 +181,8 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
         if (!model.__appTitle) {
             return;
         }
-        const path = window.location.pathname.startsWith(model.__baseURL)
-            ? window.location.pathname.substring(model.__baseURL.length)
-            : "";
-        window.document.title = path ? `${model.__appTitle}: ${path}` : model.__appTitle;
+        const pageTitle = model.__pageTitlePath === window.location.pathname ? model.__pageTitle : undefined;
+        window.document.title = pageTitle ? `${pageTitle} — ${model.__appTitle}` : model.__appTitle;
     }
 
     // The counterpart to the listener syncWithBrowser installs. Called from deinit, and again

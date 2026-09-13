@@ -49,7 +49,9 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
 
         children: {
             authForm: useAppAuthForm({
-                title: "UECA-React Showcase",
+                eyebrow: "UECA-React Showcase",
+                title: "Sign in",
+                leadView: "Fifty components on plain HTML and CSS, in light and dark.",
                 contentView: () => <model._FormView />,
                 // This demo has no server, so any credentials sign in — say so, or a visitor is
                 // left guessing at a password that does not exist.
@@ -58,7 +60,7 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
 
             userInput: useTextField({
                 value: UECA.bind(() => model, "user"),
-                placeholder: "Username",
+                labelView: "Username",
                 startView: <Icon name="user" size="md" />,
                 required: true,
                 autoComplete: "username",
@@ -67,7 +69,7 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
 
             passwordInput: usePasswordField({
                 value: UECA.bind(() => model, "password"),
-                placeholder: "Password",
+                labelView: "Password",
                 startView: <Icon name="lock" size="md" />,
                 required: true,
                 autoComplete: "current-password",
@@ -75,7 +77,7 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
             }),
 
             signInButton: useButton({
-                contentView: "LOG IN",
+                contentView: "Sign in",
                 variant: "contained",
                 fullWidth: true,
                 onClick: async () => await _login()

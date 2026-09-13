@@ -3,15 +3,15 @@
 
 .ueca-textfield {
     --tf-bg: var(--surface-2);
-    /* --input-line lets a theme give fields a stronger hairline than the generic --border; MLAdmin
-       outlines them in grey.Regular, a good deal darker than its layout borders. */
+    /* --input-line lets a theme give fields a stronger hairline than the generic --border, e.g. an
+       outline a good deal darker than its layout borders. */
     --tf-line: var(--input-line, var(--border));
     --tf-ink: var(--ink);
     --tf-muted: var(--ink-disabled);
     --tf-accent: var(--textfield-color, var(--accent));
     --tf-accent-dim: var(--accent-dim);
     /* The hover/focus outline, separate from --tf-accent-dim because a theme may want the field to
-       answer in a different accent step than a pressed button. MLAdmin uses primary.Regular. */
+       answer in a different accent step than a pressed button. */
     --tf-line-active: var(--input-line-active, var(--tf-accent-dim));
     --tf-error: var(--error);
 
@@ -43,8 +43,7 @@
 }
 
 /* Height comes off the control ladder rather than from the input's own padding, so a theme can put
-   fields on the rung its design uses — MLAdmin's are 32px, one step down from the template's 40px
-   (the legacy "medium" control). */
+   fields on the rung its design uses — 32px, say, one step down from the template's 40px. */
 .textfield-frame {
     display: flex;
     align-items: center;
@@ -62,15 +61,15 @@
     border-color: var(--tf-line-active);
 }
 
-/* Legacy input.scss gives focus an outline AND a soft glow; hover gets the outline only. */
+/* A theme can give focus an outline AND a soft glow; hover gets the outline only. */
 .textfield-frame:focus-within {
     border-color: var(--tf-line-active);
     box-shadow: var(--input-focus-shadow, none);
 }
 
 /* Type is token-driven so a theme can set the voice of every field at once: the template's default
-   is a mono micro-face, while MLAdmin's fields are plain 14px UI type (measured on legacy
-   /settings). Same mechanism as --label-* in tokens.css. */
+   is a mono micro-face, while a theme's fields may be plain UI type. Same mechanism as --label-* in
+   tokens.css. */
 .textfield-input {
     font-family: var(--input-font, var(--font-mono));
     font-size: var(--input-size, var(--text-2xs));
@@ -274,8 +273,8 @@
 }
 
 /* Disabled state */
-/* A disabled field fades by default. MLAdmin instead keeps the label in full ink and washes the
-   ground, dimming only the value — measured on the licence screen. */
+/* A disabled field fades by default. A theme can instead keep the label in full ink and wash the
+   ground, dimming only the value. */
 .ueca-textfield-disabled .textfield-label {
     color: var(--input-disabled-label-ink, var(--tf-muted));
 }

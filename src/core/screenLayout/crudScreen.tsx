@@ -122,8 +122,7 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 toolsView: () => model._toolsView(),
                 // The screen's slot with the Delete row folded in. Computed HERE rather than in a
                 // `methods` entry: the layout hides its "…" button on a null slot, and a method is
-                // wrapped by the framework so it can never report null (the legacy baseScreen
-                // carried a TODO about exactly this).
+                // wrapped by the framework so it can never report null.
                 hiddenToolsView: () => {
                     if (!_showDeleteButton()) {
                         return model.hiddenToolsView;
@@ -148,7 +147,7 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 onClick: () => model.add()
             }),
 
-            // Cancel and Save are TEXT buttons in the legacy toolbar, not icon squares — outlined,
+            // Cancel and Save are TEXT buttons in the toolbar, not icon squares — outlined,
             // 32px tall, no glyph. Only Refresh is an icon square. Plain useButton rather than the
             // useCancelButton/useSaveButton shorthands: those carry a start icon (and Cancel its own
             // confirm dialog), and the toolbar wants neither — cancel() is already gated on the
@@ -163,7 +162,7 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 onClick: () => model.cancel()
             }),
 
-            // Delete is NOT a toolbar button: legacy puts it in the "…" overflow menu, so the
+            // Delete is NOT a toolbar button: it lives in the "…" overflow menu, so the
             // toolbar carries only the three buttons a record edit needs at a glance.
             deleteMenuItem: useMenuItem({
                 labelView: "Delete",
@@ -344,9 +343,9 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 runAsync(() => model.goToRoute(route));
             },
 
-            // Legacy order: the screen's own tools, then Refresh, then Cancel and Save (or the
+            // Toolbar order: the screen's own tools, then Refresh, then Cancel and Save (or the
             // action button). Refresh leads because it is the one button every intent but "none"
-            // shows — see legacy:src/screens/common/baseScreen.tsx:272.
+            // shows.
             _toolsView: () =>
                 <>
                     {model.toolsView}
@@ -415,9 +414,8 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
     }
 
     function _showDeleteButton() {
-        // Record flows only. A plain "edit" screen edits settings, not a record — legacy shows no
-        // delete there (legacy:baseScreen.tsx `_isDeleteVisible`), and "add-record" has nothing
-        // persisted to delete.
+        // Record flows only. A plain "edit" screen edits settings, not a record, so it shows no
+        // delete; and "add-record" has nothing persisted to delete.
         return model.intent === "edit-record" || model.intent === "add-edit-record";
     }
 

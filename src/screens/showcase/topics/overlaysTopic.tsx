@@ -129,7 +129,7 @@ function useOverlaysTopic(params?: OverlaysTopicParams): OverlaysTopicModel {
 
             // The popover's BODY is stateful — two live controls. That state belongs to the models
             // below, which is exactly why a popover is an ordinary component and not a singleton.
-            popoverField: useTextField({ labelView: "Site name contains", value: "kellogg" }),
+            popoverField: useTextField({ labelView: "Site name contains", value: "cedar" }),
             editDrawerButton: useButton({
                 variant: "outlined",
                 contentView: "Open edit drawer",
@@ -294,7 +294,7 @@ function useOverlaysTopic(params?: OverlaysTopicParams): OverlaysTopicModel {
                         <Block
                             className="showcase-tooltip-target" tabIndex={0}
                             {...model.tooltipProps(
-                                "A deliberately long tooltip, to show that the bubble wraps at its max width rather than running off the edge of the screen, and that long unbroken tokens like /var/log/mlsuite/instrument-04-diagnostics.log break instead of overflowing.",
+                                "A deliberately long tooltip, to show that the bubble wraps at its max width rather than running off the edge of the screen, and that long unbroken tokens like /var/log/showcase/instrument-04-diagnostics.log break instead of overflowing.",
                                 { delay: 120 }
                             )}
                         >

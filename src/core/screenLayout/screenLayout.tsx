@@ -101,6 +101,18 @@ function useScreenLayout(params?: ScreenLayoutParams): ScreenLayoutModel {
             })
         },
 
+        events: {
+            onChangeBreadcrumbs: async () => {
+                await _syncPageTitle();
+            }
+        },
+
+        // On mount as well as on change: a screen returned to keeps its breadcrumbs, so no change
+        // event fires, but the history service cleared the title when the path changed.
+        mount: async () => {
+            await _syncPageTitle();
+        },
+
         View: () => {
             const contentPaddings: BlockProps["padding"] =
                 model.contentPaddings === "none" ?
@@ -159,6 +171,18 @@ function useScreenLayout(params?: ScreenLayoutParams): ScreenLayoutModel {
 
     const model = useUIBase(struct, params);
     return model;
+
+    // Private methods
+    // The document title, from the screen's own breadcrumb trail: the last crumb, most specific part
+    // first ("Showcase · Controls" reads "Controls · Showcase", so a narrow browser tab still shows
+    // which page it is). A one-crumb trail is the home page, which takes the app name alone, and a
+    // crumb drawn as JSX has no text to offer.
+    async function _syncPageTitle() {
+        const crumbs = model.breadcrumbs ?? [];
+        const label = crumbs.length > 1 ? crumbs[crumbs.length - 1].label : undefined;
+        const title = typeof label === "string" ? label.split(" · ").reverse().join(" · ") : undefined;
+        await model.bus.unicast("App.BrowsingHistory.SetPageTitle", title);
+    }
 }
 
 const ScreenLayout = UECA.getFC(useScreenLayout);

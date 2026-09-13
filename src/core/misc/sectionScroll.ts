@@ -11,9 +11,9 @@ import { runAsync } from "../infrastructure/appUtils";
 const SECTION_INSET = 12;
 
 // The box that actually scrolls, found by walking up from the target rather than by naming a class.
-// A screen's own content box is often the scroller and often is not: on MLAdmin's showcase the
-// content box cannot move at all (maxScroll 0) while a panel inside it scrolls 502px, so anything
-// assuming the outer box would scroll nothing and appear broken.
+// A screen's own content box is often the scroller and often is not: it may be unable to move at
+// all (maxScroll 0) while a panel inside it scrolls 502px, so anything assuming the outer box would
+// scroll nothing and appear broken.
 function _scrollerFor(element: Element): HTMLElement | undefined {
     for (let node = element.parentElement; node; node = node.parentElement) {
         const overflowY = getComputedStyle(node).overflowY;

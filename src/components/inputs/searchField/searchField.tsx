@@ -6,8 +6,8 @@ import "./searchField.css";
 //
 // Built on UIBase rather than EditBase deliberately: a search term is never "invalid", so the
 // validation machinery the other inputs carry would be dead weight here. What a search box needs
-// instead is timing — the legacy SearchInput's contract, kept: typing fires `onSearch` debounced,
-// Enter fires it immediately, and Escape (or the clear button) resets both the text and the search.
+// instead is timing: typing fires `onSearch` debounced, Enter fires it immediately, and Escape (or
+// the clear button) resets both the text and the search.
 //
 // `onSearch` fires with the settled text; read `model.value` for the raw text at any moment.
 

@@ -1,11 +1,12 @@
 import * as UECA from "ueca-react";
-import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase, Block } from "@components";
+import { ScreenBaseModel, ScreenBaseParams, ScreenBaseStruct, useScreenBase } from "@components";
 import { Breadcrumb, CRUDScreenModel, useCRUDScreen } from "@core";
+import { HomeHeroModel, useHomeHero } from "./homeHero/homeHero";
 
-// Placeholder while the foundation lands; the landing page is rebuilt in the layout phase.
 type HomeScreenStruct = ScreenBaseStruct<{
     children: {
         crudScreen: CRUDScreenModel;
+        hero: HomeHeroModel;
     };
 }>;
 
@@ -21,13 +22,13 @@ function useHomeScreen(params?: HomeScreenParams): HomeScreenModel {
         children: {
             crudScreen: useCRUDScreen({
                 intent: "none",
+                // The landing page owns its own band and rhythm, so the layout adds no padding.
+                contentPaddings: "none",
                 breadcrumbs: () => _breadCrumbs(),
-                contentView: () => (
-                    <Block padding="large">
-                        <h1>UECA-React</h1>
-                    </Block>
-                )
-            })
+                contentView: () => <model.hero.View />
+            }),
+
+            hero: useHomeHero()
         },
 
         View: () => <model.crudScreen.View />

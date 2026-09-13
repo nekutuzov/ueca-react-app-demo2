@@ -16,7 +16,7 @@ type Instrument = {
 // Deterministic sample data — no Math.random, so the specimen looks the same every reload.
 function _instruments(count: number): Instrument[] {
     const kinds: Instrument["kind"][] = ["piezometer", "inclinometer", "extensometer", "tiltmeter"];
-    const sites = ["Kellogg Dam", "North Shaft", "Ridge Cut", "Tailings Cell 2", "Bridge Pier 7", "Portal West"];
+    const sites = ["Cedar Lake Dam", "North Shaft", "Ridge Cut", "Tailings Cell 2", "Bridge Pier 7", "Portal West"];
     return Array.from({ length: count }, (_, i) => ({
         id: `inst-${i + 1}`,
         name: `${kinds[i % kinds.length].toUpperCase().slice(0, 2)}-${String(i + 1).padStart(4, "0")}`,

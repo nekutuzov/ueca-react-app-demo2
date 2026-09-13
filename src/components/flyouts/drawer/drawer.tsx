@@ -12,7 +12,7 @@ type DrawerStruct = UIBaseStruct<{
         anchor: "left" | "top" | "right" | "bottom";
         variant: "permanent" | "persistent" | "temporary";
         // A bare number is pixels; a string is any CSS length, which is how a panel asks for a
-        // share of the viewport (the legacy slider ladder is 35% / 65% / 100%, not pixels).
+        // share of the viewport (e.g. 35% / 65% / 100%) rather than pixels.
         width?: number | string;
         // Stacking band held while open, so this drawer covers whatever was already up.
         // 0 = none held, and the CSS falls back to the static tokens.
