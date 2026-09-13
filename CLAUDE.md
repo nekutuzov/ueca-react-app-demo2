@@ -578,7 +578,21 @@ options: [{ value: "none", label: "None" }]
 - **Dev**: `npm run dev` (port 5001, base `/ueca-react-app-demo2/`)
 - **Build**: `npm run build`
 - **Lint**: `npm run lint`
+- **Test**: `npm test` (once), `npm run test:watch`, `npm run coverage` (HTML report in `coverage/`)
 - **MSW**: Toggle `initMocks()` in `src/main.tsx`
+
+## Testing
+
+- **Stack**: Vitest 4 on jsdom, Testing Library, jest-dom. `vitest.config.ts` reuses `vite.config.ts` (aliases, React); `tsconfig.test.json` type-checks the tests, which `tsconfig.app.json` excludes.
+- **Where**: beside the source (`button.tsx` → `button.test.tsx`); shared helpers in `src/test/`, imported from `@test`. A helper used by one area's tests goes in a `*.testUtils.tsx` beside them — like `src/test/` and `src/integration/`, it is kept out of the app build.
+- **Whole-app flows** live in `src/integration/`: `renderApp({ url, signedIn })` from `appHarness.tsx` mounts `Application` at an address, optionally signed in; `signIn()` goes through the real login form.
+- **A UECA component draws nothing on its first render.** `const { model, update } = await mount(Button, { id: "b", contentView: "Save" })` resolves once it has mounted and returns the typed model. After assigning a prop or sending a message, `await settle()` before asserting. Plain function components (Block, Row, Col, Card, Icon…) use Testing Library's `render`.
+- **Bus**: `stubMessages({ "Dialog.Confirmation": vi.fn(async () => true) })` answers messages in place of a service and returns the mocks; `appMessageBus` sends them. Never mount two handlers for one message — `unicast` throws.
+- **Silent UECA errors fail the test**: the setup collects what reaches `globalSettings.errorHandler` (a throwing View, onChange handler or hook) and fails in `afterEach`. A test that provokes one takes it with `takeUecaErrors()`.
+- **Reset after every test**: unmount (which releases bus subscriptions), storage, `document.title`, `<base>`, `data-theme`, the URL and fake timers.
+- **jsdom has no layout**: stub `clientHeight`/`getBoundingClientRect` on the element; `ResizeObserverStub.trigger()` fires resize callbacks. `src/test/browserStubs.ts` stubs `matchMedia`, `scrollTo`, pointer capture, `CSS.escape`, clipboard and `window.open`.
+- **Known bugs are pinned, not enshrined**: an `it.fails` test with a `// BUG:` comment asserts the correct behaviour. Fixing the bug makes it fail — then turn it into a plain `it`.
+- DOM ids are model paths (`app.ui.loginForm.userInput`); use `document.getElementById` where no accessible query fits.
 
 **No React.StrictMode**: Conflicts with UECA lifecycle
 

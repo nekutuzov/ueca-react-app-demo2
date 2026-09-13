@@ -33,6 +33,9 @@ Then open `http://localhost:5001/ueca-react-app-demo2/`.
 | `npm run dev` | Vite dev server on port 5001 |
 | `npm run build` | Type-check and production build into `dist/` |
 | `npm run lint` | ESLint |
+| `npm test` | Run the test suite once |
+| `npm run test:watch` | Run the tests in watch mode |
+| `npm run coverage` | Run the tests with a coverage report in `coverage/` |
 | `npm run preview` | Serve the production build |
 | `npm run deploy` | Build and copy to the GitHub Pages checkout (`deploy.ps1`) |
 
@@ -46,6 +49,8 @@ src/
 ├── tokens.css                # Non-colour design tokens: type, spacing, radii, motion, z-index
 ├── themes.css                # Colour tokens per theme (ueca-light, ueca-dark) and the control voice
 ├── theme.css                 # Page surface, markdown and code highlighting
+├── test/                     # Test setup and helpers (mount, settle, stubMessages, browser stubs)
+├── integration/              # Whole-application tests: sign-in, routing, history, theme, services
 ├── api/                      # REST client and MSW mocks
 ├── components/               # The component library
 │   ├── base/                 # useBase → useUIBase → useEditBase / useScreenBase
@@ -75,6 +80,25 @@ src/
 ```
 
 `showcaseTopics.tsx` and `playgroundTopics.tsx` are the single source for each page's route, menu entry, title, lead and previous/next links. Adding a page means adding an entry there and a route in `appRoutes.tsx`.
+
+## Testing
+
+Tests run on [Vitest](https://vitest.dev/) with jsdom and Testing Library. Each component, service and screen has its tests beside it (`button.tsx` → `button.test.tsx`), and `src/integration/` drives the whole application: signing in, deep links, navigation, Back and Forward, the theme and the app services.
+
+A UECA component draws nothing on its first render, so a test mounts it and waits:
+
+```tsx
+const { model } = await mount(Button, { id: "save", contentView: "Save", onClick });
+
+await userEvent.click(screen.getByRole("button", { name: "Save" }));
+expect(onClick).toHaveBeenCalledWith(model);
+
+model.disabled = true;
+await settle();
+expect(screen.getByRole("button")).toBeDisabled();
+```
+
+`stubMessages` stands in for a service on the message bus, and any error UECA would otherwise swallow — a View that throws, a failing hook — fails the test. Known defects are recorded as `it.fails` tests marked `// BUG:`.
 
 ## Design system
 
@@ -152,6 +176,7 @@ Every message is declared in `core/infrastructure/appMessage.ts`.
 - MobX 6 (through UECA-React)
 - Vite 7
 - MSW 2 (API mocking)
+- Vitest 4, jsdom and Testing Library (tests)
 
 ## More UECA-React
 

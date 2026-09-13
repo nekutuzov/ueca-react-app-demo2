@@ -36,9 +36,10 @@ This repository already contains a complete demo application with many component
 Use this high-level map instead of fixed file counts.
 
 ### Core Config Files
-- `package.json` - Dependencies and npm scripts (`dev`, `build`, `lint`, `preview`)
+- `package.json` - Dependencies and npm scripts (`dev`, `build`, `lint`, `test`, `test:watch`, `coverage`, `preview`)
 - `vite.config.ts` - Vite configuration (base path and dev server port)
-- `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json` - TypeScript configs and path aliases
+- `vitest.config.ts` - Test configuration (jsdom, setup file, coverage); reuses `vite.config.ts`
+- `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`, `tsconfig.test.json` - TypeScript configs and path aliases
 - `eslint.config.js` - Linting rules
 
 ### Source Directories
@@ -139,7 +140,15 @@ const screenRoutes = {
 }
 ```
 
-### 5. Build for Production
+### 5. Run the Tests
+
+```bash
+npm test
+```
+
+Put a component's tests beside it (`myScreen.tsx` → `myScreen.test.tsx`). `CLAUDE.md` describes the helpers in `src/test/`.
+
+### 6. Build for Production
 
 ```bash
 npm run build
