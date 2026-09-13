@@ -19,6 +19,10 @@ type DialogStruct = UIBaseStruct<{
         // Stacking band, taken while open so this dialog covers whatever was already up. 0 = none
         // held, in which case the CSS falls back to the static token.
         _z: number;
+        // Where focus was when the dialog opened — the trigger, as a rule — to give back on close.
+        __returnFocus: HTMLElement;
+        // Set on opening, cleared by the first draw that can put focus into the panel.
+        __focusPending: boolean;
     };
 
     events: {
@@ -43,15 +47,19 @@ function useDialog(params?: DialogParams): DialogModel {
             maxWidth: "sm",
             hidden: false,
             _z: 0,
+            __returnFocus: undefined,
+            __focusPending: false
         },
 
         events: {
             onChangeOpen: () => {
                 if (model.open) {
                     _takeStackBand();
+                    _focusOnDraw();
                     asyncSafe(() => model.onOpen?.(model));
                 } else {
                     _releaseStackBand();
+                    _returnFocus();
                     asyncSafe(() => model.onClose?.(model));
                 }
             }
@@ -60,13 +68,32 @@ function useDialog(params?: DialogParams): DialogModel {
         constr: () => {
             if (model.open) {
                 _takeStackBand();
+                _focusOnDraw();
                 asyncSafe(() => model.onOpen?.(model));
             }
         },
 
-        // A dialog torn down while still open would otherwise hold its band for the session.
+        // A dialog torn down while still open would otherwise hold its band for the session, and
+        // leave focus on the page it no longer covers.
         unmount: () => {
             _releaseStackBand();
+            if (model.open) {
+                _returnFocus();
+            }
+        },
+
+        // Focus moves into the panel once it is on screen. aria-modal tells a screen reader to stay
+        // inside the dialog, so focus left on the trigger behind the backdrop would sit somewhere it
+        // has just been told to ignore. Not while the dialog is suspended by `hidden`.
+        draw: () => {
+            if (!model.__focusPending || !model.open || model.hidden) {
+                return;
+            }
+            const panel = document.getElementById(model.htmlId());
+            if (panel) {
+                model.__focusPending = false;
+                panel.focus();
+            }
         },
 
         View: () => {
@@ -87,11 +114,18 @@ function useDialog(params?: DialogParams): DialogModel {
                     <div
                         id={model.htmlId()}
                         className={`ueca-dialog ${maxWidthClass} ${fullScreenClass} ${fullWidthClass}`}
+                        // Without these, assistive technology could not tell a modal was up at all.
+                        // Named by the title text alone, not the title row, which holds the ×.
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby={model.titleView ? _titleId() : undefined}
+                        // Focusable from code only, for draw to move focus into; never a Tab stop.
+                        tabIndex={-1}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="dialog-title">
                             <Row verticalAlign="center" horizontalAlign="spaceBetween" spacing="default">
-                                <div>{model.titleView}</div>
+                                <div id={_titleId()}>{model.titleView}</div>
                                 <CloseIconButton onClick={_close} />
                             </Row>
                         </div>
@@ -117,6 +151,29 @@ function useDialog(params?: DialogParams): DialogModel {
     // Private methods
     function _close() {
         model.open = false;
+    }
+
+    function _titleId(): string {
+        return `${model.htmlId()}-title`;
+    }
+
+    function _focusOnDraw() {
+        model.__returnFocus = document.activeElement as HTMLElement;
+        model.__focusPending = true;
+    }
+
+    // Only while focus is still the dialog's to give back: inside the panel, or dropped to the page
+    // because the panel went away. Focus the user has moved elsewhere stays where they put it.
+    function _returnFocus() {
+        const target = model.__returnFocus;
+        model.__returnFocus = undefined;
+        model.__focusPending = false;
+        const active = document.activeElement;
+        const panel = document.getElementById(model.htmlId());
+        const focusIsOurs = !active || active === document.body || !!panel?.contains(active);
+        if (focusIsOurs && target?.isConnected && target !== document.body) {
+            target.focus();
+        }
     }
 
     function _takeStackBand() {

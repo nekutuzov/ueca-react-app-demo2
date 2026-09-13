@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Dialog } from "@components";
 import { mount, settle } from "@test";
@@ -256,14 +256,95 @@ describe("Dialog", () => {
         });
     });
 
-    // BUG: the modal panel has no dialog semantics — no role="dialog", no aria-modal and no
-    // accessible name from its title — so assistive technology cannot tell a modal is up. The ×
-    // is named precisely so a screen reader can find the way out (iconButton.tsx), which it
-    // cannot do if it is never told it is inside a dialog.
-    it.fails("exposes itself to assistive technology as a modal dialog named by its title", async () => {
-        await mount(Dialog, { id: "dlg", open: true, titleView: "Delete site", contentView: "Body" });
+    // Regression: the modal panel had no dialog semantics — no role="dialog", no aria-modal and no
+    // accessible name from its title — so assistive technology could not tell a modal was up. The ×
+    // is named precisely so a screen reader can find the way out (iconButton.tsx), which it cannot
+    // do if it is never told it is inside a dialog.
+    describe("accessibility", () => {
+        it("exposes itself as a modal dialog named by its title, outside the tab order", async () => {
+            await mount(Dialog, { id: "dlg", open: true, titleView: "Delete site", contentView: "Body" });
 
-        const dialog = screen.getByRole("dialog", { name: "Delete site" });
-        expect(dialog).toHaveAttribute("aria-modal", "true");
+            const dialog = screen.getByRole("dialog", { name: "Delete site" });
+            expect(dialog).toHaveAttribute("aria-modal", "true");
+            expect(dialog).toBe(panelOf("dlg"));
+            expect(dialog).toHaveAttribute("tabindex", "-1");
+        });
+
+        it("has no name without a title", async () => {
+            await mount(Dialog, { id: "dlg", open: true, contentView: "Body" });
+
+            expect(screen.getByRole("dialog")).not.toHaveAttribute("aria-labelledby");
+        });
+
+        it("moves focus into its panel when it opens and gives it back when it closes", async () => {
+            render(<button type="button">Open</button>);
+            const trigger = screen.getByRole("button", { name: "Open" });
+            trigger.focus();
+            const { model } = await mount(Dialog, { id: "dlg", titleView: "Delete site", contentView: "Body" });
+
+            model.open = true;
+            await settle();
+            expect(screen.getByRole("dialog")).toHaveFocus();
+
+            await userEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Close" }));
+            await settle();
+
+            expect(trigger).toHaveFocus();
+        });
+
+        // The way AppDialogManager shows every dialog.
+        it("takes focus when created already open", async () => {
+            render(<button type="button">Open</button>);
+            screen.getByRole("button", { name: "Open" }).focus();
+
+            await mount(Dialog, { id: "dlg", open: true, titleView: "Delete site", contentView: "Body" });
+
+            expect(screen.getByRole("dialog")).toHaveFocus();
+        });
+
+        // Dialog.Close removes the dialog from the manager's stack rather than closing it.
+        it("gives focus back when it is removed while still open", async () => {
+            render(<button type="button">Open</button>);
+            const trigger = screen.getByRole("button", { name: "Open" });
+            trigger.focus();
+            const { unmount } = await mount(Dialog, { id: "dlg", open: true, titleView: "Delete site", contentView: "Body" });
+            expect(screen.getByRole("dialog")).toHaveFocus();
+
+            unmount();
+            await settle();
+
+            expect(trigger).toHaveFocus();
+        });
+
+        it("leaves focus where the user moved it before the dialog closed", async () => {
+            render(<><button type="button">Open</button><input aria-label="Elsewhere" /></>);
+            screen.getByRole("button", { name: "Open" }).focus();
+            const { model } = await mount(Dialog, { id: "dlg", titleView: "Delete site", contentView: "Body" });
+            model.open = true;
+            await settle();
+
+            screen.getByRole("textbox", { name: "Elsewhere" }).focus();
+            model.open = false;
+            await settle();
+
+            expect(screen.getByRole("textbox", { name: "Elsewhere" })).toHaveFocus();
+        });
+
+        // Suspended while something it opened covers it (AlertDialog's details), it must not pull
+        // focus back from what is on top.
+        it("waits until it is shown before taking focus", async () => {
+            render(<button type="button">Open</button>);
+            const trigger = screen.getByRole("button", { name: "Open" });
+            trigger.focus();
+            const { model } = await mount(Dialog, { id: "dlg", titleView: "Delete site", contentView: "Body", hidden: true });
+
+            model.open = true;
+            await settle();
+            expect(trigger).toHaveFocus();
+
+            model.hidden = false;
+            await settle();
+            expect(screen.getByRole("dialog")).toHaveFocus();
+        });
     });
 });

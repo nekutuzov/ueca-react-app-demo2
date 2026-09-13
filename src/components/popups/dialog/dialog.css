@@ -52,6 +52,12 @@
     animation: slideIn var(--motion-base) var(--ease);
 }
 
+/* The panel takes focus from code when the dialog opens, so assistive technology starts inside it.
+   It is a container, not a control, so it draws no ring — the dialog itself is what shows. */
+.ueca-dialog:focus-visible {
+    outline: none;
+}
+
 @keyframes slideIn {
     from {
         transform: scale(0.9);
