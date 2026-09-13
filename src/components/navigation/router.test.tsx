@@ -210,10 +210,10 @@ describe("Router", () => {
             expect(router.lookupRoute("/users/42")).toBeUndefined();
         });
 
-        // BUG: onChangeRoutes resets the match cache and drops a route the table lost, but never
-        // rebuilds _currentView (router.tsx:62-67), so a route that survives the change keeps
-        // rendering the component of the table that was replaced.
-        it.fails("renders the new table's view for a route that survives the change", async () => {
+        // Regression: onChangeRoutes reset the match cache and dropped a route the table lost, but never
+        // rebuilt _currentView, so a route that survived the change kept rendering the component of
+        // the table that was replaced.
+        it("renders the new table's view for a route that survives the change", async () => {
             const { router } = await mountRouter();
             await go(router, { path: "/" });
 
@@ -221,6 +221,17 @@ describe("Router", () => {
             await settle();
 
             expect(shown()).toHaveTextContent("new home");
+        });
+
+        it("clears the view when the new table drops the route", async () => {
+            const { router } = await mountRouter();
+            await go(router, { path: "/" });
+
+            router.routes = { "/extra": view("extra") };
+            await settle();
+
+            expect(router.route).toBeUndefined();
+            expect(shown()).toBeNull();
         });
     });
 

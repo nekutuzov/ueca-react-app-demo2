@@ -71,7 +71,12 @@ function useRouter(params?: RouterParams): RouterModel {
                 model.__regExRoutes = undefined; // reset routes cache
                 if (model.route && model.routes && !Reflect.has(model.routes, model.route.path)) {
                     model.route = undefined
+                    return;
                 }
+                // A route the new table still has is drawn from the new table. The view used to be
+                // rebuilt only when the route changed, so a surviving route kept rendering the
+                // component of the table that was replaced.
+                _drawRoute();
             },
 
             onChangingRoute: (newRoute, oldRoute) => {
