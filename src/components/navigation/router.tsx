@@ -161,18 +161,32 @@ function useRouter(params?: RouterParams): RouterModel {
             // "^": a route names the whole path, not its tail. Unanchored, "/home" also answered
             // "/retired/home" and "/showcase/controls?from=/home", and an app-relative route answered
             // the tagged form of an origin-root path.
-            let regEx = "^" + (routeUrl.host === "_" ? "" : (routeUrl.protocol + "\\/\\/" + routeUrl.host));
+            let regEx = "^";
             const rootParams: Record<string, null | undefined> = {};
-            const pathParts = routeUrl.pathname.split("/");
-            pathParts.splice(0, 1);
-            pathParts.map(pathPart => {
-                const p = pathPart.split(":");
-                if (p.length > 1) {
-                    pathPart = p[0] + "([^/?]+)";
-                    rootParams[p[1]] = null; // use null for tagging a dynamic path parameter
+            if (!routeUrl.host && !routeUrl.pathname.startsWith("/")) {
+                // An address with no host, such as mailto:, is its whole path, matched as written.
+                // Built like a URL with a host, the address was dropped as the empty segment before a
+                // leading slash, and every mailto: route became /^mailto:\/\/(?:\?|$)/.
+                regEx += _escapeRegExp(routeUrl.protocol + routeUrl.pathname);
+            } else {
+                regEx += routeUrl.host === "_" ? "" : (routeUrl.protocol + "\\/\\/" + routeUrl.host);
+                const pathParts = routeUrl.pathname.split("/");
+                pathParts.splice(0, 1);
+                pathParts.map(pathPart => {
+                    const p = pathPart.split(":");
+                    if (p.length > 1) {
+                        pathPart = p[0] + "([^/?]+)";
+                        rootParams[p[1]] = null; // use null for tagging a dynamic path parameter
+                    }
+                    regEx += "\\/" + pathPart;
+                });
+                if (routeUrl.host !== "_" && routeUrl.pathname === "/" && !r.split("?")[0].endsWith("/")) {
+                    // An origin-only address ("https://cranesoft.net") parses with the path "/", which
+                    // its key does not have, so the slash is optional — required, the key did not
+                    // match itself.
+                    regEx += "?";
                 }
-                regEx += "\\/" + pathPart;
-            });
+            }
             regEx += "(?:\\?|$)";
 
             routeUrl.searchParams.forEach((_, key) => {
@@ -184,6 +198,10 @@ function useRouter(params?: RouterParams): RouterModel {
             res.push({ regExPath: new RegExp(regEx, "i"), path: r, params: rootParams, component: model.routes[r] });
         }
         model.__regExRoutes = res;
+    }
+
+    function _escapeRegExp(text: string): string {
+        return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
 
     function _getRegExRoute(path: string) {
