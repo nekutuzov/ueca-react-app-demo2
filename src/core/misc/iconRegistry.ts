@@ -1,31 +1,32 @@
 import {
-    AccountIcon, AddIcon, CancelIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon,
-    ChevronUpIcon, ClipboardIcon, CloseIcon, DatabaseIcon, DeleteIcon, DocumentIcon, EditIcon,
-    ErrorCircleIcon, FolderIcon, HomeIcon, IconProps, InfoCircleIcon, LayoutIcon,
-    MenuCollapseIcon, MenuIcon, RefreshIcon, SecurityIcon,
-    SortIcon, SuccessCircleIcon, WarningIcon
+    AccountIcon, AddCircleIcon, AddIcon, AngleDownIcon, AngleUpIcon, ArrowLeftIcon, ArrowRightIcon,
+    BoltIcon, CalendarIcon, CancelIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon,
+    ChevronRightIcon, ChevronUpIcon, ClipboardIcon, CloseIcon, CodeIcon, DashboardIcon, DatabaseIcon,
+    DeleteIcon, DocumentIcon, DownloadIcon, EditIcon, EmailIcon, ErrorCircleIcon, ExportFileIcon,
+    EyeIcon, EyeSlashIcon, FilterIcon, FolderIcon, GridIcon, HeartIcon, HelpIcon, HomeIcon, IconProps,
+    InfoCircleIcon, LayersIcon, LayoutIcon, ListIcon, LockIcon, LogoutIcon, MenuCollapseIcon, MenuIcon,
+    MoonIcon, MoreIcon, PrintIcon, PulseIcon, RefreshIcon, SearchIcon, SecurityIcon, SettingsIcon,
+    ShapesIcon, SlidersIcon, SortIcon, SuccessCircleIcon, SunIcon, SwatchIcon, TableIcon, ThemeIcon,
+    UploadIcon, UserIcon, WarningIcon, WebsiteIcon
 } from "./icons";
 
 // ============================================================================
-// Icon registry — one name, several possible sources.
+// Icon registry — one name, the source decided here.
 //
-// Call sites name a ROLE ("delete", "refresh"), never a source. Swapping a hand-rolled SVG for a
-// FontAwesome glyph, or for an image the server supplies, is then an edit HERE and nothing else
-// changes — the same reasoning that keeps colour in themes.css rather than in components.
+// Call sites name a ROLE ("delete", "refresh"), never a glyph. Swapping one drawing for another,
+// or for an image the server supplies, is then an edit HERE and nothing else changes — the same
+// reasoning that keeps colour in themes.css rather than in components.
 //
-// Three source kinds today:
+// Two source kinds:
 //   svg — a React component from icons.tsx. Monochrome, recolours via currentColor.
-//   fa  — a FontAwesome Pro class pair. Monochrome, recolours via `color`. The Pro CSS is already
-//         bundled (main.tsx), so this costs nothing extra.
 //   url — an image. NOT monochrome: it cannot be recoloured, and `Icon` ignores `color` for it.
-//         Included now so the shape is right for server-supplied icons later; note that a remote
-//         source is async and will need `Icon` promoted from a plain function to a UECA component
-//         holding load/error state. The public API below does not change when that happens.
+//         Included so the shape is right for server-supplied icons; a remote source is async and
+//         will need `Icon` promoted from a plain function to a UECA component holding load/error
+//         state. The public API below does not change when that happens.
 // ============================================================================
 
 type IconSource =
     | { kind: "svg"; component: (props?: IconProps) => React.ReactNode }
-    | { kind: "fa"; classes: string }
     | { kind: "url"; src: string; alt?: string };
 
 // Roles, grouped by what they are for rather than by what they look like.
@@ -33,24 +34,27 @@ const ICONS = {
     // Navigation / chrome
     home: { kind: "svg", component: HomeIcon },
     layout: { kind: "svg", component: LayoutIcon },
+    grid: { kind: "svg", component: GridIcon },
+    list: { kind: "svg", component: ListIcon },
     menu: { kind: "svg", component: MenuIcon },
     menuCollapse: { kind: "svg", component: MenuCollapseIcon },
     chevronUp: { kind: "svg", component: ChevronUpIcon },
     chevronDown: { kind: "svg", component: ChevronDownIcon },
-    // The DROPDOWN caret — a role of its own, not a second use of the chevrons above. Legacy draws
-    // a menu trigger's caret with fal angle-up/down (topBarMenuItem.tsx:90) and an input's or a
-    // select's with fal chevron-up/down (input.tsx:92, selectEx.tsx:152). Same direction, different
-    // glyph, different job, so they must not collapse into one role.
-    angleUp: { kind: "fa", classes: "fa-light fa-angle-up" },
-    angleDown: { kind: "fa", classes: "fa-light fa-angle-down" },
     chevronLeft: { kind: "svg", component: ChevronLeftIcon },
     chevronRight: { kind: "svg", component: ChevronRightIcon },
+    // The DROPDOWN caret — a role of its own, not a second use of the chevrons above: a menu
+    // trigger's caret is smaller and lighter than a navigation chevron. Same direction, different
+    // job, so they must not collapse into one role.
+    angleUp: { kind: "svg", component: AngleUpIcon },
+    angleDown: { kind: "svg", component: AngleDownIcon },
+    arrowLeft: { kind: "svg", component: ArrowLeftIcon },
+    arrowRight: { kind: "svg", component: ArrowRightIcon },
     sort: { kind: "svg", component: SortIcon },
+    more: { kind: "svg", component: MoreIcon },
 
     // Record actions
     add: { kind: "svg", component: AddIcon },
-    // legacy toolActions "Add new" glyph (fal plus-circle)
-    addCircle: { kind: "fa", classes: "fa-light fa-circle-plus" },
+    addCircle: { kind: "svg", component: AddCircleIcon },
     edit: { kind: "svg", component: EditIcon },
     delete: { kind: "svg", component: DeleteIcon },
     save: { kind: "svg", component: CheckIcon },
@@ -60,56 +64,59 @@ const ICONS = {
     refresh: { kind: "svg", component: RefreshIcon },
     close: { kind: "svg", component: CloseIcon },
     copy: { kind: "svg", component: ClipboardIcon },
+    print: { kind: "svg", component: PrintIcon },
+    exportFile: { kind: "svg", component: ExportFileIcon },
+    download: { kind: "svg", component: DownloadIcon },
+    upload: { kind: "svg", component: UploadIcon },
+    filter: { kind: "svg", component: FilterIcon },
+    search: { kind: "svg", component: SearchIcon },
+    logout: { kind: "svg", component: LogoutIcon },
 
     // Status
     success: { kind: "svg", component: SuccessCircleIcon },
     info: { kind: "svg", component: InfoCircleIcon },
-    // The help affordance beside a field label — a distinct role from the `info` STATUS icon an
-    // alert wears, and legacy drew it as the light outline circle rather than a filled glyph.
-    infoHint: { kind: "fa", classes: "fa-light fa-circle-info" },
+    // The help affordance beside a field label — a distinct ROLE from the `info` status icon an
+    // alert wears, even though it draws the same glyph today. Keeping them apart is what lets one
+    // change without the other.
+    infoHint: { kind: "svg", component: InfoCircleIcon },
     warning: { kind: "svg", component: WarningIcon },
     error: { kind: "svg", component: ErrorCircleIcon },
+    help: { kind: "svg", component: HelpIcon },
 
-    // Entities
-    user: { kind: "fa", classes: "fa-light fa-user" },   // legacy used the fal outline everywhere
+    // People and security
+    user: { kind: "svg", component: UserIcon },
     account: { kind: "svg", component: AccountIcon },
     security: { kind: "svg", component: SecurityIcon },
-    settings: { kind: "fa", classes: "fa-light fa-gear" },   // legacy Settings screen/menu glyph (fal cog)
+    lock: { kind: "svg", component: LockIcon },
+    eye: { kind: "svg", component: EyeIcon },
+    eyeSlash: { kind: "svg", component: EyeSlashIcon },
+
+    // Content and data
+    settings: { kind: "svg", component: SettingsIcon },
     folder: { kind: "svg", component: FolderIcon },
     document: { kind: "svg", component: DocumentIcon },
-    // The two Help menu rows. Distinct roles rather than two uses of `document`, because they point
-    // at different things: a manual to read, and this build's release notes.
-    guide: { kind: "fa", classes: "fa-light fa-book-open" },
-    releaseNotes: { kind: "fa", classes: "fa-light fa-file-lines" },
     database: { kind: "svg", component: DatabaseIcon },
-    email: { kind: "fa", classes: "fa-light fa-envelope" },   // legacy Email screen/menu glyph (fal envelope)
-    sites: { kind: "fa", classes: "fa-light fa-window-restore" },   // legacy Sites screen/menu glyph
-    site: { kind: "fa", classes: "fa-light fa-window-maximize" },   // legacy crumb icon for one site
-    license: { kind: "fa", classes: "fa-light fa-file-certificate" },   // legacy crumb icon for a licence
-    general: { kind: "fa", classes: "fa-light fa-gears" },   // legacy General screen/menu glyph (fal cogs)
-    operations: { kind: "fa", classes: "fa-light fa-list-check" },   // legacy Operations screen/menu glyph
-    // Was the filled Material-style LogoutIcon (still in icons.tsx, like the other spares). Swapped
-    // to the fal outline so the user menu's two rows share one weight — a solid glyph beside a light
-    // one reads as a mistake. Exactly the swap this registry exists to make cheap: one edit here.
-    logout: { kind: "fa", classes: "fa-light fa-arrow-right-from-bracket" },
+    table: { kind: "svg", component: TableIcon },
+    calendar: { kind: "svg", component: CalendarIcon },
+    chart: { kind: "svg", component: ChartIcon },
+    email: { kind: "svg", component: EmailIcon },
+    website: { kind: "svg", component: WebsiteIcon },
+    favorite: { kind: "svg", component: HeartIcon },
 
-    // Roles with no hand-rolled SVG — served from the bundled FontAwesome Pro set instead. These
-    // are the proof that a role is not tied to a source: give any of them an `svg` entry later and
-    // no call site changes.
-    print: { kind: "fa", classes: "fa-light fa-print" },
-    exportFile: { kind: "fa", classes: "fa-light fa-file-export" },
-    download: { kind: "fa", classes: "fa-light fa-download" },
-    upload: { kind: "fa", classes: "fa-light fa-upload" },
-    filter: { kind: "fa", classes: "fa-light fa-filter" },
-    search: { kind: "fa", classes: "fa-light fa-magnifying-glass" },
-    more: { kind: "fa", classes: "fa-light fa-ellipsis" },
-    help: { kind: "fa", classes: "fa-light fa-circle-question" },
-    theme: { kind: "fa", classes: "fa-light fa-palette" },
-    lock: { kind: "fa", classes: "fa-solid fa-lock-keyhole" },   // legacy fas fa-lock-alt
-    eye: { kind: "fa", classes: "fa-light fa-eye" },
-    eyeSlash: { kind: "fa", classes: "fa-light fa-eye-slash" },
-    calendar: { kind: "fa", classes: "fa-light fa-calendar" },
-    chart: { kind: "fa", classes: "fa-light fa-chart-line" }
+    // Appearance
+    theme: { kind: "svg", component: ThemeIcon },
+    lightMode: { kind: "svg", component: SunIcon },
+    darkMode: { kind: "svg", component: MoonIcon },
+
+    // Showcase sections — one per component family, shared by the menu and the screens.
+    overview: { kind: "svg", component: DashboardIcon },
+    tokens: { kind: "svg", component: SwatchIcon },
+    controls: { kind: "svg", component: SlidersIcon },
+    status: { kind: "svg", component: PulseIcon },
+    icons: { kind: "svg", component: ShapesIcon },
+    overlays: { kind: "svg", component: LayersIcon },
+    dynamic: { kind: "svg", component: BoltIcon },
+    code: { kind: "svg", component: CodeIcon }
 } as const satisfies Record<string, IconSource>;
 
 type IconName = keyof typeof ICONS;

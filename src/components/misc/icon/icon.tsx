@@ -87,10 +87,6 @@ function _sourceView(source: IconSource, label?: string): React.ReactNode {
             // currentColor inside the SVG picks up the wrapper's `color`.
             return source.component({ size: "1em", color: "currentColor" });
 
-        case "fa":
-            // FontAwesome sizes from font-size and colours from `color`, both inherited here.
-            return <i className={source.classes} aria-hidden={true} />;
-
         case "url":
             // Not monochrome — `color` does not apply, by design.
             return <img className="ueca-icon-image" src={source.src} alt={source.alt ?? label ?? ""} />;

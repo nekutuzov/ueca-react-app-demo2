@@ -7,8 +7,24 @@ export type IconProps = {
     color?: string;
 };
 
-// The outline family: one stroke weight, round caps and joins, recoloured through currentColor.
-// Drawing every outline glyph through this is what keeps them reading as one set.
+// ============================================================================
+// The app's icon set — one outline family, drawn for this project.
+//
+// Every interface glyph sits on the same 24px grid with the same 1.75px stroke, round caps and
+// round joins, so they read as one set wherever they appear together: a toolbar, a menu, an alert.
+// A handful of small solid dots (the ellipsis, the "i" and "?" marks) are filled rather than
+// stroked, because a 1.75px round cap is too small to read as a dot.
+//
+// Brand marks (GitHub, YouTube, npm) are the exception and keep their own shapes — they identify
+// those services, so they are drawn as the services draw them.
+//
+// Call sites should usually name a ROLE through `<Icon name="…" />` (see iconRegistry.ts) rather
+// than import a glyph, so swapping a drawing is an edit to the registry and nothing else.
+// ============================================================================
+
+// The outline family. `color` is applied as the SVG `color` attribute and every stroke and dot
+// draws in currentColor, so a colour passed as a prop reaches the dots as well as the strokes;
+// with no colour the glyph inherits the surrounding text colour.
 function outline(props: IconProps, children: React.ReactNode) {
     if (props?.render === false) {
         return null;
@@ -20,7 +36,8 @@ function outline(props: IconProps, children: React.ReactNode) {
             height={size}
             viewBox="0 0 24 24"
             fill="none"
-            stroke={props?.color ?? "currentColor"}
+            color={props?.color}
+            stroke="currentColor"
             strokeWidth={1.75}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -32,606 +49,55 @@ function outline(props: IconProps, children: React.ReactNode) {
     );
 }
 
+// A solid dot inside an outline glyph.
+function dot(cx: number, cy: number, r = 1.15) {
+    return <circle cx={cx} cy={cy} r={r} fill="currentColor" stroke="none" />;
+}
+
+// ---- Navigation and chrome -------------------------------------------------
+
 export function HomeIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-        </svg>
-    );
+    return outline(props, <>
+        <path d="M3.5 10.5 12 3.75l8.5 6.75" />
+        <path d="M5.75 9v11h12.5V9" />
+        <path d="M10 20v-5.25h4V20" />
+    </>);
 }
 
-export function CubeIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round">
-            <path d="M12 2 3 7v10l9 5 9-5V7z" />
-            <path d="M3 7l9 5 9-5M12 12v10" />
-        </svg>
-    );
-}
-
-export function AddIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-        </svg>
-    );
-}
-
-export function LayoutIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z" />
-        </svg>
-    );
-}
-
-export function ButtonsIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
-        </svg>
-    );
-}
-
-export function InputsIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
-        </svg>
-    );
-}
-
-export function PopupsIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-8-2h2v-2h-2v2zm0-4h2V7h-2v6z" />
-        </svg>
-    );
-}
-
-export function FlyoutsIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-        </svg>
-    );
-}
-
-export function NavigationIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
-        </svg>
-    );
-}
-
-export function TabsIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h10v4h8v10z" />
-        </svg>
-    );
-}
-
-export function MiscIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-        </svg>
-    );
-}
-
-// Icon Button Icons
-export function CheckIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-        </svg>
-    );
-}
-
-export function IndeterminateIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M19 13H5v-2h14v2z" />
-        </svg>
-    );
-}
-
-export function CancelIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z" />
-        </svg>
-    );
-}
-
-export function DeleteIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-        </svg>
-    );
-}
-
-export function EditIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-        </svg>
-    );
-}
-
-export function RefreshIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
-        </svg>
-    );
-}
-
-export function CloseIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-        </svg>
-    );
-}
-
-// Settings and Profile Icons
-export function SettingsIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
-        </svg>
-    );
-}
-
-export function PersonIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-        </svg>
-    );
-}
-
-export function AccountIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
-        </svg>
-    );
-}
-
-export function SecurityIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
-        </svg>
-    );
-}
-
-export function InfoIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-        </svg>
-    );
-}
-
-export function BlockIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z" />
-        </svg>
-    );
-}
-
-export function ClipboardIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z" />
-        </svg>
-    );
-}
-
-// Navigation Icons
 export function MenuIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-        </svg>
-    );
+    return outline(props, <path d="M4 6.5h16M4 12h16M4 17.5h16" />);
 }
 
 export function MenuCollapseIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M3 18h13v-2H3v2zm0-5h10v-2H3v2zm0-7v2h13V6H3zm18 9.59L17.42 12 21 8.41 19.59 7l-5 5 5 5L21 15.59z" />
-        </svg>
-    );
-}
-
-export function ChevronDownIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M7 10l5 5 5-5z" />
-        </svg>
-    );
-}
-
-export function ChevronRightIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M10 7l5 5-5 5z" />
-        </svg>
-    );
-}
-
-export function ChevronLeftIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M14 7l-5 5 5 5z" />
-        </svg>
-    );
+    return outline(props, <>
+        <path d="M4 6.5h16M11 12h9M4 17.5h16" />
+        <path d="m7.5 9.25-3 2.75 3 2.75" />
+    </>);
 }
 
 export function ChevronUpIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M7 14l5-5 5 5z" />
-        </svg>
-    );
+    return outline(props, <path d="m6 15 6-6 6 6" />);
 }
 
-export function SortIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 5.83L15.17 9l1.41-1.41L12 3 7.42 7.59 8.83 9zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15z" />
-        </svg>
-    );
+export function ChevronDownIcon(props?: IconProps) {
+    return outline(props, <path d="m6 9 6 6 6-6" />);
 }
 
-export function GitHubIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-        </svg>
-    );
+export function ChevronLeftIcon(props?: IconProps) {
+    return outline(props, <path d="m15 6-6 6 6 6" />);
 }
 
-export function FolderIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" />
-        </svg>
-    );
+export function ChevronRightIcon(props?: IconProps) {
+    return outline(props, <path d="m9 6 6 6-6 6" />);
 }
 
-export function DocumentIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
-        </svg>
-    );
+// The dropdown caret — a smaller, lighter chevron than the navigation ones above.
+export function AngleUpIcon(props?: IconProps) {
+    return outline(props, <path d="m8 14 4-4 4 4" />);
 }
 
-export function DatabaseIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4-3.58-4-8-4zM4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4zm0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z" />
-        </svg>
-    );
-}
-
-export function HeartIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-        </svg>
-    );
-}
-
-export function SuccessCircleIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-        </svg>
-    );
-}
-
-export function InfoCircleIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-        </svg>
-    );
-}
-
-export function WarningIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
-        </svg>
-    );
-}
-
-export function ErrorCircleIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-        </svg>
-    );
-}
-
-export function LogoutIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
-        </svg>
-    );
-}
-
-export function YouTubeIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-        </svg>
-    );
-}
-
-export function NpmIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.332h-2.669v-.001zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z" />
-        </svg>
-    );
-}
-
-export function EmailIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-        </svg>
-    );
-}
-
-export function WebsiteIcon(props?: IconProps) {
-    if (props?.render === false) {
-        return null;
-    }
-    const size = props?.size ?? 24;
-    const color = props?.color ?? "currentColor";
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.93 9h-3.1a15.55 15.55 0 0 0-1.38-5.01A8.03 8.03 0 0 1 18.93 11zM12 4c1.25 1.54 2.16 4.04 2.48 7H9.52C9.84 8.04 10.75 5.54 12 4zM4.24 13h3.1c.11 1.8.57 3.48 1.28 4.9A8.02 8.02 0 0 1 4.24 13zm3.1-2h-3.1a8.02 8.02 0 0 1 4.38-4.9A14.13 14.13 0 0 0 7.34 11zM12 20c-1.25-1.54-2.16-4.04-2.48-7h4.96C14.16 15.96 13.25 18.46 12 20zm2.83-2.1c.71-1.42 1.17-3.1 1.28-4.9h3.1a8.02 8.02 0 0 1-4.38 4.9z" />
-        </svg>
-    );
+export function AngleDownIcon(props?: IconProps) {
+    return outline(props, <path d="m8 10 4 4 4-4" />);
 }
 
 export function ArrowLeftIcon(props?: IconProps) {
@@ -648,15 +114,272 @@ export function ArrowRightIcon(props?: IconProps) {
     </>);
 }
 
-export function ListIcon(props?: IconProps) {
+export function SortIcon(props?: IconProps) {
     return outline(props, <>
-        <path d="M8.5 6.5h11M8.5 12h11M8.5 17.5h11" />
-        <path d="M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01" />
+        <path d="M8 19.5V4.5M4.75 7.75 8 4.5l3.25 3.25" />
+        <path d="M16 4.5v15M12.75 16.25 16 19.5l3.25-3.25" />
     </>);
 }
 
-export function MoonIcon(props?: IconProps) {
-    return outline(props, <path d="M20.5 14.3A8.6 8.6 0 0 1 9.7 3.5a8.6 8.6 0 1 0 10.8 10.8" />);
+export function ListIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M9 6.5h11M9 12h11M9 17.5h11" />
+        {dot(4.75, 6.5)}
+        {dot(4.75, 12)}
+        {dot(4.75, 17.5)}
+    </>);
+}
+
+export function MoreIcon(props?: IconProps) {
+    return outline(props, <>
+        {dot(5.5, 12, 1.5)}
+        {dot(12, 12, 1.5)}
+        {dot(18.5, 12, 1.5)}
+    </>);
+}
+
+export function LayoutIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="3.5" y="4" width="17" height="16" rx="2" />
+        <path d="M3.5 9h17M9.5 9v11" />
+    </>);
+}
+
+export function GridIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
+        <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+        <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
+        <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+    </>);
+}
+
+// ---- Record actions --------------------------------------------------------
+
+export function AddIcon(props?: IconProps) {
+    return outline(props, <path d="M12 5v14M5 12h14" />);
+}
+
+export function AddCircleIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M12 8.5v7M8.5 12h7" />
+    </>);
+}
+
+export function EditIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M14.5 5.25 18.75 9.5 8.5 19.75H4.25V15.5z" />
+        <path d="m12.25 7.5 4.25 4.25" />
+    </>);
+}
+
+export function DeleteIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M4.5 7h15" />
+        <path d="M9.5 7V4.5h5V7" />
+        <path d="m6.5 7 1 13h9l1-13" />
+        <path d="M10 11v5.5M14 11v5.5" />
+    </>);
+}
+
+export function CheckIcon(props?: IconProps) {
+    return outline(props, <path d="m5 12.5 4.5 4.5L19 7.5" />);
+}
+
+export function IndeterminateIcon(props?: IconProps) {
+    return outline(props, <path d="M6 12h12" />);
+}
+
+export function CancelIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="m9.25 9.25 5.5 5.5M14.75 9.25l-5.5 5.5" />
+    </>);
+}
+
+export function CloseIcon(props?: IconProps) {
+    return outline(props, <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />);
+}
+
+export function RefreshIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" />
+        <path d="M19.5 4.25v4.5H15" />
+    </>);
+}
+
+export function ClipboardIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="8.5" y="8.5" width="11" height="11" rx="2" />
+        <path d="M15.5 8.5V6A1.5 1.5 0 0 0 14 4.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5" />
+    </>);
+}
+
+export function PrintIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M7 9V4.5h10V9" />
+        <rect x="4" y="9" width="16" height="7.5" rx="1.5" />
+        <path d="M7 14h10v6H7z" />
+    </>);
+}
+
+export function ExportFileIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M13.5 3.5H7A1.5 1.5 0 0 0 5.5 5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8.5z" />
+        <path d="M13.5 3.5v5h5" />
+        <path d="M9 14.5h6M12.75 12.25 15 14.5l-2.25 2.25" />
+    </>);
+}
+
+export function DownloadIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M12 4v11" />
+        <path d="m7.5 10.5 4.5 4.5 4.5-4.5" />
+        <path d="M5 19.5h14" />
+    </>);
+}
+
+export function UploadIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M12 15V4" />
+        <path d="m7.5 8.5 4.5-4.5 4.5 4.5" />
+        <path d="M5 19.5h14" />
+    </>);
+}
+
+export function FilterIcon(props?: IconProps) {
+    return outline(props, <path d="M4 5h16l-6.25 7.5v6.25L10.25 17.5v-5z" />);
+}
+
+export function SearchIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="10.5" cy="10.5" r="6" />
+        <path d="m15 15 5 5" />
+    </>);
+}
+
+export function LogoutIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M14 4.5H6.5A1.5 1.5 0 0 0 5 6v12a1.5 1.5 0 0 0 1.5 1.5H14" />
+        <path d="M10 12h10M16.5 8.5 20 12l-3.5 3.5" />
+    </>);
+}
+
+// ---- Status ----------------------------------------------------------------
+// Outline like everything else. A status surface — an alert, a toast, an invalid field — already
+// carries its own tint, so a stroked glyph in the status ink reads clearly without a solid badge.
+
+export function SuccessCircleIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="m8.5 12.25 2.5 2.5 4.5-5" />
+    </>);
+}
+
+export function InfoCircleIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M12 11v5.5" />
+        {dot(12, 7.9)}
+    </>);
+}
+
+// The same glyph as InfoCircleIcon, kept as its own export for the call sites that import it.
+export function InfoIcon(props?: IconProps) {
+    return InfoCircleIcon(props);
+}
+
+export function WarningIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M10.3 4.5 3.3 17a2 2 0 0 0 1.7 3h14a2 2 0 0 0 1.7-3L13.7 4.5a1.95 1.95 0 0 0-3.4 0z" />
+        <path d="M12 9.5v4.25" />
+        {dot(12, 16.9)}
+    </>);
+}
+
+export function ErrorCircleIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M12 7.5v5.5" />
+        {dot(12, 16.1)}
+    </>);
+}
+
+export function HelpIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M9.6 9.4a2.5 2.5 0 0 1 4.85.85c0 1.65-2.45 2.15-2.45 3.7" />
+        {dot(12, 16.9)}
+    </>);
+}
+
+// ---- People and security ---------------------------------------------------
+
+export function UserIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="8.5" r="3.75" />
+        <path d="M5 20a7 7 0 0 1 14 0" />
+    </>);
+}
+
+// The same glyph as UserIcon, kept as its own export for the call sites that import it.
+export function PersonIcon(props?: IconProps) {
+    return UserIcon(props);
+}
+
+export function AccountIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <circle cx="12" cy="10" r="3" />
+        <path d="M6.6 18.1a6.1 6.1 0 0 1 10.8 0" />
+    </>);
+}
+
+export function SecurityIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M12 3.5 5 6.1v5.4c0 4.25 2.9 7.8 7 9 4.1-1.2 7-4.75 7-9V6.1z" />
+        <path d="m9 12 2.1 2.1L15.25 10" />
+    </>);
+}
+
+export function LockIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="5" y="10.5" width="14" height="10" rx="2" />
+        <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+        <path d="M12 14.5v2" />
+    </>);
+}
+
+export function EyeIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M2.75 12S6.25 5.75 12 5.75 21.25 12 21.25 12 17.75 18.25 12 18.25 2.75 12 2.75 12z" />
+        <circle cx="12" cy="12" r="3" />
+    </>);
+}
+
+export function EyeSlashIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M9.9 5.95A9 9 0 0 1 12 5.75C17.75 5.75 21.25 12 21.25 12a15.7 15.7 0 0 1-2.55 3.35M6.55 6.8C4 8.5 2.75 12 2.75 12S6.25 18.25 12 18.25a8.7 8.7 0 0 0 5.3-1.8" />
+        <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+        <path d="m3.5 3.5 17 17" />
+    </>);
+}
+
+// ---- Settings, content and data -------------------------------------------
+
+export function SettingsIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M10.23 5.33 10.8 3.08h2.4l.57 2.25 1.7.7 1.99-1.18 1.69 1.69-1.18 1.99.7 1.7 2.25.57v2.4l-2.25.57-.7 1.7 1.18 1.99-1.69 1.69-1.99-1.18-1.7.7-.57 2.25h-2.4l-.57-2.25-1.7-.7-1.99 1.18-1.69-1.69 1.18-1.99-.7-1.7-2.25-.57v-2.4l2.25-.57.7-1.7-1.18-1.99 1.69-1.69 1.99 1.18z" />
+        <circle cx="12" cy="12" r="3" />
+    </>);
+}
+
+export function ThemeIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor" stroke="none" />
+    </>);
 }
 
 export function SunIcon(props?: IconProps) {
@@ -664,4 +387,223 @@ export function SunIcon(props?: IconProps) {
         <circle cx="12" cy="12" r="4.1" />
         <path d="M12 2.6v2.2M12 19.2v2.2M4.3 4.3l1.6 1.6M18.1 18.1l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.3 19.7l1.6-1.6M18.1 5.9l1.6-1.6" />
     </>);
+}
+
+export function MoonIcon(props?: IconProps) {
+    return outline(props, <path d="M20.5 14.3A8.6 8.6 0 0 1 9.7 3.5a8.6 8.6 0 1 0 10.8 10.8" />);
+}
+
+export function FolderIcon(props?: IconProps) {
+    return outline(props, <path d="M3.5 7A1.5 1.5 0 0 1 5 5.5h4l2 2.5h8a1.5 1.5 0 0 1 1.5 1.5V18a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18z" />);
+}
+
+export function DocumentIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M13.5 3.5H7A1.5 1.5 0 0 0 5.5 5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8.5z" />
+        <path d="M13.5 3.5v5h5" />
+        <path d="M9 13h6M9 16.5h6" />
+    </>);
+}
+
+export function DatabaseIcon(props?: IconProps) {
+    return outline(props, <>
+        <ellipse cx="12" cy="6" rx="7" ry="2.5" />
+        <path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6" />
+        <path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5" />
+    </>);
+}
+
+export function CalendarIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="4" y="5" width="16" height="15" rx="2" />
+        <path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3" />
+    </>);
+}
+
+export function ChartIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M4 4v16h16" />
+        <path d="m7.5 14.5 3.5-4 3 3 5-6" />
+    </>);
+}
+
+export function TableIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+        <path d="M3.5 9.5h17M3.5 14.5h17M9.5 9.5v10" />
+    </>);
+}
+
+export function EmailIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+        <path d="m4 7.25 8 5.75 8-5.75" />
+    </>);
+}
+
+export function WebsiteIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M3.5 12h17" />
+        <path d="M12 3.5a13 13 0 0 1 0 17 13 13 0 0 1 0-17z" />
+    </>);
+}
+
+export function HeartIcon(props?: IconProps) {
+    return outline(props, <path d="M12 19.5s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 6.75a4.3 4.3 0 0 1 7.5 2.75c0 5.6-7.5 10-7.5 10z" />);
+}
+
+// ---- Showcase sections -----------------------------------------------------
+// One glyph per component family, used by the navigation menu and the showcase screens.
+
+export function DashboardIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="3.5" y="3.5" width="7.5" height="9" rx="1.5" />
+        <rect x="13" y="3.5" width="7.5" height="5" rx="1.5" />
+        <rect x="13" y="11" width="7.5" height="9.5" rx="1.5" />
+        <rect x="3.5" y="15" width="7.5" height="5.5" rx="1.5" />
+    </>);
+}
+
+export function SwatchIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="7.5" cy="7.5" r="3.5" />
+        <circle cx="16.5" cy="7.5" r="3.5" />
+        <circle cx="7.5" cy="16.5" r="3.5" />
+        <circle cx="16.5" cy="16.5" r="3.5" />
+    </>);
+}
+
+export function SlidersIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
+        <circle cx="15" cy="7" r="2" />
+        <circle cx="9" cy="17" r="2" />
+    </>);
+}
+
+export function PulseIcon(props?: IconProps) {
+    return outline(props, <path d="M3.5 12h4l2.5-6 4 12 2.5-6h4" />);
+}
+
+export function ShapesIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="7.5" cy="7.5" r="3.5" />
+        <rect x="13.5" y="4" width="7" height="7" rx="1.5" />
+        <path d="M7.5 13.5 11.25 20.5h-7.5z" />
+        <path d="m17 13.25 3.5 3.5-3.5 3.5-3.5-3.5z" />
+    </>);
+}
+
+export function LayersIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M12 3.5 20.5 8 12 12.5 3.5 8z" />
+        <path d="m3.5 12 8.5 4.5 8.5-4.5" />
+        <path d="m3.5 16 8.5 4.5 8.5-4.5" />
+    </>);
+}
+
+export function BoltIcon(props?: IconProps) {
+    return outline(props, <path d="M13 3.5 5.5 13.5H12l-1 7 7.5-10H12z" />);
+}
+
+export function CodeIcon(props?: IconProps) {
+    return outline(props, <path d="m8.5 7.5-5 4.5 5 4.5M15.5 7.5l5 4.5-5 4.5" />);
+}
+
+export function CubeIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M12 3.5 19.5 7.5v9L12 20.5l-7.5-4v-9z" />
+        <path d="M4.5 7.5 12 11.5l7.5-4M12 11.5v9" />
+    </>);
+}
+
+export function BlockIcon(props?: IconProps) {
+    return outline(props, <rect x="4.5" y="4.5" width="15" height="15" rx="2" />);
+}
+
+export function ButtonsIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="3.5" y="7.5" width="17" height="9" rx="4.5" />
+        <path d="M8.5 12h7" />
+    </>);
+}
+
+export function InputsIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="3.5" y="6.5" width="17" height="11" rx="2" />
+        <path d="M7.5 10v4" />
+    </>);
+}
+
+export function PopupsIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+        <path d="M3.5 8.5h17M8 13h8M8 16h5" />
+    </>);
+}
+
+export function FlyoutsIcon(props?: IconProps) {
+    return outline(props, <>
+        <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+        <path d="M14 4.5v15" />
+    </>);
+}
+
+export function NavigationIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8z" />
+    </>);
+}
+
+export function TabsIcon(props?: IconProps) {
+    return outline(props, <path d="M3.5 19.5V7A1.5 1.5 0 0 1 5 5.5h4.5A1.5 1.5 0 0 1 11 7v2.5h8a1.5 1.5 0 0 1 1.5 1.5v8.5z" />);
+}
+
+// The same glyph as GridIcon, kept as its own export for the call sites that import it.
+export function MiscIcon(props?: IconProps) {
+    return GridIcon(props);
+}
+
+// ---- Brand marks -----------------------------------------------------------
+// Drawn as the services draw them, not in the outline family: they identify the service.
+
+export function GitHubIcon(props?: IconProps) {
+    if (props?.render === false) {
+        return null;
+    }
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true" focusable="false">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+        </svg>
+    );
+}
+
+export function YouTubeIcon(props?: IconProps) {
+    if (props?.render === false) {
+        return null;
+    }
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true" focusable="false">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+        </svg>
+    );
+}
+
+export function NpmIcon(props?: IconProps) {
+    if (props?.render === false) {
+        return null;
+    }
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true" focusable="false">
+            <path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.332h-2.669v-.001zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z" />
+        </svg>
+    );
 }
