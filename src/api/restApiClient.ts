@@ -110,7 +110,10 @@ class RestApiClient implements IRestApiClient {
     }
 
     private _createRequestURL(url: string, params: Record<string, unknown>): string {
-        const { updatedUrl, updatedParams } = this._replaceDynamicParams(url, params);
+        // A copy: substitution deletes each path param it consumes. Handed the caller's object, it
+        // emptied it, and the same params used again — a retry, a refresh — failed with
+        // 'Parameter "id" not found'.
+        const { updatedUrl, updatedParams } = this._replaceDynamicParams(url, { ...params });
         const searchParams = new URLSearchParams();
         for (const param in updatedParams) {
             // Only null and undefined mean "no value". The loop tested truthiness, so 0, false and ""

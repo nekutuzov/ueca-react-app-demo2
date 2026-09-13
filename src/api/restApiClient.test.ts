@@ -162,10 +162,10 @@ describe("RestApiClient", () => {
             expect(client.getUrl("/users", { page: 0, sort: null, archived: false })).toBe(`${BASE}/users?page=0&archived=false`);
         });
 
-        // BUG: _replaceDynamicParams deletes each consumed key from the params object it was handed
-        // (restApiClient.ts:97-103 — `updatedParams` is the caller's object, not a copy), so reusing
-        // params for a second request — a retry, a refresh — fails with 'Parameter "id" not found'.
-        it.fails("leaves the caller's params untouched, so they can be reused", async () => {
+        // Regression: _replaceDynamicParams deleted each consumed key from the params object it was
+        // handed (the caller's object, not a copy), so reusing params for a second request — a retry,
+        // a refresh — failed with 'Parameter "id" not found'.
+        it("leaves the caller's params untouched, so they can be reused", async () => {
             const fetch = serve();
             const client = createRestAPIClient(BASE);
             const params = { id: 7, page: 2 };
