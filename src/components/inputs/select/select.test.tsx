@@ -139,6 +139,9 @@ describe("Select", () => {
             expect(label.firstElementChild).toHaveClass("ueca-select-required");
             expect(label).toHaveTextContent(/^\*Fruit$/);
             expect(trigger()).toHaveAttribute("aria-required", "true");
+            // The asterisk is for the eye: the name stays "Fruit", and aria-required says the rest.
+            expect(label.firstElementChild).toHaveAttribute("aria-hidden", "true");
+            expect(screen.getByRole("combobox", { name: /^Fruit/ })).toBe(trigger());
         });
 
         it("disables the trigger when disabled, and does not open", async () => {

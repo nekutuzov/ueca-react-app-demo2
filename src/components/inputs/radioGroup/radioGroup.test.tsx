@@ -234,13 +234,48 @@ describe("RadioGroup", () => {
     });
 
     describe("accessibility", () => {
-        // BUG: the label is a plain <div> and the options container has no role, so there is no
-        // radiogroup and nothing ties "Units" to the radios — a screen reader announces "Inches, radio
-        // button, 3 of 3" without ever saying what is being chosen.
-        it.fails("exposes its options as a radiogroup named by its label", async () => {
+        // Regression: the label was a plain <div> and the options container had no role, so there was
+        // no radiogroup and nothing tied "Units" to the radios — a screen reader announced "Inches,
+        // radio button, 3 of 3" without ever saying what was being chosen.
+        it("exposes its options as a radiogroup named by its label", async () => {
             await mount(RadioGroup, { id: "units", options: UNITS, labelView: "Units" });
 
-            expect(screen.getByRole("radiogroup", { name: "Units" })).toBeInTheDocument();
+            const group = screen.getByRole("radiogroup", { name: "Units" });
+            expect(group).toContainElement(radio("Inches"));
+        });
+
+        // The asterisk is for the eye: a screen reader hears "required", not "Units star".
+        it("keeps the required asterisk out of the name and marks the group required", async () => {
+            await mount(RadioGroup, { id: "units", options: UNITS, labelView: "Units", required: true });
+
+            expect(screen.getByRole("radiogroup", { name: "Units" })).toHaveAttribute("aria-required", "true");
+            expect(document.querySelector(".ueca-radio-group-required")).toHaveAttribute("aria-hidden", "true");
+        });
+
+        it("describes the group with its helper text, and marks it invalid with the error while one shows", async () => {
+            const { model } = await mount(RadioGroup, {
+                id: "units",
+                options: UNITS,
+                labelView: "Units",
+                required: true,
+                helperTextView: "Used for every measurement"
+            });
+            const group = () => screen.getByRole("radiogroup", { name: "Units" });
+            expect(group()).not.toHaveAttribute("aria-invalid");
+            expect(group()).toHaveAccessibleDescription("Used for every measurement");
+
+            await model.validate();
+            await settle();
+
+            expect(group()).toHaveAttribute("aria-invalid", "true");
+            expect(group()).toHaveAccessibleDescription("Units cannot be empty");
+        });
+
+        it("is an unlabelled radiogroup without a label, and undescribed without helper text", async () => {
+            await mount(RadioGroup, { id: "units", options: UNITS });
+
+            expect(screen.getByRole("radiogroup")).not.toHaveAttribute("aria-labelledby");
+            expect(screen.getByRole("radiogroup")).not.toHaveAttribute("aria-describedby");
         });
     });
 });

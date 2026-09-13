@@ -418,9 +418,9 @@ describe("NumberField", () => {
     });
 
     describe("accessibility", () => {
-        // BUG: inherited from TextField — the label is not associated with the input, so the number
-        // box has no accessible name.
-        it.fails("names its input after the label", async () => {
+        // Regression: inherited from TextField, whose label was not associated with its input, so the
+        // number box had no accessible name.
+        it("names its input after the label", async () => {
             await mount(NumberField, { id: "port", labelView: "Port" });
 
             expect(screen.getByRole("textbox", { name: "Port" })).toBeInTheDocument();

@@ -4,13 +4,14 @@ import userEvent from "@testing-library/user-event";
 import { AppLoginForm } from "@core";
 import { mount, settle } from "@test";
 
-// TextField inputs carry no accessible name, so they are reached through their UECA ids.
 function userInput() {
-    return document.getElementById("login.userInput").querySelector("input");
+    return screen.getByRole("textbox", { name: "Username" });
 }
 
+// A password input has no ARIA role, so it is found by its label, whose text carries the required
+// asterisk that the accessible name leaves out.
 function passwordInput() {
-    return document.getElementById("login.passwordInput").querySelector("input");
+    return screen.getByLabelText(/^\*?Password$/);
 }
 
 function helperText(field: "userInput" | "passwordInput") {

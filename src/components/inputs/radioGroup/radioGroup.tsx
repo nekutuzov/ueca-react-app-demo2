@@ -67,7 +67,9 @@ function useRadioGroup<T = string>(params?: RadioGroupParams<T>): RadioGroupMode
         View: () => {
             const colorClass = resolvePaletteColor(model.color);
             const sizeClass = model.size ? `ueca-radio-group-${model.size}` : "";
-            const className = `ueca-radio-group ${sizeClass}${!model.isValid() ? " ueca-radio-group-error" : ""}${model.disabled ? " ueca-radio-group-disabled" : ""}${model.fullWidth ? " ueca-radio-group-fullwidth" : ""}`.trim();
+            const invalid = !model.isValid();
+            const helperShown = invalid || !!model.helperTextView;
+            const className = `ueca-radio-group ${sizeClass}${invalid ? " ueca-radio-group-error" : ""}${model.disabled ? " ueca-radio-group-disabled" : ""}${model.fullWidth ? " ueca-radio-group-fullwidth" : ""}`.trim();
 
             return (
                 <div
@@ -78,12 +80,22 @@ function useRadioGroup<T = string>(params?: RadioGroupParams<T>): RadioGroupMode
                     } as React.CSSProperties}
                 >
                     {model.labelView && (
-                        <div className="ueca-radio-group-label ueca-label">
+                        <div id={_labelId()} className="ueca-radio-group-label ueca-label">
                             {model.labelView}
-                            {model.required && <span className="ueca-radio-group-required"> *</span>}
+                            {/* Hidden from screen readers, which hear aria-required instead. */}
+                            {model.required && <span className="ueca-radio-group-required" aria-hidden="true"> *</span>}
                         </div>
                     )}
-                    <div className={`ueca-radio-group-options ueca-radio-group-options-${model.orientation}`}>
+                    {/* The radiogroup role and its label are what make a screen reader say what is
+                        being chosen, rather than only "Inches, radio button, 3 of 3". */}
+                    <div
+                        className={`ueca-radio-group-options ueca-radio-group-options-${model.orientation}`}
+                        role="radiogroup"
+                        aria-labelledby={model.labelView ? _labelId() : undefined}
+                        aria-required={model.required || undefined}
+                        aria-invalid={invalid || undefined}
+                        aria-describedby={helperShown ? _helperId() : undefined}
+                    >
                         {model.options.map((option, index) => {
                             const isChecked = String(model.value) === String(option.value);
                             const isDisabled = model.disabled || option.disabled;
@@ -112,9 +124,9 @@ function useRadioGroup<T = string>(params?: RadioGroupParams<T>): RadioGroupMode
                             );
                         })}
                     </div>
-                    {(model.helperTextView || !model.isValid()) && (
-                        <div className={`ueca-radio-group-helper-text${!model.isValid() ? " ueca-radio-group-helper-text-error" : ""}`}>
-                            {!model.isValid() ? model.getValidationError() : model.helperTextView}
+                    {helperShown && (
+                        <div id={_helperId()} className={`ueca-radio-group-helper-text${invalid ? " ueca-radio-group-helper-text-error" : ""}`}>
+                            {invalid ? model.getValidationError() : model.helperTextView}
                         </div>
                     )}
                 </div>
@@ -126,6 +138,14 @@ function useRadioGroup<T = string>(params?: RadioGroupParams<T>): RadioGroupMode
     return model;
 
     // Private methods
+    function _labelId(): string {
+        return `${model.htmlId()}-label`;
+    }
+
+    function _helperId(): string {
+        return `${model.htmlId()}-helper`;
+    }
+
     function _handleChange(optionValue: T) {
         if (!model.disabled) {
             model.value = optionValue;

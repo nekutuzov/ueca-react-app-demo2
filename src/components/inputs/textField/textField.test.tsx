@@ -538,18 +538,45 @@ describe("TextField", () => {
     });
 
     describe("accessibility", () => {
-        // BUG: the <label> is a sibling of the <input> with no htmlFor/id pairing, aria-labelledby or
-        // aria-label, so the input has no accessible name — a screen reader announces only "edit text".
-        it.fails("names its input after the label", async () => {
+        // Regression: the <label> was a sibling of the <input> with no htmlFor/id pairing, so the input
+        // had no accessible name — a screen reader announced only "edit text".
+        it("names its input after the label", async () => {
             await mount(TextField, { id: "user", labelView: "Username" });
 
-            expect(screen.getByRole("textbox", { name: "Username" })).toBeInTheDocument();
+            expect(screen.getByRole("textbox", { name: "Username" })).toHaveAttribute("id", "user-input");
         });
 
-        // BUG: the invalid state is only painted. Select sets aria-invalid on its trigger; the text
-        // input never does.
-        it.fails("marks its input aria-invalid while it shows a validation error", async () => {
+        it("names a multiline field and a password field after their labels", async () => {
+            await mount(TextField, { id: "notes", labelView: "Notes", multiline: true });
+            await mount(TextField, { id: "pw", labelView: "Password", type: "password", revealable: true });
+
+            expect(screen.getByRole("textbox", { name: "Notes" }).tagName).toBe("TEXTAREA");
+            // A password input has no ARIA role, but its label names it all the same.
+            expect(screen.getByLabelText("Password")).toBe(inputOf("pw"));
+        });
+
+        it("focuses its input when the label is clicked", async () => {
+            await mount(TextField, { id: "user", labelView: "Username" });
+
+            await userEvent.click(screen.getByText("Username"));
+
+            expect(screen.getByRole("textbox", { name: "Username" })).toHaveFocus();
+        });
+
+        // The asterisk is for the eye: a screen reader hears "required", not "star Username".
+        it("keeps the required asterisk out of the name and marks the input required", async () => {
+            await mount(TextField, { id: "user", labelView: "Username", required: true });
+
+            const input = screen.getByRole("textbox", { name: "Username" });
+            expect(input).toHaveAttribute("aria-required", "true");
+            expect(document.querySelector(".textfield-required")).toHaveAttribute("aria-hidden", "true");
+        });
+
+        // Regression: the invalid state was only painted. Select set aria-invalid on its trigger; the
+        // text input never did.
+        it("marks its input aria-invalid while it shows a validation error", async () => {
             const { model } = await mount(TextField, { id: "user", labelView: "Username", required: true });
+            expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-invalid");
 
             await model.validate();
             await settle();
@@ -557,12 +584,34 @@ describe("TextField", () => {
             expect(screen.getByRole("textbox")).toHaveAttribute("aria-invalid", "true");
         });
 
-        // BUG: helper and error text are not linked to the input (no aria-describedby), so the message
-        // is never announced with the field.
-        it.fails("describes its input with the helper text", async () => {
-            await mount(TextField, { id: "user", labelView: "Password", helperTextView: "At least 8 characters" });
+        it("marks its input aria-invalid and describes it for an external error", async () => {
+            await mount(TextField, { id: "user", labelView: "Username", error: true, helperTextView: "Already taken" });
 
+            expect(screen.getByRole("textbox")).toHaveAttribute("aria-invalid", "true");
+            expect(screen.getByRole("textbox")).toHaveAccessibleDescription("Already taken");
+        });
+
+        // Regression: helper and error text were not linked to the input, so the message was never
+        // announced with the field.
+        it("describes its input with the helper text, and with the error while one shows", async () => {
+            const { model } = await mount(TextField, {
+                id: "user",
+                labelView: "Username",
+                required: true,
+                helperTextView: "At least 8 characters"
+            });
             expect(screen.getByRole("textbox")).toHaveAccessibleDescription("At least 8 characters");
+
+            await model.validate();
+            await settle();
+
+            expect(screen.getByRole("textbox")).toHaveAccessibleDescription("Username cannot be empty");
+        });
+
+        it("has no description without helper or error text", async () => {
+            await mount(TextField, { id: "user", labelView: "Username" });
+
+            expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-describedby");
         });
     });
 });

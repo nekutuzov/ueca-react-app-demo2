@@ -243,7 +243,8 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
                 >
                     {model.labelView && (
                         <label id={_labelId()} className="ueca-select-label ueca-label">
-                            {model.required && <span className="ueca-select-required">*</span>}
+                            {/* Hidden from screen readers, which hear the trigger's aria-required. */}
+                            {model.required && <span className="ueca-select-required" aria-hidden="true">*</span>}
                             {model.labelView}
                         </label>
                     )}

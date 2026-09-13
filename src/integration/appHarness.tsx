@@ -79,9 +79,10 @@ async function waitForScreen(heading?: string | RegExp, options?: WaitOptions): 
     }, options);
 }
 
-// The sign-in form's inputs, by model path: the TextField does not give its <input> an accessible name.
+// The sign-in form's inputs, by their labels. A password input has no ARIA role, so both go through
+// the label, whose text carries the required asterisk that the accessible name leaves out.
 function signInField(field: "user" | "password"): HTMLInputElement {
-    return document.getElementById(`app.ui.loginForm.${field}Input`)?.querySelector("input");
+    return screen.getByLabelText(field === "user" ? /^\*?Username$/ : /^\*?Password$/) as HTMLInputElement;
 }
 
 function signInButton(): HTMLElement {

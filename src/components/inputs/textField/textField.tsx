@@ -141,6 +141,7 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
             const hasExternalError = model.error;
             const showError = hasValidationError || hasExternalError;
             const errorMessage = hasValidationError ? model.getValidationError() : model.helperTextView;
+            const helperShown = showError || !!model.helperTextView;
 
             const className = `ueca-textfield ueca-textfield-${model.variant}${showError ? " ueca-textfield-error" : ""}${model.disabled ? " ueca-textfield-disabled" : ""}${model.readOnly ? " ueca-textfield-readonly" : ""}${model.fullWidth ? " ueca-textfield-fullwidth" : ""}${model.fill ? " ueca-textfield-fill" : ""}`;
 
@@ -159,22 +160,29 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                     } as React.CSSProperties}
                 >
                     {model.labelView && (
-                        <label className="textfield-label ueca-label">
+                        // htmlFor, not wrapping: the label sits above the frame, and pairing it by id
+                        // is what gives the input its accessible name.
+                        <label htmlFor={_inputId()} className="textfield-label ueca-label">
                             {/* Leading: the asterisk reads as part of the label rather than as
-                                punctuation trailing it. */}
-                            {model.required && <span className="textfield-required">*</span>}
+                                punctuation trailing it. Hidden from screen readers, which hear
+                                aria-required instead of "star". */}
+                            {model.required && <span className="textfield-required" aria-hidden="true">*</span>}
                             {model.labelView}
                         </label>
                     )}
                     {model.multiline ? (
                         <div className="textfield-frame">
                             <textarea
+                                id={_inputId()}
                                 className="textfield-input textfield-textarea"
                                 value={model.value?.toString()}
                                 placeholder={model.placeholder}
                                 disabled={model.disabled}
                                 readOnly={model.readOnly}
                                 rows={model.rows}
+                                aria-required={model.required || undefined}
+                                aria-invalid={showError || undefined}
+                                aria-describedby={helperShown ? _helperId() : undefined}
                                 onChange={_handleChange}
                                 onFocus={_handleFocus}
                                 onBlur={_handleBlur}
@@ -188,6 +196,7 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                                 </span>
                             )}
                             <input
+                                id={_inputId()}
                                 className="textfield-input"
                                 type={_inputType()}
                                 value={model.value?.toString()}
@@ -195,6 +204,9 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                                 disabled={model.disabled}
                                 readOnly={model.readOnly}
                                 autoComplete={model.autoComplete}
+                                aria-required={model.required || undefined}
+                                aria-invalid={showError || undefined}
+                                aria-describedby={helperShown ? _helperId() : undefined}
                                 onChange={_handleChange}
                                 onFocus={_handleFocus}
                                 onBlur={_handleBlur}
@@ -219,8 +231,8 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                             )}
                         </div>
                     )}
-                    {(showError || model.helperTextView) && (
-                        <div className={`textfield-helper-text${showError ? " textfield-helper-text-error" : ""}`}>
+                    {helperShown && (
+                        <div id={_helperId()} className={`textfield-helper-text${showError ? " textfield-helper-text-error" : ""}`}>
                             {errorMessage}
                         </div>
                     )}
@@ -233,6 +245,16 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
     return model;
 
     // Private methods
+    // Derived from the model's DOM id, like Select's: the label's htmlFor and the input's
+    // aria-describedby point at these.
+    function _inputId(): string {
+        return `${model.htmlId()}-input`;
+    }
+
+    function _helperId(): string {
+        return `${model.htmlId()}-helper`;
+    }
+
     function _inputType(): TextFieldType {
         if (model.type === "password" && model.revealable && model._revealed) {
             return "text";
