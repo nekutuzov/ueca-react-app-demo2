@@ -78,8 +78,21 @@ function asyncSafe(action: () => (void | Promise<void>), errorHandling: ErrorHan
     }
 }
 
+// Runs the action on a later task, with the error handling asyncSafe gives a call made now. The guard
+// goes inside the timer: wrapped around setTimeout it only covered the scheduling, and the action's
+// own errors escaped uncaught whatever errorHandling said.
 function runAsync(action: () => void, errorHandling: ErrorHandling = "application") {
-    asyncSafe(async () => void setTimeout(action, 0), errorHandling);
+    setTimeout(() => {
+        try {
+            asyncSafe(action, errorHandling);
+        } catch (error) {
+            // asyncSafe ends a reported failure by throwing AbortExecutionException, to bail its caller
+            // out. A timer has no caller to bail out, so that stops here; "none" still rethrows.
+            if (!(error instanceof AbortExecutionException)) {
+                throw error;
+            }
+        }
+    }, 0);
 }
 
 function goToRoute(route: AppRoute) {

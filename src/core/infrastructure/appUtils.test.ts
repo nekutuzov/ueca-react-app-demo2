@@ -218,16 +218,54 @@ describe("runAsync", () => {
         expect(action).toHaveBeenCalledOnce();
     });
 
-    // BUG: runAsync wraps only the setTimeout() call in asyncSafe (appUtils.ts:81-83); the action
-    // runs later, outside that guard, so its errors ignore the errorHandling argument entirely —
-    // they escape as uncaught errors: "suppress" does not suppress, and "application" or "dialog"
-    // never report them.
-    it.fails("applies errorHandling to an error thrown by the deferred action", () => {
+    // Regression: runAsync wrapped only the setTimeout() call in asyncSafe; the action ran later,
+    // outside that guard, so its errors ignored the errorHandling argument entirely and escaped as
+    // uncaught errors — "suppress" did not suppress, and "application" or "dialog" never reported
+    // them. A CRUD screen that navigates after a save with runAsync failed without a word.
+    it("applies errorHandling to an error thrown by the deferred action", () => {
         vi.useFakeTimers();
 
         runAsync(() => { throw new Error("late failure"); }, "suppress");
 
         expect(() => vi.advanceTimersByTime(0)).not.toThrow();
+    });
+
+    it("reports an error thrown by the deferred action as App.UnhandledException by default, throwing nothing into the timer", async () => {
+        const { unhandled } = await observeReporting();
+        const error = new Error("late failure");
+        vi.useFakeTimers();
+
+        runAsync(() => { throw error; });
+
+        expect(() => vi.advanceTimersByTime(0)).not.toThrow();
+        vi.useRealTimers();
+        await settle();
+        expect(unhandled).toHaveBeenCalledExactlyOnceWith(error);
+    });
+
+    it("reports a deferred async action that rejects through the channel it was given", async () => {
+        const { dialog, unhandled } = await observeReporting();
+        const error = new Error("navigation refused");
+        vi.useFakeTimers();
+
+        runAsync(async () => { throw error; }, "dialog");
+        const outcome = asyncOutcome(() => vi.advanceTimersByTime(0));
+
+        await expect(outcome).rejects.toBeInstanceOf(AbortExecutionException);
+        vi.useRealTimers();
+        await settle();
+        expect(dialog).toHaveBeenCalledExactlyOnceWith({ error });
+        expect(unhandled).not.toHaveBeenCalled();
+    });
+
+    // "none" means no handling at all, deferred or not.
+    it("lets the deferred action's error through in none mode", () => {
+        const error = new Error("late failure");
+        vi.useFakeTimers();
+
+        runAsync(() => { throw error; }, "none");
+
+        expect(() => vi.advanceTimersByTime(0)).toThrow(error);
     });
 });
 
