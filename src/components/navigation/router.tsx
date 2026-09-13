@@ -85,14 +85,19 @@ function useRouter(params?: RouterParams): RouterModel {
             },
 
             onChangeRoute: () => {
-                if (!model.route || !model.routes) {
-                    model._currentView = undefined;
-                    return;
-                }
-                const RouteView: RouteComp = model.routes[model.route.path];
-                model._currentView = RouteView(model.route.params);
-                //model._currentView = <RouteView p={model.route.params} />;
+                _drawRoute();
             }
+        },
+
+        // A route present at creation raised no change events — they are suppressed while a model
+        // initialises — so it was never vetted against the table and never drawn: the router showed
+        // nothing, or held a route it does not have. By mount the route has landed.
+        mount: () => {
+            if (model.route && !_hasRoute(model.route)) {
+                model.route = undefined;
+                return;
+            }
+            _drawRoute();
         },
 
         methods: {
@@ -123,6 +128,19 @@ function useRouter(params?: RouterParams): RouterModel {
     return model;
 
     // Private methods
+    function _hasRoute(route: AnyRoute): boolean {
+        return !!model.routes && Reflect.has(model.routes, route.path);
+    }
+
+    function _drawRoute() {
+        if (!model.route || !model.routes) {
+            model._currentView = undefined;
+            return;
+        }
+        const RouteView: RouteComp = model.routes[model.route.path];
+        model._currentView = RouteView(model.route.params);
+    }
+
     function _prepareRegExRoutes() {
         if (model.__regExRoutes?.length > 0) {
             return;

@@ -108,21 +108,30 @@ describe("Router", () => {
             expect(shown()).toHaveTextContent("user 42");
         });
 
-        // BUG: _currentView is derived only in onChangeRoute, and change events are suppressed while
-        // a model initialises (see NavLink's `mount` comment), so a route present at creation never
-        // gets a view — nor does a JSX re-render with that same route change anything.
-        it.fails("renders the view of a route given at creation", async () => {
+        // Regression: _currentView was derived only in onChangeRoute, and change events are suppressed
+        // while a model initialises (see NavLink's `mount` comment), so a route present at creation
+        // never got a view — nor did a JSX re-render with that same route change anything.
+        it("renders the view of a route given at creation", async () => {
             await mount(Router, { id: "router", routes, route: user42 });
 
             expect(shown()).toHaveTextContent("user 42");
         });
 
-        // BUG: the same suppressed events mean onChangingRoute never vets a route present at
-        // creation, so the router holds a route its table does not have.
-        it.fails("does not accept an unknown route given at creation", async () => {
+        // Regression: the same suppressed events meant onChangingRoute never vetted a route present at
+        // creation, so the router held a route its table does not have.
+        it("does not accept an unknown route given at creation", async () => {
             const { model } = await mount(Router, { id: "router", routes, route: { path: "/nowhere" } });
 
             expect(model.route).toBeUndefined();
+            expect(shown()).toBeNull();
+        });
+
+        it("follows a route given at creation to the next one", async () => {
+            const { model } = await mount(Router, { id: "router", routes, route: user42 });
+
+            await go(model, { path: "/" });
+
+            expect(shown()).toHaveTextContent("home");
         });
     });
 
