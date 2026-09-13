@@ -21,7 +21,6 @@ type CheckboxStruct = EditBaseStruct<{
 
     events: {
         onChange: (checked: boolean, source: CheckboxModel) => UECA.MaybePromise;
-        onChangeValue: () => void;
     };
 }>;
 
@@ -50,7 +49,10 @@ function useCheckbox(params?: CheckboxParams): CheckboxModel {
                 }
             },
 
-            onChangeValue: () => model.resetValidationErrors(),
+            // On `checked`, the box's state, by click or by binding. The other inputs reset on
+            // onChangeValue, and a Checkbox has no `value`: wired to that, the reset never ran and
+            // "must be checked" stayed on a box the user had just checked.
+            onChangeChecked: () => model.resetValidationErrors(),
         },
 
         View: () => {

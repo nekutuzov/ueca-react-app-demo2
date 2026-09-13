@@ -180,10 +180,10 @@ describe("Checkbox", () => {
             expect(optional.isValid()).toBe(true);
         });
 
-        // BUG: the reset is wired to `onChangeValue`, but a Checkbox has no `value` prop — its state
-        // is `checked` — so the handler never fires. Once validation has flagged the box, checking it
-        // leaves "must be checked" on screen until the owner validates again.
-        it.fails("clears its validation error once checked", async () => {
+        // Regression: the reset was wired to `onChangeValue`, but a Checkbox has no `value` prop — its
+        // state is `checked` — so the handler never fired. Once validation had flagged the box, checking
+        // it left "must be checked" on screen until the owner validated again.
+        it("clears its validation error once checked", async () => {
             const { model } = await mount(Checkbox, { id: "terms", labelView: "Accept the terms", required: true });
             await model.validate();
             await settle();
@@ -192,6 +192,21 @@ describe("Checkbox", () => {
 
             expect(model.isValid()).toBe(true);
             expect(helperTextOf("terms")).toBeNull();
+        });
+
+        // The same through a binding: an owner that ticks the box from code — or a record loaded into a
+        // bound `checked` — clears the error as a click does.
+        it("clears its validation error when checked is assigned", async () => {
+            const { model } = await mount(Checkbox, { id: "terms", labelView: "Accept the terms", required: true });
+            await model.validate();
+            await settle();
+            expect(frameOf("terms")).toHaveClass("ueca-checkbox-error");
+
+            model.checked = true;
+            await settle();
+
+            expect(model.isValid()).toBe(true);
+            expect(frameOf("terms")).not.toHaveClass("ueca-checkbox-error");
         });
     });
 
