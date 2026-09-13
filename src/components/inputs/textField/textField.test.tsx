@@ -349,10 +349,10 @@ describe("TextField", () => {
             expect(onBlur).not.toHaveBeenCalled();
         });
 
-        // BUG: _handleBlur only runs on the INPUT. Once focus has moved to the reveal button (or any
-        // focusable adornment) inside the frame, leaving the field from there never clears _focused
-        // and never raises onBlur — the field believes it is still focused.
-        it.fails("clears _focused and raises onBlur when focus leaves the field from the reveal button", async () => {
+        // Regression: _handleBlur ran only on the INPUT. Once focus had moved to the reveal button (or
+        // any focusable adornment) inside the frame, leaving the field from there never cleared
+        // _focused and never raised onBlur — the field believed it was still focused.
+        it("clears _focused and raises onBlur when focus leaves the field from the reveal button", async () => {
             const onBlur = vi.fn();
             const { model } = await mount(TextField, { id: "pw", type: "password", revealable: true, value: "x", onBlur });
             await userEvent.click(inputOf("pw"));
@@ -363,6 +363,22 @@ describe("TextField", () => {
             expect(screen.getByRole("button", { name: "Show password" })).not.toHaveFocus();
             expect(model._focused).toBe(false);
             expect(onBlur).toHaveBeenCalledOnce();
+        });
+
+        // Regression: _handleFocus ran on the input alone, so coming back to the input from the eye
+        // raised onFocus a second time for a field that had never lost focus.
+        it("raises onFocus once while focus moves between the input and the reveal button", async () => {
+            const onFocus = vi.fn();
+            const onBlur = vi.fn();
+            await mount(TextField, { id: "pw", type: "password", revealable: true, value: "x", onFocus, onBlur });
+
+            await userEvent.click(inputOf("pw"));
+            await userEvent.tab();
+            await userEvent.tab({ shift: true });
+
+            expect(inputOf("pw")).toHaveFocus();
+            expect(onFocus).toHaveBeenCalledOnce();
+            expect(onBlur).not.toHaveBeenCalled();
         });
     });
 
@@ -776,11 +792,11 @@ describe("SecuredPasswordField", () => {
         expect(inputOf("smtp")).toHaveAttribute("type", "text");
     });
 
-    // BUG: the contract is "an unfocused field can never reveal what it is holding, and blurring
-    // re-hides it" — but when focus leaves from the eye itself (click the eye, then Tab or click
-    // away) the input's blur handler never runs (see TextField's _handleBlur), so the secret stays
-    // revealed and the eye stays enabled on an unfocused field.
-    it.fails("re-hides the password and disables the eye when focus leaves from the eye", async () => {
+    // Regression: the contract is "an unfocused field can never reveal what it is holding, and
+    // blurring re-hides it" — but when focus left from the eye itself, the input's blur handler never
+    // ran (see TextField's _handleBlur), so the secret stayed revealed and the eye stayed enabled on
+    // an unfocused field.
+    it("re-hides the password and disables the eye when focus leaves from the eye", async () => {
         const { model } = await mount(SecuredPasswordField, { id: "smtp", value: "secret" });
         await userEvent.click(inputOf("smtp"));
         await userEvent.tab();
@@ -791,6 +807,23 @@ describe("SecuredPasswordField", () => {
 
         expect(inputOf("smtp")).toHaveAttribute("type", "password");
         expect(screen.getByRole("button", { name: "Show password" })).toBeDisabled();
+    });
+
+    // Regression: the same with the mouse, the usual way — reveal with a click on the eye, then click
+    // anywhere else. The secret stayed on screen.
+    it("re-hides the password when the user clicks away after revealing it with the eye", async () => {
+        const onBlur = vi.fn();
+        const { model } = await mount(SecuredPasswordField, { id: "smtp", value: "secret", onBlur });
+        await userEvent.click(inputOf("smtp"));
+        await userEvent.click(screen.getByRole("button", { name: "Show password" }));
+        expect(inputOf("smtp")).toHaveAttribute("type", "text");
+
+        await userEvent.click(document.body);
+
+        expect(model._focused).toBe(false);
+        expect(inputOf("smtp")).toHaveAttribute("type", "password");
+        expect(screen.getByRole("button", { name: "Show password" })).toBeDisabled();
+        expect(onBlur).toHaveBeenCalledOnce();
     });
 
     // Gated on focus, not on editability — TextField already disables the eye when read-only.

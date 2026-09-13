@@ -171,7 +171,8 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                         </label>
                     )}
                     {model.multiline ? (
-                        <div className="textfield-frame">
+                        // Focus is tracked on the frame, not on the input: see _handleBlur.
+                        <div className="textfield-frame" onFocus={_handleFocus} onBlur={_handleBlur}>
                             <textarea
                                 id={_inputId()}
                                 className="textfield-input textfield-textarea"
@@ -187,12 +188,10 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                                 aria-invalid={showError || undefined}
                                 aria-describedby={helperShown ? _helperId() : undefined}
                                 onChange={_handleChange}
-                                onFocus={_handleFocus}
-                                onBlur={_handleBlur}
                             />
                         </div>
                     ) : (
-                        <div className="textfield-frame">
+                        <div className="textfield-frame" onFocus={_handleFocus} onBlur={_handleBlur}>
                             {model.startView && (
                                 <span className="textfield-adornment textfield-adornment-start">
                                     {model.startView}
@@ -212,8 +211,6 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                                 aria-invalid={showError || undefined}
                                 aria-describedby={helperShown ? _helperId() : undefined}
                                 onChange={_handleChange}
-                                onFocus={_handleFocus}
-                                onBlur={_handleBlur}
                                 onKeyDown={_handleKeyDown}
                             />
                             {model.endView && (
@@ -273,7 +270,11 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
         }
     }
 
-    function _handleFocus() {
+    function _handleFocus(e: React.FocusEvent<HTMLDivElement>) {
+        if (_movesWithinField(e)) {
+            return;
+        }
+
         model._focused = true;
         if (model.onFocus) {
             model.onFocus(model);
@@ -282,12 +283,13 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
 
     // `_focused` means "the FIELD has focus", not "the input element has focus". The difference is
     // load-bearing: useSecuredPasswordField gates its reveal button on it, and the button is a
-    // sibling of the input inside the same frame — so without this guard, moving focus toward the
-    // eye (by Tab or by mousedown) blurred the input, disabled the button mid-transit, and dropped
-    // focus to <body>. The eye was unreachable by keyboard AND by mouse on every secured field.
-    function _handleBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
-        const frame = e.currentTarget.closest(".textfield-frame");
-        if (frame && e.relatedTarget instanceof Node && frame.contains(e.relatedTarget)) {
+    // sibling of the input inside the same frame — so moving focus toward the eye (by Tab or by
+    // mousedown) must not blur the field, or the button is disabled mid-transit and focus drops to
+    // <body>. Both handlers sit on the frame, where React's focus events bubble from every control
+    // in it: with them on the input alone, focus that left the field FROM the eye never blurred it,
+    // and a secured field went on showing its secret, unfocused.
+    function _handleBlur(e: React.FocusEvent<HTMLDivElement>) {
+        if (_movesWithinField(e)) {
             return;
         }
 
@@ -295,6 +297,11 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
         if (model.onBlur) {
             model.onBlur(model);
         }
+    }
+
+    // Focus passing between the input and an adornment inside the same frame.
+    function _movesWithinField(e: React.FocusEvent<HTMLDivElement>): boolean {
+        return e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget);
     }
 
     // Raw DOM handler, so it cannot be async — asyncSafe carries the awaited onEnter.
