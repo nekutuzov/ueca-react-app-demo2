@@ -327,10 +327,10 @@ describe("AlertDialog", () => {
             expect(detailsPanel().style.width).toBe("65%");
         });
 
-        // BUG: closing the dialog sets `detailsOpen = false` to put the details away, but nothing
-        // connects that prop to the details drawer. A panel left open outlives its dialog, and the
-        // dialog comes back hidden behind it the next time it opens.
-        it.fails("puts the details panel away when the dialog closes", async () => {
+        // Regression: closing the dialog set `detailsOpen = false` to put the details away, but nothing
+        // connected that prop to the details drawer. A panel left open outlived its dialog, and the
+        // dialog came back hidden behind it the next time it opened.
+        it("puts the details panel away when the dialog closes", async () => {
             const { model } = await mount(AlertDialog, { id: "ad", open: true, buttons: { details: true }, detailsView: "trace" });
             await clickInDialog("Show details");
 
@@ -344,6 +344,22 @@ describe("AlertDialog", () => {
             await settle();
 
             expect(dialogPanel().parentElement).not.toHaveClass("dialog-hidden");
+        });
+
+        it("reads the details panel's state through detailsOpen and opens the panel from it", async () => {
+            const { model } = await mount(AlertDialog, { id: "ad", open: true, buttons: { details: true }, detailsView: "trace" });
+            expect(model.detailsOpen).toBe(false);
+
+            await clickInDialog("Show details");
+            expect(model.detailsOpen).toBe(true);
+
+            model.detailsDrawer.open = false;
+            await settle();
+            expect(model.detailsOpen).toBe(false);
+
+            model.detailsOpen = true;
+            await settle();
+            expect(detailsPanel()).toBeInTheDocument();
         });
     });
 
