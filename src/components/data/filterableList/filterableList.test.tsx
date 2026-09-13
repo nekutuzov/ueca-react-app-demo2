@@ -175,20 +175,19 @@ describe("FilterableList", () => {
             expect(searchBox()).toHaveAttribute("placeholder", "Find");
         });
 
-        // BUG: `search` is documented as assignable so that "a caller can clear or preseed the
-        // filter" (filterableList.tsx:41-43), but nothing carries it into the SearchField, whose
-        // value is never bound (filterableList.tsx:85-91). The box then misdescribes the filter the
-        // list applies: a preseeded search narrows the list under an empty box…
-        it.fails("shows a preseeded search in the search box", async () => {
+        // Regression: `search` is documented as assignable so that "a caller can clear or preseed the
+        // filter", but nothing carried it into the SearchField. The box then misdescribed the filter
+        // the list applies: a preseeded search narrowed the list under an empty box…
+        it("shows a preseeded search in the search box", async () => {
             await mountList({ search: "piezo" });
 
             expect(optionTexts()).toHaveLength(2);
             expect(searchBox()).toHaveValue("piezo");
         });
 
-        // BUG: …and a search the caller clears stays in the box, where the next keystroke searches
-        // for the old text again. Same cause as above.
-        it.fails("empties the search box when a caller clears the search", async () => {
+        // Regression: …and a search the caller cleared stayed in the box, where the next keystroke
+        // searched for the old text again. Same cause as above.
+        it("empties the search box when a caller clears the search", async () => {
             const { model } = await mountList();
             vi.useFakeTimers({ shouldAdvanceTime: true });
             fireEvent.change(searchBox(), { target: { value: "piezo" } });
@@ -200,6 +199,24 @@ describe("FilterableList", () => {
 
             expect(optionTexts()).toHaveLength(4);
             expect(searchBox()).toHaveValue("");
+        });
+
+        // Typing is not overwritten while the search catches up: between keystrokes the box runs
+        // ahead of the settled search, and the list follows once the search settles.
+        it("keeps the typed text while its search is still settling", async () => {
+            await mountList();
+            vi.useFakeTimers({ shouldAdvanceTime: true });
+
+            fireEvent.change(searchBox(), { target: { value: "pie" } });
+            await act(async () => { await vi.advanceTimersByTimeAsync(300); });
+            fireEvent.change(searchBox(), { target: { value: "piezometer p-03" } });
+            await settle();
+            expect(searchBox()).toHaveValue("piezometer p-03");
+
+            await act(async () => { await vi.advanceTimersByTimeAsync(300); });
+
+            expect(searchBox()).toHaveValue("piezometer p-03");
+            expect(optionTexts()).toEqual(["Piezometer P-03"]);
         });
     });
 

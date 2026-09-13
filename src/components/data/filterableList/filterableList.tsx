@@ -107,7 +107,18 @@ function useFilterableList<T>(params?: FilterableListParams<T>): FilterableListM
             // no-op — the case it exists for is a caller assigning activeKey.
             onChangeActiveKey: () => {
                 model.scrollToActive();
+            },
+
+            // The box shows the search a caller assigns, not only what was typed there. Nothing
+            // carried it into the SearchField, so a preseeded search narrowed the list under an
+            // empty box, and a cleared one stayed in the box for the next keystroke to bring back.
+            onChangeSearch: () => {
+                _showSearchInBox();
             }
+        },
+
+        init: () => {
+            _showSearchInBox();
         },
 
         methods: {
@@ -157,6 +168,15 @@ function useFilterableList<T>(params?: FilterableListParams<T>): FilterableListM
 
     const model = useUIBase(struct, params);
     return model;
+
+    // Typing reaches `search` through onSearch, where the box already holds the same text; only a
+    // search set from outside changes what the box shows.
+    function _showSearchInBox() {
+        const search = model.search ?? "";
+        if (model.searchField.value !== search) {
+            model.searchField.value = search;
+        }
+    }
 
     function _renderRow(index: number): React.ReactNode {
         const items = model.filteredItems();
