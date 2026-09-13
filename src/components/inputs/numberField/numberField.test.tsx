@@ -404,10 +404,10 @@ describe("NumberField", () => {
             expect(model.getValidationError()).toBe("Port cannot be empty");
         });
 
-        // BUG: NumberField uses `??` where TextField deliberately uses `||` — the default placeholder
-        // "" passes through `??`, so an unlabelled field reports " cannot be empty" (TextField's own
-        // comment describes exactly this failure).
-        it.fails("names an unlabelled field without a placeholder 'This field'", async () => {
+        // Regression: NumberField used `??` where TextField deliberately uses `||` — the default
+        // placeholder "" passed through `??`, so an unlabelled field reported " cannot be empty"
+        // (TextField's own comment describes exactly this failure).
+        it("names an unlabelled field without a placeholder 'This field'", async () => {
             const { model } = await mount(NumberField, { id: "n", required: true });
 
             await model.validate();

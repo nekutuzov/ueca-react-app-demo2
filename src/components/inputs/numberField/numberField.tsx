@@ -99,7 +99,9 @@ function useNumberField(params?: NumberFieldParams): NumberFieldModel {
         events: {
             onInternalValidate: async () => {
                 if (model.required && model.value == null) {
-                    const fieldName = fieldLabelText(model.labelView) ?? model.placeholder ?? "This field";
+                    // `||`, as in TextField: placeholder defaults to "", which `??` passed through,
+                    // so an unlabelled field reported " cannot be empty".
+                    const fieldName = fieldLabelText(model.labelView) || model.placeholder || "This field";
                     return `${fieldName} cannot be empty`;
                 }
             },
