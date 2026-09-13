@@ -280,6 +280,41 @@ describe("NavLink", () => {
             expect(bus["App.Router.OpenNewTab"]).not.toHaveBeenCalled();
         });
 
+        // Regression: with no route there is no href, and an <a> without one is neither focusable nor
+        // a link — Sign out could not be reached from the keyboard at all.
+        it("make a link without a route a focusable button that Enter and Space press", async () => {
+            const bus = await stubRouter();
+            const onClick = vi.fn();
+            await mount(NavLink, { id: "action", title: "Sign out", onClick });
+
+            const action = screen.getByRole("button", { name: "Sign out" });
+            await userEvent.tab();
+            expect(action).toHaveFocus();
+
+            await userEvent.keyboard("{Enter}");
+            await settle();
+            await userEvent.keyboard(" ");
+            await settle();
+            await userEvent.keyboard("a");
+            await settle();
+
+            expect(onClick).toHaveBeenCalledTimes(2);
+            expect(bus["App.Router.GoToRoute"]).not.toHaveBeenCalled();
+        });
+
+        it("leave a link with a route a plain link, without a tab stop or key handling of its own", async () => {
+            const bus = await stubRouter();
+            await mount(NavLink, { id: "home", route: HOME, title: "Home" });
+
+            const link = screen.getByRole("link", { name: "Home" });
+            expect(link).not.toHaveAttribute("role");
+            expect(link).not.toHaveAttribute("tabindex");
+            fireEvent.keyDown(link, { key: " " });
+            await settle();
+
+            expect(bus["App.Router.GoToRoute"]).not.toHaveBeenCalled();
+        });
+
         it("on a link without a route raise onClick and go nowhere", async () => {
             const bus = await stubRouter();
             const onClick = vi.fn();

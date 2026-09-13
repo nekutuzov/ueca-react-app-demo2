@@ -2,7 +2,7 @@ import React from "react";
 import * as UECA from "ueca-react";
 import { resolvePaletteColor } from "@core";
 import {
-    BlockProps, borderStyleMap, flexValue, isFilled, paddingStyleMap, Spacing, spacingMap
+    ariaAttributes, BlockProps, borderStyleMap, flexValue, isFilled, paddingStyleMap, Spacing, spacingMap
 } from "./layoutShared";
 
 const gridVerticalAlignMap = {
@@ -81,6 +81,7 @@ function Grid(props: GridProps): UECA.ReactElement {
             onKeyDown={props?.onKeyDown}
             tabIndex={props?.tabIndex}
             role={props?.role}
+            {...ariaAttributes(props)}
         >
             {props?.children}
         </div>

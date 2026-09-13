@@ -113,11 +113,17 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
                     id={model.htmlId()}
                     className={`ueca-nav-link ${underlineClass}`}
                     href={model._routeURL}
+                    // A link without a route is an action (Sign out). An <a> with no href is neither
+                    // focusable nor a link, so the keyboard could not reach it at all: it is a button
+                    // with a tab stop instead, pressed by Enter and Space.
+                    role={model.route ? undefined : "button"}
+                    tabIndex={model.route ? undefined : 0}
                     target={model.newTab ? "_blank" : undefined}
                     rel={model.newTab ? "noopener noreferrer" : undefined}
                     aria-label={model.ariaLabel}
                     style={{ color: colorStyle }}
                     onClick={(e) => asyncSafe(async () => await _onLinkClick(e))}
+                    onKeyDown={model.route ? undefined : _onActionKeyDown}
                 >
                     {model.linkView || model.title}
                 </a>
@@ -139,6 +145,16 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
         }
         e.preventDefault();
         return await model.click();
+    }
+
+    // A link with an href needs none of this: the browser turns Enter on it into the click above.
+    function _onActionKeyDown(e: React.KeyboardEvent) {
+        if (e.key !== "Enter" && e.key !== " ") {
+            return;
+        }
+        // Space would otherwise scroll the page.
+        e.preventDefault();
+        asyncSafe(async () => await model.click());
     }
 
     async function _syncRouteURL() {

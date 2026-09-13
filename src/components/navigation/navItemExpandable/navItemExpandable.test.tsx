@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as UECA from "ueca-react";
 import { NavItemExpandable, NavItemExpandableModel, NavItemModel, useNavItem, useNavItemExpandable } from "@components";
 import { AppMessage, AppRoute } from "@core";
@@ -59,6 +60,43 @@ describe("NavItemExpandable", () => {
         expect(box.querySelector("svg") !== null).toBe(expected.chevron);
         expect((box.firstElementChild as HTMLElement).style.justifyContent).toBe(expected.justifyContent);
         expect(box.style.paddingLeft).toBe(expected.paddingLeft);
+    });
+
+    // Regression: the heading was a bare clickable <div> — no role, no tab stop — so a keyboard user
+    // could not open a group at all.
+    it("is a button the keyboard can reach and press, reporting whether it is expanded", async () => {
+        const { model } = await mount(NavItemExpandable, { id: "group", text: "Showcase" });
+        const button = screen.getByRole("button", { name: "Showcase" });
+        expect(button).toBe(heading());
+        expect(button).toHaveAttribute("aria-expanded", "false");
+
+        await userEvent.tab();
+        expect(button).toHaveFocus();
+        await userEvent.keyboard("{Enter}");
+        await settle();
+        expect(model.expanded).toBe(true);
+        expect(heading()).toHaveAttribute("aria-expanded", "true");
+
+        await userEvent.keyboard(" ");
+        await settle();
+        expect(model.expanded).toBe(false);
+
+        await userEvent.keyboard("a");
+        await settle();
+        expect(model.expanded).toBe(false);
+    });
+
+    it("names its button after its text only while the label is hidden", async () => {
+        const { model } = await mount(NavItemExpandable, {
+            id: "group", text: "Showcase", icon: <svg aria-hidden="true" />, mode: "icon-only"
+        });
+        expect(screen.getByRole("button", { name: "Showcase" })).toHaveAttribute("aria-label", "Showcase");
+
+        model.mode = "icon-text";
+        await settle();
+
+        expect(heading()).not.toHaveAttribute("aria-label");
+        expect(screen.getByRole("button", { name: "Showcase" })).toBe(heading());
     });
 
     it("marks an active group", async () => {

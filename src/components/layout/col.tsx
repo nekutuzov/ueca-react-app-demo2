@@ -2,7 +2,7 @@ import React from "react";
 import * as UECA from "ueca-react";
 import { resolvePaletteColor } from "@core";
 import {
-    borderStyleMap, FlexProps, flexValue, isFilled, paddingStyleMap, spacingMap, withDividers
+    ariaAttributes, borderStyleMap, FlexProps, flexValue, isFilled, paddingStyleMap, spacingMap, withDividers
 } from "./layoutShared";
 
 const colHorizontalAlignMap = {
@@ -84,6 +84,7 @@ function Col(props: ColProps): UECA.ReactElement {
             onKeyDown={props?.onKeyDown}
             tabIndex={props?.tabIndex}
             role={props?.role}
+            {...ariaAttributes(props)}
         >
             {children}
         </div>

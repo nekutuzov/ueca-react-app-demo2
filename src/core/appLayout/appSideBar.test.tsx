@@ -166,6 +166,26 @@ describe("AppSideBar", () => {
         expect(bus["App.Router.GoToRoute"]).not.toHaveBeenCalled();
     });
 
+    // Regression: Sign out has no route, so its link had no href and no tab stop — a keyboard user
+    // could not sign out in either sidebar state.
+    it("signs out from the keyboard, expanded and collapsed", async () => {
+        const bus = await stubShell();
+        const model = await mountSideBar();
+
+        screen.getByRole("button", { name: "Sign out" }).focus();
+        await userEvent.keyboard("{Enter}");
+        await settle();
+        expect(bus["App.Security.Unauthorize"]).toHaveBeenCalledOnce();
+
+        model.collapsed = true;
+        await settle();
+        screen.getByRole("button", { name: "Sign out" }).focus();
+        await userEvent.keyboard(" ");
+        await settle();
+
+        expect(bus["App.Security.Unauthorize"]).toHaveBeenCalledTimes(2);
+    });
+
     it("opens the UECA website in a new tab from the logo", async () => {
         const bus = await stubShell();
         await mountSideBar();

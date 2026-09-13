@@ -2,7 +2,7 @@ import React from "react";
 import * as UECA from "ueca-react";
 import { resolvePaletteColor } from "@core";
 import {
-    blockHorizontalAlignMap, borderStyleMap, BlockProps, flexValue, paddingStyleMap
+    ariaAttributes, blockHorizontalAlignMap, borderStyleMap, BlockProps, flexValue, paddingStyleMap
 } from "./layoutShared";
 
 function Block(props: BlockProps): UECA.ReactElement {
@@ -44,6 +44,7 @@ function Block(props: BlockProps): UECA.ReactElement {
             onKeyDown={props?.onKeyDown}
             tabIndex={props?.tabIndex}
             role={props?.role}
+            {...ariaAttributes(props)}
         >
             {props?.children}
         </div>

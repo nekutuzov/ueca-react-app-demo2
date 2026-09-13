@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/react";
+import { BlockProps, Block, Card, Col, Grid, GridCell, Row } from "@components";
 import { resolvePaletteColor } from "@core";
 // Not re-exported by the @components barrel, which exposes only the types of this module.
 import {
-    borderStyleMap, flexValue, isFilled, Padding, paddingSizeMap, paddingStyleMap, spacingMap, withDividers
+    ariaAttributes, borderStyleMap, flexValue, isFilled, Padding, paddingSizeMap, paddingStyleMap, spacingMap,
+    withDividers
 } from "./layoutShared";
 
 // tokens.css is read from disk because Vitest empties every CSS import, `?raw` included. The test
@@ -37,6 +39,33 @@ describe("flexValue and isFilled", () => {
         expect(flexValue({ fraction: 0, fill: true })).toBe(0);
         expect(flexValue({ fraction: 0 })).toBe(0);
         expect(isFilled({ fraction: 0 })).toBe(true);
+    });
+});
+
+describe("ariaAttributes", () => {
+    it("picks out the aria-* props and nothing else", () => {
+        const props = { "aria-expanded": true, "aria-label": "Showcase", role: "button", fill: true } as BlockProps;
+
+        expect(ariaAttributes(props)).toEqual({ "aria-expanded": true, "aria-label": "Showcase" });
+        expect(ariaAttributes(undefined)).toEqual({});
+    });
+
+    // A role without its states is half a role: a disclosure header built on Block needs
+    // aria-expanded, and an icon-only one needs aria-label.
+    it.each([
+        ["Block", Block],
+        ["Row", Row],
+        ["Col", Col],
+        ["Grid", Grid],
+        ["GridCell", GridCell],
+        ["Card", Card]
+    ] as [string, (props: BlockProps) => React.ReactNode][])("%s puts aria-* attributes on its element", (_name, Primitive) => {
+        const { container } = render(<Primitive role="button" aria-expanded={false} aria-label="Showcase" fill />);
+
+        const element = container.querySelector("[role=button]");
+        expect(element).toHaveAttribute("aria-expanded", "false");
+        expect(element).toHaveAttribute("aria-label", "Showcase");
+        expect(element).not.toHaveAttribute("fill");
     });
 });
 

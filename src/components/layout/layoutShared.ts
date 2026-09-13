@@ -80,7 +80,7 @@ type BlockProps = {
     // ARIA role. A div is semantically nothing, so anything acting as a grid, list or dialog has to
     // say so for assistive technology to make sense of it.
     role?: string;
-};
+} & React.AriaAttributes; // …and the states and names that go with a role: aria-expanded, aria-label.
 
 type FlexProps = BlockProps & {
     reverseItems?: boolean;
@@ -235,6 +235,18 @@ function borderStyleMap(border?: Border): React.CSSProperties {
     }
 }
 
+// The aria-* attributes among a primitive's props, to spread onto its element. Picked out by name,
+// so no other prop ever reaches the DOM.
+function ariaAttributes(props?: React.AriaAttributes): React.AriaAttributes {
+    const aria: Record<string, unknown> = {};
+    for (const key in props) {
+        if (key.startsWith("aria-")) {
+            aria[key] = props[key as keyof React.AriaAttributes];
+        }
+    }
+    return aria;
+}
+
 // Interleave a hairline divider between flex children. `axis` is the divider's own thin dimension:
 // "vertical" (1px wide) between Row children, "horizontal" (1px tall) between Col children.
 function withDividers(children: React.ReactNode, axis: "vertical" | "horizontal"): React.ReactNode {
@@ -260,5 +272,5 @@ export {
     Spacing, PaddingSize, Padding, BlockHorizontalAlign, Overflow, Cursor, FlexWrap, Border,
     BlockProps, FlexProps,
     spacingMap, paddingSizeMap, blockHorizontalAlignMap,
-    flexValue, isFilled, paddingStyleMap, borderStyleMap, withDividers
+    flexValue, isFilled, paddingStyleMap, borderStyleMap, ariaAttributes, withDividers
 };
