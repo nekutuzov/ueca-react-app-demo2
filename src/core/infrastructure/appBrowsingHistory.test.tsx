@@ -719,10 +719,10 @@ describe("AppBrowsingHistory", () => {
             expect(navigate).not.toHaveBeenCalled();
         });
 
-        // BUG: deinit detaches the listener and says a following init may re-add it
-        // (appBrowsingHistory.ts:152-157), but only constr — which a cache retrieval skips —
-        // attaches it. A model parked in the cache and brought back ignores Back and Forward.
-        it.fails("keeps following Back and Forward after being parked in the cache and brought back", async () => {
+        // Regression: deinit detaches the listener and says a following init may re-add it, but only
+        // constr — which a cache retrieval skips — attached it. A model parked in the cache and brought
+        // back ignored Back and Forward.
+        it("keeps following Back and Forward after being parked in the cache and brought back", async () => {
             at(`${BASE}/a`);
             // Only the host's AppBrowsingHistory may listen, so no mountHistory() here.
             const navigate = vi.fn(async () => true);
@@ -738,6 +738,23 @@ describe("AppBrowsingHistory", () => {
             await arrive(`${BASE}/c`, { index: 2000 });
 
             expect(navigate).toHaveBeenCalledTimes(2);
+        });
+
+        it("catches up with the address when brought back, listening once", async () => {
+            at(`${BASE}/a`);
+            const navigate = vi.fn(async () => true);
+            await stubMessages({ "App.BrowsingHistory.OnNavigate": navigate });
+            const { model: host } = await mount(HistoryHost, { id: "host" });
+
+            host.showHistory = false;
+            await settle();
+            at(`${BASE}/moved#there`);
+            host.showHistory = true;
+            await settle();
+
+            expect(await address()).toEqual({ path: "/moved", section: "there" });
+            await arrive(`${BASE}/c`, { index: 2000 });
+            expect(navigate).toHaveBeenCalledOnce();
         });
     });
 });

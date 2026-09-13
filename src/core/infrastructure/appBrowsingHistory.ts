@@ -148,6 +148,13 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
         },
 
         init: async () => {
+            // Brought back from the model cache, the model has had its listener detached by deinit,
+            // and constr — the only other place it is attached — does not run again: Back and
+            // Forward went unheard. Syncing again also catches up with an address that moved while
+            // it was parked. On first activation constr has just done this, so it is skipped.
+            if (!model.__popstateHandler) {
+                model.syncWithBrowser();
+            }
             const appInfo = await model.bus.unicast("App.GetInfo");
             model.__appTitle = appInfo?.appName;
             _syncDocumentTitle();
