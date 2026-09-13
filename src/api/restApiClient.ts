@@ -104,7 +104,10 @@ class RestApiClient implements IRestApiClient {
             if (updatedParams[paramName] != null) {
                 const parameter = updatedParams[paramName];
                 delete updatedParams[paramName];
-                return (typeof parameter === "string") ? parameter : JSON.stringify(parameter);
+                // Encoded, so the value stays one path segment. Spliced in as it was, a "?" started the
+                // query (which the search assignment then overwrote) and a "/" or "#" moved the
+                // request somewhere else: "what?.txt" requested /files/what.
+                return encodeURIComponent((typeof parameter === "string") ? parameter : JSON.stringify(parameter));
             } else {
                 throw new Error(`Parameter "${paramName}" not found. URL: ${url}`);
             }

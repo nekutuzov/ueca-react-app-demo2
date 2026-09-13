@@ -186,14 +186,30 @@ describe("RestApiClient", () => {
             await expect(createRestAPIClient(BASE).get("/users/:id", { id })).rejects.toThrow('Parameter "id" not found');
         });
 
-        // BUG: path values are spliced in unencoded (restApiClient.ts:104), so a "?" in one starts the
-        // query, which the search assignment then overwrites: the request silently goes to /files/what.
-        it.fails("keeps a '?' inside a path value in the path", async () => {
+        // Regression: path values were spliced in unencoded, so a "?" in one started the query, which the
+        // search assignment then overwrote: the request silently went to /files/what.
+        it("keeps a '?' inside a path value in the path", async () => {
             const fetch = serve();
 
             await createRestAPIClient(BASE).get("/files/:name", { name: "what?.txt" });
 
             expect(new URL(requestOf(fetch).url).pathname).toBe("/api/files/what%3F.txt");
+        });
+
+        it.each([
+            ["a slash", "reports/2024", "/api/files/reports%2F2024"],
+            ["a hash", "c#-notes", "/api/files/c%23-notes"],
+            ["a percent sign", "100%", "/api/files/100%25"],
+            ["a space", "annual report", "/api/files/annual%20report"]
+        ])("keeps a path value with %s in one segment", async (_case, name, pathname) => {
+            const fetch = serve();
+
+            await createRestAPIClient(BASE).get("/files/:name", { name, page: 1 });
+
+            const url = new URL(requestOf(fetch).url);
+            expect(url.pathname).toBe(pathname);
+            expect(url.hash).toBe("");
+            expect(url.searchParams.get("page")).toBe("1");
         });
 
         it("getUrl builds the same URL without fetching", () => {
