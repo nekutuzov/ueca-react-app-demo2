@@ -127,7 +127,10 @@ function useRouter(params?: RouterParams): RouterModel {
                 url = url.replace("//", _rootURLTag);
             }
             const routeUrl = new AppURL(url);
-            let regEx = routeUrl.host === "_" ? "" : (routeUrl.protocol + "\\/\\/" + routeUrl.host);
+            // "^": a route names the whole path, not its tail. Unanchored, "/home" also answered
+            // "/retired/home" and "/showcase/controls?from=/home", and an app-relative route answered
+            // the tagged form of an origin-root path.
+            let regEx = "^" + (routeUrl.host === "_" ? "" : (routeUrl.protocol + "\\/\\/" + routeUrl.host));
             const rootParams: Record<string, null | undefined> = {};
             const pathParts = routeUrl.pathname.split("/");
             pathParts.splice(0, 1);

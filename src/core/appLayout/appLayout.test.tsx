@@ -47,12 +47,12 @@ describe("AppLayout", () => {
             expect(model.lookupRoute("")).toBeUndefined();
         });
 
-        // BUG: the route patterns router.tsx builds are not anchored at the start, and "/" becomes
-        // /\/(?:\?|$)/ — so any address ending in a slash matches the Home route.
-        // "https://nekutuzov.github.io/ueca-react-doc/" and "https://ueca-react.carrd.co/" resolve to
-        // { path: "/" }, and AppRouter._changeRoute, which asks this layout first, hands such a
+        // Regression: the route patterns router.tsx built were not anchored at the start, and "/"
+        // became /\/(?:\?|$)/ — so any address ending in a slash matched the Home route.
+        // "https://nekutuzov.github.io/ueca-react-doc/" and "https://ueca-react.carrd.co/" resolved to
+        // { path: "/" }, and AppRouter._changeRoute, which asks this layout first, handed such a
         // GoToRoute to the app layout instead of the other layout.
-        it.fails("does not claim an external address, even one ending in a slash", async () => {
+        it("does not claim an external address, even one ending in a slash", async () => {
             const { model } = await mount(AppLayout, { id: "appLayout" });
 
             for (const path of Object.keys(otherRoutes)) {
@@ -60,8 +60,9 @@ describe("AppLayout", () => {
             }
         });
 
-        // BUG: same unanchored pattern — a path that merely ends with a screen path resolves to it.
-        it.fails("does not claim a path that merely ends with a screen path", async () => {
+        // Regression: same unanchored pattern — a path that merely ended with a screen path resolved
+        // to it.
+        it("does not claim a path that merely ends with a screen path", async () => {
             const { model } = await mount(AppLayout, { id: "appLayout" });
 
             expect(model.lookupRoute("/legacy/home")).toBeUndefined();

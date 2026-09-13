@@ -58,6 +58,27 @@ describe("Deep links", { timeout: 20_000 }, () => {
         expect(await currentRoute()).toEqual({ path: "/" });
     });
 
+    // Regression: route patterns were not anchored at the start, so an address that merely ENDED
+    // like a screen's path opened that screen instead of falling back to Home.
+    it("falls back to Home for an address that only ends like a screen's path", async () => {
+        const { historyLength } = await renderApp({ url: "/retired/showcase/controls", signedIn: true });
+
+        expect(await waitForScreen(HOME_HEADING)).toBeInTheDocument();
+        expect(location.pathname).toBe(appPath("/"));
+        expect(history.length).toBe(historyLength);
+        expect(await currentRoute()).toEqual({ path: "/" });
+    });
+
+    // Regression: the same missing anchor let a query value pick the screen. This address ends in
+    // "/home", so it opened Home, and startup rewrote the address to match.
+    it("opens the screen its path names, whatever path a query value ends in", async () => {
+        await renderApp({ url: "/showcase/controls?from=/home", signedIn: true });
+
+        expect(await waitForScreen("Controls")).toBeInTheDocument();
+        expect(location.pathname).toBe(appPath("/showcase/controls"));
+        expect(await currentRoute()).toMatchObject({ path: "/showcase/controls" });
+    });
+
     describe("opened while signed out", () => {
         it("keeps the address on the sign-in form, and signing in lands on the linked page and section", async () => {
             const { historyLength } = await renderApp({ url: "/playground/table#columns" });

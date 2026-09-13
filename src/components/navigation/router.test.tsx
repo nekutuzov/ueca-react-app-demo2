@@ -291,19 +291,21 @@ describe("Router", () => {
             expect(router.lookupRoute("//admin/users")?.path).toBe("//admin/:section");
         });
 
-        // BUG: route patterns are built without a ^ anchor (router.tsx:130-142), so a route matches
-        // any path that merely ENDS like it. With "/users/:id" listed first, "/org/7/users/u2"
-        // resolves to it with id "u2", and a mistyped "/typo/users/5" still resolves.
-        it.fails("matches a route from the start of the path, not a shorter route its tail resembles", async () => {
+        // Regression: route patterns were built without a ^ anchor, so a route matched any path that
+        // merely ENDED like it. With "/users/:id" listed first, "/org/7/users/u2" resolved to it with
+        // id "u2", a mistyped "/typo/users/5" still resolved, and a query value ending in a path
+        // answered with the route that value named.
+        it("matches a route from the start of the path, not a shorter route its tail resembles", async () => {
             const { router } = await mountRouter();
 
             expect(router.lookupRoute("/org/7/users/u2")?.path).toBe("/org/:orgId/users/:userId");
             expect(router.lookupRoute("/typo/users/5")).toBeUndefined();
+            expect(router.lookupRoute("/list?back=/users/5")?.path).toBe("/list?:tab&:page");
         });
 
-        // BUG: the same missing anchor defeats the tag an origin-root path is rewritten to: an
-        // app-relative route listed first matches the tail of the tagged "//admin/users".
-        it.fails("never answers an origin-root path with an app-relative route listed before it", async () => {
+        // Regression: the same missing anchor defeated the tag an origin-root path is rewritten to:
+        // an app-relative route listed first matched the tail of the tagged "//admin/users".
+        it("never answers an origin-root path with an app-relative route listed before it", async () => {
             const { router } = await mountRouter({ "/admin/:section": view("app admin"), "//admin/:section": view("root admin") });
 
             expect(router.lookupRoute("//admin/users")?.path).toBe("//admin/:section");

@@ -37,7 +37,7 @@ describe("OtherLayout", () => {
 
         // BUG: router.tsx builds every absolute pattern as protocol + "//" + host + path, and drops
         // the first path segment as the empty one before a leading slash. A mailto address has no
-        // "//" and its whole address is that first segment, so the pattern is /mailto:\/\/(?:\?|$)/.
+        // "//" and its whole address is that first segment, so the pattern is /^mailto:\/\/(?:\?|$)/.
         it.fails("resolves a mailto address by its own key", async () => {
             const { model } = await mount(OtherLayout, { id: "otherLayout" });
 
