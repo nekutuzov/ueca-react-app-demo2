@@ -9,6 +9,8 @@ type AppDialogManagerStruct = UIBaseStruct<{
         // Parallel to _openDialogs: the resolver of each open dialog, so Dialog.Close can settle
         // the topmost one from code. Pushed and popped together with the view.
         _dialogClosers: ((result: boolean) => void)[];
+        // Numbers each dialog, for the React key that gives it a model of its own.
+        __dialogCount: number;
     }
 }>;
 
@@ -22,7 +24,8 @@ function useAppDialogManager(params?: AppDialogManagerParams): AppDialogManagerM
         props: {
             id: useAppDialogManager.name,
             _openDialogs: [],
-            _dialogClosers: []
+            _dialogClosers: [],
+            __dialogCount: 0
         },
 
         messages: {
@@ -62,8 +65,15 @@ function useAppDialogManager(params?: AppDialogManagerParams): AppDialogManagerM
 
         const severity = _getSeverity(_kind);
 
+        // Every dialog shows as "activeDialog", so the key and cacheable={false} are what give each
+        // one a model of its own. Sharing one, a nested dialog took over the model of the dialog
+        // beneath it, whose `init` — the OK button's verb and colour — never ran again, and the
+        // nested dialog wore the other's button. Uncached, a dialog brought back when the one above
+        // it closes starts from its own parameters again.
         const newDialog = (
             <AlertDialog
+                key={++model.__dialogCount}
+                cacheable={false}
                 id={"activeDialog"}
                 titleView={title}
                 contentView={message}

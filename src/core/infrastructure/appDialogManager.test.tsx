@@ -282,11 +282,11 @@ describe("AppDialogManager", () => {
             expect(within(dialogElement()).getByText("Outer question")).toBeInTheDocument();
         });
 
-        // BUG: every dialog is rendered as the same AlertDialog ("activeDialog") at the same place,
-        // so a nested dialog re-uses the model of the one beneath. Its `init` param — where the OK
-        // button gets its verb and colour — never runs again, and the nested dialog shows the
-        // previous dialog's button (appDialogManager.tsx:66-83).
-        it.fails("gives a nested action confirmation its own verb and danger tint", async () => {
+        // Regression: every dialog was rendered as the same AlertDialog model ("activeDialog") at the
+        // same place, so a nested dialog re-used the model of the one beneath. Its `init` param — where
+        // the OK button gets its verb and colour — never ran again, and the nested dialog showed the
+        // previous dialog's button.
+        it("gives a nested action confirmation its own verb and danger tint", async () => {
             await mountDialogManager();
             await open(() => appMessageBus.unicast("Dialog.Custom", { title: "Edit", content: "Form", okText: "Apply" }));
 
@@ -294,6 +294,38 @@ describe("AppDialogManager", () => {
 
             expect(footerButtons()).toEqual(["Cancel", "Delete"]);
             expect(button("Delete").style.getPropertyValue("--button-color")).toBe("var(--error)");
+        });
+
+        it("gives the dialog beneath its own button back when the nested one closes", async () => {
+            await mountDialogManager();
+            const outer = await open(() => appMessageBus.unicast("Dialog.ActionConfirmation", { title: "Delete", message: "Really?", action: "Delete" }));
+            const inner = await open(() => appMessageBus.unicast("Dialog.Custom", { title: "Edit", content: "Form", okText: "Apply" }));
+            expect(footerButtons()).toEqual(["Apply"]);
+
+            fireEvent.click(button("Apply"));
+            expect(await inner.promise).toBe(true);
+            await settle();
+
+            expect(footerButtons()).toEqual(["Cancel", "Delete"]);
+            expect(button("Delete").style.getPropertyValue("--button-color")).toBe("var(--error)");
+            fireEvent.click(button("Delete"));
+            expect(await outer.promise).toBe(true);
+        });
+
+        // A dialog's own state goes with it: the next one does not open showing the last one's details.
+        it("opens each dialog fresh, not with the details panel an earlier one left open", async () => {
+            await mountDialogManager();
+            const first = await open(() => appMessageBus.unicast("Dialog.Error", { title: "Failed", message: "Boom", details: "trace one" }));
+            fireEvent.click(button("Show details"));
+            await settle();
+
+            await act(async () => { await appMessageBus.unicast("Dialog.Close"); });
+            await first.promise;
+            expect(first.isSettled()).toBe(true);
+            await open(() => appMessageBus.unicast("Dialog.Error", { title: "Failed again", message: "Boom", details: "trace two" }));
+
+            expect(dialogElement().parentElement).not.toHaveClass("dialog-hidden");
+            expect(screen.queryByText("trace one")).toBeNull();
         });
     });
 
