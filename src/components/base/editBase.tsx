@@ -49,7 +49,10 @@ function useEditBase<T extends EditBasePartialStruct>(extStruct?: T, params?: Ed
             },
 
             validate: async (errorText?: string) => {
-                await Promise.all(model.modelsToValidate?.map(x => x.validate()));
+                // An unset list validates nothing, as it reads in getValidationError and
+                // resetValidationErrors. Promise.all(undefined) rejected, so a composite whose list
+                // was unset — a TabsContainer whose tabs were not there yet — could not validate.
+                await Promise.all((model.modelsToValidate ?? []).map(x => x.validate()));
                 model._internalValidationError = await model.onInternalValidate?.();
                 if (model._internalValidationError) {
                     return;

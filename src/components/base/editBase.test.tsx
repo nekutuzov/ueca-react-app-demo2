@@ -168,11 +168,11 @@ describe("useEditBase validation", () => {
             expect(form.getValidationError()).toBeUndefined();
         });
 
-        // BUG: getValidationError and resetValidationErrors read modelsToValidate optionally (?.),
-        // but validate() hands `modelsToValidate?.map(...)` straight to Promise.all, which rejects on
-        // undefined. A composite whose list is unset — TabsContainer copies its `tabs` into it —
-        // cannot validate at all.
-        it.fails("validates with modelsToValidate unset, as its other methods already allow", async () => {
+        // Regression: getValidationError and resetValidationErrors read modelsToValidate optionally
+        // (?.), but validate() handed `modelsToValidate?.map(...)` straight to Promise.all, which
+        // rejects on undefined. A composite whose list was unset — TabsContainer copies its `tabs`
+        // into it — could not validate at all.
+        it("validates with modelsToValidate unset, as its other methods already allow", async () => {
             const field = await mountField("field", { onInternalValidate: async () => "Required" });
             field.modelsToValidate = undefined;
 
