@@ -198,6 +198,14 @@ class RestApiClient implements IRestApiClient {
                 throw new Error(`${response.statusText}`);
             }
         }
+
+        // An error with nothing to read is still an error: a body declared empty (a server's bare
+        // 500), or one already read with no status text (HTTP/2 sends none). Falling out of the
+        // checks above resolved it as undefined, and the caller carried on as if it had succeeded.
+        if (!response.ok) {
+            const status = `${response.status}${response.statusText ? ` ${response.statusText}` : ""}`;
+            throw new DetailedError(response.statusText || `HTTP ${response.status}`, `The server responded with ${status}.`);
+        }
     }
 
     private _getAcceptHeaderValue(returnsStream?: boolean): string {

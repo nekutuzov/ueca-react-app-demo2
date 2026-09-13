@@ -333,13 +333,28 @@ describe("RestApiClient", () => {
             expect(onUnauthorized).not.toHaveBeenCalled();
         });
 
-        // BUG: the error path only throws when the body is not declared empty and has no else
-        // (restApiClient.ts:186-195), so a 500 with content-length 0 RESOLVES undefined and the
-        // caller carries on as if the request had succeeded.
-        it.fails("rejects an error response whose body is declared empty", async () => {
-            serve(() => new Response(null, { status: 500, statusText: "Internal Server Error", headers: { "content-length": "0" } }));
+        // Regression: the error path threw only when there was a body to read, and nothing followed
+        // it, so an error with an empty body — a 500 declared content-length 0, which is what a server
+        // sends for an unhandled exception it has no error page for — RESOLVED undefined, and the
+        // caller carried on as if the request had succeeded.
+        it.each([
+            [500, "Internal Server Error"],
+            [404, "Not Found"]
+        ])("rejects a %i whose body is declared empty", async (status, statusText) => {
+            serve(() => new Response(null, { status, statusText, headers: { "content-length": "0" } }));
 
-            await expect(createRestAPIClient(BASE).get("/boom")).rejects.toMatchObject({ name: "Internal Server Error" });
+            const error = await rejectionOf(createRestAPIClient(BASE).post("/orders/7", {}, {}));
+
+            expect(error).toBeInstanceOf(DetailedError);
+            expect(error).toMatchObject({ name: statusText, message: `The server responded with ${status} ${statusText}.` });
+        });
+
+        it("reports an empty 401 to onUnauthorizedResponse and still rejects", async () => {
+            serve(() => new Response(null, { status: 401, statusText: "Unauthorized", headers: { "content-length": "0" } }));
+            const onUnauthorized = vi.fn();
+
+            await expect(createRestAPIClient(BASE, onUnauthorized).get("/me")).rejects.toMatchObject({ name: "Unauthorized" });
+            expect(onUnauthorized).toHaveBeenCalledOnce();
         });
 
         it("reports the status text when the error body has already been read", async () => {
@@ -350,6 +365,21 @@ describe("RestApiClient", () => {
             });
 
             await expect(createRestAPIClient(BASE).get("/status")).rejects.toThrow("Service Unavailable");
+        });
+
+        // Regression: the same fall-through resolved an error whose body had been read when it had no
+        // status text to report, and HTTP/2 responses never carry one.
+        it("rejects an error whose body has been read and that has no status text, naming the status", async () => {
+            serve(async () => {
+                const response = new Response("down for maintenance", { status: 503 });
+                await response.text();
+                return response;
+            });
+
+            await expect(createRestAPIClient(BASE).get("/status")).rejects.toMatchObject({
+                name: "HTTP 503",
+                message: "The server responded with 503."
+            });
         });
 
         it("wraps a network failure in a Connection Error that names the URL", async () => {
