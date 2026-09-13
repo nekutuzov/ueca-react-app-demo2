@@ -34,6 +34,9 @@ type EditDrawerStruct = EditBaseStruct<{
         // The pending showModal() resolver. A prop, not a closure variable: the model is what
         // survives re-renders.
         __resolveShowModal: (value: boolean) => void;
+        // Set when a footer button closes the drawer, having already settled the outcome. Cleared on
+        // every opening, so a button whose hide() closed nothing cannot mark the next close.
+        __closedByFooter: boolean;
     };
 
     children: {
@@ -75,7 +78,8 @@ function useEditDrawer(params?: EditDrawerParams): EditDrawerModel {
             footerView: undefined,
             showDeleteButton: false,
             deleteConfirmation: true,
-            width: undefined
+            width: undefined,
+            __closedByFooter: false
         },
 
         children: {
@@ -86,14 +90,21 @@ function useEditDrawer(params?: EditDrawerParams): EditDrawerModel {
                 titleView: () => model.titleView,
                 contentView: () => model.contentView,
                 actionView: () => <model._FooterView />,
-                onOpen: async () => await model.onOpen?.(),
-                // The close X and the backdrop both land here. An edit drawer treats that as a
-                // cancel.
+                onOpen: async () => {
+                    model.__closedByFooter = false;
+                    await model.onOpen?.();
+                },
+                // Every close lands here — the × and the backdrop, the owner's hide(), and the footer's
+                // buttons, which close through hide() too. Only a close no button made is a dismissal,
+                // which an edit drawer treats as a cancel. Treating them all as one raised onCancel after
+                // a Save or a Delete and twice for a Cancel, and turned a view drawer's OK into false.
                 onClose: async () => {
-                    if (model.mode === "edit") {
-                        await model.onCancel?.();
+                    if (!model.__closedByFooter) {
+                        if (model.mode === "edit") {
+                            await model.onCancel?.();
+                        }
+                        _resolveShowModal(false);
                     }
-                    _resolveShowModal(false);
                     await model.onClose?.();
                 }
             }),
@@ -109,8 +120,7 @@ function useEditDrawer(params?: EditDrawerParams): EditDrawerModel {
                     }
                     const deleted = await model.onDelete?.();
                     if (deleted) {
-                        model.hide();
-                        _resolveShowModal(false);
+                        _closeFromFooter(false);
                     }
                 }
             }),
@@ -122,8 +132,7 @@ function useEditDrawer(params?: EditDrawerParams): EditDrawerModel {
                 skipConfirmation: true,
                 onClick: async () => {
                     await model.onCancel?.();
-                    model.hide();
-                    _resolveShowModal(false);
+                    _closeFromFooter(false);
                 }
             }),
 
@@ -135,8 +144,7 @@ function useEditDrawer(params?: EditDrawerParams): EditDrawerModel {
                         return;
                     }
                     await model.onSave?.();
-                    model.hide();
-                    _resolveShowModal(true);
+                    _closeFromFooter(true);
                 }
             }),
 
@@ -144,10 +152,7 @@ function useEditDrawer(params?: EditDrawerParams): EditDrawerModel {
                 contentView: "OK",
                 variant: "contained",
                 size: "small",
-                onClick: () => {
-                    model.hide();
-                    _resolveShowModal(true);
-                }
+                onClick: () => _closeFromFooter(true)
             })
         },
 
@@ -195,6 +200,14 @@ function useEditDrawer(params?: EditDrawerParams): EditDrawerModel {
             model.__resolveShowModal(value);
             model.__resolveShowModal = undefined;
         }
+    }
+
+    // A footer button's close: the button knows the outcome, so it settles showModal() itself and
+    // marks the close as its own before the drawer's close handler runs.
+    function _closeFromFooter(result: boolean) {
+        model.__closedByFooter = true;
+        _resolveShowModal(result);
+        model.hide();
     }
 }
 

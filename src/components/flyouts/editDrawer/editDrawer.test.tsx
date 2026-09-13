@@ -187,11 +187,11 @@ describe("EditDrawer", () => {
             expect(onCancel).not.toHaveBeenCalled();
         });
 
-        // BUG: "showModal() resolves true when the user saved (or acknowledged a view drawer)" —
-        // but OK's hide() synchronously runs the drawer's close handler, which settles the promise
-        // with false before OK can settle it with true. (Save escapes this only because, in edit
-        // mode, that handler awaits onCancel first.)
-        it.fails("resolves true when a view drawer is acknowledged with OK", async () => {
+        // Regression: "showModal() resolves true when the user saved (or acknowledged a view drawer)" —
+        // but OK's hide() synchronously ran the drawer's close handler, which settled the promise with
+        // false before OK could settle it with true. (Save escaped this only because, in edit mode,
+        // that handler awaited onCancel first.)
+        it("resolves true when a view drawer is acknowledged with OK", async () => {
             const { model } = await mount(EditDrawer, { id: "ed", mode: "view" });
             const outcome = await openModal(model);
 
@@ -316,12 +316,11 @@ describe("EditDrawer", () => {
         });
     });
 
-    // BUG: every close of the underlying drawer runs its "× / backdrop is a cancel" handler, and
-    // Save, Cancel and a successful Delete all close it through hide() — so the owner's onCancel
-    // also fires after a save, twice for one Cancel, and after a delete. showModal() still
-    // resolves correctly only because the button settles it first.
+    // Regression: every close of the underlying drawer ran its "× / backdrop is a cancel" handler,
+    // and Save, Cancel and a successful Delete all close it through hide() — so the owner's onCancel
+    // also fired after a save, twice for one Cancel, and after a delete.
     describe("onCancel is raised only when the user cancels", () => {
-        it.fails("is not raised by a successful Save", async () => {
+        it("is not raised by a successful Save", async () => {
             const onCancel = vi.fn();
             const { model } = await mount(EditDrawer, { id: "ed", mode: "edit", onCancel });
             await openModal(model);
@@ -331,7 +330,7 @@ describe("EditDrawer", () => {
             expect(onCancel).not.toHaveBeenCalled();
         });
 
-        it.fails("is raised once by Cancel", async () => {
+        it("is raised once by Cancel", async () => {
             const onCancel = vi.fn();
             const { model } = await mount(EditDrawer, { id: "ed", mode: "edit", onCancel });
             await openModal(model);
@@ -341,7 +340,7 @@ describe("EditDrawer", () => {
             expect(onCancel).toHaveBeenCalledOnce();
         });
 
-        it.fails("is not raised by a confirmed Delete", async () => {
+        it("is not raised by a confirmed Delete", async () => {
             await stubMessages({ "Dialog.ActionConfirmation": vi.fn(async () => true) });
             const onCancel = vi.fn();
             const { model } = await mount(EditDrawer, {
@@ -352,6 +351,23 @@ describe("EditDrawer", () => {
             await clickInDrawer("Delete");
 
             expect(onCancel).not.toHaveBeenCalled();
+        });
+
+        // A button's mark on its close lasts until the next opening. Here the owner's onSave hides
+        // the drawer first, so Save's own hide() closes nothing — its mark must not turn the next
+        // opening's × into a button.
+        it("is raised by the × of the next opening after a Save whose hide() closed nothing", async () => {
+            const onCancel = vi.fn();
+            const { model } = await mount(EditDrawer, { id: "ed", mode: "edit", onCancel, onSave: () => model.hide() });
+            await openModal(model);
+            await clickInDrawer("Save");
+            onCancel.mockClear();
+
+            const outcome = await openModal(model);
+            await clickInDrawer("Close");
+
+            expect(onCancel).toHaveBeenCalledOnce();
+            expect(outcome).toEqual({ settled: true, result: false });
         });
     });
 });
