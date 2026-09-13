@@ -201,14 +201,16 @@ class RestApiClient implements IRestApiClient {
         }
         
         if (!response.bodyUsed) {
-            if (!this._isContentLengthIsZero(response)) {
+            // Read as text first, as a success is: an empty body need not declare content-length 0.
+            // Parsed as JSON it rejected with a SyntaxError, and read as text it gave a blank
+            // message, where an empty error should name its status below.
+            const errorText = this._isContentLengthIsZero(response) ? "" : await response.text();
+            if (errorText) {
                 if (this._isJson(response)) {
-                    const errorObject = await response.json();
+                    const errorObject = JSON.parse(errorText);
                     throw new DetailedError(response.statusText, errorObject.errorText, errorObject.errorDetails, errorObject.errorCallStack);
-                } else {
-                    const errorText = await response.text();
-                    throw new DetailedError(response.statusText, errorText);
                 }
+                throw new DetailedError(response.statusText, errorText);
             }
         } else {
             if (response.statusText) {

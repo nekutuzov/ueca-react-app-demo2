@@ -415,11 +415,11 @@ describe("RestApiClient", () => {
             });
         });
 
-        // BUG: the error path reads a body unless it is declared empty, but an empty body need not
-        // declare content-length 0 — the gap the success path had for 204 (restApiClient.ts:193-199).
-        // Declared JSON, it rejects with SyntaxError "Unexpected end of JSON input"; otherwise with a
-        // blank message, and on HTTP/2, which sends no status text, a blank name as well.
-        it.fails.each([
+        // Regression: the error path read a body unless it was declared empty, but an empty body need not
+        // declare content-length 0 — the gap the success path had for 204. Declared JSON, it rejected
+        // with SyntaxError "Unexpected end of JSON input"; otherwise with a blank message, and on HTTP/2,
+        // which sends no status text, a blank name as well.
+        it.each([
             ["declared JSON", { "content-type": "application/json" }],
             ["of no declared type", {}]
         ])("names the status for an error whose empty body is %s but not declared empty", async (_case, headers) => {
@@ -429,6 +429,15 @@ describe("RestApiClient", () => {
 
             expect(error).toBeInstanceOf(DetailedError);
             expect(error).toMatchObject({ name: "Internal Server Error", message: "The server responded with 500 Internal Server Error." });
+        });
+
+        it("names the status of an empty HTTP/2 error, which has no status text", async () => {
+            serve(() => new Response(null, { status: 502 }));
+
+            await expect(createRestAPIClient(BASE).get("/boom")).rejects.toMatchObject({
+                name: "HTTP 502",
+                message: "The server responded with 502."
+            });
         });
 
         it("wraps a network failure in a Connection Error that names the URL", async () => {
