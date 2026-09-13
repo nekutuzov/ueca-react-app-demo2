@@ -185,10 +185,10 @@ describe("Spinner", () => {
             expect(numericAttribute(track(), "stroke-dashoffset")).toBeCloseTo(0, 6);
         });
 
-        // BUG: stroke-dashoffset only moves a dash PATTERN, and the determinate circle gets no
-        // stroke-dasharray (only the indeterminate one does), so a determinate spinner draws a full
-        // ring whatever its value — the offset computed for it has nothing to shift.
-        it.fails("gives the determinate arc a dash pattern one ring long, so the offset shows the value", async () => {
+        // Regression: stroke-dashoffset only moves a dash PATTERN, and the determinate circle got no
+        // stroke-dasharray (only the indeterminate one did), so a determinate spinner drew a full ring
+        // whatever its value — the offset computed for it had nothing to shift.
+        it("gives the determinate arc a dash pattern one ring long, so the offset shows the value", async () => {
             const { model } = await mount(Spinner, { id: "spinner", variant: "determinate", thickness: 4, value: 25 });
             model.visible = true;
             await settle();

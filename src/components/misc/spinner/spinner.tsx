@@ -91,7 +91,10 @@ function useSpinner(params?: SpinnerParams): SpinnerModel {
                             fill="none"
                             stroke={resolvePaletteColor(model.color)}
                             strokeWidth={strokeWidth}
-                            strokeDasharray={model.variant === "indeterminate" ? circumference : undefined}
+                            // One ring-long dash in both variants. The offset only slides a dash
+                            // pattern, so a determinate ring without one drew in full whatever its
+                            // value; the indeterminate animation overrides the pattern in CSS.
+                            strokeDasharray={circumference}
                             strokeDashoffset={model.variant === "indeterminate" ? undefined : strokeDashoffset}
                             strokeLinecap="round"
                             className={`ueca-spinner-track ${model.variant}`}
