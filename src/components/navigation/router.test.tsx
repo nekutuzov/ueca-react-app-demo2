@@ -57,12 +57,17 @@ describe("routeKey", () => {
         expect(routeKey({ path: "/users/:id", params: { id: 0 } })).toBe("/users/0");
     });
 
-    // BUG: the token pattern /:([^/?]+)/ is not tied to a path segment (router.tsx:46), so a port
-    // or a mailto address reads as a ":param" and is deleted: https://host:8443/guide keys as
-    // https://host/guide, and every mailto: route keys as "mailto".
-    it.fails("keeps the colon of a port or a scheme, which is not a path token", () => {
+    // Regression: the token pattern /:([^/?]+)/ was not tied to the path, so a port or a mailto
+    // address read as a ":param" and was deleted: https://host:8443/guide keyed as https://host/guide,
+    // and every mailto: route keyed as "mailto".
+    it("keeps the colon of a port or a scheme, which is not a path token", () => {
         expect(routeKey({ path: "https://docs.example.com:8443/guide" })).toBe("https://docs.example.com:8443/guide");
         expect(routeKey({ path: "mailto:someone@example.com" })).toBe("mailto:someone@example.com");
+    });
+
+    it("still substitutes the path tokens of an absolute or origin-root route", () => {
+        expect(routeKey({ path: "https://docs.example.com:8443/guide/:page", params: { page: "intro" } })).toBe("https://docs.example.com:8443/guide/intro");
+        expect(routeKey({ path: "//admin/:section", params: { section: "users" } })).toBe("//admin/users");
     });
 });
 

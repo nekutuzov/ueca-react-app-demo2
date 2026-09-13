@@ -43,8 +43,16 @@ function routeKey(route: AnyRoute): string {
         return "";
     }
     const path = route.path.split("?")[0]; // drop the query pattern; query params don't affect screen identity
-    return path.replace(/:([^/?]+)/g, (_m, name) => String(route.params?.[name] ?? ""));
+    // Tokens are substituted after the scheme and host only. Matched over the whole address, the
+    // pattern read a port or a mailto: scheme as a ":param" and deleted it: https://host:8443/guide
+    // keyed as https://host/guide, and every mailto: route keyed as "mailto".
+    const origin = path.match(ROUTE_ORIGIN)?.[0] ?? "";
+    return origin + path.slice(origin.length).replace(/:([^/?]+)/g, (_m, name) => String(route.params?.[name] ?? ""));
 }
+
+// The scheme and host that start an absolute route ("https://host:8443", "mailto:"), where a colon is
+// not a token.
+const ROUTE_ORIGIN = /^[a-z][a-z\d+.-]*:(?:\/\/[^/?#]*)?/i;
 
 type RouterParams = UIBaseParams<RouterStruct>;
 type RouterModel = UIBaseModel<RouterStruct>;
