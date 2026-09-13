@@ -96,10 +96,10 @@ describe("Notebook", () => {
             expect(closeAll(model)).toEqual([undefined]);
         });
 
-        // BUG: open() documents a history reset, but it clears the stack BEFORE assigning the new
-        // active page, and onChangingActivePage then pushes the page that was showing — so the page
-        // active before open() stays reachable through closeLastPage().
-        it.fails("resets the history, so the page showing before open() is not stepped back to", async () => {
+        // Regression: open() documents a history reset, but it cleared the stack BEFORE assigning the
+        // new active page, and onChangingActivePage then pushed the page that was showing — so the page
+        // active before open() stayed reachable through closeLastPage().
+        it("resets the history, so the page showing before open() is not stepped back to", async () => {
             const { model } = await mount(Notebook, { id: "notebook", pages: PAGES, activePage: "summary" });
 
             model.open("list", "edit");

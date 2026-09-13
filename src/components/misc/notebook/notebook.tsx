@@ -55,6 +55,10 @@ function useNotebook<T extends string = string>(params?: NotebookParams<T>): Not
                 model.history = true;
                 pages = pages.filter(p => !!p);
                 model.activePage = pages.pop();
+                // Cleared again now the page is assigned: onChangingActivePage has just recorded the
+                // page that was showing, which a reset must not keep. Cleared only before, that page
+                // stayed reachable through closeLastPage().
+                _historyClear();
                 _historyPush(...pages);
             },
 
