@@ -6,8 +6,8 @@ import {
 } from "@components";
 import { Palette, asyncSafe, resolvePaletteColor } from "@core";
 import {
-    PAGE_STEP, firstEnabledIndex, isTypeAheadKey, lastEnabledIndex, nextTypeAheadBuffer, stepIndex,
-    typeAheadIndex
+    PAGE_STEP, TYPE_AHEAD_RESET_MS, firstEnabledIndex, isTypeAheadKey, lastEnabledIndex, nextTypeAheadBuffer,
+    stepIndex, typeAheadIndex
 } from "./selectNavigation";
 import "./select.css";
 
@@ -377,7 +377,7 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
             return;
         }
 
-        if (e.key === "Enter" || (e.key === " " && !model._typeAhead)) {
+        if (e.key === "Enter" || (e.key === " " && !_typingWord())) {
             e.preventDefault();
             if (open) {
                 _choose(model._activeIndex);
@@ -428,6 +428,13 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
             _commit(target);
         }
         return true;
+    }
+
+    // Whether a type-ahead word is still being typed, so that Space belongs to it ("New Zealand")
+    // rather than choosing. The buffer is cleared only when the list opens or closes, so it is not
+    // enough on its own: after the reset pause it is stale, and Space chooses again.
+    function _typingWord(): boolean {
+        return !!model._typeAhead && Date.now() - model._typeAheadAt <= TYPE_AHEAD_RESET_MS;
     }
 
     function _typeAhead(e: React.KeyboardEvent<HTMLButtonElement>) {

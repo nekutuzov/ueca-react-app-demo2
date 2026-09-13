@@ -97,8 +97,9 @@ function nextTypeAheadBuffer(buffer: string, key: string, elapsedMs: number): st
 }
 
 // A key that should feed type-ahead rather than being treated as a command. Space is deliberately
-// excluded by the CALLER when the buffer is empty (there it commits the active row), but included
-// once a word is being typed — "NEW ZEALAND" is unreachable otherwise.
+// excluded by the CALLER when no word is being typed — the buffer empty, or stale after the reset
+// pause (there it commits the active row) — but included while one is, or "NEW ZEALAND" is
+// unreachable.
 function isTypeAheadKey(key: string): boolean {
     return key.length === 1 && key !== "\t";
 }

@@ -586,12 +586,12 @@ describe("Select", () => {
             expect(model.value).toBe("apple");
         });
 
-        // BUG: Space chooses the active row only while the type-ahead buffer is EMPTY, and the buffer
-        // is cleared only on open/close — never by the reset timeout. After typing "b" and pausing,
-        // no word is being typed any more, yet the stale buffer still sends Space to type-ahead, where
-        // it starts a new word " " that matches nothing and leaves the key to the button, whose native
-        // click toggles the list shut without choosing.
-        it.fails("chooses the active row with Space after a pause in typing", async () => {
+        // Regression: Space chose the active row only while the type-ahead buffer was EMPTY, and the
+        // buffer is cleared only on open/close — never by the reset timeout. After typing "b" and
+        // pausing, no word was being typed any more, yet the stale buffer still sent Space to
+        // type-ahead, where it started a new word " " that matched nothing and left the key to the
+        // button, whose native click toggled the list shut without choosing.
+        it("chooses the active row with Space after a pause in typing", async () => {
             freezeClock();
             const { model } = await mount(Select, { id: "s", options: BERRIES });
             await openByClick();
@@ -603,6 +603,22 @@ describe("Select", () => {
 
             expect(model.value).toBe("banana");
             expect(listbox()).toBeNull();
+        });
+
+        // A closed select opens on Space after a pause, as a native one does. It did before that fix
+        // too, but only because the key fell through to the button's own click.
+        it("opens a closed select with Space after a pause in typing", async () => {
+            freezeClock();
+            const { model } = await mount(Select, { id: "s", options: BERRIES });
+            focusTrigger();
+            await userEvent.keyboard("b");
+            expect(model.value).toBe("banana");
+
+            vi.setSystemTime(10_000 + 5_000);
+            await userEvent.keyboard(" ");
+
+            expect(listbox()).not.toBeNull();
+            expect(option("Banana")).toHaveClass("active");
         });
     });
 
