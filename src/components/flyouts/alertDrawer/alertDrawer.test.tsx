@@ -112,10 +112,10 @@ describe("AlertDrawer", () => {
             expect(onClose).toHaveBeenCalledExactlyOnceWith(false, model);
         });
 
-        // BUG: closeResult is set by OK/Cancel but never reset when the drawer opens again (the
-        // AlertDialog resets its own on open for exactly this reason), so dismissing a reopened
-        // drawer with the × reports the PREVIOUS answer — an earlier OK comes back as true.
-        it.fails("reports false from the × even after an earlier OK", async () => {
+        // Regression: closeResult was set by OK/Cancel but never reset when the drawer opened again
+        // (the AlertDialog resets its own on open for exactly this reason), so dismissing a reopened
+        // drawer with the × reported the PREVIOUS answer — an earlier OK came back as true.
+        it("reports false from the × even after an earlier OK", async () => {
             const onClose = vi.fn();
             const { model } = await mount(AlertDrawer, { id: "ald", open: true, buttons: { okCancel: true }, onClose });
             await clickInDrawer("OK");

@@ -76,6 +76,10 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
                 width: () => model.width,
                 open: UECA.bind(() => model, "open"),
                 onOpen: () => {
+                    // Each opening starts unanswered, as AlertDialog's does. OK and Cancel set the
+                    // result and nothing reset it, so the × on a reopened drawer reported the
+                    // previous answer — an earlier OK came back as true.
+                    model.closeResult = false;
                     model.enterModalMode();
                     model.onOpen?.(model);
                 },
