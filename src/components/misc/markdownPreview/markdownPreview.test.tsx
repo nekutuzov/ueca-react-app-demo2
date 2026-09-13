@@ -166,10 +166,43 @@ describe("MarkdownPreview", () => {
         });
     });
 
-    // BUG: skipHtml never takes effect. @uiw/react-markdown-preview always adds rehype-raw to its
-    // plugin list, so raw HTML in the source renders whatever skipHtml says.
-    it.fails("does not render raw HTML when skipHtml is set", async () => {
+    // Regression: skipHtml never took effect. @uiw/react-markdown-preview always adds rehype-raw to its
+    // plugin list, so raw HTML in the source rendered whatever skipHtml said.
+    it("does not render raw HTML when skipHtml is set", async () => {
         await mount(MarkdownPreview, { id: "doc", source: "Plain <mark>raw html</mark> text", skipHtml: true });
+
+        expect(document.getElementById("doc").querySelector("mark")).toBeNull();
+    });
+
+    it("keeps the text between skipped tags, drops an HTML block, and leaves HTML in code alone", async () => {
+        const source = [
+            "Plain <mark>raw html</mark> text",
+            "",
+            "<div class=\"banner\">A banner</div>",
+            "",
+            "Inline `<b>code</b>` stays.",
+            "",
+            "```html",
+            "<i>listing</i>",
+            "```"
+        ].join("\n");
+
+        await mount(MarkdownPreview, { id: "doc", source, skipHtml: true });
+
+        const root = document.getElementById("doc");
+        expect(root).toHaveTextContent("Plain raw html text");
+        expect(root.querySelector(".banner")).toBeNull();
+        expect(root).not.toHaveTextContent("A banner");
+        expect(root.querySelector("code")).toHaveTextContent("<b>code</b>");
+        expect(root.querySelector("pre code")).toHaveTextContent("<i>listing</i>");
+    });
+
+    it("renders raw HTML while skipHtml is off, and stops once it is set", async () => {
+        const { model } = await mount(MarkdownPreview, { id: "doc", source: "Plain <mark>raw html</mark> text" });
+        expect(document.getElementById("doc").querySelector("mark")).toHaveTextContent("raw html");
+
+        model.skipHtml = true;
+        await settle();
 
         expect(document.getElementById("doc").querySelector("mark")).toBeNull();
     });
