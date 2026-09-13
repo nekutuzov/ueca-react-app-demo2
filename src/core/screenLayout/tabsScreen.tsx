@@ -59,14 +59,21 @@ function useTabsScreen(params?: TabsScreenParams): TabsScreenModel {
             tabsContainer: useTabsContainer()
         },
 
+        // Every CRUDScreenMethods member the model's type promises. add, goToParentScreen,
+        // scheduleSetRoute and scheduleGoToRoute were missing, so a call that type-checked threw
+        // "is not a function".
         methods: {
             getScreenState: () => model.crudScreen.getScreenState(),
             setScreenState: (state) => model.crudScreen.setScreenState(state),
+            add: async () => await model.crudScreen.add(),
             refresh: async () => await model.crudScreen.refresh(),
             save: async () => await model.crudScreen.save(),
             cancel: async () => await model.crudScreen.cancel(),
             delete: async () => await model.crudScreen.delete(),
             validateScreen: async (showDialog) => await model.crudScreen.validateScreen(showDialog),
+            goToParentScreen: async (redirect) => await model.crudScreen.goToParentScreen(redirect),
+            scheduleSetRoute: (route) => model.crudScreen.scheduleSetRoute(route),
+            scheduleGoToRoute: (route) => model.crudScreen.scheduleGoToRoute(route),
             resetValidationErrors: () => model.crudScreen.resetValidationErrors()
         },
 

@@ -197,10 +197,10 @@ describe("TabsScreen", () => {
         expect(onAdd).toHaveBeenCalledOnce();
     });
 
-    // BUG: TabsScreenModel's type promises every CRUDScreenMethods member, but the struct forwards
-    // only some of them; add, goToParentScreen, scheduleSetRoute and scheduleGoToRoute are undefined
-    // at runtime, so a call that type-checks throws "is not a function" (tabsScreen.tsx:59-68).
-    it.fails("goes to the parent screen like the CRUD screen it wraps", async () => {
+    // Regression: TabsScreenModel's type promises every CRUDScreenMethods member, but the struct
+    // forwarded only some of them; add, goToParentScreen, scheduleSetRoute and scheduleGoToRoute were
+    // undefined at runtime, so a call that type-checked threw "is not a function".
+    it("goes to the parent screen like the CRUD screen it wraps", async () => {
         const bus = await stubServices();
         const { screenModel } = await mountTabsScreen();
 
@@ -208,6 +208,22 @@ describe("TabsScreen", () => {
         await settle();
 
         expect(bus["App.Router.GoToRoute"]).toHaveBeenCalledExactlyOnceWith(TRAIL[1].route);
+    });
+
+    it("adds and schedules routes like the CRUD screen it wraps", async () => {
+        const bus = await stubServices();
+        const setRoute = (await stubMessages({ "App.Router.SetRoute": vi.fn(async () => true) }))["App.Router.SetRoute"];
+        const onAdd = vi.fn(async () => { });
+        const { screenModel } = await mountTabsScreen({ onAdd });
+
+        await screenModel.add();
+        screenModel.scheduleSetRoute({ path: "/home" });
+        screenModel.scheduleGoToRoute({ path: "/showcase/overview" });
+        await settle(20);
+
+        expect(onAdd).toHaveBeenCalledOnce();
+        expect(setRoute).toHaveBeenCalledExactlyOnceWith({ path: "/home" });
+        expect(bus["App.Router.GoToRoute"]).toHaveBeenCalledExactlyOnceWith({ path: "/showcase/overview" });
     });
 
     // BUG: contentPaddings is part of TabsScreen's props type (Omit<CRUDScreenProps, "contentView">)
