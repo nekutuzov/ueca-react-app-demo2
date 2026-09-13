@@ -224,12 +224,11 @@ describe("AppRouter", () => {
             expect(await getRoute()).toEqual(expect.objectContaining({ path: "/showcase/data", section: "table" }));
         });
 
-        // BUG: an absolute URL is an OtherLayout route, so GoToRoute makes OtherLayout — whose
-        // routes render nothing — the active layout (appRouter.tsx:66-67, 92-93), while
-        // AppBrowsingHistory diverts the foreign URL to a new tab. The screen on show is replaced by
-        // a blank page. appRoutes.tsx: "an absolute URL opens in a new tab and never mounts
-        // OtherLayout".
-        it.fails("opens an external route without blanking the screen on show", async () => {
+        // Regression: an absolute URL is an OtherLayout route, so GoToRoute made OtherLayout — whose
+        // routes render nothing — the active layout, while AppBrowsingHistory diverted the foreign URL
+        // to a new tab. The screen on show was replaced by a blank page. appRoutes.tsx: "an absolute URL
+        // opens in a new tab and never mounts OtherLayout".
+        it("opens an external route without blanking the screen on show", async () => {
             document.head.appendChild(Object.assign(document.createElement("base"), { href: `${BASE}/` }));
             history.replaceState(null, "", `${BASE}/home`);
             await mount(AppBrowsingHistory, { id: "history" });
@@ -241,6 +240,24 @@ describe("AppRouter", () => {
             expect(newTab).toHaveBeenCalledWith("https://github.com/nekutuzov/ueca-react-app-demo2", "_blank", "noopener,noreferrer");
             expect(model._activeLayout?.id).toBe("appLayout");
             expect(shownScreen()).toBe("homeScreen");
+        });
+
+        // Nothing on show is left, so there is nothing for a guard to veto or to announce.
+        it.each([
+            ["GoToRoute", goToRoute],
+            ["SetRoute", setRoute]
+        ])("%s to a foreign address opens a new tab, asking no guard and announcing nothing", async (_message, send) => {
+            const { history, afterRouteChange } = await mountRouter({ path: "/showcase/data" });
+            const beforeRouteChange = await guard(() => false);
+            afterRouteChange.mockClear();
+
+            expect(await send({ path: "mailto:cranesoft@protonmail.com" })).toBe(true);
+
+            expect(history["App.BrowsingHistory.Open"]).toHaveBeenLastCalledWith({ path: { path: "mailto:cranesoft@protonmail.com" }, newTab: true });
+            expect(history["App.BrowsingHistory.Replace"]).not.toHaveBeenCalledWith({ path: { path: "mailto:cranesoft@protonmail.com" } });
+            expect(beforeRouteChange).not.toHaveBeenCalled();
+            expect(afterRouteChange).not.toHaveBeenCalled();
+            expect(shownScreen()).toBe("showcase-data");
         });
     });
 

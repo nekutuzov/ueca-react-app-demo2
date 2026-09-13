@@ -31,9 +31,9 @@ function useAppRouter(params?: AppRouterParams): AppRouterModel {
         messages: {
             "App.Router.GetRoute": async () => ({ ...model._activeLayout?.route }),
 
-            "App.Router.GoToRoute": async (route) => await _changeRoute(route, true),
+            "App.Router.GoToRoute": async (route) => await _goToRoute(route, true),
 
-            "App.Router.SetRoute": async (route) => await _changeRoute(route, false),
+            "App.Router.SetRoute": async (route) => await _goToRoute(route, false),
 
             "App.Router.OpenNewTab": async (route) => await model.bus.unicast("App.BrowsingHistory.Open", { path: route, newTab: true }),
 
@@ -95,6 +95,19 @@ function useAppRouter(params?: AppRouterParams): AppRouterModel {
             return true;
         }
         return false;
+    }
+
+    // A route the app asks for. An address on another origin opens in a new tab and the screen on
+    // show stays: nothing is left, so nothing is asked or announced. Routed like any other, it made
+    // OtherLayout — whose external routes draw nothing — the active layout while the address went to
+    // a new tab, and the whole shell went blank. (Startup and Back/Forward read this page's own
+    // address, which is never foreign.)
+    async function _goToRoute(route: AppRoute, historyTrack: boolean) {
+        if (_isForeign(route)) {
+            await model.bus.unicast("App.BrowsingHistory.Open", { path: UECA.clone(route), newTab: true });
+            return true;
+        }
+        return await _changeRoute(route, historyTrack);
     }
 
     // Patches the address of the screen already on show. Everything here writes THROUGH the live
@@ -178,6 +191,20 @@ function useAppRouter(params?: AppRouterParams): AppRouterModel {
 
     function _withSection(route: AppRoute, section: string): AppRoute {
         return section ? { ...route, section } : route;
+    }
+
+    // An absolute address whose origin is not this one ("https://…" elsewhere, "mailto:…"). App-relative
+    // and origin-root paths start with "/".
+    function _isForeign(route: AppRoute): boolean {
+        const path = route?.path as string;
+        if (!path || path.startsWith("/")) {
+            return false;
+        }
+        try {
+            return new URL(path).origin !== window.location.origin;
+        } catch {
+            return false;
+        }
     }
 }
 

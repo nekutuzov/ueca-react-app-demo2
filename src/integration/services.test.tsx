@@ -225,15 +225,11 @@ describe("App services end to end", { timeout: 20_000 }, () => {
             expect(history.length).toBe(historyLength);
         });
 
-        // BUG: Router.lookupRoute cannot find an external route registered without a path, such as
-        // "https://cranesoft.net" (or "mailto:…"): _prepareRegExRoutes builds the pattern from the
-        // PARSED url, whose pathname is "/", so it demands a trailing slash the registered key does
-        // not have — and a mailto address, parsed as the pathname, is dropped from its pattern
-        // altogether (router.tsx:129-145). AppRouter._changeRoute then takes the address for an
-        // unknown one and routes to Home instead (appRouter.tsx:67-72), adding a history entry — where
-        // appRoutes.tsx and AppBrowsingHistory._divertCrossOrigin promise a new tab for a foreign URL.
-        // Fixing the lookup alone is not enough: the found route then hits the bug pinned below.
-        it.fails("App.Router.GoToRoute to https://cranesoft.net opens the site in a new tab and stays on the screen", async () => {
+        // Regression: Router.lookupRoute could not find an external route registered without a path,
+        // such as "https://cranesoft.net", so AppRouter took the address for an unknown one and routed
+        // to Home instead, adding a history entry — where appRoutes.tsx promises a new tab for a
+        // foreign URL. Fixing the lookup alone was not enough: the found route then hit the bug below.
+        it("App.Router.GoToRoute to https://cranesoft.net opens the site in a new tab and stays on the screen", async () => {
             await renderApp({ url: "/showcase/overview", signedIn: true });
             const open = vi.spyOn(window, "open");
 
@@ -244,12 +240,11 @@ describe("App services end to end", { timeout: 20_000 }, () => {
             expect(await waitForScreen("Overview", { timeout: 500 })).toBeInTheDocument();
         });
 
-        // BUG: for an external route the router does find, AppRouter._changeRoute still makes
-        // OtherLayout the active layout once AppBrowsingHistory has diverted the URL to a new tab
-        // (appRouter.tsx:92-93). That route's view is `() => null`, so the whole shell — menu and
-        // screen — disappears, contradicting appRoutes.tsx: "an absolute URL opens in a new tab and
-        // never mounts OtherLayout".
-        it.fails("App.Router.GoToRoute to a registered external page opens it in a new tab and keeps the shell on show", async () => {
+        // Regression: for an external route the router does find, AppRouter._changeRoute still made
+        // OtherLayout the active layout once AppBrowsingHistory had diverted the URL to a new tab. That
+        // route's view is `() => null`, so the whole shell — menu and screen — disappeared,
+        // contradicting appRoutes.tsx: "an absolute URL opens in a new tab and never mounts OtherLayout".
+        it("App.Router.GoToRoute to a registered external page opens it in a new tab and keeps the shell on show", async () => {
             await renderApp({ url: "/showcase/overview", signedIn: true });
             const open = vi.spyOn(window, "open");
 
