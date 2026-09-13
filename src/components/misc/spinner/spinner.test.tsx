@@ -55,12 +55,23 @@ describe("Spinner", () => {
         expect(spinnerOverlay()).toBeInTheDocument();
     });
 
-    // BUG: _visible is only synchronised from onChangeVisible, which never fires for the value a
-    // spinner is created with, so a spinner mounted visible stays invisible until visible toggles.
-    it.fails("shows a spinner that is visible from the start", async () => {
+    // Regression: _visible was only synchronised from onChangeVisible, which never fires for the value
+    // a spinner is created with, so a spinner mounted visible stayed invisible until visible toggled.
+    it("shows a spinner that is visible from the start", async () => {
         await mount(Spinner, { id: "spinner", visible: true });
         await settle(20);
 
+        expect(spinnerOverlay()).toBeInTheDocument();
+    });
+
+    it("waits out its delayTime when it is visible from the start", async () => {
+        vi.useFakeTimers({ shouldAdvanceTime: true });
+        await mount(Spinner, { id: "spinner", visible: true, delayTime: 500 });
+
+        await advance(400);
+        expect(spinnerOverlay()).toBeNull();
+
+        await advance(200);
         expect(spinnerOverlay()).toBeInTheDocument();
     });
 
