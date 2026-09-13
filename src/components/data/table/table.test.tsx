@@ -765,6 +765,15 @@ describe("Table", () => {
             expect([...ResizeObserverStub.instances].some((o) => o.targets.has(grid()))).toBe(false);
         });
 
+        it("stops observing its size when switched off", async () => {
+            const { model } = await mountTable({ rows: sites(100), virtualized: true });
+
+            model.virtualized = false;
+            await settle();
+
+            expect([...ResizeObserverStub.instances].some((o) => o.targets.has(grid()))).toBe(false);
+        });
+
         // "Clamped, because a filter can shrink the data under a deep scroll position before the
         // clamp-scroll event lands."
         it("still renders the last rows when a filter shrinks the data under a deep scroll position", async () => {
@@ -781,27 +790,29 @@ describe("Table", () => {
             expect(spacerHeights()).toEqual([`${10 * 40}px`]);
         });
 
-        it("falls back to a first page of 30 rows when switched on after mounting, until it scrolls", async () => {
+        // Like mounting virtualized: the window fits the viewport at once. It used to fall back to a
+        // first page of 30 rows until the grid scrolled.
+        it("measures the viewport when switched on after mounting", async () => {
             const { model } = await mountTable({ rows: sites(100), columns: plainColumns });
             const el = grid();
             Object.defineProperty(el, "clientHeight", { configurable: true, value: 400 });
 
             model.virtualized = true;
             await settle();
-            expect(rowKeys()).toHaveLength(30);
-            expect(spacerHeights()).toEqual([`${70 * 40}px`]);
+            expect(rowKeys()).toEqual(sites(28).map((site) => site.id));
+            expect(spacerHeights()).toEqual([`${72 * 40}px`]);
 
             scrollGrid(el, 480);
             await settle();
             expect(rowKeys()).toEqual(sites(34).slice(6).map((site) => site.id));
         });
 
-        // BUG: the ResizeObserver is created only in the `mount` hook, and only when the table is
-        // already virtualized (table.tsx:420-431). A table switched to virtualized later — which the
-        // Table playground's "Virtualized" switch does — never hears about a viewport resize, so its
-        // window stays sized for the old viewport: once the viewport grows past the overscan margin,
-        // the area below the rendered rows stays blank until the next scroll.
-        it.fails("follows viewport resizes when switched to virtualized after mounting", async () => {
+        // Regression: the ResizeObserver was created only in the `mount` hook, and only when the table
+        // was already virtualized. A table switched to virtualized later — which the Table playground's
+        // "Virtualized" switch does — never heard about a viewport resize, so its window stayed sized
+        // for the old viewport: once the viewport grew past the overscan margin, the area below the
+        // rendered rows stayed blank until the next scroll.
+        it("follows viewport resizes when switched to virtualized after mounting", async () => {
             const { model } = await mountTable({ rows: sites(100), columns: plainColumns });
             const el = grid();
             model.virtualized = true;

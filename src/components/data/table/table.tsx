@@ -417,22 +417,28 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
             }
         },
 
+        events: {
+            // The viewport is watched while the table is virtualized, however it got there. Watching
+            // started only in `mount`, so a table switched on afterwards — the Table playground's
+            // "Virtualized" switch — never measured its viewport or heard it resize, and a viewport
+            // grown past the overscan showed a blank band below the rows until the next scroll.
+            onChangeVirtualized: (virtualized) => {
+                if (virtualized) {
+                    _observeViewport();
+                } else {
+                    _stopObservingViewport();
+                }
+            }
+        },
+
         mount: () => {
-            const el = model.__rootRef.current;
-            if (el && model.virtualized) {
-                model.__resizeObserver = new ResizeObserver(() => {
-                    model.__derived.viewportH = el.clientHeight;
-                    updateWindow(model);
-                });
-                model.__resizeObserver.observe(el);
-                model.__derived.viewportH = el.clientHeight;
-                updateWindow(model);
+            if (model.virtualized) {
+                _observeViewport();
             }
         },
 
         unmount: () => {
-            model.__resizeObserver?.disconnect();
-            model.__resizeObserver = undefined;
+            _stopObservingViewport();
             // A row action that navigates away unmounts the row before its mouseleave fires. The
             // model is cached, so without this the table comes back showing a stray action button
             // on a row the pointer is nowhere near.
@@ -479,6 +485,28 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
     // Private methods
     function _isSelectable(): boolean {
         return model.selectable || model.multiSelect;
+    }
+
+    // Sizes the window to the viewport now, and again whenever the viewport resizes. Only a mounted
+    // table has one; an unmounted table is measured when it mounts.
+    function _observeViewport() {
+        const el = model.__rootRef.current;
+        if (!el || model.__resizeObserver) {
+            return;
+        }
+        model.__resizeObserver = new ResizeObserver(() => {
+            model.__derived.viewportH = el.clientHeight;
+            updateWindow(model);
+        });
+        model.__resizeObserver.observe(el);
+        model.__derived.viewportH = el.clientHeight;
+        updateWindow(model);
+    }
+
+    function _stopObservingViewport() {
+        model.__resizeObserver?.disconnect();
+        model.__resizeObserver = undefined;
+        model.__derived.viewportH = 0;
     }
 
     function _stickyClass(colIndex: number): string {
