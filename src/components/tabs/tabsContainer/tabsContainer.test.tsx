@@ -293,15 +293,22 @@ describe("TabsContainer", () => {
             expect(model.tabs).toHaveLength(3);
         });
 
-        // BUG: init runs _initTabs before any config tab exists (config tabs are created by the first
-        // render), so the id parked in __defaultTabId is looked up in an empty list and discarded
-        // (tabsContainer.tsx:291-295). The first tab is selected instead — and a bound selectedTabId
-        // source is overwritten with it.
-        it.fails("starts on the selectedTabId it was given among its config tabs", async () => {
+        // Regression: init ran _initTabs before any config tab existed (config tabs are created by the
+        // first render), so the id parked in __defaultTabId was looked up in an empty list and
+        // discarded. The first tab was selected instead — and a bound selectedTabId source was
+        // overwritten with it.
+        it("starts on the selectedTabId it was given among its config tabs", async () => {
             await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL, ADVANCED], selectedTabId: "advanced" });
 
             expect(selectedButtonIds()).toEqual(["tabs.advanced"]);
             expect(panelText()).toBe("advanced content");
+        });
+
+        it("starts on the first config tab when the selectedTabId it was given names none", async () => {
+            await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL, ADVANCED], selectedTabId: "missing" });
+
+            expect(selectedButtonIds()).toEqual(["tabs.general"]);
+            expect(panelText()).toBe("general content");
         });
     });
 
