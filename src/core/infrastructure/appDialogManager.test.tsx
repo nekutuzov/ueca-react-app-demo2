@@ -343,11 +343,11 @@ describe("AppDialogManager", () => {
             expect(bus["BusyDisplay.SetVisibility"]).toHaveBeenCalledTimes(2);
         });
 
-        // BUG: closing a nested dialog restores the spinner while the dialog beneath is still up.
-        // The spinner covers every dialog (spinner.tsx: "must cover everything, including a
-        // dialog"), so while the app is busy the outer dialog is covered and can no longer be
-        // answered (appDialogManager.tsx:57; appBusyDisplay.tsx:7).
-        it.fails("keeps the spinner hidden while a dialog beneath the closed one is still open", async () => {
+        // Regression: closing a nested dialog restored the spinner while the dialog beneath was still
+        // up. The spinner covers every dialog (spinner.tsx: "must cover everything, including a
+        // dialog"), so while the app was busy the outer dialog was covered and could no longer be
+        // answered.
+        it("keeps the spinner hidden while a dialog beneath the closed one is still open", async () => {
             const { bus } = await mountDialogManager();
             await open(() => appMessageBus.unicast("Dialog.Confirmation", { title: "Outer", message: "Outer question" }));
             const inner = await open(() => appMessageBus.unicast("Dialog.Information", { title: "Inner", message: "Inner note" }));
@@ -357,6 +357,22 @@ describe("AppDialogManager", () => {
             await settle();
 
             expect(bus["BusyDisplay.SetVisibility"]).not.toHaveBeenCalledWith(true);
+        });
+
+        it("restores the spinner once the last of nested dialogs closes", async () => {
+            const { bus } = await mountDialogManager();
+            const outer = await open(() => appMessageBus.unicast("Dialog.Confirmation", { title: "Outer", message: "Outer question" }));
+            const inner = await open(() => appMessageBus.unicast("Dialog.Information", { title: "Inner", message: "Inner note" }));
+            fireEvent.click(button("Close"));
+            await inner.promise;
+            await settle();
+
+            fireEvent.click(button("No"));
+            await outer.promise;
+            await settle();
+
+            expect(bus["BusyDisplay.SetVisibility"]).toHaveBeenLastCalledWith(true);
+            expect(bus["BusyDisplay.SetVisibility"].mock.calls.filter((call) => (call as unknown[])[0] === true)).toHaveLength(1);
         });
     });
 });

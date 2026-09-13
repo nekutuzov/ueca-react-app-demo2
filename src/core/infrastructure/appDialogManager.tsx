@@ -57,7 +57,12 @@ function useAppDialogManager(params?: AppDialogManagerParams): AppDialogManagerM
                 resolve(result);
                 model._openDialogs.pop();
                 model._dialogClosers.pop();
-                model.bus.unicast("BusyDisplay.SetVisibility", true);
+                // Only once no dialog is left. The spinner covers every dialog, so restored while
+                // a dialog beneath was still up, it kept the app busy over a question nobody could
+                // then answer.
+                if (!model._openDialogs.length) {
+                    model.bus.unicast("BusyDisplay.SetVisibility", true);
+                }
             };
             onDialogClose = (result) => { settle(!!result); };
             closeFromCode = settle;
