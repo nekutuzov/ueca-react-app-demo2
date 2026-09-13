@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
-    AlertDrawerModel, BlockProps, Col, Icon, IconButtonModel, MenuList, PopoverModel, Row,
-    UIBaseModel, UIBaseParams, UIBaseStruct, useAlertDrawer, useIconButton, usePopover, useUIBase
+    BlockProps, Col, Icon, IconButtonModel, MenuList, PopoverModel, Row,
+    UIBaseModel, UIBaseParams, UIBaseStruct, useIconButton, usePopover, useUIBase
 } from "@components";
 import { Breadcrumb, LocationBreadcrumbsModel, useLocationBreadcrumbs, UECAContactsModel, useUECAContacts } from "@core";
 import { ThemeToggleModel, useThemeToggle } from "../appComponents/themeToggle/themeToggle";
@@ -23,7 +23,6 @@ type ScreenLayoutStruct = UIBaseStruct<{
 
     children: {
         breadcrumbsControl: LocationBreadcrumbsModel;
-        drawerPanel: AlertDrawerModel;
         hiddenToolsButton: IconButtonModel;
         hiddenToolsPopover: PopoverModel;
         themeToggle: ThemeToggleModel;
@@ -48,12 +47,6 @@ function useScreenLayout(params?: ScreenLayoutParams): ScreenLayoutModel {
         children: {
             breadcrumbsControl: useLocationBreadcrumbs({
                 items: () => model.breadcrumbs
-            }),
-
-            drawerPanel: useAlertDrawer({
-                titleView: "Alert",
-                contentView: "This is an alert drawer.",
-                width: 1000,
             }),
 
             hiddenToolsButton: useIconButton({
@@ -163,7 +156,6 @@ function useScreenLayout(params?: ScreenLayoutParams): ScreenLayoutModel {
                     <Col className={"app-content ueca-screen-content"} fill padding={contentPaddings} overflow={"auto"} spacing="default">
                         {model.contentView}
                     </Col>
-                    <model.drawerPanel.View />
                 </Col>
             )
         }
