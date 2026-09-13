@@ -679,10 +679,10 @@ describe("AppBrowsingHistory", () => {
             expect(model.getActiveSection()).toBeUndefined();
         });
 
-        // BUG: the in-place rollback rebuilds the URL from the path alone
-        // (appBrowsingHistory.ts:250), so the anchor the app is still showing is dropped from the
-        // address — although a section is part of the address everywhere else in this service.
-        it.fails("restores the section too when rolling a vetoed entry back in place", async () => {
+        // Regression: the in-place rollback rebuilt the URL from the path alone, so the anchor the app
+        // was still showing was dropped from the address — although a section is part of the address
+        // everywhere else in this service.
+        it("restores the section too when rolling a vetoed entry back in place", async () => {
             at(`${BASE}/a#intro`);
             await mountHistory({ onNavigate: async () => false });
             vi.spyOn(history, "go").mockImplementation(() => { });

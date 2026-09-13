@@ -250,8 +250,13 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
                 // No distance to travel back, which is always the case for an entry that arrived
                 // without an index of its own (stamped with the current one above). history.go(0)
                 // would reload the page and discard the very state the denial protects, so restore
-                // the URL in place instead.
-                history.replaceState({ index: model.__currentHistoryIndex }, "", model.__baseURL + model.__activePath);
+                // the URL in place instead — section included, as it is everywhere else in this
+                // service. Rebuilt from the path alone, the anchor still on show left the address.
+                const restored = new URL(model.__baseURL + model.__activePath, window.location.origin);
+                if (model.__activeSection) {
+                    restored.hash = model.__activeSection;
+                }
+                history.replaceState({ index: model.__currentHistoryIndex }, "", restored.href);
             }
         }
     }
