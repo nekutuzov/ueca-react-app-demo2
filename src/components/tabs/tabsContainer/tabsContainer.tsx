@@ -20,7 +20,10 @@ type TabsContainerStruct = EditBaseStruct<{
         scrollButtons: TabScrollButtons;
         centered: boolean;
         _hasOverflow: boolean;
-        __defaultTabId: string;
+        // A selectedTabId waiting for its tab to exist. Reactive, because selectedTabId reads it
+        // first: as a non-reactive prop, using it up did not make that read look again, and the id
+        // went on being reported after another tab was selected in its place.
+        _defaultTabId: string;
         __scrollerRef: React.RefObject<HTMLDivElement>;
     };
 
@@ -51,7 +54,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             tabsConfig: [],
             selectedTab: undefined,
             selectedTabId: UECA.bind(
-                () => model.__defaultTabId ?? model.selectedTab?.getTabId(),
+                () => model._defaultTabId ?? model.selectedTab?.getTabId(),
                 (v) => {
                     if (model.tabs?.length) {
                         // An id that names no tab falls back to the first, as it does at start-up.
@@ -59,7 +62,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                         // ?tab= in a route a TabsScreen binds did exactly that.
                         model.selectedTab = (v && model.getTab(v)) || model.tabs[0];
                     } else {
-                        model.__defaultTabId = v;
+                        model._defaultTabId = v;
                     }
                 }
             ),
@@ -72,6 +75,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             scrollButtons: undefined,
             centered: false,
             _hasOverflow: false,
+            _defaultTabId: undefined,
             __scrollerRef: { current: null },
         },
 
@@ -291,14 +295,14 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
 
         model.tabs?.map(t => { t.container = model; });
 
-        if (model.__defaultTabId) {
+        if (model._defaultTabId) {
             // Config tabs are created by the first render, after init has already run this over an
             // empty list, so the id waits until its tab exists — or until every configured tab does
             // and it names none. Looked up at once, it was discarded, the first tab was selected, and
             // a bound selectedTabId source was overwritten with it.
-            const defaultTab = model.getTab(model.__defaultTabId);
+            const defaultTab = model.getTab(model._defaultTabId);
             if (defaultTab || !_configTabsPending()) {
-                model.__defaultTabId = undefined; // Clear after use, so it used only once
+                model._defaultTabId = undefined; // Clear after use, so it used only once
                 model.selectedTab = defaultTab;
             }
         }

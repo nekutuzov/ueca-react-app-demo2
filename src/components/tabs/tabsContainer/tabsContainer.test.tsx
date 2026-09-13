@@ -294,7 +294,7 @@ describe("TabsContainer", () => {
         });
 
         // Regression: init ran _initTabs before any config tab existed (config tabs are created by the
-        // first render), so the id parked in __defaultTabId was looked up in an empty list and
+        // first render), so the id parked in _defaultTabId was looked up in an empty list and
         // discarded. The first tab was selected instead — and a bound selectedTabId source was
         // overwritten with it.
         it("starts on the selectedTabId it was given among its config tabs", async () => {
@@ -309,6 +309,16 @@ describe("TabsContainer", () => {
 
             expect(selectedButtonIds()).toEqual(["tabs.general"]);
             expect(panelText()).toBe("general content");
+        });
+
+        // Regression: the id waiting for its tab was a non-reactive prop, and selectedTabId reads it
+        // first, so once it was used up nothing told the read to look again: a start-up id that named
+        // no tab went on being reported after the first tab was selected, and a bound source was never
+        // corrected to the tab on show.
+        it("reports the tab it fell back to through selectedTabId", async () => {
+            const { model } = await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL, ADVANCED], selectedTabId: "missing" });
+
+            expect(model.selectedTabId).toBe("general");
         });
     });
 
