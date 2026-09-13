@@ -72,7 +72,8 @@ Application
 - NumberField: parsing, min/max clamping, spin buttons; SearchField: settled (debounced) search text
 - RadioGroup`<T>`: orientation (row/column), sizes (small/medium/large), color palette, built-in validation
 - Select`<T>`: variants, sizes (small/medium), fullWidth, themed listbox, built-in validation
-- Checkbox, Switch: sizes, built-in `required` validation (Checkbox also indeterminate)
+- Checkbox: sizes, indeterminate, built-in `required` validation
+- Switch: sizes (small/medium/large), color palette, helper text. Always on or off, with no unset state to display, so it has no `required` validation
 
 **Note**: TextField, RadioGroup, Select, and Checkbox:
 - TextField, RadioGroup, and Select accept generic type parameter `<T>` for type-safe values
@@ -109,7 +110,7 @@ Application
 **Misc** (`misc/`): Icon, StatusLabel, ProgressBar, Spinner, SeverityIcon, MarkdownPreview, FileSelector, DropZone, FieldLabel, FieldHint, Notebook; **Panels** (`panels/`): Panel
 
 **App Components** (`src/core/appComponents/`):
-- UECAContacts: Four icon buttons (email, GitHub, npm, YouTube) for contact links, supports horizontal/vertical orientation
+- UECAContacts: Five icon buttons (YouTube, GitHub, npm, website, email) for contact links, supports horizontal/vertical orientation
 - ThemeToggle: top-bar light/dark switch (`App.Theme.*` messages)
 - CodeSample: a titled, syntax-highlighted listing with a copy button
 
