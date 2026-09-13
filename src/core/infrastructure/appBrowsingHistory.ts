@@ -106,9 +106,10 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
             },
 
             open: async (route, newTab) => {
-                if (UECA.isObject(route)) {
-                    route = routeToURL(route, model.__baseURL);
-                }
+                // A string route is resolved too: only its app-relative form gains the base, and
+                // routeURL.ts leaves every other form as it is. Handed to window.open as it was,
+                // "/home" opened at the origin root, outside the app, and "//docs/x" on host "docs".
+                route = routeToURL(UECA.isObject(route) ? route : { path: route }, model.__baseURL);
                 if (newTab) {
                     // noopener closes the reverse-tabnabbing hole: without it the opened page
                     // gets a live window.opener and can navigate this one. Unlike <a
@@ -121,9 +122,9 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
             },
 
             replace: async (route) => {
-                if (UECA.isObject(route)) {
-                    route = routeToURL(route, model.__baseURL);
-                }
+                // Resolved like Open's. Used as it was, an app-relative string reached `new URL()` in
+                // _divertCrossOrigin without a base and threw "Invalid URL".
+                route = routeToURL(UECA.isObject(route) ? route : { path: route }, model.__baseURL);
                 if (_divertCrossOrigin(route)) {
                     return;
                 }

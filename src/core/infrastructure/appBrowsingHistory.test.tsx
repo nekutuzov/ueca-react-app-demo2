@@ -229,11 +229,11 @@ describe("AppBrowsingHistory", () => {
             expect(history.length).toBe(before);
         });
 
-        // BUG: a string route is handed to window.open as it is (appBrowsingHistory.ts:106-114), so
-        // "/home" opens at the origin root instead of under the app's base, and "//docs/x" becomes
-        // a protocol-relative URL on host "docs". routeURL.ts: a bare string must still be resolved
-        // "rather than using the string directly".
-        it.fails("opens an app-relative string path in a new tab inside the app", async () => {
+        // Regression: a string route was handed to window.open as it was, so "/home" opened at the
+        // origin root instead of under the app's base, and "//docs/x" became a protocol-relative URL on
+        // host "docs". routeURL.ts: a bare string must still be resolved "rather than using the string
+        // directly".
+        it("opens an app-relative string path in a new tab inside the app", async () => {
             at(`${BASE}/start`);
             await mountHistory();
             const newTab = vi.spyOn(window, "open");
@@ -242,6 +242,19 @@ describe("AppBrowsingHistory", () => {
 
             const [url] = newTab.mock.calls[0];
             expect(new URL(String(url), document.baseURI).href).toBe(`${ORIGIN}${BASE}/home`);
+        });
+
+        it.each([
+            ["an origin-root string", "//docs/x", `${ORIGIN}/docs/x`],
+            ["an absolute string", "https://example.com/elsewhere", "https://example.com/elsewhere"]
+        ])("opens %s in a new tab where routeURL.ts resolves it", async (_case, path, expected) => {
+            at(`${BASE}/start`);
+            await mountHistory();
+            const newTab = vi.spyOn(window, "open");
+
+            await open(path, true);
+
+            expect(newTab).toHaveBeenCalledExactlyOnceWith(expected, "_blank", "noopener,noreferrer");
         });
 
         it("rejects a route whose path parameter has no value, and stays put", async () => {
@@ -350,10 +363,10 @@ describe("AppBrowsingHistory", () => {
             expect(location.href).toBe(`${ORIGIN}${BASE}/start?x=1#here`);
         });
 
-        // BUG: replace() uses a string route as it is (appBrowsingHistory.ts:120-130), so an
-        // app-relative string reaches `new URL(url)` in _divertCrossOrigin without a base and throws
-        // "Invalid URL" — where Open resolves the same string under the base.
-        it.fails("resolves an app-relative string path the way Open does", async () => {
+        // Regression: replace() used a string route as it was, so an app-relative string reached
+        // `new URL(url)` in _divertCrossOrigin without a base and threw "Invalid URL" — where Open
+        // resolves the same string under the base.
+        it("resolves an app-relative string path the way Open does", async () => {
             at(`${BASE}/start`);
             await mountHistory();
 
