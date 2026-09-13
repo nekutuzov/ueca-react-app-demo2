@@ -132,7 +132,7 @@ function useNumberField(params?: NumberFieldParams): NumberFieldModel {
                     type="button"
                     tabIndex={-1}
                     className="numberfield-spin-button"
-                    disabled={model.disabled}
+                    disabled={!_isEditable()}
                     aria-label="Increment"
                     onClick={() => { _step(1); }}
                 >
@@ -142,7 +142,7 @@ function useNumberField(params?: NumberFieldParams): NumberFieldModel {
                     type="button"
                     tabIndex={-1}
                     className="numberfield-spin-button"
-                    disabled={model.disabled}
+                    disabled={!_isEditable()}
                     aria-label="Decrement"
                     onClick={() => { _step(-1); }}
                 >
@@ -162,8 +162,17 @@ function useNumberField(params?: NumberFieldParams): NumberFieldModel {
     }
 
     function _step(delta: number) {
+        if (!_isEditable()) {
+            return;
+        }
         const base = _clamp(_parse(model._text)) ?? 0;
         _apply(_clamp(base + delta));
+    }
+
+    // Read-only is "visible and selectable but not editable", so it stops the spin buttons as
+    // disabled does. They used to check disabled alone, and changed a read-only field.
+    function _isEditable(): boolean {
+        return !model.disabled && !model.readOnly;
     }
 
     function _apply(next: number) {

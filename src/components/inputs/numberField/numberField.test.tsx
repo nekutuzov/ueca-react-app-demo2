@@ -350,14 +350,26 @@ describe("NumberField", () => {
             expect(onChange).not.toHaveBeenCalled();
         });
 
-        // BUG: the spin buttons check only `disabled`, and _step has no readOnly guard, so a read-only
-        // field — "visible and selectable but not editable" — can still be changed with them.
-        it.fails("does not let the spin buttons change a read-only field", async () => {
+        // Regression: the spin buttons checked only `disabled`, and _step had no readOnly guard, so a
+        // read-only field — "visible and selectable but not editable" — could still be changed with them.
+        it("does not let the spin buttons change a read-only field", async () => {
             const { model } = await mount(NumberField, { id: "n", value: 5, spinButtons: true, readOnly: true });
 
             await userEvent.click(screen.getByRole("button", { name: "Increment" }));
 
             expect(model.value).toBe(5);
+        });
+
+        it("disables both buttons while read-only, and enables them again after", async () => {
+            const { model } = await mount(NumberField, { id: "n", value: 5, spinButtons: true, readOnly: true });
+            expect(screen.getByRole("button", { name: "Increment" })).toBeDisabled();
+            expect(screen.getByRole("button", { name: "Decrement" })).toBeDisabled();
+
+            model.readOnly = false;
+            await settle();
+            await userEvent.click(screen.getByRole("button", { name: "Decrement" }));
+
+            expect(model.value).toBe(4);
         });
     });
 
