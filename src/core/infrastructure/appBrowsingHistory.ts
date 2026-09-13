@@ -1,6 +1,7 @@
 import * as UECA from "ueca-react";
 import { BaseModel, BaseParams, BaseStruct, useBase, AnyRoute } from "@components";
 import { asyncSafe, runAsync } from "./appUtils";
+import { resolveRouteURL } from "../misc/routeURL";
 
 type AppBrowsingHistoryStruct = BaseStruct<{
     props: {
@@ -44,7 +45,13 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
 
             "App.BrowsingHistory.Open": async (p) => await model.open(p.path, p.newTab),
 
-            "App.BrowsingHistory.Replace": async (p) => await model.replace(p.path)
+            "App.BrowsingHistory.Replace": async (p) => await model.replace(p.path),
+
+            // The URL a route would navigate to, for a link's href. Total, unlike the strict
+            // resolution navigation uses: an unresolvable route yields undefined, so a link renders
+            // without an href instead of raising. Without this handler every NavLink lost its href —
+            // a unicast with no subscriber returns undefined rather than failing.
+            "App.BrowsingHistory.ResolveRoute": async (route) => resolveRouteURL(route, model.__baseURL)
         },
 
         methods: {

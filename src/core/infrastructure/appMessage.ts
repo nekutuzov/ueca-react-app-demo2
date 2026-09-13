@@ -106,9 +106,6 @@ type MiscMessages = {
     "App.LocalStorage.Write": { in: { key: AppStorageKey; value: string } };
     "App.LocalStorage.Clear": { in: AppStorageKey };
 
-    "App.GetSideBarState": { out: { collapsed: boolean } };
-    "App.SetSideBarState": { in: { collapsed: boolean } };
-    "App.ToggleSideBarState": { out: { collapsed: boolean } };
     "App.SideBarStateChanged": { in: { collapsed: boolean } };
 
     // Add public messages directly in here or declare a separate message type

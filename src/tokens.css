@@ -264,6 +264,26 @@
     line-height: var(--label-leading, var(--leading-snug));
 }
 
+/* The structural micro-label: uppercase, tracked, mono. Sidebar section headings and the eyebrow
+   above a page title. Colour is the caller's — usually --marker, since it reports structure. */
+.ueca-eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    line-height: var(--leading-snug);
+}
+
+/* The display face at its largest — a page's one headline. */
+.ueca-display {
+    font-family: var(--font-display);
+    font-size: var(--text-4xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+}
+
 /* Screen or dialog heading. */
 .ueca-title-lg {
     font-size: var(--text-2xl);
@@ -302,9 +322,8 @@
     line-height: var(--leading-normal);
 }
 
-/* A measured value or code fragment — monospace so digits align in a column.
-   This is the instrument readout style, and the reason JetBrains Mono is
-   bundled at all. */
+/* A measured value or code fragment — monospace with tabular figures, so digits
+   align down a column. */
 .ueca-value {
     font-family: var(--font-mono);
     font-size: var(--text-sm);

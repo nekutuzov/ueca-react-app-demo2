@@ -1,10 +1,23 @@
 import { Route } from "@components";
-import { HomeScreen } from "@screens";
+import { HomeScreen, ShowcaseScreen } from "@screens";
 
 
 const screenRoutes = {
     "/": () => <HomeScreen id={"homeScreen"} />,
     "/home": () => <HomeScreen id={"homeScreen"} />,
+
+    // One route per showcase topic, each with its own screen id so a topic's page state is its own.
+    // The paths, titles and order live in screens/showcase/showcaseTopics.tsx.
+    "/showcase/overview": () => <ShowcaseScreen id={"showcase-overview"} topic={"overview"} />,
+    "/showcase/tokens": () => <ShowcaseScreen id={"showcase-tokens"} topic={"tokens"} />,
+    "/showcase/layout": () => <ShowcaseScreen id={"showcase-layout"} topic={"layout"} />,
+    "/showcase/controls": () => <ShowcaseScreen id={"showcase-controls"} topic={"controls"} />,
+    "/showcase/status": () => <ShowcaseScreen id={"showcase-status"} topic={"status"} />,
+    "/showcase/icons": () => <ShowcaseScreen id={"showcase-icons"} topic={"icons"} />,
+    "/showcase/overlays": () => <ShowcaseScreen id={"showcase-overlays"} topic={"overlays"} />,
+    "/showcase/data": () => <ShowcaseScreen id={"showcase-data"} topic={"data"} />,
+    "/showcase/lists": () => <ShowcaseScreen id={"showcase-lists"} topic={"lists"} />,
+    "/showcase/dynamic-content": () => <ShowcaseScreen id={"showcase-dynamic"} topic={"dynamic"} />,
 };
 
 

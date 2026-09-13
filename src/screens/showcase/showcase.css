@@ -1,0 +1,356 @@
+/* ============================================================
+   Showcase chrome — the frame around the specimens, not the specimens themselves.
+
+   Colour comes from theme tokens; sizes, tracking, radii and leading come from the
+   non-colour tokens in tokens.css.
+   ============================================================ */
+
+/* ---- The page frame ---- */
+
+/* The content band every screen shares, not a width of its own: it keeps the content from jumping
+   sideways between pages, and it is what the top bar's breadcrumb aligns to. width:100% is
+   load-bearing — an auto cross-axis margin opts a flex item out of stretching, so without it the
+   page shrink-wraps to its content. Stretch first, then cap, then centre. */
+.showcase-page {
+    width: 100%;
+    max-width: var(--band-w);
+    margin: 0 auto;
+    padding: var(--space-large) var(--page-pad) var(--space-huge);
+}
+
+.showcase-page-header {
+    margin-bottom: var(--space-large);
+    padding-bottom: var(--space-medium);
+    border-bottom: var(--hairline) solid var(--border);
+}
+
+/* Amber: the eyebrow reports where the page sits in the showcase, which is structure, not action. */
+.showcase-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-default);
+    color: var(--marker);
+    margin-bottom: var(--space-small);
+}
+
+.showcase-page-title {
+    font-family: var(--font-display);
+    font-size: var(--text-4xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.02em;
+    line-height: var(--leading-tight);
+    color: var(--ink);
+    margin: 0 0 var(--space-small);
+}
+
+.showcase-page-lead {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--ink-dim);
+    max-width: var(--measure);
+    margin: 0;
+}
+
+.showcase-page-lead code,
+.showcase-note code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    color: var(--ink);
+    background: var(--surface-code);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-xs);
+    padding: 1px 5px;
+    /* A file path is one unbreakable word, and on a phone it pushed the whole page sideways. */
+    overflow-wrap: anywhere;
+}
+
+/* ---- Previous / next ---- */
+
+.showcase-pager {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-small);
+    margin-top: var(--space-huge);
+    padding-top: var(--space-medium);
+    border-top: var(--hairline) solid var(--border);
+}
+
+.showcase-pager-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-tiny);
+    flex: 0 1 auto;
+    min-width: 200px;
+    max-width: 48%;
+    appearance: none;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    background: var(--surface);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-default) var(--space-small);
+    transition: border-color var(--motion-base) var(--ease),
+                background-color var(--motion-base) var(--ease);
+}
+
+.showcase-pager-link:hover {
+    border-color: var(--accent);
+    background: var(--hover);
+}
+
+.showcase-pager-link:focus-visible {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* The "next" card aligns to its own right edge so the pair reads outward from the middle. */
+.showcase-pager-next {
+    text-align: right;
+    align-items: flex-end;
+}
+
+.showcase-pager-dir {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--ink-disabled);
+}
+
+.showcase-pager-link:hover .showcase-pager-dir {
+    color: var(--accent);
+}
+
+.showcase-pager-title {
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    color: var(--ink);
+    line-height: var(--leading-snug);
+}
+
+@media (max-width: 640px) {
+    .showcase-page {
+        padding-top: var(--space-medium);
+    }
+
+    .showcase-pager-link {
+        min-width: 0;
+        max-width: 100%;
+    }
+}
+
+/* ---- Sections ---- */
+
+/* The topic's own column. Sections share the page's full band; prose inside them caps itself. */
+.showcase-topic {
+    min-width: 0;
+}
+
+.showcase-section-title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-snug);
+    color: var(--ink);
+}
+
+.showcase-section-description {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--ink-dim);
+    max-width: var(--measure);
+    margin-bottom: var(--space-default);
+}
+
+/* The well a specimen sits in — reads as "this is a demo", not as app chrome. */
+.showcase-specimen {
+    background: var(--surface);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-lg);
+    min-width: 0;
+}
+
+/* Wraps only at spaces, so a scale token ("px16", "menuCollapse") never breaks, while a long
+   descriptive label wraps on a narrow screen instead of widening the whole page. */
+.showcase-specimen-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--ink-dim);
+    white-space: normal;
+    min-width: 0;
+    /* ...and a long token with no space in it (a clamp() value) breaks rather than overflowing. */
+    overflow-wrap: anywhere;
+}
+
+/* A filled block used to make spacing and alignment visible. */
+.showcase-swatch {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    border: var(--hairline) solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: var(--radius-sm);
+}
+
+/* The container whose bounds a specimen is demonstrating (alignment, fill, overflow). */
+.showcase-frame {
+    border: var(--hairline) dashed var(--border);
+    border-radius: var(--radius-sm);
+    /* Specimens set a fixed width inline (width={520}); the cap is CSS because Block writes
+       width inline but not max-width, so this still applies on a narrow screen. */
+    max-width: 100%;
+}
+
+.showcase-note {
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    color: var(--ink-dim);
+    max-width: var(--measure);
+}
+
+.showcase-note b {
+    color: var(--ink);
+    font-weight: var(--weight-semibold);
+}
+
+/* A single stop in a status ramp — labelled so the specimen says which token it is. */
+.showcase-ramp-stop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    padding: var(--space-default) 0;
+    border: var(--hairline) solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--ink-on-accent);
+}
+
+/* One cell of the icon registry grid. */
+.showcase-icon-cell {
+    width: 104px;
+    padding: var(--space-default) var(--space-tiny);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    text-align: center;
+}
+
+.showcase-icon-kind {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--ink-disabled);
+}
+
+/* A hoverable target used by the tooltip specimens. */
+.showcase-tooltip-target {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    padding: var(--space-default) var(--space-small);
+    background: var(--bg);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    cursor: help;
+}
+
+.showcase-tooltip-target:hover,
+.showcase-tooltip-target:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* …and a ring, so focus is not byte-identical to hover. The showcase is where a reader checks what
+   a state is supposed to look like, so it has to follow the policy it is demonstrating. */
+.showcase-tooltip-target:focus-visible {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.showcase-pos-row {
+    padding: var(--space-tiny) 0;
+    border-bottom: var(--hairline) solid var(--border);
+}
+
+/* Bounds a virtualised list so it has a height to window against. */
+.showcase-list-frame {
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+/* A row in the raw VirtualList specimen — fills the declared itemSize. */
+.showcase-vrow {
+    height: 100%;
+    padding: 0 var(--space-default);
+    font-size: var(--text-sm);
+    border-bottom: var(--hairline) solid var(--border);
+}
+
+/* Bounds the table so its sticky header and scrolling are demonstrable. */
+.showcase-table-frame {
+    max-height: 420px;
+    overflow: hidden;
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+    display: flex;
+}
+
+.showcase-table-frame > * {
+    flex: 1;
+    min-height: 0;
+}
+
+/* One specimen of the Dynamic Content topic: a small card whose count is the visible evidence of
+   whether the model behind it survived an unmount. */
+.showcase-counter {
+    min-width: 190px;
+    background: var(--bg);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.showcase-counter-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-bold);
+    color: var(--accent);
+}
+
+.showcase-counter-note {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--ink-dim);
+}
+
+/* The lifecycle readout, parked in the right-hand column so it stays beside the specimen being
+   operated. Sticky rather than fixed: it rides the scroll only until it reaches the top. */
+.showcase-log-panel {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+}
+
+/* Two columns — specimens plus the sticky log — need the band's full width. */
+.showcase-topic-wide {
+    max-width: none;
+}
+
+/* Fixed height so the panel does not resize as lines arrive. Scrolling is set through the Col's
+   `overflow` prop, not here — the layout primitives write overflow inline, which beats this file. */
+.showcase-log {
+    height: 400px;
+    background: var(--surface-code);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.showcase-log-line {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: var(--leading-normal);
+    color: var(--ink-dim);
+    white-space: pre;
+}

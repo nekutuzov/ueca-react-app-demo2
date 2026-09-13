@@ -83,9 +83,13 @@ function useNavItemExpandable(params?: NavItemExpandableParams): NavItemExpandab
                 </Block>
             ),
 
+            // Shown in the icon rail too. Hiding the sub-items there left the collapsed rail with only
+            // the group's own glyph, whose click then toggled `expanded` with nothing visible to show
+            // for it — so every item in the group was unreachable without first widening the menu.
+            // Sub-items carry their own icon and, collapsed, their own tooltip, so they stand alone.
             _SubMenuView: () => (
-                <UECA.IF condition={model.expanded && model.mode !== "icon-only"}>
-                    <Col spacing="none" padding={{ left: "medium" }}>
+                <UECA.IF condition={model.expanded}>
+                    <Col spacing="none" padding={model.mode === "icon-only" ? undefined : { left: "medium" }}>
                         {model.subItems.map((subItem, index) => (
                             <subItem.View key={index} />
                         ))}

@@ -1,5 +1,8 @@
 import * as UECA from "ueca-react";
-import { Col, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, IconButtonModel, useIconButton, NavLinkModel, useNavLink } from "@components";
+import {
+    Col, Icon, Row, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, IconButtonModel, useIconButton,
+    NavItemModel, useNavItem, NavLinkModel, useNavLink
+} from "@components";
 import { AppMenuModel, useAppMenu } from "./appMenu";
 import { MenuIcon, MenuCollapseIcon } from "../misc/icons";
 import "./appSideBar.css";
@@ -21,6 +24,7 @@ type AppSideBarStruct = UIBaseStruct<{
         menu: AppMenuModel;
         toggleButton: IconButtonModel;
         logoLink: NavLinkModel;
+        signOutItem: NavItemModel;
     };
 
     methods: {
@@ -65,6 +69,17 @@ function useAppSideBar(params?: AppSideBarParams): AppSideBarModel {
                 route: { path: "https://cranesoft.net" },
                 newTab: true,
                 linkView: () => <span className="app-sidebar-logo"><img src="logo.png" alt="UECA-React" /></span>
+            }),
+
+            // An action, not a route: signing out swaps the whole shell for the sign-in form, so
+            // there is no screen to navigate to. Collapses to its icon with the rest of the rail.
+            signOutItem: useNavItem({
+                text: "Sign out",
+                icon: <Icon name="logout" size="lg" />,
+                mode: () => model.collapsed ? "icon-only" : "icon-text",
+                onClick: async () => {
+                    await model.bus.unicast("App.Security.Unauthorize");
+                }
             }),
         },
 
@@ -133,6 +148,12 @@ function useAppSideBar(params?: AppSideBarParams): AppSideBarModel {
                         the first time a label does not fit. */}
                     <Col className="app-sidebar-scroll" fill overflow={"hidden auto"}>
                         <model.menu.View />
+                    </Col>
+
+                    {/* Pinned under the scrolling menu, so it stays in reach however long the
+                        index grows. */}
+                    <Col className="app-sidebar-footer" spacing={"none"}>
+                        <model.signOutItem.View />
                     </Col>
                 </Col>
             );

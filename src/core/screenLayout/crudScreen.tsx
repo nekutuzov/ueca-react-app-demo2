@@ -52,6 +52,9 @@ type CRUDScreenProps = {
     hiddenToolsView: React.ReactNode;
     readonly: boolean;
     actionButtonText: string;
+    // Forwarded to ScreenLayout. "none" lets a screen own its content region's padding — how the
+    // showcase pages and the home page centre themselves on the content band.
+    contentPaddings: ScreenLayoutModel["contentPaddings"];
 }
 
 type CRUDScreenMethods = {
@@ -92,6 +95,7 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
             hiddenToolsView: undefined,
             readonly: false,
             actionButtonText: undefined,
+            contentPaddings: "default",
             _state: {
                 dataNew: false,
                 dataModified: false,
@@ -131,7 +135,8 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                         </>
                     );
                 },
-                contentView: () => model.contentView
+                contentView: () => model.contentView,
+                contentPaddings: () => model.contentPaddings
             }),
 
             addButton: useIconButton({

@@ -70,3 +70,10 @@
     min-height: 0;
     padding-bottom: var(--space-medium);
 }
+
+/* The pinned foot of the rail: account actions that must stay in reach below the scrolling menu. */
+.app-sidebar-footer {
+    flex: 0 0 auto;
+    border-top: var(--hairline) solid var(--border);
+    padding: var(--space-tiny) 0;
+}
