@@ -39,6 +39,9 @@ function useTabsScreen(params?: TabsScreenParams): TabsScreenModel {
             hiddenToolsView: UECA.bind(() => model.crudScreen, "hiddenToolsView"),
             readonly: UECA.bind(() => model.crudScreen, "readonly"),
             actionButtonText: UECA.bind(() => model.crudScreen, "actionButtonText"),
+            // Part of the props type like the rest, but neither declared nor bound, so a value given
+            // here was dropped and the tabs always sat in the default padding.
+            contentPaddings: UECA.bind(() => model.crudScreen, "contentPaddings"),
         },
 
         children: {

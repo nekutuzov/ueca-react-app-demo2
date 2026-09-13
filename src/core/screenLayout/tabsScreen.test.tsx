@@ -226,14 +226,26 @@ describe("TabsScreen", () => {
         expect(bus["App.Router.GoToRoute"]).toHaveBeenCalledExactlyOnceWith({ path: "/showcase/overview" });
     });
 
-    // BUG: contentPaddings is part of TabsScreen's props type (Omit<CRUDScreenProps, "contentView">)
-    // but is neither declared nor bound to the crudScreen, so the value is silently dropped and the
-    // tabs always sit in the default padding (tabsScreen.tsx:31-42).
-    it.fails("applies the content paddings it is given", async () => {
+    // Regression: contentPaddings is part of TabsScreen's props type (Omit<CRUDScreenProps,
+    // "contentView">) but was neither declared nor bound to the crudScreen, so the value was silently
+    // dropped and the tabs always sat in the default padding.
+    it("applies the content paddings it is given", async () => {
         await stubServices();
         await mountTabsScreen({ contentPaddings: "none" });
 
         expect(document.querySelector(".app-content").getAttribute("style")).not.toMatch(/padding/);
+    });
+
+    it("follows content paddings that change after mounting", async () => {
+        await stubServices();
+        const { screenModel } = await mountTabsScreen();
+        expect(document.querySelector(".app-content").getAttribute("style")).toMatch(/padding/);
+
+        screenModel.contentPaddings = "none";
+        await settle();
+
+        expect(document.querySelector(".app-content").getAttribute("style")).not.toMatch(/padding/);
+        expect(screenModel.crudScreen.contentPaddings).toBe("none");
     });
 });
 
