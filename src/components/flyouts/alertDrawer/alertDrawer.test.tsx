@@ -206,11 +206,11 @@ describe("AlertDrawer", () => {
             expect(takeUecaErrors()).toEqual([expect.objectContaining({ message: "owner failed" })]);
         });
 
-        // BUG: as in AlertDialog, modal mode is left only on close, so a drawer removed while still
-        // open stays on uiBase's modal stack for the session and every later overlay's zIndex comes
-        // out 100 higher. Nothing paints zIndex today (the painted z comes from overlayStack, which
-        // Drawer releases on unmount), so the leak is a held reference rather than a visible one.
-        it.fails("leaves modal mode when unmounted while still open", async () => {
+        // Regression: as in AlertDialog, modal mode was left only on close, so a drawer removed while
+        // still open stayed on uiBase's modal stack for the session and every later overlay's zIndex
+        // came out 100 higher. Nothing paints zIndex today (the painted z comes from overlayStack,
+        // which Drawer releases on unmount), so the leak was a held reference rather than a visible one.
+        it("leaves modal mode when unmounted while still open", async () => {
             const { model, unmount } = await mount(AlertDrawer, { id: "ald", open: true });
 
             unmount();

@@ -108,13 +108,19 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
             }),
         },
 
+        // Removed while still open, the drawer never closes, and leaving modal mode happened only on
+        // close — the entry stayed on the modal stack for the session. Leaving is idempotent.
+        unmount: () => {
+            model.leaveModalMode();
+        },
+
         View: () => <model.drawer.View />
     };
 
     const model = useUIBase(struct, params);
     return model;
 
-    // Private methods    
+    // Private methods
     function _close(result: boolean) {
         model.closeResult = result;
         model.open = false;

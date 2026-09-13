@@ -414,12 +414,12 @@ describe("AlertDialog", () => {
             expect(takeUecaErrors()).toEqual([expect.objectContaining({ message: "owner failed" })]);
         });
 
-        // BUG: modal mode is left only on close. A dialog removed while still open — which is how
-        // AppDialogManager's Dialog.Close retires one: it pops the view without closing it — stays
-        // on the modal stack for the session, and every later overlay's zIndex comes out 100 higher
+        // Regression: modal mode was left only on close. A dialog removed while still open — which is
+        // how AppDialogManager's Dialog.Close retires one: it pops the view without closing it — stayed
+        // on the modal stack for the session, and every later overlay's zIndex came out 100 higher
         // (the leak uiBase.tsx warns about). Nothing paints zIndex today — the painted z comes from
-        // overlayStack, which Dialog releases on unmount — so the leak is not visible.
-        it.fails("leaves modal mode when unmounted while still open", async () => {
+        // overlayStack, which Dialog releases on unmount — so the leak was not visible.
+        it("leaves modal mode when unmounted while still open", async () => {
             const { model, unmount } = await mount(AlertDialog, { id: "ad", open: true });
 
             unmount();
