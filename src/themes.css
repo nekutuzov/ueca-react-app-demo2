@@ -98,6 +98,12 @@
     /* A select sized to its padding came out 35px beside a 40px text field; pinning both to the
        control ladder puts every field in a form on one rung. */
     --input-height: var(--control-h-md);
+    /* Hover and focus on a field answer in the action colour, and focus adds a soft glow in it —
+       the one way the input family (TextField, NumberField, Select, SearchField, the table's filter
+       row) says "the keyboard is here". Undefined, a focused field changed only its 1px border. The
+       glow's geometry is mirrored by the error state in textField.css and select.css. */
+    --input-line-active: var(--accent);
+    --input-focus-shadow: 0 1px 4px color-mix(in srgb, var(--accent) 35%, transparent);
     --select-size: var(--text-md);
     --select-weight: var(--weight-regular);
     --control-label-font: var(--text-md);

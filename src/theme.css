@@ -28,8 +28,15 @@ body {
 }
 
 /* One visible focus treatment for the whole app. Keyboard users get a ring;
-   pointer users do not, which is what :focus-visible is for. */
-:focus-visible {
+   pointer users do not, which is what :focus-visible is for.
+
+   The FALLBACK ring, for anything that does not draw its own — hence :where(), which gives the rule
+   zero specificity. The components pair every `outline: none` with a focus treatment of their own
+   (a field's frame border and glow, a hint chip's round ring, a button's ring on its own radius).
+   At :focus-visible's own specificity this rule tied with those opt-outs and, loaded last, won:
+   every focused text field grew a second ring inside its frame (a text input matches
+   :focus-visible on a click too), and buttons lost their corner radius while focused. */
+:where(:focus-visible) {
     outline: var(--stroke-emphasis) solid var(--focus-ring);
     outline-offset: 2px;
     border-radius: var(--radius-xs);
