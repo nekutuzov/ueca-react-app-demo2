@@ -3,11 +3,15 @@ import { AnchorRect, AppMessage, AppRoute, asyncSafe, Placement } from "@core";
 
 // Base UECA Component for all components in the application
 
+// `trigger` names one of several elements a component gives tooltips to — see tooltipProps.
+type TooltipOptions = { placement?: Placement; delay?: number; trigger?: string };
+
 type BasePartialStruct = UECA.ComponentStruct<{
     props: {
-        // Whether THIS component currently has the app's tooltip showing. Only so `unmount` can
-        // close its own without every component in the app sending a hide on every unmount.
-        __tooltipShown: boolean;
+        // The token of the tooltip THIS component last opened and has not hidden. Only so `unmount`
+        // can close its own without every component in the app sending a hide on every unmount —
+        // and close the right one when the component drives several named triggers.
+        __tooltipToken: string;
     };
 
     methods: {
@@ -56,15 +60,20 @@ type BasePartialStruct = UECA.ComponentStruct<{
         // Returns the DOM handlers; the app's single tooltip (AppTooltipManager) does the rendering,
         // so nothing here owns tooltip state. Wiring the four handlers by hand is what leads to a
         // stuck tooltip when one of them is forgotten, which is why this exists.
-        tooltipProps: (contentView: React.ReactNode, options?: { placement?: Placement; delay?: number }) => {
+        // Spread onto SEVERAL elements, name each one with `trigger`: the tooltip tells triggers
+        // apart by token, and one token shared by all lets a late leave from one close the tooltip
+        // another has just opened.
+        tooltipProps: (contentView: React.ReactNode, options?: TooltipOptions) => {
             onMouseEnter: React.MouseEventHandler;
             onMouseLeave: React.MouseEventHandler;
             onFocus: React.FocusEventHandler;
             onBlur: React.FocusEventHandler;
         };
-        // dismissed — awaited like dialogYesNo.
-        showTooltip: (anchor: AnchorRect, contentView: React.ReactNode, options?: { placement?: Placement; delay?: number }) => Promise<void>;
-        hideTooltip: () => Promise<void>;
+        // Opens the tooltip from code, against an explicit anchor (textField's reveal button).
+        showTooltip: (anchor: AnchorRect, contentView: React.ReactNode, options?: TooltipOptions) => Promise<void>;
+        // Hides the tooltip the named trigger opened; without a name, the one this component last
+        // opened.
+        hideTooltip: (trigger?: string) => Promise<void>;
     }
 
 }, AppMessage>;
@@ -77,16 +86,16 @@ type BaseModel<T extends BasePartialStruct = BasePartialStruct> = UECA.Component
 function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<T>): BaseModel<T> {
     const struct: BasePartialStruct = {
         props: {
-            __tooltipShown: false
+            __tooltipToken: undefined
         },
 
         // A trigger that unmounts while its tooltip is up can never fire its own mouseleave — a
         // dialog's × closes the dialog it lives in, a row action removes its own row — which left
-        // the bubble stranded on screen. `hideTooltip` carries this component's token, so it can
-        // only ever close a tooltip this component opened. Base and extended lifecycle hooks
-        // chain (extended runs first, then this), so declaring it here costs call sites nothing.
+        // the bubble stranded on screen. `hideTooltip` carries the token this component opened with,
+        // so it can only ever close a tooltip this component opened. Base and extended lifecycle
+        // hooks chain (extended runs first, then this), so declaring it here costs call sites nothing.
         unmount: async () => {
-            if (model.__tooltipShown) {
+            if (model.__tooltipToken) {
                 await model.hideTooltip();
             }
         },
@@ -133,16 +142,16 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
 
             // Tooltip
             tooltipProps: (contentView, options) => _tooltipProps(contentView, options),
-            // The flag is set HERE rather than in _tooltipProps so that every route to the tooltip
-            // marks it — including a direct showTooltip from a click handler (textField's reveal).
+            // The token is recorded HERE rather than in _tooltipProps so that every route to the
+            // tooltip marks it — including a direct showTooltip from a click handler (textField's reveal).
             showTooltip: async (anchor, contentView, options) => {
-                model.__tooltipShown = true;
+                const token = _tooltipToken(options?.trigger);
+                model.__tooltipToken = token;
                 await model.bus.unicast("App.Tooltip.Show",
-                    { token: model.htmlId(), anchor, contentView, placement: options?.placement, delay: options?.delay });
+                    { token, anchor, contentView, placement: options?.placement, delay: options?.delay });
             },
-            hideTooltip: async () => {
-                model.__tooltipShown = false;
-                await model.bus.unicast("App.Tooltip.Hide", { token: model.htmlId() });
+            hideTooltip: async (trigger) => {
+                await _hideTooltip(trigger === undefined ? (model.__tooltipToken ?? model.htmlId()) : _tooltipToken(trigger));
             }
         }
     }
@@ -151,7 +160,7 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
     return model;
 
     // Private methods
-    function _tooltipProps(contentView: React.ReactNode, options?: { placement?: Placement; delay?: number }) {
+    function _tooltipProps(contentView: React.ReactNode, options?: TooltipOptions) {
         // The anchor rect is read from the event target, so no ref is needed on the caller's side —
         // and it is read at hover time, when it is actually correct, rather than at render.
         const open = (target: Element) => {
@@ -159,7 +168,9 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
             const anchor: AnchorRect = { top: r.top, left: r.left, width: r.width, height: r.height };
             asyncSafe(() => model.showTooltip(anchor, contentView, options));
         };
-        const close = () => asyncSafe(() => model.hideTooltip());
+        // This trigger's own token, never "whatever this component opened last": that may be a
+        // neighbour's tooltip, which a late leave from here must not close.
+        const close = () => asyncSafe(() => _hideTooltip(_tooltipToken(options?.trigger)));
 
         // Focus/blur as well as the pointer pair: a tooltip that only answers the mouse is invisible
         // to keyboard users. These are raw DOM handlers and cannot be async, hence asyncSafe.
@@ -180,6 +191,21 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
             },
             onBlur: () => close()
         };
+    }
+
+    // The component's htmlId names its trigger; a named trigger adds its name after a "#", which
+    // model paths do not use, so it cannot collide with a child component's id.
+    function _tooltipToken(trigger?: string): string {
+        return trigger === undefined ? model.htmlId() : `${model.htmlId()}#${trigger}`;
+    }
+
+    // Forgets the token only when it is the one this component has showing: a late hide from another
+    // of its named triggers must not leave unmount thinking there is nothing left to close.
+    async function _hideTooltip(token: string) {
+        if (token === model.__tooltipToken) {
+            model.__tooltipToken = undefined;
+        }
+        await model.bus.unicast("App.Tooltip.Hide", { token });
     }
 
     async function _runWithErrorDisplay<P, R>(action: (params?: P) => Promise<R>, params?: P): Promise<R | undefined> {

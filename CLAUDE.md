@@ -122,7 +122,7 @@ Application
 - **AppBusyDisplay**: `BusyDisplay.Set/Clear/SetVisibility`
 - **AppDialogManager**: `Dialog.Information/Warning/Error/Exception/Confirmation/ActionConfirmation/Custom`
 - **AppAlertManager**: `Alert.Success/Information/Warning/Error`, position via `anchorOrigin` (top/bottom × left/center/right)
-- **AppTooltipManager**: the single tooltip; triggers spread `model.tooltipProps(contentView)` onto an element
+- **AppTooltipManager**: the single tooltip; triggers spread `model.tooltipProps(contentView)` onto an element. A model spreading it onto several elements names each with `{ trigger: "…" }`, so each gets its own token
 - **AppThemeManager**: `App.Theme.GetTheme/SetTheme/ToggleTheme/GetMode/SetMode/ListThemes`, broadcasts `App.Theme.Changed`
 - **AppLocalStorage**: Browser localStorage wrapper, messages: `App.LocalStorage.Read/Write/Clear`, storage keys defined as union type in `appTypes.ts`
 - **appTheme.ts**: Palette tokens → CSS variables (`resolvePaletteColor()` returns `var(--…)`), theme registry

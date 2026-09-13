@@ -70,7 +70,7 @@ describe("OverlaysTopic", () => {
             fireEvent.mouseEnter(tooltipTarget(placement));
             await settle();
             expect(bus["App.Tooltip.Show"]).toHaveBeenCalledWith({
-                token: TOPIC,
+                token: `${TOPIC}#${placement}`,
                 anchor: { top: 0, left: 0, width: 0, height: 0 },
                 contentView: `Placement: ${placement}`,
                 placement,
@@ -79,7 +79,7 @@ describe("OverlaysTopic", () => {
 
             fireEvent.mouseLeave(tooltipTarget(placement));
             await settle();
-            expect(bus["App.Tooltip.Hide"]).toHaveBeenCalledWith({ token: TOPIC });
+            expect(bus["App.Tooltip.Hide"]).toHaveBeenCalledWith({ token: `${TOPIC}#${placement}` });
         });
 
         it("labels each of the twelve sweep targets with its channel and a short delay", async () => {
@@ -98,11 +98,11 @@ describe("OverlaysTopic", () => {
             }));
         });
 
-        // BUG: all twelve sweep targets spread the topic model's own tooltipProps, so they share one
-        // token ("overlays"). A late leave from one therefore names the trigger now showing and
-        // closes the tooltip its neighbour has just opened — the very race this section says the
-        // token prevents (overlaysTopic.tsx, _SweepView).
-        it.fails("a late leave from one sweep target leaves its neighbour's tooltip open", async () => {
+        // Regression: all twelve sweep targets spread the topic model's own tooltipProps, so they
+        // shared one token ("overlays"). A late leave from one therefore named the trigger showing and
+        // closed the tooltip its neighbour had just opened — the very race this section says the token
+        // prevents.
+        it("a late leave from one sweep target leaves its neighbour's tooltip open", async () => {
             await mount(AppTooltipManager, { id: "tooltip" });
             await mount(OverlaysTopic, { id: TOPIC });
 

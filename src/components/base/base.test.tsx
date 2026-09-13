@@ -363,6 +363,42 @@ describe("useBase", () => {
         });
     });
 
+    // Regression: a component spreading tooltipProps onto several elements gave them all its one
+    // token, so the tooltip could not tell them apart — a late leave from one closed the tooltip its
+    // neighbour had just opened (the Overlays showcase's sweep row). Each named trigger now has its own.
+    describe("named triggers on one component", () => {
+        it("give each trigger a token of its own", async () => {
+            const bus = await stubTooltip();
+            await mount(TriggerRowProbe, { id: "row" });
+
+            fireEvent.mouseEnter(screen.getByRole("button", { name: "a" }));
+            fireEvent.mouseLeave(screen.getByRole("button", { name: "a" }));
+            fireEvent.mouseEnter(screen.getByRole("button", { name: "b" }));
+            await settle();
+
+            expect(bus["App.Tooltip.Show"]).toHaveBeenNthCalledWith(1, expect.objectContaining({ token: "row#a", contentView: "Tip a" }));
+            expect(bus["App.Tooltip.Hide"]).toHaveBeenCalledExactlyOnceWith({ token: "row#a" });
+            expect(bus["App.Tooltip.Show"]).toHaveBeenNthCalledWith(2, expect.objectContaining({ token: "row#b", contentView: "Tip b" }));
+        });
+
+        // The late leave must not count as hiding the tooltip still showing, or unmount would leave
+        // that one stranded.
+        it("still close the tooltip showing on unmount after another trigger's late leave", async () => {
+            const bus = await stubTooltip();
+            const { unmount } = await mount(TriggerRowProbe, { id: "row" });
+            fireEvent.mouseEnter(screen.getByRole("button", { name: "a" }));
+            fireEvent.mouseEnter(screen.getByRole("button", { name: "b" }));
+            fireEvent.mouseLeave(screen.getByRole("button", { name: "a" }));
+            await settle();
+
+            unmount();
+            await settle();
+
+            expect(bus["App.Tooltip.Hide"]).toHaveBeenCalledTimes(2);
+            expect(bus["App.Tooltip.Hide"]).toHaveBeenLastCalledWith({ token: "row#b" });
+        });
+    });
+
     describe("showTooltip and hideTooltip", () => {
         // The token is what lets the tooltip ignore a late hide from a trigger that is no longer
         // showing; the dotted path keeps same-named triggers under different owners apart.
@@ -473,6 +509,30 @@ function useTriggerProbe(params?: TriggerProbeParams): TriggerProbeModel {
 }
 
 const TriggerProbe = UECA.getFC(useTriggerProbe);
+
+// Two triggers on one component, each named — the shape of a row of targets or a table's resize
+// handles.
+type TriggerRowProbeStruct = BaseStruct<object>;
+
+function useTriggerRowProbe(params?: BaseParams<TriggerRowProbeStruct>): BaseModel<TriggerRowProbeStruct> {
+    const struct: TriggerRowProbeStruct = {
+        props: {
+            id: useTriggerRowProbe.name
+        },
+
+        View: () => (
+            <div id={model.htmlId()}>
+                <button {...model.tooltipProps("Tip a", { trigger: "a" })}>a</button>
+                <button {...model.tooltipProps("Tip b", { trigger: "b" })}>b</button>
+            </div>
+        )
+    };
+
+    const model = useBase(struct, params);
+    return model;
+}
+
+const TriggerRowProbe = UECA.getFC(useTriggerRowProbe);
 
 // Owns a trigger as a child, so the trigger's htmlId is a dotted path.
 type TriggerHostStruct = BaseStruct<{

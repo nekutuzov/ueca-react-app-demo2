@@ -613,6 +613,21 @@ describe("Table", () => {
 
             expect(bus["App.Tooltip.Show"]).toHaveBeenCalledWith(expect.objectContaining({ contentView: "Drag to resize · double-click to reset" }));
         });
+
+        // Regression: every handle spread the table's own tooltipProps and so shared its token; a late
+        // leave from one handle could close the tooltip another had just opened.
+        it("gives each column's handle a tooltip token of its own", async () => {
+            const show = vi.fn(async (_p: { token: string }) => { });
+            await stubMessages({ "App.Tooltip.Show": show });
+            await mountTable({ resizableColumns: true });
+
+            fireEvent.mouseEnter(handleOf("Name"));
+            fireEvent.mouseEnter(handleOf("Qty"));
+            await settle();
+
+            const [name, qty] = show.mock.calls.map(([p]) => p.token);
+            expect(name).not.toBe(qty);
+        });
     });
 
     describe("row cap and footer", () => {

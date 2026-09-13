@@ -292,7 +292,7 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
                             {model.resizableColumns && column.resizable !== false && (
                                 <span
                                     className="ueca-table-resize-handle"
-                                    {...model.tooltipProps("Drag to resize · double-click to reset")}
+                                    {...model.tooltipProps("Drag to resize · double-click to reset", { trigger: `resize-${String(column.key)}` })}
                                     onClick={(e) => { e.stopPropagation(); }}
                                     onDoubleClick={(e) => { resetColumnWidth(model, e, column); }}
                                     onPointerDown={(e) => { startResize(model, e, column); }}

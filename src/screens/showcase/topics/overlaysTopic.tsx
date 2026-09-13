@@ -196,7 +196,7 @@ function useOverlaysTopic(params?: OverlaysTopicParams): OverlaysTopicModel {
                             <Block
                                 key={placement}
                                 className="showcase-tooltip-target" tabIndex={0}
-                                {...model.tooltipProps(`Placement: ${placement}`, { placement, delay: 120 })}
+                                {...model.tooltipProps(`Placement: ${placement}`, { placement, delay: 120, trigger: placement })}
                             >
                                 {placement}
                             </Block>
@@ -244,14 +244,16 @@ function useOverlaysTopic(params?: OverlaysTopicParams): OverlaysTopicModel {
                     description="Drag the pointer quickly along these. Each leave races the next enter, and a
                                  singleton is exactly where that race bites — so Hide carries the trigger's token
                                  and is ignored unless it names the trigger currently showing. Without that, a
-                                 late leave would close the tooltip its neighbour has just opened."
+                                 late leave would close the tooltip its neighbour has just opened. All twelve
+                                 belong to this page's one model, so each is named with tooltipProps' trigger
+                                 option to get a token of its own."
                 >
                     <Row spacing="tiny" flexWrap="wrap">
                         {Array.from({ length: 12 }, (_, i) => (
                             <Block
                                 key={i}
                                 className="showcase-tooltip-target" tabIndex={0}
-                                {...model.tooltipProps(`Channel ${String(i + 1).padStart(2, "0")} — last reading 14:0${i % 10}`, { delay: 80 })}
+                                {...model.tooltipProps(`Channel ${String(i + 1).padStart(2, "0")} — last reading 14:0${i % 10}`, { delay: 80, trigger: `channel-${i + 1}` })}
                             >
                                 {String(i + 1).padStart(2, "0")}
                             </Block>
@@ -288,7 +290,7 @@ function useOverlaysTopic(params?: OverlaysTopicParams): OverlaysTopicModel {
                                     <Icon name="warning" size="sm" intent="warning" />
                                     <Block>Battery below 20%</Block>
                                 </Row>,
-                                { delay: 120 }
+                                { delay: 120, trigger: "battery" }
                             )}
                         >
                             with an icon
@@ -298,7 +300,7 @@ function useOverlaysTopic(params?: OverlaysTopicParams): OverlaysTopicModel {
                             className="showcase-tooltip-target" tabIndex={0}
                             {...model.tooltipProps(
                                 "A deliberately long tooltip, to show that the bubble wraps at its max width rather than running off the edge of the screen, and that long unbroken tokens like /var/log/showcase/instrument-04-diagnostics.log break instead of overflowing.",
-                                { delay: 120 }
+                                { delay: 120, trigger: "long-text" }
                             )}
                         >
                             long text
