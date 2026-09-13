@@ -1,0 +1,20 @@
+/* FieldLabel — a field label plus a dimmed qualifier. This renders INSIDE the input's own
+   <label className="… ueca-label">, so type is already set there; only the gap and the qualifier's
+   ink belong here. */
+
+/* Centred rather than baseline-aligned: the hint slot holds an icon, which has no text baseline to
+   sit on and would hang low. Label and qualifier are the same size, so the two agree anyway. */
+.ueca-field-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-tiny);
+}
+
+/* The qualifier is the same type as the label, one step dimmer — never smaller. Measured #B5B9BA
+   against a #002A52 label on legacy /settings, which is the placeholder ink rather than --ink-dim;
+   the mladmin theme sets the token accordingly. */
+.ueca-field-label-secondary {
+    color: var(--field-label-secondary-ink, var(--ink-dim));
+    text-transform: none;
+    letter-spacing: normal;
+}

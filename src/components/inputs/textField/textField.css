@@ -1,9 +1,24 @@
-/* TextField container */
+/* TextField. Per-instance accent via --textfield-color (the `color` prop). The FRAME carries the
+   field chrome (:focus-within) so adornments live inside it; the input is borderless. */
+
 .ueca-textfield {
+    --tf-bg: var(--surface-2);
+    /* --input-line lets a theme give fields a stronger hairline than the generic --border; MLAdmin
+       outlines them in grey.Regular, a good deal darker than its layout borders. */
+    --tf-line: var(--input-line, var(--border));
+    --tf-ink: var(--ink);
+    --tf-muted: var(--ink-disabled);
+    --tf-accent: var(--textfield-color, var(--accent));
+    --tf-accent-dim: var(--accent-dim);
+    /* The hover/focus outline, separate from --tf-accent-dim because a theme may want the field to
+       answer in a different accent step than a pressed button. MLAdmin uses primary.Regular. */
+    --tf-line-active: var(--input-line-active, var(--tf-accent-dim));
+    --tf-error: var(--error);
+
     display: inline-flex;
     flex-direction: column;
-    gap: 4px;
-    font-family: inherit;
+    gap: var(--space-tiny);
+    font-family: var(--font-ui);
     position: relative;
     min-width: 200px;
 }
@@ -13,127 +28,258 @@
     width: 100%;
 }
 
-/* Label */
+/* Label — type comes from .ueca-label (applied alongside in the TSX); only colour
+   and spacing are this component's business. */
+/* No margin-bottom: the field's own column gap already puts 4px under the label, and adding one
+   here doubled it. */
 .textfield-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 4px;
+    color: var(--label-ink, var(--tf-accent-dim));
 }
 
+/* Leads the label, so the gap goes after it. */
 .textfield-required {
-    color: #d32f2f;
+    color: var(--tf-error);
+    margin-right: var(--space-tiny);
 }
 
-/* Input field base */
+/* Height comes off the control ladder rather than from the input's own padding, so a theme can put
+   fields on the rung its design uses — MLAdmin's are 32px, one step down from the template's 40px
+   (the legacy "medium" control). */
+.textfield-frame {
+    display: flex;
+    align-items: center;
+    min-height: var(--input-height, var(--control-h-md));
+    border: var(--hairline) solid var(--tf-line);
+    border-radius: var(--input-radius, var(--radius-md));
+    background-color: var(--tf-bg);
+    /* NAMED, never `all` — see the note in checkbox.css. */
+    transition: background-color var(--motion-base) var(--ease),
+        border-color var(--motion-base) var(--ease),
+        box-shadow var(--motion-base) var(--ease);
+}
+
+.ueca-textfield:not(.ueca-textfield-disabled) .textfield-frame:hover {
+    border-color: var(--tf-line-active);
+}
+
+/* Legacy input.scss gives focus an outline AND a soft glow; hover gets the outline only. */
+.textfield-frame:focus-within {
+    border-color: var(--tf-line-active);
+    box-shadow: var(--input-focus-shadow, none);
+}
+
+/* Type is token-driven so a theme can set the voice of every field at once: the template's default
+   is a mono micro-face, while MLAdmin's fields are plain 14px UI type (measured on legacy
+   /settings). Same mechanism as --label-* in tokens.css. */
 .textfield-input {
-    font-family: inherit;
-    font-size: 1rem;
-    padding: 12px 14px;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.23);
+    font-family: var(--input-font, var(--font-mono));
+    font-size: var(--input-size, var(--text-2xs));
+    line-height: var(--leading-snug);
+    /* The frame owns the height and centres its content, so a theme that pins a rung wants the
+       vertical padding gone — otherwise the padding fights the min-height. */
+    padding: var(--input-padding, var(--space-default));
+    border: none;
+    border-radius: inherit;
     outline: none;
-    transition: all 0.2s ease;
     background-color: transparent;
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--tf-ink);
+    flex: 1;
     width: 100%;
+    min-width: 0;
     box-sizing: border-box;
 }
 
+/* A textarea sets its own height, and needs the vertical padding a single-line field drops. */
 .textfield-textarea {
     resize: vertical;
     min-height: 80px;
+    padding: var(--space-default);
+}
+
+/* `fill`: the field takes the height its parent hands it rather than sizing to `rows`. min-height:0
+   at both levels because a flex item defaults to min-height:auto and would refuse to shrink below
+   the textarea's own 80px floor. */
+.ueca-textfield-fill {
+    flex: 1;
+    min-height: 0;
+}
+
+.ueca-textfield-fill .textfield-frame {
+    flex: 1;
+    min-height: 0;
+}
+
+/* No drag handle on a filled field. The parent dictates the height here, so dragging could only
+   shrink the textarea INSIDE a frame that stays put — a mismatched inner box, and never larger.
+   A plain multiline field keeps its handle, because there the textarea IS the control. */
+.ueca-textfield-fill .textfield-textarea {
+    height: 100%;
+    resize: none;
 }
 
 .textfield-input::placeholder {
-    color: rgba(0, 0, 0, 0.38);
+    color: var(--tf-muted);
 }
 
-.textfield-input:hover:not(:disabled) {
-    border-color: rgba(0, 0, 0, 0.87);
-}
-
-.textfield-input:focus {
-    border-color: var(--textfield-color, #1976d2);
-    border-width: 2px;
-    padding: 11px 13px; /* Adjust padding to account for wider border */
+/* Paint over Chrome's autofill wash with the frame's own colours. Declare NOTHING about type here:
+   `font: inherit` reaches the FRAME, which sits a step larger than the input, so an autofilled
+   field jumped 14px -> 16px the moment it was hovered. Leaving type undeclared keeps whatever the
+   field normally uses, which is the point. */
+.textfield-input:-webkit-autofill,
+.textfield-input:-webkit-autofill:hover,
+.textfield-input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--tf-bg) inset;
+    -webkit-text-fill-color: var(--tf-ink);
+    caret-color: var(--tf-ink);
 }
 
 .textfield-input:disabled {
-    background-color: rgba(0, 0, 0, 0.04);
     cursor: not-allowed;
-    color: rgba(0, 0, 0, 0.38);
+    color: var(--tf-muted);
 }
 
-/* Outlined variant (default) */
-.ueca-textfield-outlined .textfield-input {
-    border: 1px solid rgba(0, 0, 0, 0.23);
-    background-color: transparent;
+/* Read-only is NOT disabled: the field is filled to say "not yours to edit right now", but the
+   value stays in full ink so it can still be read. Disabled dims the text as well. */
+.ueca-textfield-readonly .textfield-frame {
+    background-color: var(--input-readonly-bg, var(--bg));
+}
+
+.ueca-textfield-readonly .textfield-input {
+    cursor: default;
+}
+
+/* A read-only field is inert to the POINTER — hovering must not suggest you may type here.
+   FOCUS is a different question, and it answers exactly as an editable field does: the app has one
+   vocabulary for "the keyboard is here" (accent border + glow), and giving read-only fields a
+   second one — a hard ring — made them the odd control out on any screen that toggles between
+   view and edit. What still says "read-only" is the filled ground, not the focus treatment.
+   `:not(:focus-within)` so a field that is hovered AND focused keeps the glow. */
+.ueca-textfield-readonly .textfield-frame:hover:not(:focus-within) {
+    border-color: var(--tf-line);
+    box-shadow: none;
+}
+
+.textfield-adornment {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    color: var(--tf-muted);
+}
+
+.textfield-adornment-start {
+    padding-left: var(--space-default);
+}
+
+.textfield-adornment-end {
+    padding-right: var(--space-default);
+}
+
+.textfield-reveal {
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0 var(--space-default) 0 0;
+    cursor: pointer;
+    color: var(--ink-dim);
+    transition: color var(--motion-base) var(--ease);
+}
+
+.textfield-reveal:hover:not(:disabled),
+.textfield-reveal:focus-visible {
+    color: var(--tf-ink);
+}
+
+/* The group above is colour-only and byte-identical to :hover, so focus was indistinguishable from
+   a pointer resting on the eye — and this is a tab stop the moment a password field is focused.
+   Inset, because it sits flush inside the field frame and an outward ring would cross the border. */
+.textfield-reveal:focus-visible {
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+    border-radius: var(--radius-sm);
+}
+
+.textfield-reveal:disabled {
+    cursor: not-allowed;
 }
 
 /* Filled variant */
-.ueca-textfield-filled .textfield-input {
+.ueca-textfield-filled .textfield-frame {
     border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
-    border-radius: 4px 4px 0 0;
-    background-color: rgba(0, 0, 0, 0.06);
-    padding: 16px 12px 8px;
+    border-bottom: var(--hairline) solid var(--tf-line);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    background-color: var(--ink-hover);
 }
 
-.ueca-textfield-filled .textfield-input:hover:not(:disabled) {
-    background-color: rgba(0, 0, 0, 0.09);
+.ueca-textfield-filled:not(.ueca-textfield-disabled) .textfield-frame:hover {
+    background-color: var(--hover);
 }
 
-.ueca-textfield-filled .textfield-input:focus {
-    background-color: rgba(0, 0, 0, 0.09);
-    border-bottom-width: 2px;
-    border-bottom-color: var(--textfield-color, #1976d2);
-    padding-bottom: 7px; /* Adjust for thicker border */
+.ueca-textfield-filled .textfield-frame:focus-within {
+    border-bottom-color: var(--tf-line-active);
 }
 
 /* Standard variant */
-.ueca-textfield-standard .textfield-input {
+.ueca-textfield-standard .textfield-frame {
     border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+    border-bottom: var(--hairline) solid var(--tf-line);
     border-radius: 0;
-    padding: 8px 0;
+    background-color: transparent;
 }
 
-.ueca-textfield-standard .textfield-input:hover:not(:disabled) {
-    border-bottom-color: rgba(0, 0, 0, 0.87);
+.ueca-textfield-standard .textfield-input {
+    padding: var(--space-default) 0;
 }
 
-.ueca-textfield-standard .textfield-input:focus {
-    border-bottom-width: 2px;
-    border-bottom-color: var(--textfield-color, #1976d2);
-    padding-bottom: 7px; /* Adjust for thicker border */
+.ueca-textfield-standard:not(.ueca-textfield-disabled) .textfield-frame:hover {
+    border-bottom-color: var(--tf-line-active);
+}
+
+.ueca-textfield-standard .textfield-frame:focus-within {
+    border-bottom-color: var(--tf-line-active);
 }
 
 /* Error state */
 .ueca-textfield-error .textfield-label {
-    color: #d32f2f;
+    color: var(--tf-error);
 }
 
-.ueca-textfield-error .textfield-input {
-    border-color: #d32f2f;
+.ueca-textfield-error .textfield-frame,
+.ueca-textfield-error:not(.ueca-textfield-disabled) .textfield-frame:hover {
+    border-color: var(--tf-error);
+    border-bottom-color: var(--tf-error);
+    box-shadow: none;
 }
 
-.ueca-textfield-error .textfield-input:focus {
-    border-color: #d32f2f;
+/* Focused AND invalid: the border stays the error colour — that is the whole point of the state —
+   and the glow comes back, so focus says the same thing here as everywhere else. The glow is
+   restated rather than taken from --input-focus-shadow because a box-shadow's colour cannot be
+   swapped without its geometry; the geometry mirrors that token deliberately. */
+.ueca-textfield-error .textfield-frame:focus-within {
+    border-color: var(--tf-error);
+    border-bottom-color: var(--tf-error);
+    box-shadow: 0 1px 4px color-mix(in srgb, var(--tf-error) 30%, transparent);
 }
 
 /* Helper text */
 .textfield-helper-text {
-    font-size: 0.75rem;
-    color: rgba(0, 0, 0, 0.6);
-    margin-top: 4px;
+    font-size: var(--text-2xs);
+    font-family: var(--input-font, var(--font-mono));
+    color: var(--tf-muted);
+    margin-top: var(--space-tiny);
 }
 
 .textfield-helper-text-error {
-    color: #d32f2f;
+    color: var(--tf-error);
 }
 
 /* Disabled state */
+/* A disabled field fades by default. MLAdmin instead keeps the label in full ink and washes the
+   ground, dimming only the value — measured on the licence screen. */
 .ueca-textfield-disabled .textfield-label {
-    color: rgba(0, 0, 0, 0.38);
+    color: var(--input-disabled-label-ink, var(--tf-muted));
+}
+
+.ueca-textfield-disabled .textfield-frame {
+    opacity: var(--input-disabled-opacity, .4);
+    background-color: var(--input-disabled-bg, var(--tf-bg));
+    cursor: not-allowed;
 }

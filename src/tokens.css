@@ -1,0 +1,325 @@
+/* ============================================================
+   Design tokens — everything that is NOT colour.
+
+   Colour lives in themes.css and varies per theme. The scales below are
+   theme-INDEPENDENT: a type step, a control height, a radius, a duration and an
+   elevation are properties of the design system, not of the palette, so they are
+   defined once here and every theme inherits them.
+
+   Why this file exists: without it each component invents its own values, and the
+   app drifts. Before it, the shared components between them used twelve distinct
+   font sizes across four units, seven border radii, five transition durations, and
+   four hardcoded rgba() shadows — in a codebase whose rule is "never hardcode a
+   colour". A component's .css should reference a token here rather than a literal.
+
+   Adding a value: add it to the right scale, don't inline it locally. If a scale
+   genuinely has no step that fits, add the step here so the next person finds it.
+   ============================================================ */
+
+:root {
+    /* ---- Typefaces -------------------------------------------------------
+       Display carries the personality (headings, hero), body carries the prose and
+       the controls, mono carries code and the structural micro-labels. Loaded in
+       index.html from Google Fonts; every stack falls back to something real.
+       Components reference a token, never a family name — the same rule as colour.
+       --font-ui is what the shared components read, so it follows --font-body. */
+    --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --font-ui: var(--font-body);
+    --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+    /* ---- Type scale ------------------------------------------------------
+       Every step corresponds to something the app actually renders; there are no
+       decorative steps. --text-md is control and UI text, --text-base is prose.
+       2xs is the uppercase micro-label the shared label style is built on (see
+       .ueca-label at the bottom of this file). */
+    --text-2xs: 11px;
+    --text-xs: 12px;
+    --text-sm: 13px;
+    --text-md: 15px;
+    --text-base: 16px;
+    --text-lg: 19px;
+    --text-xl: 23px;
+    --text-2xl: 27px;
+    /* The two display steps are fluid, so a long heading keeps whole words on a phone
+       column instead of breaking inside an identifier. */
+    --text-3xl: clamp(26px, 5.2vw, 34px);
+    --text-4xl: clamp(30px, 6.4vw, 42px);
+
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+    --weight-extrabold: 800;
+
+    --leading-tight: 1.15;
+    --leading-snug: 1.3;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.7;
+
+    /* Tracking widens as type gets smaller and more label-like — `widest` is only
+       legible because it is paired with uppercase at --text-2xs. */
+    --tracking-tight: -0.02em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.04em;
+    --tracking-wider: 0.12em;
+    --tracking-widest: 0.16em;
+
+    /* The reading measure. Prose is capped here; code blocks and tables are allowed
+       to be wider and scroll inside themselves. */
+    --measure: 72ch;
+
+    /* ---- Spacing ---------------------------------------------------------
+       These MIRROR the tokens in src/components/layout/layoutShared.ts, which is the
+       source of truth for JSX (`spacing="small"` → 16px). They exist so a leaf
+       component's CSS measures with the same ruler as the screen's JSX — before
+       this, CSS used raw literals like `7px 8px` and `12px 16px` that belonged to
+       no scale at all. Keep the two in sync: the Tokens showcase topic renders
+       both and any drift is visible there. */
+    --space-none: 0px;
+    --space-tiny: 4px;
+    --space-default: 8px;
+    --space-small: 16px;
+    --space-medium: 24px;
+    --space-large: 32px;
+    --space-huge: 64px;
+    --space-massive: 96px;
+
+    /* ---- Control heights -------------------------------------------------
+       One ladder for everything the user can click, so a Button and an IconButton
+       sitting in the same toolbar line up. */
+    --control-h-xs: 24px;
+    --control-h-sm: 32px;
+    --control-h-md: 40px;
+    --control-h-lg: 48px;
+    --control-h-xl: 56px;
+
+    /* ---- App shell metrics -------------------------------------------------
+       The frame the screens live in: a collapsible sidebar rail beside a slim top
+       bar. Shell COLOURS are theme business — see the shell chrome tokens in
+       themes.css. */
+    --topbar-h: 52px;
+    --sidebar-w: 280px;
+    --sidebar-w-collapsed: 60px;
+    /* The content band: a screen's whole design width. Past it there is nothing left to
+       widen, so the page centres instead of growing — left-aligned, the surplus piles up
+       in one void on the right. */
+    --band-w: 1180px;
+    /* The page's own left/right padding, shared by screen content and the top bar's
+       breadcrumb offset, which is aligned to the band by arithmetic — both have to read
+       one value or they drift apart at the phone breakpoint below. */
+    --page-pad: var(--space-medium);
+
+    /* ---- Icon sizes ------------------------------------------------------ */
+    --icon-xs: 12px;
+    --icon-sm: 14px;
+    --icon-md: 16px;
+    --icon-lg: 20px;
+    --icon-xl: 24px;
+    --icon-2xl: 32px;
+
+    /* ---- Radii ----------------------------------------------------------- */
+    --radius-xs: 3px;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 10px;
+    --radius-pill: 999px;
+    --radius-circle: 50%;
+
+    /* ---- Strokes ---------------------------------------------------------
+       Border, outline and separator widths. A hairline is the app's default
+       edge — every border, divider and separator draws one — so it is a token
+       rather than 1px written out forty times: it is what a high-DPI or
+       high-contrast pass would need to change in ONE place. The emphasis stroke
+       is the deliberate step up: focus rings, checkbox and radio rings, the
+       active tab underline, the drawer's intent bar.
+
+       Not every px in a component stylesheet is a missing token. These scales
+       (stroke, spacing, radius, icon size, control height) cover the values that
+       REPEAT and that a theme could reasonably want to shift. A number used once
+       to place one thing — a drawer's 280px width, a resize handle's 9px hit
+       area — is geometry, not a design decision, and a --drawer-width with a
+       single call site is indirection with nothing on the other end. Those stay
+       literal; give them a comment when the number is not self-evident. */
+    --hairline: 1px;
+    --stroke-emphasis: 2px;
+
+    /* How far a focus effect paints OUTSIDE a control's border box, and therefore how much room a
+       CLIPPING container has to reserve or its children's rings are cut. The ring reaches
+       --stroke-emphasis + its 2px offset = 4px; the field glow (--input-focus-shadow, 0 1px 4px)
+       reaches 5px, which is the binding case. See css-practices.md#reserving-room-for-focus —
+       a container that clips deliberately (an ellipsis cell, fixed chrome) uses an inset ring
+       instead, because there is nothing to pad. */
+    --focus-bleed: 5px;
+
+    /* ---- Elevation -------------------------------------------------------
+       Shadows are the one "non-colour" token that carries a colour, so it is
+       factored out: a theme MAY override --shadow-color (an "R G B" triplet) if
+       black reads wrong against its surfaces; none currently needs to. The alphas
+       are deliberately modest — the values these replace went up to 0.6 black,
+       which is heavy in a dark theme and simply wrong in a light one. */
+    --shadow-color: 0 0 0;
+    --shadow-1: 0 1px 2px rgb(var(--shadow-color) / 0.20);
+    --shadow-2: 0 4px 12px rgb(var(--shadow-color) / 0.24);
+    --shadow-3: 0 12px 32px rgb(var(--shadow-color) / 0.30);
+    --shadow-4: 0 24px 56px rgb(var(--shadow-color) / 0.38);
+
+    /* A hairline ring, for elevated surfaces that have NO border of their own.
+       A drop shadow is nearly invisible on a dark theme — black on near-black has
+       almost no contrast — so a raised surface needs an edge to read as raised.
+       Dialog, Drawer and the login card already draw `1px solid var(--border)`,
+       and adding a ring there would double the edge; Card and Snackbar do not, and
+       are what this is for. Compose it in front of the shadow:
+           box-shadow: var(--ring), var(--shadow-2);
+       Opt-in on purpose — it is not folded into --shadow-* for the reason above. */
+    --ring: 0 0 0 1px var(--border);
+
+    /* ---- Motion ----------------------------------------------------------
+       Durations are tokens mainly so the reduced-motion override below can reach
+       every animation in the app from one place. */
+    --motion-fast: 120ms;
+    --motion-base: 160ms;
+    --motion-slow: 240ms;
+    --motion-slower: 320ms;
+    --ease: cubic-bezier(0.2, 0, 0, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ---- Overlay ladder --------------------------------------------------
+       Was prose in docs/raw/css-practices.md plus literals in five component files.
+       `dropdown` is reserved for the popover/menu layer that does not exist yet;
+       it sits below the dialog backdrop so a menu inside a dialog still needs its
+       own stacking context rather than a bigger number. */
+    --z-hud: 5;
+    --z-sticky: 100;
+    --z-dropdown: 1000;
+    /* Dialogs and drawers do NOT sit in fixed bands: which one is on top is a runtime fact
+       (a confirmation raised inside an edit drawer must cover it), so each takes a band in open
+       order from overlayStack.ts and the newest wins. These four are only the fallback for an
+       overlay holding no band, and the floor the ladder starts from. */
+    --z-dialog-backdrop: 1300;
+    --z-drawer: 1400;
+    --z-drawer-panel: 1410;
+    /* Far above the overlay ladder rather than one step up, so a deep stack of drawers and
+       dialogs can never climb into the toast/tooltip layer. */
+    --z-toast: 2500;
+    /* The singleton tooltip owned by AppUI (see appTooltipManager). It renders OUTSIDE the dialog
+       and drawer subtrees, so it has to sit above them — a tooltip on a control inside a drawer
+       would otherwise be painted under that drawer. This is why it is not on --z-dropdown, which
+       is for a popover rendered inline in page flow. */
+    --z-tooltip: 2700;
+}
+
+/* Phone widths: the page gives back some of its gutter to the content. */
+@media (max-width: 700px) {
+    :root {
+        --page-pad: var(--space-small);
+    }
+}
+
+/* Honour the OS "reduce motion" setting everywhere at once. Only works for
+   animations whose duration comes from a token — one more reason to use them. */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --motion-fast: 0ms;
+        --motion-base: 0ms;
+        --motion-slow: 0ms;
+        --motion-slower: 0ms;
+    }
+}
+
+/* ============================================================
+   Typography roles
+
+   Named roles built from the scales above, so a component asks for "this is a
+   title" rather than picking a font-size. Before these, the shared components
+   between them used twelve font sizes across four units, and the label style
+   below was copy-pasted verbatim into three separate component stylesheets.
+
+   These set TYPE ONLY — size, weight, tracking, leading, case. Deliberately no
+   colour: colour is a palette decision made at the call site (`color=` on
+   Block/Row/Col) or in the component's own CSS, and baking it in here would
+   quietly override those. Same for margins.
+
+   Combine with a component's own class rather than replacing it:
+       <label className="textfield-label ueca-label">
+   where `.ueca-label` brings the type and `.textfield-label` brings colour and
+   spacing.
+   ============================================================ */
+
+/* The app's signature micro-label: uppercase, tiny, heavily tracked. Field
+   labels, select labels and panel titles all share it.
+
+   This one is token-driven where the others are not, because it is the single
+   place a theme's *voice* shows in a form. The MLAdmin theme's labels are 14px
+   sentence case, not a tracked micro-caps — so the four properties that carry
+   that difference read --label-* tokens, defaulting to the values above. Only
+   themes.css sets them; nothing else should. */
+.ueca-label {
+    font-size: var(--label-size, var(--text-2xs));
+    font-weight: var(--label-weight, var(--weight-bold));
+    letter-spacing: var(--label-tracking, var(--tracking-widest));
+    text-transform: var(--label-transform, uppercase);
+    line-height: var(--label-leading, var(--leading-snug));
+}
+
+/* Screen or dialog heading. */
+.ueca-title-lg {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    line-height: var(--leading-tight);
+}
+
+/* Section heading, app name, panel header. */
+.ueca-title {
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    line-height: var(--leading-tight);
+}
+
+/* Secondary heading, or a lead-in line under a title. Tokenized like .ueca-label: a theme can set
+   the voice of every section heading at once (MLAdmin's are 16/600, a step heavier than ours). */
+.ueca-subtitle {
+    font-size: var(--subtitle-size, var(--text-lg));
+    font-weight: var(--subtitle-weight, var(--weight-medium));
+    line-height: var(--subtitle-leading, var(--leading-snug));
+}
+
+/* Default running text. */
+.ueca-body {
+    font-size: var(--text-md);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-normal);
+}
+
+/* Supporting text: hints, metadata, timestamps, field help. */
+.ueca-caption {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-normal);
+}
+
+/* A measured value or code fragment — monospace so digits align in a column.
+   This is the instrument readout style, and the reason JetBrains Mono is
+   bundled at all. */
+.ueca-value {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-snug);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Single-line truncation with an ellipsis. `min-width: 0` is the part everyone
+   forgets: inside a Row or Col — which are flex — a text child defaults to
+   min-width:auto and refuses to shrink below its content, so it overflows the
+   container instead of ellipsising. */
+.ueca-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}

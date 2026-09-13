@@ -1,0 +1,35 @@
+/* Icon — a fixed square that sizes from font-size, so every source (inline SVG, a FontAwesome
+   glyph, an image) occupies exactly the same box at a given token step. */
+
+.ueca-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    flex: none;         /* never let a flex parent squash an icon */
+    line-height: 1;
+}
+
+.ueca-icon svg,
+.ueca-icon img,
+.ueca-icon i {
+    display: block;
+    width: 1em;
+    height: 1em;
+}
+
+/* A FontAwesome glyph is TEXT, and its advance is per-icon — up to ~1.25em, so a wide one (gears,
+   ellipsis) paints wider than the 1em box above reserves. Without this it overflows entirely to the
+   RIGHT, because that is where a left-aligned line box grows, and it crowds whatever follows: the
+   breadcrumb's label sat ~1.8px closer to its icon than the 4px gap said it should.
+   Centring splits the overflow evenly, so a wide glyph encroaches equally on both sides and the
+   icon reads as centred in its box. Boxes keep their 1em width, so nothing moves. */
+.ueca-icon i {
+    text-align: center;
+}
+
+/* An image source keeps its aspect ratio inside the square rather than being stretched to it. */
+.ueca-icon-image {
+    object-fit: contain;
+}

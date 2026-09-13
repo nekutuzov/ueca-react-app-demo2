@@ -1,0 +1,196 @@
+/* ============================================================
+   Colour — one block per theme, switched by <html data-theme>.
+
+   The palette is derived from the UECA mark: four interlocking puzzle pieces in
+   blue, amber, green and coral. Blue is the accent (links, active nav, actions),
+   amber the STRUCTURE marker (section numbers, rules, eyebrows), and green/coral
+   the success and error states. Two accents doing two different jobs — amber never
+   lands on anything clickable, which is what keeps the split readable.
+
+   Everything that is not colour — type, spacing, radii, motion, z-index — lives in
+   tokens.css. Component CSS references these tokens and never a hex.
+
+   Base tokens per theme:
+     --bg             page ground
+     --surface        sidebar, cards, dialogs
+     --surface-2      input surface
+     --surface-code   code block / inline code ground
+     --ink            primary text
+     --ink-dim        secondary text
+     --ink-disabled   disabled text
+     --ink-on-accent  text on an accent-filled surface
+     --border         hairlines
+     --accent         primary accent — action
+     --accent-strong  brighter accent (hover)
+     --accent-dim     pressed/dim accent
+     --marker         structural accent — never interactive
+     --secondary --error --warning --info --success
+
+   Registry (id/label/mode) lives in core/infrastructure/appTheme.ts.
+   ============================================================ */
+
+/* Derived tokens — formulas resolved against whichever theme is active, so
+   component CSS never repeats a color-mix. */
+:root {
+    --scrim: color-mix(in srgb, black 55%, transparent);
+    --glass: color-mix(in srgb, var(--surface) 85%, transparent);
+    --hover: color-mix(in srgb, var(--accent) 8%, transparent);
+    --active: color-mix(in srgb, var(--accent) 14%, transparent);
+    --selected: color-mix(in srgb, var(--accent) 12%, transparent);
+    --focus: color-mix(in srgb, var(--accent) 30%, transparent);
+    --ink-hover: color-mix(in srgb, var(--ink) 7%, transparent);
+    --disabled-ink: color-mix(in srgb, var(--ink) 40%, transparent);
+    --disabled-line: color-mix(in srgb, var(--ink) 24%, transparent);
+
+    /* The keyboard focus ring, deliberately the opaque accent and not the 30%
+       --focus wash: a 30% tint sits near 1.4:1, well under WCAG 2.4.11's 3:1
+       floor for a focus indicator. --focus stays as it is for selected states,
+       which is a different job. */
+    --focus-ring: var(--accent);
+
+    /* Status ramps — four stops per intent so an alert, chip or invalid field
+       never improvises its own tint. --*-ink mixes toward an explicit extreme
+       chosen by the theme's own color-scheme; mixing toward --ink instead
+       assumes --ink is near-black, which is false in half of all themes.
+       (light-dark() needs Chrome 123+/Firefox 120+/Safari 17.5+.) */
+    --status-ink-anchor: light-dark(#000000, #ffffff);
+
+    --success-bg: color-mix(in srgb, var(--success) 13%, var(--surface));
+    --success-hover: color-mix(in srgb, var(--success) 21%, var(--surface));
+    --success-border: color-mix(in srgb, var(--success) 40%, var(--surface));
+    --success-ink: color-mix(in srgb, var(--success) 45%, var(--status-ink-anchor));
+
+    --info-bg: color-mix(in srgb, var(--info) 13%, var(--surface));
+    --info-hover: color-mix(in srgb, var(--info) 21%, var(--surface));
+    --info-border: color-mix(in srgb, var(--info) 40%, var(--surface));
+    --info-ink: color-mix(in srgb, var(--info) 45%, var(--status-ink-anchor));
+
+    --warning-bg: color-mix(in srgb, var(--warning) 13%, var(--surface));
+    --warning-hover: color-mix(in srgb, var(--warning) 21%, var(--surface));
+    --warning-border: color-mix(in srgb, var(--warning) 40%, var(--surface));
+    --warning-ink: color-mix(in srgb, var(--warning) 45%, var(--status-ink-anchor));
+
+    --error-bg: color-mix(in srgb, var(--error) 13%, var(--surface));
+    --error-hover: color-mix(in srgb, var(--error) 21%, var(--surface));
+    --error-border: color-mix(in srgb, var(--error) 40%, var(--surface));
+    --error-ink: color-mix(in srgb, var(--error) 45%, var(--status-ink-anchor));
+
+    /* "primary" rides the theme accent rather than a status colour. */
+    --primary-bg: color-mix(in srgb, var(--accent) 13%, var(--surface));
+    --primary-hover: color-mix(in srgb, var(--accent) 21%, var(--surface));
+    --primary-border: color-mix(in srgb, var(--accent) 40%, var(--surface));
+    --primary-ink: color-mix(in srgb, var(--accent) 45%, var(--status-ink-anchor));
+
+    /* Shell chrome — the sidebar rail and the top bar. A theme that wants a
+       branded bar overrides these in its own block. */
+    --sidebar-bg: var(--surface);
+    --sidebar-ink: var(--ink-dim);
+    --sidebar-ink-active: var(--ink);
+    --sidebar-marker: var(--marker);
+    --sidebar-item-ink: var(--ink-dim);
+    --sidebar-item-icon: var(--ink-dim);
+    --sidebar-item-active-bg: var(--selected);
+    --sidebar-item-active-ink: var(--ink);
+    --sidebar-item-active-icon: var(--accent);
+
+    --topbar-bg: var(--glass);
+    --topbar-ink: var(--ink-dim);
+    --topbar-ink-dim: var(--ink-dim);
+    --topbar-hover-ink: var(--accent);
+    --topbar-chevron: var(--ink-dim);
+    --topbar-divider: var(--border);
+
+    /* Sign-in backdrop behind the centred card. */
+    --auth-backdrop: var(--bg);
+    --auth-card-shadow: var(--ring), var(--shadow-3);
+
+    /* Tooltip. The one surface that deliberately reads DIFFERENTLY per theme,
+       because its job is to sit visibly above the page and the way to do that is
+       not the same in both: light gets an inverted ink chip (a --surface bubble on
+       a --surface sidebar is invisible), dark a raised, bordered plane (an
+       inverted near-white chip on a dark page glares). Set per theme below. */
+}
+
+/* ---- Light: the default, and the fallback before <html> is stamped ---- */
+:root,
+:root[data-theme="ueca-light"] {
+    color-scheme: light;
+
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --surface-2: #ffffff;
+    --surface-code: #f4f6f9;
+
+    --ink: #131a24;
+    --ink-dim: #5d6b7e;
+    --ink-disabled: #9aa7b5;
+    --ink-on-accent: #ffffff;
+
+    --border: #e2e6ec;
+
+    --accent: #1c5c8c;
+    --accent-strong: #2e7cb8;
+    --accent-dim: #144463;
+
+    /* Darker than the logo's amber: the marker is used as TEXT (section numbers,
+       eyebrows), and the brighter #c4881b measures 3.05:1 on white — fine for a
+       rule or a dot, short of the 4.5:1 that text needs. This reads 5.04:1 on
+       --surface, 4.74:1 on --bg. */
+    --marker: #96650f;
+
+    --secondary: #3e7d63;
+    --error: #c4603f;
+    --warning: #b0781a;
+    --info: #1c5c8c;
+    --success: #4e9e74;
+
+    /* Inverted: an ink chip reads unambiguously above a pale page, and needs no edge. */
+    --tooltip-bg: var(--ink);
+    --tooltip-ink: var(--bg);
+    --tooltip-dim: color-mix(in srgb, var(--bg) 62%, var(--ink));
+    --tooltip-edge: transparent;
+    --tooltip-rule: color-mix(in srgb, var(--bg) 22%, transparent);
+}
+
+/* ---- Dark ---- */
+:root[data-theme="ueca-dark"] {
+    color-scheme: dark;
+
+    --bg: #0e141a;
+    --surface: #151e27;
+    --surface-2: #1b2530;
+    --surface-code: #111a22;
+
+    --ink: #dde5ec;
+    --ink-dim: #93a3b4;
+    --ink-disabled: #61717f;
+    --ink-on-accent: #08121a;
+
+    --border: #25313d;
+
+    --accent: #5aa9dc;
+    --accent-strong: #7dc0ea;
+    --accent-dim: #3d89bb;
+
+    --marker: #e8b33c;
+
+    --secondary: #74bf95;
+    --error: #f2856a;
+    --warning: #e8b33c;
+    --info: #5aa9dc;
+    --success: #74bf95;
+
+    /* A drop shadow is nearly invisible on a dark ground, so raised surfaces
+       lean on the hairline ring instead. */
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 4px 12px rgb(0 0 0 / 0.45);
+    --shadow-3: 0 12px 32px rgb(0 0 0 / 0.5);
+
+    /* Raised rather than inverted, and it keeps its edge — that hairline is what
+       separates it from the page, since a shadow barely registers on this ground. */
+    --tooltip-bg: var(--surface-2);
+    --tooltip-ink: var(--ink);
+    --tooltip-dim: var(--ink-dim);
+    --tooltip-edge: var(--border);
+    --tooltip-rule: var(--border);
+}

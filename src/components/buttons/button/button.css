@@ -1,97 +1,176 @@
-/* Button base styles */
+/* Button — the app-wide button style. Every default below is the template's own look, and every
+   one of them is theme-overridable through the tokens named in the block that follows.
+   Per-instance accent can be overridden via the --button-color CSS var (set from the `color` prop). */
+
 .ueca-button {
+    /* theme tokens (see src/themes.css). --btn-outline-line is a PRIMARY outlined button's border
+       (MLAdmin's light readings: the accent); --btn-text-ink pins the label ink (legacy used its
+       textBase, not the body ink).
+       A button given its own `color` outlines and hovers in THAT colour whatever the theme says.
+       --button-color is read here, on the button, and never through a :root token: a :root
+       var(--button-color) resolves at :root, where no button has set it. IconButton reads its
+       --icon-button-color the same way. */
+    --btn-bg: var(--glass);
+    --btn-line: var(--button-color, var(--btn-outline-line, var(--border)));
+    --btn-ink: var(--btn-text-ink, var(--ink));
+    --btn-accent: var(--button-color, var(--accent));
+    --btn-accent-dim: var(--button-color, var(--accent-dim));
+    --btn-ink-on-accent: var(--ink-on-accent);
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    border: none;
-    border-radius: 4px;
-    font-family: inherit;
-    font-weight: 500;
+    gap: var(--space-default);
+    border: var(--hairline) solid transparent;
+    /* --btn-* tokens are theme-overridable; defaults are the app's designed look (themes.css) */
+    border-radius: var(--btn-radius, var(--radius-lg));
+    font-family: var(--font-ui);
+    font-weight: var(--btn-weight, var(--weight-bold));
+    /* NOT .ueca-label: a button is tracked one step tighter than the micro-label, and its
+       font-size varies per size variant below. */
+    letter-spacing: var(--btn-tracking, var(--tracking-wider));
+    text-transform: var(--btn-case, uppercase);
     cursor: pointer;
-    transition: all 0.2s ease;
+    /* NAMED, never `all` — `all` animates outline-color from currentColor, which flashes the focus
+       ring in the body ink before it settles. See the note in checkbox.css. */
+    transition: background-color var(--motion-base) var(--ease),
+        border-color var(--motion-base) var(--ease),
+        color var(--motion-base) var(--ease),
+        box-shadow var(--motion-base) var(--ease);
     white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 0.02857em;
     outline: none;
     position: relative;
-    overflow: hidden;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+/* The replacement for the `outline: none` above — which previously had none, leaving every Button
+   in the app with NO focus indicator at all: measured on a tab-focused Button as outline none,
+   box-shadow none, transparent border and background. That is a WCAG 2.4.7 failure on the app's
+   most-used control, and one rule fixes every instance (CRUD toolbar, dialog and drawer footers,
+   the toolButtons shorthands).
+   :focus-visible, so a pointer click still shows nothing and the legacy look is unchanged for a
+   mouse user. */
+.ueca-button:focus-visible {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: 2px;
 }
 
 .ueca-button:disabled {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--btn-disabled-opacity, 0.32);
+    filter: var(--btn-disabled-filter, saturate(0.4));
 }
 
-/* Size variants */
+/* A theme that PAINTS its disabled state rather than fading it sets these three (and neutralises
+   the opacity/filter above). MLAdmin's disabled chip is a solid grey fill with a grey outline and
+   grey text, which fading a blue outline cannot produce. Every variant takes it — legacy's
+   `.cs-button:disabled` does — except that a text button keeps no fill or border, only the ink.
+   Painting only the outlined variant left a disabled contained button a full accent fill.
+   Defaults resolve to each variant's own colours, so a theme that says nothing sees no change. */
+.ueca-button-outlined:disabled {
+    background-color: var(--btn-disabled-bg, var(--btn-bg));
+    color: var(--btn-disabled-ink, var(--btn-ink));
+    border-color: var(--btn-disabled-line, var(--btn-line));
+}
+
+.ueca-button-contained:disabled {
+    background-color: var(--btn-disabled-bg, var(--btn-accent));
+    color: var(--btn-disabled-ink, var(--btn-ink-on-accent));
+    border-color: var(--btn-disabled-line, var(--btn-accent));
+}
+
+.ueca-button-text:disabled {
+    color: var(--btn-disabled-ink, var(--btn-ink));
+}
+
+/* Size variants — heights come from the shared control ladder so a Button and an IconButton of the
+   same size line up in a toolbar. These were 30/36/44 against IconButton's 32/40/48. */
+/* Horizontal padding only. Vertical padding plus the border used to overflow min-height on the
+   small and large rungs, so a Button rendered 34 and 53 where the ladder says 32 and 48 — and sat
+   2px and 5px taller than the IconButton it is supposed to line up with in a toolbar. The rung now
+   sets the height outright; `align-items: center` (base rule) does the centring padding was doing. */
+/* The 24px rung exists because a dialog's answers sit one step below a toolbar's buttons — the
+   legacy message box's own ladder — and because it is the rung IconButton already had, so a
+   Button and an IconButton still line up at every size. There is no type step below --text-2xs,
+   so the default shares the small rung's size and differs in height and padding alone. */
+.ueca-button-xsmall {
+    padding: 0 var(--btn-pad-x-xs, var(--space-default));
+    font-size: var(--btn-font-xs, var(--text-2xs));
+    min-height: var(--control-h-xs);
+}
+
 .ueca-button-small {
-    padding: 4px 10px;
-    font-size: 0.8125rem;
-    min-height: 30px;
+    padding: 0 var(--btn-pad-x-sm, var(--space-default));
+    font-size: var(--btn-font-sm, var(--text-2xs));
+    min-height: var(--control-h-sm);
 }
 
 .ueca-button-medium {
-    padding: 6px 16px;
-    font-size: 0.875rem;
-    min-height: 36px;
+    padding: 0 var(--btn-pad-x-md, var(--space-small));
+    font-size: var(--btn-font-md, var(--text-xs));
+    min-height: var(--control-h-md);
 }
 
 .ueca-button-large {
-    padding: 8px 22px;
-    font-size: 0.9375rem;
-    min-height: 42px;
+    padding: 0 var(--btn-pad-x-lg, var(--space-medium));
+    font-size: var(--btn-font-lg, var(--text-sm));
+    min-height: var(--control-h-lg);
 }
 
-/* Text variant */
+/* Text variant — minimal, accent on hover */
 .ueca-button-text {
     background-color: transparent;
-    color: var(--button-color, #1976d2);
+    color: var(--btn-ink);
+    border-color: transparent;
 }
 
 .ueca-button-text:hover:not(:disabled) {
-    background-color: rgba(25, 118, 210, 0.04);
+    color: var(--btn-accent);
+    background-color: var(--hover);
 }
 
 .ueca-button-text:active:not(:disabled) {
-    background-color: rgba(25, 118, 210, 0.12);
+    background-color: var(--active);
 }
 
-/* Outlined variant */
+/* Outlined variant — the default "chip" look */
 .ueca-button-outlined {
-    background-color: transparent;
-    color: var(--button-color, #1976d2);
-    border: 1px solid rgba(25, 118, 210, 0.5);
+    background-color: var(--btn-bg);
+    color: var(--btn-ink);
+    border-color: var(--btn-line);
 }
 
 .ueca-button-outlined:hover:not(:disabled) {
-    background-color: rgba(25, 118, 210, 0.04);
-    border-color: var(--button-color, #1976d2);
+    color: var(--btn-accent);
+    border-color: var(--btn-accent-dim);
 }
 
 .ueca-button-outlined:active:not(:disabled) {
-    background-color: rgba(25, 118, 210, 0.12);
+    background-color: var(--hover);
 }
 
-/* Contained variant */
+/* Contained variant — solid lime call-to-action (the dropcard "Choose file") */
 .ueca-button-contained {
-    background-color: var(--button-color, #1976d2);
-    color: white;
-    box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2),
-                0px 2px 2px 0px rgba(0,0,0,0.14),
-                0px 1px 5px 0px rgba(0,0,0,0.12);
+    background-color: var(--btn-accent);
+    color: var(--btn-ink-on-accent);
+    border-color: var(--btn-accent);
 }
 
 .ueca-button-contained:hover:not(:disabled) {
-    box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2),
-                0px 4px 5px 0px rgba(0,0,0,0.14),
-                0px 1px 10px 0px rgba(0,0,0,0.12);
-    filter: brightness(1.1);
+    filter: brightness(1.08);
 }
 
 .ueca-button-contained:active:not(:disabled) {
-    box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.2),
-                0px 8px 10px 1px rgba(0,0,0,0.14),
-                0px 3px 14px 2px rgba(0,0,0,0.12);
+    filter: brightness(0.96);
+}
+
+/* Selected / "on" toggle state — accent border + text + inset glow (rail toggles) */
+.ueca-button-selected.ueca-button-outlined,
+.ueca-button-selected.ueca-button-text {
+    border-color: var(--btn-accent);
+    color: var(--btn-accent);
+    box-shadow: inset 0 0 0 1px var(--focus);
 }
 
 /* Icon styles */
@@ -99,15 +178,29 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    /* Relative on purpose: the glyph scales with whatever size variant the button is. */
     font-size: 1.2em;
 }
 
+/* An icon in a bordered/borderless button can carry the ACCENT while the label stays body ink —
+   legacy's `.cs-button.primary.outlined .cs-button-icon` (and `.primary.link`), which is why its
+   "Add new" reads as a black label beside a blue plus. --btn-outline-icon-ink is that PRIMARY
+   glyph; a button with its own `color` puts the glyph in it (legacy `.danger.outlined` inherits its
+   red), read from --button-color here for the reason in the token block above — through the :root
+   token alone, Delete's trash can wore the theme accent. With neither, the icon follows its label.
+   `:not(:disabled)` is load-bearing: without it a disabled button keeps a vivid accent glyph beside
+   its greyed-out label. */
+.ueca-button-outlined:not(:disabled) .button-icon,
+.ueca-button-text:not(:disabled) .button-icon {
+    color: var(--button-color, var(--btn-outline-icon-ink, inherit));
+}
+
 .button-start-icon {
-    margin-left: -4px;
+    margin-left: -2px;
 }
 
 .button-end-icon {
-    margin-right: -4px;
+    margin-right: -2px;
 }
 
 /* Full width */

@@ -1,0 +1,38 @@
+/* FilterableList — search box pinned above, virtualised rows below. The list owns the row shell
+   (height, hover, active, click target); onRenderItem only fills it. */
+
+.ueca-filterablelist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-tiny);
+    height: 100%;
+    min-height: 0;
+}
+
+/* The search box keeps its height; the list absorbs the rest and scrolls. */
+.ueca-filterablelist > .ueca-virtuallist {
+    flex: 1;
+    min-height: 0;
+}
+
+.ueca-filterablelist-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-default);
+    height: 100%;
+    padding: 0 var(--space-default);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    color: var(--ink);
+    cursor: pointer;
+    user-select: none;
+}
+
+.ueca-filterablelist-row:hover {
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.ueca-filterablelist-row.active {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent);
+}

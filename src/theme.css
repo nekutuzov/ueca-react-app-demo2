@@ -1,0 +1,420 @@
+/* ============================================================
+   Page surface, base typography, and the markdown article retheme.
+
+   Built on the tokens in tokens.css (scale) and themes.css (colour). Nothing
+   here hard-codes a colour: every value is a token, so both themes come from
+   the same rules.
+
+   The markdown side re-dresses @uiw/react-markdown-preview, which ships
+   GitHub's stylesheet plus Prism token classes via rehype-prism-plus. Its own
+   colours are overridden rather than extended — otherwise a GitHub grey leaks
+   through on one theme and not the other.
+   ============================================================ */
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* One visible focus treatment for the whole app. Keyboard users get a ring;
+   pointer users do not, which is what :focus-visible is for. */
+:focus-visible {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+}
+
+::selection {
+    background: color-mix(in srgb, var(--accent) 26%, transparent);
+}
+
+/* Scrollbars — the default light-grey pair reads as a seam on the dark theme. */
+* {
+    scrollbar-color: color-mix(in srgb, var(--ink) 24%, transparent) transparent;
+    scrollbar-width: thin;
+}
+
+/* ============================================================
+   Markdown articles
+   ============================================================ */
+
+.wmde-markdown,
+.wmde-markdown-var {
+    --color-canvas-default: transparent;
+    --color-canvas-subtle: var(--surface-code);
+    --color-border-default: var(--border);
+    --color-border-muted: var(--border);
+    --color-fg-default: var(--ink);
+    --color-fg-muted: var(--ink-dim);
+    --color-accent-fg: var(--accent);
+
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    /* min-width:0 is what stops a wide code block from forcing the whole flex
+       column wider than the viewport — the cause of the horizontal page
+       scrollbar this replaces. */
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Prose sits at the reading measure; code, tables and images may use the full
+   column and scroll inside themselves. */
+.wmde-markdown p,
+.wmde-markdown ul,
+.wmde-markdown ol,
+.wmde-markdown blockquote,
+.wmde-markdown h1,
+.wmde-markdown h2,
+.wmde-markdown h3,
+.wmde-markdown h4,
+.wmde-markdown h5,
+.wmde-markdown h6 {
+    max-width: var(--measure);
+}
+
+/* ---- Headings ---- */
+.wmde-markdown h1,
+.wmde-markdown h2,
+.wmde-markdown h3,
+.wmde-markdown h4,
+.wmde-markdown h5,
+.wmde-markdown h6 {
+    font-family: var(--font-display);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+    color: var(--ink);
+    /* Clears the sticky top bar when a TOC link jumps to a heading. */
+    scroll-margin-top: var(--space-large);
+}
+
+.wmde-markdown h1 {
+    font-size: var(--text-4xl);
+    margin: 0 0 var(--space-small);
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+/* h2 opens a section, so it gets the rule — the same structural device the
+   sidebar ladder and the home hero use. */
+.wmde-markdown h2 {
+    font-size: var(--text-2xl);
+    margin: var(--space-huge) 0 var(--space-small);
+    padding-bottom: var(--space-default);
+    border-bottom: var(--hairline) solid var(--border);
+}
+
+.wmde-markdown h3 {
+    font-size: var(--text-lg);
+    margin: var(--space-large) 0 var(--space-default);
+    border-bottom: none;
+}
+
+.wmde-markdown h4,
+.wmde-markdown h5,
+.wmde-markdown h6 {
+    font-size: var(--text-md);
+    margin: var(--space-medium) 0 var(--space-tiny);
+}
+
+/* The hash anchor rehype-autolink-headings injects — visible on hover only. */
+.wmde-markdown .anchor {
+    color: var(--ink-disabled);
+}
+
+.wmde-markdown h1:hover .anchor,
+.wmde-markdown h2:hover .anchor,
+.wmde-markdown h3:hover .anchor {
+    color: var(--accent);
+}
+
+/* ---- Prose ---- */
+.wmde-markdown p {
+    margin: 0 0 var(--space-small);
+}
+
+.wmde-markdown a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 38%, transparent);
+    text-underline-offset: 3px;
+    transition: color var(--motion-fast) var(--ease);
+}
+
+.wmde-markdown a:hover {
+    color: var(--accent-strong);
+    text-decoration-color: currentColor;
+}
+
+.wmde-markdown strong {
+    font-weight: var(--weight-semibold);
+    color: var(--ink);
+}
+
+.wmde-markdown ul,
+.wmde-markdown ol {
+    margin: 0 0 var(--space-small);
+    padding-left: var(--space-medium);
+}
+
+.wmde-markdown li {
+    margin-bottom: var(--space-tiny);
+}
+
+.wmde-markdown li::marker {
+    color: var(--ink-disabled);
+}
+
+.wmde-markdown hr {
+    height: var(--hairline);
+    margin: var(--space-huge) 0;
+    background: var(--border);
+    border: none;
+}
+
+.wmde-markdown img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+}
+
+/* ---- Blockquote ---- structural, so it takes the marker rather than the
+   accent. This is the same amber that marks the active chapter. */
+.wmde-markdown blockquote {
+    margin: 0 0 var(--space-small);
+    padding: var(--space-default) var(--space-small);
+    color: var(--ink);
+    background: color-mix(in srgb, var(--marker) 7%, transparent);
+    border-left: var(--stroke-emphasis) solid var(--marker);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.wmde-markdown blockquote > :last-child {
+    margin-bottom: 0;
+}
+
+/* ---- Code ---- */
+.wmde-markdown code,
+.wmde-markdown kbd {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+}
+
+/* Inline code only — the :not() keeps this off code inside a pre. */
+.wmde-markdown :not(pre) > code {
+    padding: 0.15em 0.4em;
+    color: var(--ink);
+    background: var(--surface-code);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-sm);
+    white-space: break-spaces;
+}
+
+/* The overflow fix: the block scrolls inside its own box instead of widening
+   the page. */
+.wmde-markdown pre {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0 0 var(--space-small);
+    padding: var(--space-small);
+    background: var(--surface-code);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-md);
+    line-height: var(--leading-normal);
+}
+
+/* width:max-content is what makes the block above actually scroll. Left as a plain block, the
+   code element is only as wide as the pre's content box and the long lines spill out of it
+   without growing scrollWidth - so overflow-x has nothing to scroll and the line is simply
+   clipped. min-width:100% keeps short blocks full width, so line backgrounds still span. */
+.wmde-markdown pre > code {
+    display: block;
+    width: max-content;
+    min-width: 100%;
+    padding: 0;
+    background: transparent;
+    border: none;
+    font-size: var(--text-sm);
+    color: var(--ink);
+}
+
+.wmde-markdown pre .copied {
+    color: var(--ink-dim);
+    background: var(--surface);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+/* ---- Tables ---- scroll rather than stretch, same reason as pre. */
+.wmde-markdown table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0 0 var(--space-small);
+    border-collapse: collapse;
+    font-size: var(--text-md);
+}
+
+.wmde-markdown th,
+.wmde-markdown td {
+    padding: var(--space-default) var(--space-small);
+    border: var(--hairline) solid var(--border);
+}
+
+.wmde-markdown th {
+    font-family: var(--font-display);
+    font-weight: var(--weight-semibold);
+    text-align: left;
+    background: var(--surface-code);
+}
+
+.wmde-markdown tr {
+    background: transparent;
+    border-top: var(--hairline) solid var(--border);
+}
+
+.wmde-markdown tr:nth-child(2n) {
+    background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+
+/* ---- GitHub-style alert blockquotes (remark-github-blockquote-alert) ---- */
+.wmde-markdown .markdown-alert {
+    padding: var(--space-default) var(--space-small);
+    margin-bottom: var(--space-small);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.wmde-markdown .markdown-alert-note {
+    background: var(--info-bg);
+    border-left-color: var(--info);
+}
+
+.wmde-markdown .markdown-alert-tip {
+    background: var(--success-bg);
+    border-left-color: var(--success);
+}
+
+.wmde-markdown .markdown-alert-warning {
+    background: var(--warning-bg);
+    border-left-color: var(--warning);
+}
+
+.wmde-markdown .markdown-alert-caution {
+    background: var(--error-bg);
+    border-left-color: var(--error);
+}
+
+/* ============================================================
+   Syntax highlighting (Prism, via rehype-prism-plus)
+
+   Built from the four logo hues rather than a stock Prism theme, so code reads
+   as part of the same palette: coral = keywords, green = strings, amber =
+   numbers and constants, blue = functions and types.
+   ============================================================ */
+
+.wmde-markdown .token.comment,
+.wmde-markdown .token.prolog,
+.wmde-markdown .token.doctype,
+.wmde-markdown .token.cdata {
+    color: var(--ink-dim);
+    font-style: italic;
+}
+
+.wmde-markdown .token.punctuation,
+.wmde-markdown .token.operator {
+    color: var(--ink-dim);
+}
+
+.wmde-markdown .token.keyword,
+.wmde-markdown .token.rule,
+.wmde-markdown .token.important,
+.wmde-markdown .token.atrule {
+    color: var(--code-keyword);
+}
+
+.wmde-markdown .token.string,
+.wmde-markdown .token.char,
+.wmde-markdown .token.attr-value,
+.wmde-markdown .token.regex {
+    color: var(--code-string);
+}
+
+.wmde-markdown .token.number,
+.wmde-markdown .token.boolean,
+.wmde-markdown .token.constant,
+.wmde-markdown .token.symbol {
+    color: var(--code-number);
+}
+
+.wmde-markdown .token.function,
+.wmde-markdown .token.class-name,
+.wmde-markdown .token.maybe-class-name {
+    color: var(--code-function);
+}
+
+.wmde-markdown .token.tag,
+.wmde-markdown .token.selector,
+.wmde-markdown .token.property {
+    color: var(--code-tag);
+}
+
+.wmde-markdown .token.attr-name,
+.wmde-markdown .token.parameter,
+.wmde-markdown .token.variable {
+    color: var(--code-attr);
+}
+
+.wmde-markdown .token.deleted {
+    color: var(--error);
+}
+
+.wmde-markdown .token.inserted {
+    color: var(--success);
+}
+
+/* rehype-prism-plus line numbering, off by default but styled if a fence
+   turns it on. */
+.wmde-markdown .code-line.line-number::before {
+    color: var(--ink-disabled);
+    border-right: var(--hairline) solid var(--border);
+    padding-right: var(--space-default);
+    margin-right: var(--space-default);
+}
+
+.wmde-markdown .code-line.highlight-line {
+    background: color-mix(in srgb, var(--marker) 10%, transparent);
+}
+
+:root,
+:root[data-theme="ueca-light"] {
+    --code-keyword: #b4552f;
+    --code-string: #3e7d63;
+    --code-number: #96650f;
+    --code-function: #1c5c8c;
+    --code-tag: #1c5c8c;
+    --code-attr: #7a4a86;
+}
+
+:root[data-theme="ueca-dark"] {
+    --code-keyword: #f2856a;
+    --code-string: #74bf95;
+    --code-number: #e8b33c;
+    --code-function: #5aa9dc;
+    --code-tag: #5aa9dc;
+    --code-attr: #c39ad6;
+}

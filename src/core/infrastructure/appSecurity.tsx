@@ -1,9 +1,15 @@
 import * as UECA from "ueca-react";
-import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
-import { UserContext } from "@core";
+import { BaseModel, BaseParams, BaseStruct, useBase } from "@components";
+import { AppStorageKeys, UserContext } from "./appTypes";
 
-type AppSecurityStruct = UIBaseStruct<{
+// Owns who is signed in. This demo has no server: authorize accepts any credentials and issues a
+// local token. Replace _issueUserContext with a call to your authentication API — everything that
+// asks "is anyone signed in?" goes through the messages below, so nothing else changes.
+type AppSecurityStruct = BaseStruct<{
     props: {
+        // Reactive on purpose — a single underscore, NOT the "__" private prefix. AppUI switches
+        // between the login form and the router by reading isAuthorized(), and a "__" prop is a
+        // plain value that re-renders nothing: signing in would leave the login form on screen.
         _userContext: UserContext;
     },
 
@@ -15,8 +21,8 @@ type AppSecurityStruct = UIBaseStruct<{
     }
 }>;
 
-type AppSecurityParams = UIBaseParams<AppSecurityStruct>;
-type AppSecurityModel = UIBaseModel<AppSecurityStruct>;
+type AppSecurityParams = BaseParams<AppSecurityStruct>;
+type AppSecurityModel = BaseModel<AppSecurityStruct>;
 
 function useAppSecurity(params?: AppSecurityParams): AppSecurityModel {
     const struct: AppSecurityStruct = {
@@ -26,26 +32,24 @@ function useAppSecurity(params?: AppSecurityParams): AppSecurityModel {
         },
 
         methods: {
-            isAuthorized: () => !!model._userContext?.apiToken,
+            isAuthorized: () => !!model.getUserContext()?.apiToken,
 
             authorize: async (user, _password, keepMeSignedIn) => {
-                // Implement your authorization logic here, e.g. call an API to verify credentials and get user context
-                // model._userContext = await model.bus.unicast("Api.Authorize", { user, password })
-                model._userContext = { user, apiToken: "MOCK-TOKEN" }; // Mock authorization, replace with real API call
-
+                const context = _issueUserContext(user);
+                _setUserContext(context);
                 if (keepMeSignedIn) {
-                    await model.bus.unicast("App.LocalStorage.Write", { key: "user-context", value: JSON.stringify(model._userContext) });
+                    await model.bus.unicast("App.LocalStorage.Write", { key: AppStorageKeys.userContext, value: JSON.stringify(context) });
                 } else {
-                    await model.bus.unicast("App.LocalStorage.Clear", "user-context");
+                    await model.bus.unicast("App.LocalStorage.Clear", AppStorageKeys.userContext);
                 }
             },
 
             unauthorize: async () => {
-                model._userContext = undefined;
-                await model.bus.unicast("App.LocalStorage.Clear", "user-context");
+                _setUserContext(undefined);
+                await model.bus.unicast("App.LocalStorage.Clear", AppStorageKeys.userContext);
             },
 
-            getUserContext: () => ({ ...model._userContext })
+            getUserContext: () => model._userContext
         },
 
         messages: {
@@ -54,24 +58,41 @@ function useAppSecurity(params?: AppSecurityParams): AppSecurityModel {
             "App.Security.Authorize": async (p) => await model.authorize(p.user, p.password, p.keepMeSignedIn),
 
             "App.Security.Unauthorize": async () => await model.unauthorize(),
+
+            "App.Security.GetSecurityInfo": async () => ({ user: model.getUserContext()?.user, securityRules: [] })
         },
 
-        init: async () => {
-            const userContextStr = await model.bus.unicast("App.LocalStorage.Read", "user-context");
-            if (userContextStr) {
-                try {
-                    model._userContext = JSON.parse(userContextStr);
-                } catch {
-                    model._userContext = undefined;
-                }
-            }
+        // Restored in constr, not init: AppUI decides between the login form and the router from
+        // isAuthorized() on its first render, and init hooks are not ordered between models. Read
+        // straight from localStorage — synchronous, so there is nothing to wait for.
+        constr: () => {
+            _setUserContext(_readStoredUserContext());
         }
     }
 
-    const model = useUIBase(struct, params);
+    const model = useBase(struct, params);
     return model;
+
+    // Private methods
+    function _issueUserContext(user: string): UserContext {
+        return { user, apiToken: "DEMO-TOKEN" };
+    }
+
+    function _setUserContext(context: UserContext) {
+        model._userContext = context;
+    }
+
+    function _readStoredUserContext(): UserContext {
+        // Private browsing and blocked site data both throw here rather than returning null.
+        try {
+            const stored = window.localStorage.getItem(AppStorageKeys.userContext);
+            return stored ? JSON.parse(stored) : undefined;
+        } catch {
+            return undefined;
+        }
+    }
 }
 
 const AppSecurity = UECA.getFC(useAppSecurity);
 
-export { AppSecurityParams, AppSecurityModel, useAppSecurity, AppSecurity }
+export { AppSecurityParams, AppSecurityModel, useAppSecurity, AppSecurity };

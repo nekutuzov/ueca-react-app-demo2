@@ -1,0 +1,56 @@
+/* Shell of the pre-auth forms. Literal px values are the legacy MLAdmin AuthForm's own — do not
+   re-tokenize them. */
+
+.auth-backdrop {
+    background-color: var(--auth-backdrop);
+}
+
+.auth-card {
+    width: 420px;
+    max-width: calc(100vw - 2 * var(--space-small));
+    padding: 20px 50px;
+    border-radius: var(--auth-card-radius, var(--radius-sm));
+    box-shadow: var(--auth-card-shadow);
+}
+
+.auth-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: normal;
+    line-height: var(--leading-tight);
+    text-align: center;
+    margin: 0;
+    color: var(--ink);
+}
+
+/* 220px centred column; the margins double the flex gap to the legacy 32px rhythm. */
+.auth-content {
+    width: 220px;
+    max-width: 100%;
+    align-self: center;
+    margin-top: var(--space-small);
+}
+
+.auth-content .ueca-button {
+    margin-top: var(--space-small);
+}
+
+.auth-content .textfield-input {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.auth-content .textfield-frame {
+    height: 32px;
+    border-radius: var(--radius-sm);
+}
+
+.auth-footer {
+    border-top: var(--hairline) solid var(--auth-divider, var(--border));
+    padding-top: var(--space-small);
+    font-size: var(--text-sm);
+    line-height: var(--leading-tight);
+    color: var(--ink-dim);
+}

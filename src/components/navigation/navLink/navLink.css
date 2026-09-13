@@ -5,7 +5,7 @@
     font-size: inherit;
     font-weight: inherit;
     line-height: inherit;
-    transition: color 0.2s, text-decoration 0.2s;
+    transition: color var(--motion-base) var(--ease), text-decoration var(--motion-base) var(--ease);
 }
 
 .ueca-nav-link:hover {
@@ -29,6 +29,16 @@
 }
 
 .ueca-nav-link-disabled {
-    color: rgba(0, 0, 0, 0.38);
+    color: var(--disabled-ink);
     cursor: default;
+}
+
+/* Focus. A NavLink is a bare <a> that inherits its type from the caller, so the ring is the only
+   thing it can own — breadcrumb crumbs and the top bar's links had no indicator but the UA ring.
+   The radius is set here because an <a> has none of its own and a square ring on a text link
+   reads as a border. */
+.ueca-nav-link:focus-visible {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
 }

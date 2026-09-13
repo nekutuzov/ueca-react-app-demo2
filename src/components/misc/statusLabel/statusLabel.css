@@ -1,0 +1,87 @@
+/* StatusLabel — a compact status chip. All colour comes from the status ramps in themes.css, so a
+   theme change restyles every chip and no intent needs its own tint mixed here. */
+
+.ueca-status-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-tiny);
+    border: var(--hairline) solid transparent;
+    border-radius: var(--radius-pill);
+    padding: var(--space-tiny) var(--space-default);
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+/* The dot carries the intent at full strength — it is the part that must stay identifiable at a
+   glance in a dense list, where the label text may be truncated away entirely. Full strength means
+   the PURE status token, not the readability-mixed --*-ink the text wears (per-intent rules below);
+   the legacy MLAdmin dot was the pure colour too. */
+.ueca-status-label-dot {
+    flex: none;
+    width: var(--status-dot-size, var(--space-default));
+    height: var(--status-dot-size, var(--space-default));
+    border-radius: var(--radius-circle);
+    background-color: currentColor;
+}
+
+.ueca-status-label-success .ueca-status-label-dot { background-color: var(--success); }
+.ueca-status-label-info    .ueca-status-label-dot { background-color: var(--info); }
+.ueca-status-label-warning .ueca-status-label-dot { background-color: var(--warning); }
+.ueca-status-label-error   .ueca-status-label-dot { background-color: var(--error); }
+.ueca-status-label-primary .ueca-status-label-dot { background-color: var(--accent); }
+.ueca-status-label-none    .ueca-status-label-dot { background-color: var(--ink-dim); }
+
+/* solid paints the CHIP the intent itself, so a pure-token dot would vanish into it — there the dot
+   goes back to the chip's ink. Equal specificity to the rules above; source order decides. */
+.ueca-status-label-solid .ueca-status-label-dot { background-color: currentColor; }
+
+.ueca-status-label-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+/* ---- soft (default): tinted surface, readable ink ---- */
+.ueca-status-label-soft.ueca-status-label-success { background-color: var(--success-bg); color: var(--success-ink); }
+.ueca-status-label-soft.ueca-status-label-info    { background-color: var(--info-bg);    color: var(--info-ink); }
+.ueca-status-label-soft.ueca-status-label-warning { background-color: var(--warning-bg); color: var(--warning-ink); }
+.ueca-status-label-soft.ueca-status-label-error   { background-color: var(--error-bg);   color: var(--error-ink); }
+.ueca-status-label-soft.ueca-status-label-primary { background-color: var(--primary-bg); color: var(--primary-ink); }
+.ueca-status-label-soft.ueca-status-label-none    { background-color: var(--ink-hover);  color: var(--ink-dim); }
+
+/* ---- outlined: hairline in the intent, no fill ---- */
+.ueca-status-label-outlined { background-color: transparent; }
+.ueca-status-label-outlined.ueca-status-label-success { border-color: var(--success-border); color: var(--success-ink); }
+.ueca-status-label-outlined.ueca-status-label-info    { border-color: var(--info-border);    color: var(--info-ink); }
+.ueca-status-label-outlined.ueca-status-label-warning { border-color: var(--warning-border); color: var(--warning-ink); }
+.ueca-status-label-outlined.ueca-status-label-error   { border-color: var(--error-border);   color: var(--error-ink); }
+.ueca-status-label-outlined.ueca-status-label-primary { border-color: var(--primary-border); color: var(--primary-ink); }
+.ueca-status-label-outlined.ueca-status-label-none    { border-color: var(--border);         color: var(--ink-dim); }
+
+/* ---- solid: the intent at full strength, for the one row that must shout ---- */
+.ueca-status-label-solid { color: var(--ink-on-accent); }
+.ueca-status-label-solid.ueca-status-label-success { background-color: var(--success); }
+.ueca-status-label-solid.ueca-status-label-info    { background-color: var(--info); }
+.ueca-status-label-solid.ueca-status-label-warning { background-color: var(--warning); }
+.ueca-status-label-solid.ueca-status-label-error   { background-color: var(--error); }
+.ueca-status-label-solid.ueca-status-label-primary { background-color: var(--accent); }
+.ueca-status-label-solid.ueca-status-label-none    { background-color: var(--ink-dim); }
+
+/* ---- bare: no chrome at all — a dot plus text, for dense tables ---- */
+.ueca-status-label-bare {
+    background-color: transparent;
+    padding: 0;
+    /* Default equals the .ueca-caption size the chip already wears; a theme may step it up to its
+       table text size (MLAdmin's 14px). */
+    font-size: var(--status-bare-font, var(--text-sm));
+}
+
+/* Themes may pin the bare label's TEXT to a fixed ink while the dot keeps carrying the intent —
+   the legacy MLAdmin style (green dot, body-ink "Active"). Default inherits the intent colour. */
+.ueca-status-label-bare .ueca-status-label-text { color: var(--status-bare-label, inherit); }
+.ueca-status-label-bare.ueca-status-label-success { color: var(--success-ink); }
+.ueca-status-label-bare.ueca-status-label-info    { color: var(--info-ink); }
+.ueca-status-label-bare.ueca-status-label-warning { color: var(--warning-ink); }
+.ueca-status-label-bare.ueca-status-label-error   { color: var(--error-ink); }
+.ueca-status-label-bare.ueca-status-label-primary { color: var(--primary-ink); }
+.ueca-status-label-bare.ueca-status-label-none    { color: var(--ink-dim); }

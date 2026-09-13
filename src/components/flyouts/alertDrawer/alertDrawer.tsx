@@ -14,7 +14,8 @@ type AlertDrawerStruct = UIBaseStruct<{
         open: boolean;
         severity?: DrawerSeverity;
         titleView: React.ReactNode;
-        width?: number;
+        // Pixels as a number, or any CSS length as a string — see Drawer.
+        width?: number | string;
         buttons: {
             ok?: boolean,
             cancel?: boolean,
@@ -55,15 +56,17 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
 
         children: {
             drawer: useDrawer({
+                // No type of its own: the heading wears the Drawer's --drawer-title-* tokens like
+                // every other drawer, which an inline font-size here used to override.
                 titleView: () => (
                     <Row spacing="small" verticalAlign="center">
                         {model.severity && <SeverityIcon severity={model.severity} size={24} color={_getSeverityColor()} />}
-                        <span style={{ fontSize: "20px", fontWeight: 500 }}>{model.titleView}</span>
+                        <span>{model.titleView}</span>
                     </Row>
                 ),
                 contentView: () => model.contentView,
                 actionView: () => (
-                    <Row horizontalAlign={"right"} spacing="small">
+                    <Row horizontalAlign={"right"} spacing="default">
                         {model.customActionView}
                         <model.cancelButton.View render={!!(model.buttons?.cancel || model.buttons?.okCancel)} />
                         <model.okButton.View render={!!(model.buttons?.ok || model.buttons?.okCancel)} />
@@ -84,15 +87,19 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
                     }
                 }
             }),
+            // A panel footer's buttons sit on the 32px rung, as the legacy editor panels' do — one
+            // above the dialog's answers, which are 24px.
             okButton: useButton({
                 contentView: "OK",
                 variant: "contained",
+                size: "small",
                 color: "primary.main",
                 onClick: () => _close(true)
             }),
             cancelButton: useButton({
                 contentView: "Cancel",
                 variant: "outlined",
+                size: "small",
                 onClick: () => _close(false)
             }),
         },
@@ -110,12 +117,14 @@ function useAlertDrawer(params?: AlertDrawerParams): AlertDrawerModel {
     }
 
     function _getSeverityColor(): string | undefined {
-        if (!model.severity) return undefined;
+        if (!model.severity || model.severity == "none") {
+            return undefined;
+        }
         const colorMap = {
             success: "success.main",
             info: "info.main",
             warning: "warning.main",
-            error: "error.main"
+            error: "error.main"            
         };
         return resolvePaletteColor(colorMap[model.severity]);
     }

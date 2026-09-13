@@ -1,0 +1,43 @@
+/* VirtualList — the spacer owns the full scroll height; the window is the rendered slice,
+   absolutely positioned at the current offset. Nothing here is visual: rows are the caller's
+   business via onRenderItem, and the list draws no chrome of its own. */
+
+.ueca-virtuallist {
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    min-height: 0;
+}
+
+.ueca-virtuallist-spacer {
+    position: relative;
+}
+
+.ueca-virtuallist-window {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+/* Locked to the declared itemSize (inline) — overflow hidden so an oversized row cannot push
+   every row below it off its computed offset. */
+.ueca-virtuallist-item {
+    overflow: hidden;
+}
+
+.ueca-virtuallist-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--ink-dim);
+    font-size: var(--text-sm);
+}
+
+/* The viewport is a scroll container, which Chrome makes a tab stop so it can be scrolled by
+   keyboard — so it needs to say when it holds focus. Inset, because it is the clip itself. */
+.ueca-virtuallist:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}

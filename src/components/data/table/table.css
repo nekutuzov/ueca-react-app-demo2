@@ -1,0 +1,360 @@
+/* Table — CSS grid, with each row `display: contents` so its cells become direct grid children.
+   That is what keeps columns aligned all the way down while a whole row still hovers and selects as
+   one unit. A row element generates no box of its own, so anything visual (background, border) must
+   be applied to the CELLS via the row's class, never to the row. */
+
+.ueca-table {
+    /* grid-template-columns is computed per column set and set inline. */
+    align-content: start;   /* rows keep their natural height instead of stretching to fill */
+    position: relative;
+}
+
+.ueca-table-row {
+    display: contents;
+}
+
+/* ---- header ---- */
+
+/* The --table-* tokens let a theme reskin the table chrome (MLAdmin's grey header band, 14px
+   sentence-case headers, separator-less 46px rows) without touching this file — every one falls
+   back to the designed look. Header HEIGHT is deliberately not themable: the filter row's sticky
+   offset and the virtualisation math (HEADER_ROW_HEIGHT) count on it. */
+.ueca-table-header-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-tiny);
+    padding: 0 var(--table-cell-pad-x, var(--space-small));
+
+    /* Sticky against the table's own scroll container. Must sit on the CELLS: the row has no box.
+       z-index 2: above the sticky-column BODY cells (z 1) that pass beneath it. */
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    height: var(--control-h-md);   /* fixed, not min — the filter row and virtualisation offsets count on it */
+
+    background-color: var(--table-header-bg, var(--surface));
+    border-bottom: var(--table-header-border, var(--hairline) solid var(--border));
+
+    font-size: var(--table-header-font, var(--text-2xs));
+    font-weight: var(--table-header-weight, var(--weight-bold));
+    letter-spacing: var(--table-header-tracking, var(--tracking-widest));
+    text-transform: var(--table-header-case, uppercase);
+    color: var(--ink-dim);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.ueca-table-header-cell.sortable {
+    cursor: pointer;
+}
+
+.ueca-table-header-cell.sortable:hover {
+    color: var(--accent);
+}
+
+.ueca-table-header-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- body ---- */
+
+.ueca-table-cell {
+    display: flex;
+    align-items: center;
+    position: relative;
+    min-height: var(--table-row-min-h, var(--control-h-md));
+    padding: var(--space-tiny) var(--table-cell-pad-x, var(--space-small));
+    border-bottom: var(--table-row-border, var(--hairline) solid var(--border));
+    font-size: var(--table-font, var(--text-sm));
+    color: var(--ink);
+    min-width: 0;   /* let the ellipsis below actually engage inside a grid track */
+}
+
+.ueca-table-cell-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+/* A focusable thing in a cell — the domain NavLink, a row action — sits flush inside the span
+   above, which has zero padding and clips. An outward ring is therefore cut on ALL FOUR sides and
+   is invisible: measured on /sites, the link filled the span exactly (0px on every edge) while its
+   ring asked for 4px. Padding cannot fix it (it would misalign every cell) and neither can dropping
+   the clip, because the clip IS the ellipsis. Inset is the only mechanism left — which is the
+   general rule, see css-practices.md#reserving-room-for-focus. */
+.ueca-table-cell-content :focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}
+
+/* Alignment applies to the flex main axis, so it moves the content box rather than just the text —
+   which matters for a cell holding a StatusLabel or a button rather than a string. */
+.align-left {
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.align-center {
+    justify-content: center;
+    text-align: center;
+}
+
+.align-right {
+    justify-content: flex-end;
+    text-align: right;
+}
+
+/* Hover and selection are painted on the cells, driven by a class on the (box-less) row. */
+.ueca-table-body-row.selectable .ueca-table-cell {
+    cursor: pointer;
+}
+
+.ueca-table-body-row:hover .ueca-table-cell {
+    background-color: var(--hover);
+}
+
+/* Selection is a highlight plus one light border around the RECORD — never boxes around the
+   individual cells. The row generates no box, but CSS custom properties cascade through
+   display:contents: the row sets --row-line and every cell composes its piece of the outline
+   (top+bottom everywhere, the left edge on the first cell, the right edge on the last). */
+.ueca-table-body-row .ueca-table-cell {
+    box-shadow:
+        inset 0 1px 0 var(--row-line, transparent),
+        inset 0 -1px 0 var(--row-line, transparent);
+}
+
+.ueca-table-body-row .ueca-table-cell:first-child {
+    box-shadow:
+        inset 1px 0 0 var(--row-line, transparent),
+        inset 0 1px 0 var(--row-line, transparent),
+        inset 0 -1px 0 var(--row-line, transparent);
+}
+
+.ueca-table-body-row .ueca-table-cell:last-child {
+    box-shadow:
+        inset -1px 0 0 var(--row-line, transparent),
+        inset 0 1px 0 var(--row-line, transparent),
+        inset 0 -1px 0 var(--row-line, transparent);
+}
+
+.ueca-table-body-row.selected {
+    --row-line: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.ueca-table-body-row.selected .ueca-table-cell {
+    background-color: var(--selected);
+}
+
+/* The CURRENT row — where keyboard navigation stands — gets a firmer outline, and only while the
+   table actually has keyboard focus; it is a cursor, not a state. */
+.ueca-table:focus-visible .ueca-table-body-row.current {
+    --row-line: var(--accent-dim);
+}
+
+/* ---- row actions ---- */
+
+/* Rendered ONLY for the active row (table.tsx) — no display toggle here, because a hidden copy in
+   every row would repeat the shared action button's DOM id down the table. Floated over the cell's
+   right edge so they never change the column's width — the reason they are absolute rather than
+   part of the flex flow. The chip chrome is themable (--table-actions-*): MLAdmin de-chromes it
+   entirely because its action buttons carry their own outline. */
+.ueca-table-cell-actions {
+    display: flex;
+    position: absolute;
+    right: var(--space-tiny);
+    align-items: center;
+    gap: var(--space-tiny);
+    padding: 0 var(--space-tiny);
+    background-color: var(--table-actions-bg, var(--surface));
+    border: var(--table-actions-border, var(--hairline) solid var(--border));
+    border-radius: var(--radius-sm);
+    box-shadow: var(--table-actions-shadow, var(--shadow-1));
+}
+
+/* Row-action buttons wear the shared chrome (.ueca-chromed-icon-buttons in iconButton.css), which
+   the actions element carries — under MLAdmin, the legacy outlined-primary squares. They keep
+   their OWN size, from the button's size class (xsmall), which is why no size rule lives here. */
+
+
+/* ---- filter row ---- */
+
+/* Sits directly under the header row and scrolls with it — sticky at exactly one header height,
+   which is why the header height is fixed rather than a min. */
+.ueca-table-filter-cell {
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: var(--control-h-md);
+    z-index: 2;
+    height: var(--control-h-md);
+    padding: 0 var(--space-default);
+    background-color: var(--surface);
+    border-bottom: var(--hairline) solid var(--border);
+}
+
+/* A filter box IS a text field, so it reads the same --input-* tokens a TextField does rather than
+   the generic ones. It was on --border where a field is on --input-line, and it answered focus with
+   a bare border change where a field also glows — near-miss styling, which reads as sloppier than
+   an outright different design. Only the TYPE and HEIGHT stay its own: the filter row is a dense
+   strip under the header, not a form field. */
+.ueca-table-filter-input {
+    width: 100%;
+    min-width: 0;
+    height: var(--control-h-xs);
+    padding: 0 var(--space-default);
+    background-color: var(--surface-2);
+    border: var(--hairline) solid var(--input-line, var(--border));
+    border-radius: var(--input-radius, var(--radius-sm));
+    font-family: var(--input-font, var(--font-ui));
+    font-size: var(--text-xs);
+    color: var(--ink);
+    outline: none;
+    transition: border-color var(--motion-base) var(--ease),
+        box-shadow var(--motion-base) var(--ease);
+}
+
+.ueca-table-filter-input::placeholder {
+    color: var(--ink-disabled);
+}
+
+.ueca-table-filter-input:hover {
+    border-color: var(--input-line-active, var(--accent-dim));
+}
+
+.ueca-table-filter-input:focus-visible {
+    border-color: var(--input-line-active, var(--accent-dim));
+    box-shadow: var(--input-focus-shadow, none);
+}
+
+/* ---- sticky first column ---- */
+
+/* Pinned cells need an OPAQUE surface: content scrolls underneath them, and the hover/selected
+   tints are translucent color-mixes, so each state gets an opaque equivalent mixed over the
+   surface instead of over whatever happens to be scrolling past. */
+.ueca-table.sticky-first .col-sticky {
+    position: sticky;
+    z-index: 1;
+    background-color: var(--surface);
+}
+
+.ueca-table.sticky-first .col-sticky-first {
+    left: 0;
+    /* The visual edge of the pinned region — a border, not a shadow, so it cannot collide with
+       the row-outline shadows above. */
+    border-right: var(--hairline) solid var(--border);
+}
+
+/* Header and filter cells are sticky on BOTH axes; they must also pass over the other header
+   cells (z 2) that slide beneath them horizontally. */
+.ueca-table.sticky-first .ueca-table-header-cell.col-sticky,
+.ueca-table.sticky-first .ueca-table-filter-cell.col-sticky {
+    z-index: 3;
+}
+
+.ueca-table.sticky-first .ueca-table-body-row:hover .ueca-table-cell.col-sticky {
+    background-color: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.ueca-table.sticky-first .ueca-table-body-row.selected .ueca-table-cell.col-sticky {
+    background-color: color-mix(in srgb, var(--accent) 14%, var(--surface));
+}
+
+/* ---- resizable columns ---- */
+
+/* A grab strip over the header cell's right edge. The header cell is position:sticky, which makes
+   it the containing block, so absolute positioning is against the cell itself. */
+.ueca-table-resize-handle {
+    position: absolute;
+    top: 0;
+    right: -4px;
+    width: 9px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 1;
+    touch-action: none;   /* pointer-capture drag — do not let the browser pan instead */
+}
+
+.ueca-table-resize-handle::after {
+    content: "";
+    position: absolute;
+    top: 20%;
+    bottom: 20%;
+    left: 4px;
+    width: var(--hairline);
+    background-color: var(--border);
+    transition: background-color var(--motion-base) var(--ease);
+}
+
+.ueca-table-resize-handle:hover::after {
+    background-color: var(--accent);
+    width: var(--stroke-emphasis);
+}
+
+/* The handle hangs into the next cell; the header cell must not clip it. */
+.ueca-table-header-cell {
+    overflow: visible;
+}
+
+/* ---- keyboard navigation ----
+   Deliberately NO outline around the table and NO rings around cells: the current-row outline
+   (see the --row-line rules above) is the whole focus indication. Suppressing the UA ring is
+   safe only BECAUSE that row outline exists. */
+.ueca-table:focus-visible {
+    outline: none;
+}
+
+/* …and where it does NOT exist, the suppression above leaves a focused table saying nothing. A
+   selectable table is tabIndex=0 (table.tsx:462) but has no `.current` row until a key is pressed,
+   so tabbing into a freshly-mounted grid landed on an unmarked control. The :has() guard keeps the
+   row cursor as the indicator whenever there is one and rings the container only as the fallback —
+   rather than doing both at once, which would double up on every keystroke.
+   Inset: the table is its own scroll container, so an outward outline would be clipped. */
+.ueca-table:focus-visible:not(:has(.ueca-table-body-row.current)) {
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}
+
+/* ---- virtualisation ---- */
+
+/* Uniform row height is what the windowing math is built on — lock the cells to it so one
+   oversized cell cannot skew the offset of every row below. */
+.ueca-table.virtualized .ueca-table-cell {
+    height: var(--table-row-h);
+    min-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+}
+
+/* Full-width flow spacers standing in for the unrendered rows above and below the window.
+   Deliberately UNPAINTED: these can be 200,000px tall, and any background (a row-striping
+   gradient was tried) forces the compositor to rasterize tiles across the whole surface —
+   checkerboarding during fast scrolling, worse than the blank it was meant to dress up. */
+.ueca-table-spacer {
+    grid-column: 1 / -1;
+}
+
+/* ---- filler, empty, footer ---- */
+
+/* Absorbs the leftover width so real columns keep the width they asked for. */
+.ueca-table-filler {
+    padding: 0;
+}
+
+/* Span every column: `1 / -1` is the whole row regardless of how many columns there are. */
+.ueca-table-empty,
+.ueca-table-footer {
+    grid-column: 1 / -1;
+    padding: var(--space-medium) var(--space-small);
+    border-bottom: var(--hairline) solid var(--border);
+    text-align: center;
+}
+
+.ueca-table-footer {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--surface);
+    color: var(--warning-ink);
+    text-align: left;
+}

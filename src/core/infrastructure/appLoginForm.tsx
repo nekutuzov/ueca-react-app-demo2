@@ -1,112 +1,127 @@
 import * as UECA from "ueca-react";
 import {
-    Col, ButtonModel, CheckboxModel, TextFieldModel, UIBaseModel, UIBaseParams, UIBaseStruct, useButton, useCheckbox,
-    useTextField, useUIBase
+    ButtonModel, EditBaseModel, EditBaseParams, EditBaseStruct, Icon,
+    TextFieldModel, useButton, useEditBase, usePasswordField, useTextField
 } from "@components";
-import "./appLoginForm.css";
+import { AppAuthFormModel, useAppAuthForm } from "./appAuthForm";
 
-type AppLoginFormStruct = UIBaseStruct<{
+// The sign-in form. Pure presentation: it validates its own fields and raises onLogin — signing
+// in, the busy display, and error dialogs are the OWNER's (AppUI's) concern, which also lets the
+// owner clear the fields only on success.
+//
+// An EditBase, not a UIBase-plus-validator: EditBase models an editable ENTITY, and an entity can
+// be a group of controls just as well as a single one (Tab and TabsContainer are the library
+// precedents). The form IS the composite — modelsToValidate points at its own fields, validate()
+// recurses into them, and the whole form can itself sit in a parent's modelsToValidate.
+
+type AppLoginFormStruct = EditBaseStruct<{
     props: {
         user: string;
         password: string;
-        keepMeSignedIn: boolean;
     },
 
     children: {
+        authForm: AppAuthFormModel;
         userInput: TextFieldModel;
         passwordInput: TextFieldModel;
-        keepMeSignedInCheckbox: CheckboxModel;
         signInButton: ButtonModel;
     },
 
     events: {
-        onLogin: (user: string, password: string, keepMeSignedIn: boolean) => UECA.MaybePromise;
+        onLogin: (user: string, password: string) => UECA.MaybePromise;
+    }
+
+    methods: {
+        _FormView: () => UECA.ReactElement;
     }
 }>;
 
-type AppLoginFormParams = UIBaseParams<AppLoginFormStruct>;
-type AppLoginFormModel = UIBaseModel<AppLoginFormStruct>;
+type AppLoginFormParams = EditBaseParams<AppLoginFormStruct>;
+type AppLoginFormModel = EditBaseModel<AppLoginFormStruct>;
 
 function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
     const struct: AppLoginFormStruct = {
         props: {
             id: useAppLoginForm.name,
             user: "",
-            password: "",
-            keepMeSignedIn: true
+            password: ""
         },
 
         children: {
+            authForm: useAppAuthForm({
+                title: "UECA-React Showcase",
+                contentView: () => <model._FormView />,
+                // This demo has no server, so any credentials sign in — say so, or a visitor is
+                // left guessing at a password that does not exist.
+                footerView: "Demo sign-in — any username and password will do."
+            }),
+
             userInput: useTextField({
-                labelView: "Email",
                 value: UECA.bind(() => model, "user"),
-                type: "email",
-                placeholder: "your@email.com",
+                placeholder: "Username",
+                startView: <Icon name="user" size="md" />,
                 required: true,
-                autoComplete: "email"
+                autoComplete: "username",
+                onEnter: async () => await _loginOnEnter()
             }),
 
-            passwordInput: useTextField({
-                labelView: "Password",
+            passwordInput: usePasswordField({
                 value: UECA.bind(() => model, "password"),
-                type: "password",
+                placeholder: "Password",
+                startView: <Icon name="lock" size="md" />,
                 required: true,
-                autoComplete: "current-password"
-            }),
-
-            keepMeSignedInCheckbox: useCheckbox({
-                labelView: "Keep me signed in",
-                checked: UECA.bind(() => model, "keepMeSignedIn")
+                autoComplete: "current-password",
+                onEnter: async () => await _loginOnEnter()
             }),
 
             signInButton: useButton({
-                contentView: "Sign in",
+                contentView: "LOG IN",
                 variant: "contained",
                 fullWidth: true,
-                onClick: async () => await _basicLogin(),
+                onClick: async () => await _login()
             })
         },
 
-        View: () => (
-            <Col id={model.htmlId()} fill verticalAlign={"center"}>
-                <div className="login-card">
-                    <h1 className="login-heading">Sign in</h1>
+        methods: {
+            // AppAuthForm already wraps contentView in a spaced Col — no wrapper of our own.
+            _FormView: () => (
+                <>
                     <model.userInput.View />
                     <model.passwordInput.View />
-                    <model.keepMeSignedInCheckbox.View />
                     <model.signInButton.View />
-                </div>
-            </Col>
-        )
+                </>
+            )
+        },
+
+        constr: () => {
+            model.modelsToValidate = [model.userInput, model.passwordInput];
+        },
+
+        View: () => <model.authForm.View />
     }
 
-    const model = useUIBase(struct, params);
+    const model = useEditBase(struct, params);
     return model;
 
     // Private methods
-    async function _basicLogin() {
-        try {
-            await model.runWithBusyDisplay(
-                async () => await model.bus.unicast(
-                    "App.Security.Authorize",
-                    { user: model.user, password: model.password, keepMeSignedIn: model.keepMeSignedIn }
-                )
-            );
-            // Erase fields for security reason
-            model.userInput.value = "";
-            model.passwordInput.value = "";
-        } catch (e) {
-            await model.dialogError("Login Error", (e as Error).message);
+    // Enter signs in only once BOTH fields are filled. Half-filled, it does nothing rather than
+    // failing validation on the field the user has not reached yet — they are still typing, and
+    // marking the empty one red mid-entry is noise. "Filled" matches the required validator, which
+    // treats blank-only text as empty.
+    async function _loginOnEnter() {
+        if (!model.user?.trim() || !model.password?.trim()) {
+            return;
         }
+        await _login();
     }
 
-
-    // Placeholder for future login methods
-    // async function _azureLogin() {
-    // }
-
-    // async function _googleLogin() {
-    // }    
+    async function _login() {
+        await model.validate();
+        if (!model.isValid()) {
+            return;
+        }
+        await model.onLogin?.(model.user, model.password);
+    }
 }
 
 const AppLoginForm = UECA.getFC(useAppLoginForm);

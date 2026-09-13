@@ -1,38 +1,18 @@
 import * as UECA from "ueca-react";
-import { Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel, useNavItem, NavItemExpandableModel, useNavItemExpandable } from "@components";
-import { AppRoute } from "@core";
-import { HomeIcon, LayoutIcon, ButtonsIcon, InputsIcon, PopupsIcon, NavigationIcon, TabsIcon, MiscIcon, LogoutIcon } from "../misc/icons";
+import { Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, NavItemModel, useNavItem } from "@components";
+import { AppRoute, runAsync } from "@core";
+import { HomeIcon } from "../misc/icons";
+import "./appMenu.css";
 
 type AppMenuStruct = UIBaseStruct<{
     props: {
         iconsOnly: boolean;
         _activeRoute: AppRoute;
+        __revealedPath: string;
     };
 
     children: {
         homeMenuItem: NavItemModel;
-        layoutMenuItem: NavItemExpandableModel;
-        layoutBlockMenuItem: NavItemModel;
-        layoutRowMenuItem: NavItemModel;
-        layoutColMenuItem: NavItemModel;
-        buttonsMenuItem: NavItemExpandableModel;
-        buttonMenuItem: NavItemModel;
-        iconButtonMenuItem: NavItemModel;
-        inputsMenuItem: NavItemExpandableModel;
-        textFieldMenuItem: NavItemModel;
-        selectMenuItem: NavItemModel;
-        radioGroupMenuItem: NavItemModel;
-        checkboxMenuItem: NavItemModel;
-        popupsMenuItem: NavItemExpandableModel;
-        dialogMenuItem: NavItemModel;
-        drawerMenuItem: NavItemModel;
-        toastMenuItem: NavItemModel;
-        navigationMenuItem: NavItemExpandableModel;
-        navLinkMenuItem: NavItemModel;
-        navItemMenuItem: NavItemModel;
-        tabsMenuItem: NavItemModel;
-        miscMenuItem: NavItemModel;
-        logoutMenuItem: NavItemModel;
     }
 }>;
 
@@ -44,173 +24,89 @@ function useAppMenu(params?: AppMenuParams): AppMenuModel {
         props: {
             id: useAppMenu.name,
             iconsOnly: false,
-            _activeRoute: undefined
+            _activeRoute: undefined,
+            // Non-reactive: the path the rail has already been scrolled to, so a re-render for
+            // any other reason does not keep hauling the reader's scroll position back.
+            __revealedPath: undefined
         },
 
         children: {
-            layoutMenuItem: useGroupMenuItem({
-                text: "Layout",
-                icon: <LayoutIcon />,
-                subItems: () => [model.layoutBlockMenuItem, model.layoutRowMenuItem, model.layoutColMenuItem]
-            }),
-            buttonsMenuItem: useGroupMenuItem({
-                text: "Buttons",
-                icon: <ButtonsIcon />,
-                subItems: () => [model.buttonMenuItem, model.iconButtonMenuItem]
-            }),
-            inputsMenuItem: useGroupMenuItem({
-                text: "Inputs",
-                icon: <InputsIcon />,
-                subItems: () => [model.textFieldMenuItem, model.selectMenuItem, model.radioGroupMenuItem, model.checkboxMenuItem]
-            }),
-            popupsMenuItem: useGroupMenuItem({
-                text: "Popups",
-                icon: <PopupsIcon />,
-                subItems: () => [model.dialogMenuItem, model.drawerMenuItem, model.toastMenuItem]
-            }),
-            navigationMenuItem: useGroupMenuItem({
-                text: "Navigation",
-                icon: <NavigationIcon />,
-                subItems: () => [model.navLinkMenuItem, model.navItemMenuItem]
-            }),
             homeMenuItem: useMenuItem({
                 text: "Home",
                 route: { path: "/home" },
                 icon: <HomeIcon />
-            }),
-            layoutBlockMenuItem: useMenuItem({
-                text: "Block",
-                route: { path: "/block" }
-            }),
-            layoutRowMenuItem: useMenuItem({
-                text: "Row",
-                route: { path: "/row" }
-            }),
-            layoutColMenuItem: useMenuItem({
-                text: "Col",
-                route: { path: "/col" }
-            }),
-            buttonMenuItem: useMenuItem({
-                text: "Button",
-                route: { path: "/button" }
-            }),
-            iconButtonMenuItem: useMenuItem({
-                text: "IconButton",
-                route: { path: "/icon-button" }
-            }),
-            textFieldMenuItem: useMenuItem({
-                text: "TextField",
-                route: { path: "/text-field" }
-            }),
-            selectMenuItem: useMenuItem({
-                text: "Select",
-                route: { path: "/select" }
-            }),
-            radioGroupMenuItem: useMenuItem({
-                text: "RadioGroup",
-                route: { path: "/radio-group" }
-            }),
-            checkboxMenuItem: useMenuItem({
-                text: "Checkbox",
-                route: { path: "/checkbox" }
-            }),
-            dialogMenuItem: useMenuItem({
-                text: "Dialog",
-                route: { path: "/dialogs" }
-            }),
-            drawerMenuItem: useMenuItem({
-                text: "Drawer",
-                route: { path: "/drawer" }
-            }),
-            toastMenuItem: useMenuItem({
-                text: "Toast",
-                route: { path: "/toast" }
-            }),
-            navLinkMenuItem: useMenuItem({
-                text: "NavLink",
-                route: { path: "/navlink" }
-            }),
-            navItemMenuItem: useMenuItem({
-                text: "NavItem",
-                route: { path: "/navitem" }
-            }),
-            tabsMenuItem: useMenuItem({
-                text: "Tabs",
-                route: { path: "/tabs?:tab" },
-                icon: <TabsIcon />
-            }),
-            miscMenuItem: useMenuItem({
-                text: "Misc",
-                route: { path: "/misc" },
-                icon: <MiscIcon />
-            }),
-            logoutMenuItem: useLogoutMenuItem(),
+            })
         },
 
         messages: {
             "App.Router.AfterRouteChange": async (route) => {
                 model._activeRoute = route;
+                runAsync(() => _revealActiveItem());
             },
         },
 
         init: async () => {
             model._activeRoute = await model.getRoute();
+            runAsync(() => _revealActiveItem());
         },
 
+        // overflow is visible on purpose: the sidebar's scroll wrapper is the single scroller,
+        // and a second one here would nest two scrollbars in the same rail.
         View: () =>
-            <Col id={model.htmlId()} fill overflow={"auto"} padding={{ top: "small" }} spacing={"none"}>
+            <Col id={model.htmlId()} fill overflow={"visible"} padding={{ top: "small" }} spacing={"none"}>
                 <model.homeMenuItem.View />
-                <model.layoutMenuItem.View />
-                <model.buttonsMenuItem.View />
-                <model.inputsMenuItem.View />
-                <model.popupsMenuItem.View />
-                <model.navigationMenuItem.View />
-                <model.tabsMenuItem.View />
-                <model.miscMenuItem.View />
-                <Col fill verticalAlign="bottom">
-                    <model.logoutMenuItem.View />
-                </Col>
             </Col>
-    }
+    };
 
     const model = useUIBase(struct, params);
     return model;
 
-    //Private methods
+    // Private methods
+
+    // Every leaf item, in rail order — what _revealActiveItem searches for the active one.
+    function _allItems(): NavItemModel[] {
+        return [model.homeMenuItem];
+    }
+
+    // Keeps the active item in sight after a deep link or a jump from elsewhere in the app.
+    //
+    // Called a tick late, on purpose. The items re-render from _activeRoute, and until they have,
+    // the item reading as active is still the one being left. There is no draw of this
+    // component's own to hook either: AppMenu's View never reads _activeRoute - only the children's
+    // `active` bindings do - so AppMenu itself does not re-render when the route changes.
+    function _revealActiveItem() {
+        const path = model._activeRoute?.path;
+        if (!path || path === model.__revealedPath) {
+            return;
+        }
+        const item = _allItems().find((i) => i.active);
+        const el = item ? document.getElementById(item.htmlId()) : undefined;
+        const rail = el?.closest(".app-sidebar-scroll") as HTMLElement;
+        if (!el || !rail) {
+            return;
+        }
+        model.__revealedPath = path;
+
+        // Move the rail itself, never scrollIntoView: that walks every scrollable ancestor and
+        // drags the app shell along with it. And only when the item is actually outside - a click
+        // on an item already on screen should leave the rail exactly where the reader left it.
+        const itemRect = el.getBoundingClientRect();
+        const railRect = rail.getBoundingClientRect();
+        const margin = 12;
+        if (itemRect.top < railRect.top + margin) {
+            rail.scrollTop -= railRect.top + margin - itemRect.top;
+        } else if (itemRect.bottom > railRect.bottom - margin) {
+            rail.scrollTop += itemRect.bottom - railRect.bottom + margin;
+        }
+    }
+
     function useMenuItem(params: { text: string; route: AppRoute; icon?: React.ReactNode }): NavItemModel {
         return useNavItem({
             text: params.text,
             route: params.route,
             icon: params.icon,
-            active: () => model._activeRoute?.path === params.route.path,
+            active: () => model._activeRoute?.path === params.route.path || params.route.path === "/home" && model._activeRoute?.path === "/",
             mode: () => model.iconsOnly ? "icon-only" : "icon-text"
-        });
-    }
-
-    function useGroupMenuItem(params: { text: string; icon?: React.ReactNode, subItems?: () => NavItemModel[] }): NavItemExpandableModel {
-        const menuItem = useNavItemExpandable({
-            text: params.text,
-            icon: params.icon,
-            active: () => params.subItems?.().some(item => item.active),
-            mode: () => model.iconsOnly ? "icon-only" : "icon-text",
-            subItems: params.subItems,
-            onChangeActive: (active) => {
-                if (active && !model.iconsOnly) {
-                    menuItem.expanded = true;
-                }
-            }
-        });
-        return menuItem;
-    }
-
-    function useLogoutMenuItem(): NavItemModel {
-        return useNavItem({
-            text: "Logout",
-            icon: <LogoutIcon />,
-            mode: () => model.iconsOnly ? "icon-only" : "icon-text",
-            onClick: async () => {
-                await model.bus.unicast("App.Security.Unauthorize");
-            }
         });
     }
 }

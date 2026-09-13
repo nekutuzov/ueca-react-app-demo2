@@ -69,7 +69,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             scrollButtons: undefined,
             centered: false,
             _hasOverflow: false,
-            __scrollerRef: React.useRef<HTMLDivElement>(null),
+            __scrollerRef: { current: null },
         },
 
         events: {
@@ -183,7 +183,9 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             _scrollBackwardView: () => {
                 const showScrollButtons = model.variant === "scrollable" &&
                     (model.scrollButtons === true || (model.scrollButtons === "auto" && model._hasOverflow));
-                if (!showScrollButtons) return null;
+                if (!showScrollButtons) {
+                    return null;
+                }
 
                 return (
                     <button
@@ -207,7 +209,9 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             _scrollForwardView: () => {
                 const showScrollButtons = model.variant === "scrollable" &&
                     (model.scrollButtons === true || (model.scrollButtons === "auto" && model._hasOverflow));
-                if (!showScrollButtons) return null;
+                if (!showScrollButtons) {
+                    return null;
+                }
 
                 return (
                     <button
@@ -265,7 +269,9 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                             <model._scrollForwardView />
                         </div>
                     </div>
-                    <Col fill overflow="auto">
+                    {/* This panel clips and tab content sits flush against its edge, so it reserves
+                        the focus bleed — see theme.css. */}
+                    <Col className="ueca-focus-bleed" fill overflow="auto" spacing="default">
                         {model.selectedTab?.contentView}
                     </Col>
                 </div>

@@ -77,7 +77,9 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
 
             // Handle click outside
             const handleClickAway = (e: MouseEvent) => {
-                if (!model.open || !model.closeReasons?.clickaway) return;
+                if (!model.open || !model.closeReasons?.clickaway) {
+                    return;
+                }
                 
                 const snackbarElement = document.getElementById(model.htmlId());
                 if (snackbarElement && !snackbarElement.contains(e.target as Node)) {
@@ -88,7 +90,9 @@ function useSnackbar(params?: SnackbarParams): SnackbarModel {
         },
 
         View: () => {
-            if (!model.open) return null;
+            if (!model.open) {
+                return null;
+            }
 
             const positionClass = model.disablePortal ? "" : `snackbar-${model.anchorOrigin.vertical}-${model.anchorOrigin.horizontal}`;
             const transitionClass = model.transition ? "snackbar-transition" : "";

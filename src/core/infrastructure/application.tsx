@@ -8,7 +8,9 @@ import {
     AppSecurityModel,
     useAppSecurity,
     AppLocalStorageModel,
-    useAppLocalStorage
+    useAppLocalStorage,
+    AppThemeManagerModel,
+    useAppThemeManager
 } from "@core";
 
 type ApplicationStruct = UIBaseStruct<{
@@ -21,6 +23,7 @@ type ApplicationStruct = UIBaseStruct<{
         browsingHistory: AppBrowsingHistoryModel;
         security: AppSecurityModel;
         localStorage: AppLocalStorageModel;
+        themeManager: AppThemeManagerModel;
         ui: AppUIModel;
     }
 }>;
@@ -43,9 +46,11 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
 
             localStorage: useAppLocalStorage(),
 
+            themeManager: useAppThemeManager(),
+
             ui: useAppUI({
                 authorizedMode: () => model.security.isAuthorized()
-            }),
+            })
         },
 
         messages: {
@@ -57,14 +62,6 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
             }
         },
 
-        init: () => {
-            console.log(`UECA application "${model.applicationName}" v${model.appVersion} initialized`);
-        },
-
-        deinit: () => {
-            console.log(`UECA application "${model.applicationName}" deinitialized`);
-        },
-
         View: () => <model.ui.View />
     };
 
@@ -74,4 +71,4 @@ function useApplication(params?: ApplicationParams): ApplicationModel {
 
 const Application = UECA.getFC(useApplication);
 
-export { ApplicationModel, useApplication, Application };
+export { ApplicationModel, ApplicationParams, useApplication, Application };

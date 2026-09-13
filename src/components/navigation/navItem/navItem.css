@@ -1,16 +1,43 @@
-.ueca-nav-item {    
+.ueca-nav-item {
+    position: relative;
+    /* A label is a label, not a horizontal scroll. `anywhere` rather than `break-word`: only
+       `anywhere` lowers the min-content width, and the label sits in a flex row whose floor is
+       exactly that - so with `break-word` a long identifier still forces the rail wider. This
+       is the backstop; a label should be written to break at a space of its own accord. */
+    overflow-wrap: anywhere;
+    /* Set here rather than inherited: the parent <a> carries an inline accent colour, and a
+       sidebar of 20-odd all-blue links has no hierarchy. A rule on the element itself beats
+       the inherited inline value. */
+    color: var(--ink-dim);
+    font-size: var(--text-md);
     background-color: transparent;
-    transition: background-color 0.2s;
+    transition: background-color var(--motion-base) var(--ease),
+                color var(--motion-base) var(--ease);
 }
 
-.ueca-nav-item:hover:not(:disabled) {
+.ueca-nav-item:hover:not(.disabled) {
     background-color: var(--nav-item-hover);
+    color: var(--ink);
 }
 
-.ueca-nav-item:disabled {
+/* .disabled, not :disabled - this is a div, so the pseudo-class never matched. */
+.ueca-nav-item.disabled {
     color: var(--nav-item-disabled);
 }
 
-.ueca-nav-item.active:not(:disabled) {
+.ueca-nav-item.active:not(.disabled) {
     background-color: var(--nav-item-active);
+    color: var(--ink);
+    font-weight: var(--weight-medium);
+}
+
+/* The spine marker. Amber, because it reports position in the guide rather than offering an
+   action - the same distinction the whole palette is built on. */
+.ueca-nav-item.active:not(.disabled)::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 3px;
+    background: var(--marker);
 }

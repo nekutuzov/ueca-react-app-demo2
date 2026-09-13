@@ -1,14 +1,19 @@
 /* Checkbox container (label) */
+/* Block-level flex, sized to its content — NOT inline-flex. An inline-flex control sits on a line
+   box, so its wrapper is as tall as the surrounding strut (20px against a 17px control) and every
+   field below it drifts 3px further down the form. `fit-content` keeps the hit area on the label
+   rather than stretching it across the row. */
 .ueca-checkbox {
-    display: inline-flex;
+    display: flex;
+    width: fit-content;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-default);
     cursor: pointer;
     user-select: none;
     position: relative;
-    font-family: inherit;
-    font-size: 1rem;
-    color: rgba(0, 0, 0, 0.87);
+    font-family: var(--font-ui);
+    font-size: var(--control-label-font, var(--text-md));
+    color: var(--ink);
 }
 
 .ueca-checkbox-disabled {
@@ -16,13 +21,17 @@
     opacity: 0.5;
 }
 
-/* Hide native checkbox */
+/* Hide native checkbox. `outline: none` is defensive rather than a live fix — the UA ring IS
+   painted here on a keyboard focus, but opacity:0 fades it along with the element. It becomes a
+   visible stray ring the moment the hiding technique changes (a clip/sr-only pattern keeps
+   opacity 1), and the real ring is painted on the sibling below. */
 .checkbox-input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
     height: 0;
     width: 0;
+    outline: none;
 }
 
 /* Custom checkbox */
@@ -30,11 +39,17 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(0, 0, 0, 0.54);
-    border-radius: 2px;
-    transition: all 0.2s ease;
+    width: var(--checkbox-size, 18px);
+    height: var(--checkbox-size, 18px);
+    border: var(--checkbox-stroke, var(--stroke-emphasis)) solid var(--disabled-line);
+    border-radius: var(--checkbox-radius, var(--radius-xs));
+    /* NAMED properties, never `all`. `all` includes outline-color, whose resting value is
+       currentColor — so the moment the focus rule below turns outline-style solid, the ring
+       animates FROM the body ink. Under the dark theme that ink is #e6f0f9, so a click painted an
+       opaque near-white 2px ring and faded it out over 160ms: the "white flash". Measured frame by
+       frame before the fix. Every control that can grow an outline names its properties. */
+    transition: background-color var(--motion-base) var(--ease),
+        border-color var(--motion-base) var(--ease);
     flex-shrink: 0;
     position: relative;
 }
@@ -52,32 +67,35 @@
 
 /* Hover state */
 .ueca-checkbox:hover:not(.ueca-checkbox-disabled) .checkbox-custom {
-    border-color: var(--checkbox-color, #1976d2);
+    border-color: var(--checkbox-color, var(--accent));
 }
 
 /* Checked state */
 .checkbox-input:checked + .checkbox-custom {
-    background-color: var(--checkbox-color, #1976d2);
-    border-color: var(--checkbox-color, #1976d2);
+    background-color: var(--checkbox-color, var(--accent));
+    border-color: var(--checkbox-color, var(--accent));
 }
 
 /* Indeterminate state */
 .ueca-checkbox-indeterminate .checkbox-custom {
-    background-color: var(--checkbox-color, #1976d2);
-    border-color: var(--checkbox-color, #1976d2);
+    background-color: var(--checkbox-color, var(--accent));
+    border-color: var(--checkbox-color, var(--accent));
 }
 
-/* Focus state */
-.checkbox-input:focus + .checkbox-custom {
-    outline: 2px solid rgba(25, 118, 210, 0.2);
+/* Focus state — :focus-visible, not :focus. A checkbox is not a text-entry control, so the browser
+   deliberately withholds :focus-visible on a pointer click: you already know where you clicked.
+   Bare :focus overrode that and drew a keyboard ring on every mouse click. Switch had this right
+   all along. */
+.checkbox-input:focus-visible + .checkbox-custom {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
     outline-offset: 2px;
 }
 
-/* Checkbox icon (checkmark) */
+/* Checkbox icon (checkmark) — dark glyph on the lime fill for contrast */
 .checkbox-icon {
     width: 100%;
     height: 100%;
-    fill: white;
+    fill: var(--ink-on-accent);
     display: block;
 }
 
@@ -94,21 +112,21 @@
 /* Label text */
 .checkbox-label {
     font-size: inherit;
-    line-height: 1.5;
+    line-height: var(--label-leading, var(--leading-normal));
 }
 
 /* Disabled state */
 .ueca-checkbox-disabled .checkbox-custom {
-    border-color: rgba(0, 0, 0, 0.26);
+    border-color: var(--disabled-line);
 }
 
 .ueca-checkbox-disabled .checkbox-input:checked + .checkbox-custom {
-    background-color: rgba(0, 0, 0, 0.26);
-    border-color: rgba(0, 0, 0, 0.26);
+    background-color: var(--disabled-line);
+    border-color: var(--disabled-line);
 }
 
 .ueca-checkbox-disabled .checkbox-label {
-    color: rgba(0, 0, 0, 0.38);
+    color: var(--disabled-ink);
 }
 
 /* Animation for checkbox */
@@ -126,30 +144,30 @@
 
 .checkbox-input:checked ~ .checkbox-icon,
 .ueca-checkbox-indeterminate .checkbox-icon {
-    animation: checkboxCheck 0.2s ease;
+    animation: checkboxCheck var(--motion-base) var(--ease);
 }
 
 /* Helper text */
 .checkbox-helper-text {
-    font-size: 0.75rem;
-    line-height: 1.66;
-    letter-spacing: 0.03333em;
-    color: rgba(0, 0, 0, 0.6);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    letter-spacing: var(--tracking-wide);
+    color: var(--ink-dim);
     margin-top: 4px;
     margin-left: 0;
 }
 
 /* Error state */
 .ueca-checkbox-error .checkbox-custom {
-    border-color: #d32f2f;
+    border-color: var(--error);
 }
 
 .ueca-checkbox-error .checkbox-input:checked + .checkbox-custom,
 .ueca-checkbox-error.ueca-checkbox-indeterminate .checkbox-custom {
-    background-color: #d32f2f;
-    border-color: #d32f2f;
+    background-color: var(--error);
+    border-color: var(--error);
 }
 
 .checkbox-helper-text-error {
-    color: #d32f2f;
+    color: var(--error);
 }

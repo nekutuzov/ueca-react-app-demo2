@@ -1,0 +1,29 @@
+/* DropZone — full-area file drop overlay. Generic behavior (backdrop, centering, hide/over);
+   the inner card/content is supplied by the caller and styled by them. */
+
+.ueca-dropzone {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-hud);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity var(--motion-slow) var(--ease);
+    background: var(--scrim);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+}
+
+/* hidden: fade out and stop intercepting pointer events (content is loaded).
+   `pointer-events: none` gates the MOUSE only — anything focusable in the caller's contentView
+   stays in the tab order behind a fully transparent overlay stretched across the whole area at
+   --z-hud, so a keyboard user can land on a control nobody can see. `visibility: hidden` takes it
+   out of the tab order too; the delayed visibility step keeps the fade, because visibility is
+   discrete and would otherwise snap at the start of the transition. */
+.ueca-dropzone.hidden {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity var(--motion-slow) var(--ease),
+        visibility 0s linear var(--motion-slow);
+}

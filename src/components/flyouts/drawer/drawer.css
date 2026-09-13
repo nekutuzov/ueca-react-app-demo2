@@ -1,13 +1,14 @@
-/* Drawer backdrop */
+/* Drawer backdrop — above the Dialog backdrop (1300) so a details drawer launched FROM a dialog
+   dims and overlays it. */
 .ueca-drawer-backdrop {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    animation: fadeIn 0.2s ease;
-    z-index: 1200;
+    background-color: var(--scrim);
+    animation: fadeIn var(--motion-base) var(--ease);
+    z-index: var(--overlay-z, var(--z-drawer));
 }
 
 @keyframes fadeIn {
@@ -22,22 +23,25 @@
 /* Drawer container */
 .ueca-drawer {
     position: fixed;
-    background-color: white;
-    box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.2),
-        0px 16px 24px 2px rgba(0, 0, 0, 0.14),
-        0px 6px 30px 5px rgba(0, 0, 0, 0.12);
-    transition: transform 0.3s ease;
+    background-color: var(--surface);
+    color: var(--ink);
+    border: var(--drawer-border, var(--hairline) solid var(--border));
+    font-family: var(--font-ui);
+    box-shadow: var(--drawer-shadow, var(--shadow-4));
+    transition: transform var(--motion-slower) var(--ease);
     display: flex;
     flex-direction: column;
-    z-index: 1300;
+    z-index: var(--overlay-z, var(--z-drawer-panel));
 }
 
 /* Anchor positions */
+/* The `width` prop still wins (it is an inline style); the token is the theme default, and takes
+   any CSS length — MLAdmin's drawers are a share of the viewport rather than a fixed pixel width. */
 .drawer-anchor-left {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 280px;
+    width: var(--drawer-w, 280px);
 }
 
 .drawer-anchor-left.drawer-closed {
@@ -52,7 +56,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    width: 280px;
+    width: var(--drawer-w, 280px);
 }
 
 .drawer-anchor-right.drawer-closed {
@@ -95,44 +99,54 @@
 
 /* Drawer sections */
 .drawer-title {
-    padding: 20px 24px;
+    padding: var(--drawer-title-pad, var(--space-medium) var(--space-medium));
+    min-height: var(--drawer-title-h, auto);
+    box-sizing: border-box;
     flex-shrink: 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-    font-size: 20px;
-    font-weight: 500;
+    border-bottom: var(--hairline) solid var(--border);
+    color: var(--ink);
+    font-size: var(--drawer-title-font, var(--text-xl));
+    font-weight: var(--drawer-title-weight, var(--weight-bold));
+    letter-spacing: var(--drawer-title-tracking, var(--tracking-wide));
 }
 
 /* Severity-based header colors */
 .drawer-title-success {
-    background-color: rgba(46, 125, 50, 0.08);
-    border-bottom: 2px solid #2e7d32;
+    background-color: color-mix(in srgb, var(--success) 10%, transparent);
+    border-bottom: var(--stroke-emphasis) solid var(--success);
+    color: var(--success);
 }
 
 .drawer-title-info {
-    background-color: rgba(2, 136, 209, 0.08);
-    border-bottom: 2px solid #0288d1;
+    background-color: var(--hover);
+    border-bottom: var(--stroke-emphasis) solid var(--accent);
+    color: var(--accent);
 }
 
 .drawer-title-warning {
-    background-color: rgba(237, 108, 2, 0.08);
-    border-bottom: 2px solid #ed6c02;
+    background-color: color-mix(in srgb, var(--warning) 10%, transparent);
+    border-bottom: var(--stroke-emphasis) solid var(--warning);
+    color: var(--warning);
 }
 
 .drawer-title-error {
-    background-color: rgba(211, 47, 47, 0.08);
-    border-bottom: 2px solid #d32f2f;
+    background-color: color-mix(in srgb, var(--error) 10%, transparent);
+    border-bottom: var(--stroke-emphasis) solid var(--error);
+    color: var(--error);
 }
 
 .drawer-content {
     flex: 1 1 auto;
-    padding: 24px;
+    padding: var(--drawer-content-pad, var(--space-medium));
     overflow-y: auto;
+    overflow-wrap: anywhere;
     min-height: 0;
+    color: var(--ink);
 }
 
 .drawer-actions {
-    padding: 16px 24px;
+    padding: var(--drawer-actions-pad, var(--space-small) var(--space-medium));
     flex-shrink: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.12);
-    background-color: rgba(0, 0, 0, 0.02);
+    border-top: var(--hairline) solid var(--border);
+    background-color: var(--drawer-actions-bg, var(--hover));
 }

@@ -1,0 +1,158 @@
+/* Screen chrome: the top bar above every screen, and the scrolling content region. */
+
+.app-topbar {
+    background: var(--surface);
+    border-bottom: var(--hairline) solid var(--border);
+    /* The same gutter the page uses, so the trail starts level with the article at every
+       width - see the breadcrumb rule below. */
+    padding-inline: var(--page-pad);
+    /* The bar is the only thing between the article and the window edge, so it stays put
+       while the content scrolls under it. */
+    flex: 0 0 auto;
+    /* The page below has a scrollbar and this bar does not, so "centred" would mean two
+       different places and the breadcrumb would miss the article it names by half a
+       scrollbar. Reserving the same gutter on both - on both edges, so it cancels out of
+       the centring entirely - is what makes the two agree. It needs the bar to be a scroll
+       container, hence overflow="hidden" in the JSX. */
+    scrollbar-gutter: stable both-edges;
+}
+
+/* The trail stays on one line. The bar has a fixed height, so a wrapped second line escapes it
+   and prints over the top of the article - which is what happens at mobile widths. */
+.app-topbar .ueca-breadcrumbs {
+    flex-wrap: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--text-sm);
+}
+
+/* The trail names the article, so it starts where the article's text starts. The offset goes on
+   the breadcrumb component's own root rather than the <ol> inside it: that list is shrink-wrapped
+   to its labels, so a percentage there would resolve against the trail's own width instead of the
+   bar's. Both this and the page band centre the same region - see the scrollbar-gutter note on
+   .app-content, which is what keeps them from landing half a scrollbar apart - and --page-pad is
+   the page's own left padding, read by .docs-column and .home alike. Below the band width it
+   collapses to that padding alone, where the page is left-aligned and the trail already lines up. */
+.app-topbar > :has(> .ueca-breadcrumbs) {
+    margin-left: max(0px, (100% - var(--band-w)) / 2 + var(--page-pad));
+    /* Without this the trail cannot shrink - a flex item's floor is its min-content width, and
+       an article title like "Automatic onPropChange and onPropChanging Events" is wider than a
+       phone. It ran straight under the theme and contact buttons. The ellipsis rules below only
+       get their chance once this lets the box narrow. */
+    min-width: 0;
+}
+
+.app-topbar .ueca-breadcrumbs > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.app-topbar .ueca-breadcrumbs-separator svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+}
+
+/* The last crumb is the current page: rendered disabled, but it should read as where you are
+   rather than as something switched off. */
+.app-topbar .ueca-nav-link-disabled {
+    color: var(--ink);
+}
+
+/* On a phone the bar cannot hold the trail and six buttons: the five links alone want 264px of
+   a 283px bar, so the last of them was being cut in half by the window edge. Reading is what a
+   phone is for here, so the trail keeps the space and the outbound links stand down until there
+   is room - they are chrome, not navigation, and GitHub is on the home page besides.
+   The buttons are hidden rather than their container: Row writes `display: flex` inline, which
+   no stylesheet can override, while the button itself takes its display from CSS. */
+@media (max-width: 640px) {
+    .app-topbar .ueca-contacts .ueca-icon-button,
+    .app-topbar .app-topbar-divider {
+        display: none;
+    }
+}
+
+/* A hairline between the screen's own tools and the app-level controls (theme, contacts),
+   so the two groups do not read as one row of unrelated buttons. */
+.app-topbar-divider {
+    width: var(--hairline);
+    height: 22px;
+    background: var(--border);
+    flex: 0 0 auto;
+}
+
+.app-topbar .ueca-icon-button {
+    color: var(--ink-dim);
+}
+
+.app-topbar .ueca-icon-button:hover:not(:disabled) {
+    color: var(--accent);
+}
+
+/* min-width:0 is what actually fixes the horizontal page scrollbar: without it this flex
+   child refuses to shrink below its widest content (a long code line), so the whole column
+   grows instead of the code block scrolling inside itself. */
+.app-content {
+    min-width: 0;
+    /* A flex child defaults to min-height:auto, which lets it grow past the viewport instead
+       of scrolling. overflow itself is set as a prop in the JSX - see the note there. */
+    min-height: 0;
+    overscroll-behavior: contain;
+    /* Reserve the scrollbar's width on BOTH edges, so the centred page band lands at exactly
+       (region - band) / 2 whatever that scrollbar costs. The top bar has no scrollbar of its
+       own; without this the band sits half a scrollbar to the left of the breadcrumb that is
+       supposed to align with it. It also stops the page shifting when an article grows long
+       enough to need scrolling. */
+    scrollbar-gutter: stable both-edges;
+}
+
+/* Screen toolbar — the button run right of the breadcrumbs. Its CHROME comes from the shared
+   .ueca-chromed-icon-buttons rules (iconButton.css), which the table's row actions use too. What
+   lives here is only what is genuinely the toolbar's own: its height and glyph size.
+
+   --toolbar-btn-size pins EVERY rung to one height, because "the toolbar is 32px" is a property of
+   the toolbar, not a step on the control ladder — MLAdmin wants that. Each rung falls back to its
+   own control height, so with no theme token the ladder is intact and nothing changes. All four
+   rungs are covered: overriding only some of them is how a `medium` button ends up a different
+   height from its neighbours in one theme only. */
+
+.ueca-screen-tools .ueca-icon-button-xsmall {
+    width: var(--toolbar-btn-size, var(--control-h-xs));
+    height: var(--toolbar-btn-size, var(--control-h-xs));
+}
+
+.ueca-screen-tools .ueca-icon-button-xsmall svg {
+    width: var(--toolbar-btn-icon, var(--icon-sm));
+    height: var(--toolbar-btn-icon, var(--icon-sm));
+}
+
+.ueca-screen-tools .ueca-icon-button-small {
+    width: var(--toolbar-btn-size, var(--control-h-sm));
+    height: var(--toolbar-btn-size, var(--control-h-sm));
+}
+
+.ueca-screen-tools .ueca-icon-button-small svg {
+    width: var(--toolbar-btn-icon, var(--icon-md));
+    height: var(--toolbar-btn-icon, var(--icon-md));
+}
+
+.ueca-screen-tools .ueca-icon-button-medium {
+    width: var(--toolbar-btn-size, var(--control-h-md));
+    height: var(--toolbar-btn-size, var(--control-h-md));
+}
+
+.ueca-screen-tools .ueca-icon-button-medium svg {
+    width: var(--toolbar-btn-icon, var(--icon-xl));
+    height: var(--toolbar-btn-icon, var(--icon-xl));
+}
+
+.ueca-screen-tools .ueca-icon-button-large {
+    width: var(--toolbar-btn-size, var(--control-h-lg));
+    height: var(--toolbar-btn-size, var(--control-h-lg));
+}
+
+.ueca-screen-tools .ueca-icon-button-large svg {
+    width: var(--toolbar-btn-icon, var(--icon-2xl));
+    height: var(--toolbar-btn-icon, var(--icon-2xl));
+}

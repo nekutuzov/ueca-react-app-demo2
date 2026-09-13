@@ -1,0 +1,41 @@
+/* AlertDialog — the two things the message box owns that the plain Dialog does not: how big the
+   severity glyph is, and whether the heading follows that glyph's colour. Both default to the look
+   the app was designed with, so only a theme that sets the token changes anything. */
+
+/* MLAdmin's glyph is 30px, which is off the icon ladder — hence a length, not a rung.
+   `display: block` is load-bearing: an inline SVG sits on the text baseline and reserves descender
+   space under itself, which made the heading row ~5px taller than the glyph it contains. */
+.alert-dialog-icon svg {
+    display: block;
+    width: var(--dialog-icon-size, var(--icon-xl));
+    height: var(--dialog-icon-size, var(--icon-xl));
+}
+
+/* The details panel's payload is a message plus a call stack: monospace, never re-wrapped, and
+   scrolling sideways rather than folding. It shares the dialog's message type, since it IS that
+   message with the stack appended. Legacy falls back to the browser's default mono here — a <pre>
+   inherits no family — where this uses the app's own face, the same call already made for Roboto
+   over the Arial a legacy <button> falls back to. */
+.alert-dialog-details {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--dialog-content-font, inherit);
+    line-height: var(--dialog-content-leading, var(--leading-normal));
+    white-space: pre;
+    overflow-x: auto;
+}
+
+/* --alert-severity is published by the title view as a custom property. A theme that pins
+   --alert-title-ink overrules it and the icon carries the severity alone, which is how the legacy
+   dialog reads: red triangle, but a heading in the same ink as every other heading. */
+.alert-dialog-title {
+    color: var(--alert-title-ink, var(--alert-severity, inherit));
+}
+
+/* The details panel's heading is a SEPARATE rule, not the dialog's: MLAdmin tints this one and not
+   the other. The panel has no glyph — the dialog behind it already showed one — so its colour is
+   the only thing naming the severity, whereas in the dialog the glyph does that job and the
+   heading stays body ink. */
+.alert-details-title {
+    color: var(--alert-details-title-ink, var(--alert-severity, inherit));
+}

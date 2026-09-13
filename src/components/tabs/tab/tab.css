@@ -1,23 +1,30 @@
+/* Geometry and type are token-driven so a theme can put the strip on its own rung: the template's
+   tabs are 48px chips that reserve a 90px slot each, while MLAdmin's are bare 43px labels with no
+   padding at all, spaced by the list's gap (measured on legacy /general). */
 .ueca-tab {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 12px 16px;
-    min-height: 48px;
-    min-width: 90px;
+    gap: var(--space-default);
+    padding: var(--tab-pad, var(--space-default) var(--space-small));
+    min-height: var(--tab-h, 48px);
+    min-width: var(--tab-min-w, 90px);
     flex-shrink: 0;
     background: transparent;
     border: none;
-    border-bottom: 2px solid transparent;
+    border-bottom: var(--stroke-emphasis) solid transparent;
     cursor: pointer;
     font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: var(--tab-font, var(--text-md));
+    font-weight: var(--tab-weight, var(--weight-medium));
     text-transform: uppercase;
-    letter-spacing: 0.02857em;
-    color: rgba(0, 0, 0, 0.6);
-    transition: all 0.2s ease;
+    letter-spacing: var(--tab-tracking, var(--tracking-wide));
+    color: var(--ink-dim);
+    /* NAMED, never `all` — see the note in checkbox.css. */
+    transition: background-color var(--motion-base) var(--ease),
+        border-color var(--motion-base) var(--ease),
+        color var(--motion-base) var(--ease),
+        box-shadow var(--motion-base) var(--ease);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -25,7 +32,14 @@
 }
 
 .ueca-tab:hover:not(:disabled) {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: var(--tab-hover-bg, var(--hover));
+}
+
+/* Legacy tints the label on hover rather than washing the whole tab. Excluded on the selected tab,
+   which keeps its own ink — the same outcome as the legacy cascade, where `li.selected .tab-text`
+   outranked `.tab-text:hover`. */
+.ueca-tab:hover:not(:disabled):not(.selected) {
+    color: var(--tab-hover-ink, var(--ink-dim));
 }
 
 .ueca-tab:disabled {
@@ -34,18 +48,21 @@
     pointer-events: none;
 }
 
+/* Ink and underline are separate tokens because MLAdmin paints them differently — blue.Dark text
+   under a blue.Regular rule. --tab-selected-ink falls back to the underline colour, so a theme
+   that wants them the same still sets one token. */
 .ueca-tab.selected {
-    color: var(--tab-selected-color, #1976d2);
-    border-bottom-color: var(--tab-selected-color, #1976d2);
+    color: var(--tab-selected-ink, var(--tab-selected-color, var(--accent)));
+    border-bottom-color: var(--tab-selected-color, var(--accent));
 }
 
 .ueca-tab.invalid {
-    color: var(--tab-error-color, #d32f2f);
+    color: var(--tab-error-color, var(--error));
 }
 
 .ueca-tab.selected.invalid {
-    color: var(--tab-error-color, #d32f2f);
-    border-bottom-color: var(--tab-error-color, #d32f2f);
+    color: var(--tab-error-color, var(--error));
+    border-bottom-color: var(--tab-error-color, var(--error));
 }
 
 /* Icon positioning */
@@ -69,7 +86,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: var(--icon-lg);
 }
 
 .ueca-tab .ueca-tab-icon svg {
@@ -94,15 +111,24 @@
 .ueca-tabs-vertical .ueca-tab {
     min-width: 160px;
     justify-content: flex-start;
-    padding: 12px 16px;
+    padding: var(--space-default) var(--space-small);
     border-bottom: none;
-    border-right: 2px solid transparent;
+    border-right: var(--stroke-emphasis) solid transparent;
 }
 
 .ueca-tabs-vertical .ueca-tab.selected {
-    border-right-color: var(--tab-selected-color, #1976d2);
+    border-right-color: var(--tab-selected-color, var(--accent));
 }
 
 .ueca-tabs-vertical .ueca-tab.selected.invalid {
-    border-right-color: #d32f2f;
+    border-right-color: var(--error);
+}
+
+/* Focus. INSET rather than an outline: a tab sits inside .ueca-tabs-scroller and
+   .ueca-tabs-wrapper, both overflow:hidden (tabsContainer.css:39, :51), so an outward outline is
+   silently clipped and the fix looks like it did nothing. Until now a tab's only indicator was the
+   UA ring — clipped by those same two ancestors. */
+.ueca-tab:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
 }

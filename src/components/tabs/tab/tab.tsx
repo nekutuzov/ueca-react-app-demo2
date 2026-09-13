@@ -53,7 +53,9 @@ function useTab(params?: TabParams): TabModel {
         },
 
         View: () => {
-            if (!model.visible) return null;
+            if (!model.visible) {
+                return null;
+            }
 
             const invalid = !model.isValid();
             const classNames = [
@@ -70,7 +72,9 @@ function useTab(params?: TabParams): TabModel {
                     className={classNames}
                     disabled={model.disabled}                                        
                     onClick={() => {
-                        if (model.disabled) return;
+                        if (model.disabled) {
+                            return;
+                        }
                         model.container.selectedTab = model;
                         asyncSafe(() => model.onClick?.(model));
                     }}

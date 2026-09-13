@@ -7,9 +7,6 @@ function runApplication(AppView: () => UECA.ReactElement, rootElementId: string,
         UECA.globalSettings.errorHandler = onExcept;
         const root = createRoot(document.getElementById(rootElementId));
         root.render(
-            // Don't wrap in React.StrictMode!
-            // StrictMode causes double execution of UECA life-cycle hooks that leads to many issues.
-            // UECA abstracts away React from the developer, so React.StrictMode is not needed.
             <ErrorFallback onError={(error, info) => {
                 console.error("React Error Boundary caught an error:", error, info);
                 onExcept?.(error);

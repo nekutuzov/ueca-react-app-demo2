@@ -1,0 +1,31 @@
+/* Panel — card chrome (border/bg/blur) + close button + title label.
+   Positioning, show/hide, and inner layout are the caller's (via className + content). */
+
+.ueca-panel {
+    position: relative;
+    background: var(--glass);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-xl);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    font-family: var(--font-mono);
+}
+
+/* close (×) — top-right; the IconButton inside provides the glyph + hover */
+.ueca-panel-close {
+    position: absolute;
+    top: 7px;
+    right: 8px;
+    pointer-events: auto;
+    z-index: var(--z-hud);
+}
+
+/* title label — type comes from .ueca-label (applied alongside in the TSX). The
+   font-family override stays: .ueca-panel above sets JetBrains Mono on the whole
+   panel, and the title is Archivo. */
+.ueca-panel-title {
+    color: var(--accent-dim);
+    font-family: var(--font-ui);
+    margin-bottom: 9px;
+    padding-right: 24px; /* clear the close button */
+}

@@ -74,8 +74,4 @@ function useEditBase<T extends EditBasePartialStruct>(extStruct?: T, params?: Ed
     return model;
 }
 
-function useValidator(params?: EditBaseParams<EditBasePartialStruct>): EditBaseModel<EditBasePartialStruct> {
-    return useEditBase<EditBasePartialStruct>(undefined, params);
-}
-
-export { EditBaseStruct, EditBaseParams, EditBaseModel, useEditBase, useValidator }
+export { EditBaseStruct, EditBaseParams, EditBaseModel, useEditBase }

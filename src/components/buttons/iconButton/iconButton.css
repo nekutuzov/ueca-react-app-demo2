@@ -1,61 +1,117 @@
-/* IconButton base styles */
+/* IconButton — the app-wide icon-button style (muted icon, accent/ink on hover).
+   Per-instance accent overridable via the --icon-button-color CSS var (set from the `color` prop). */
+
 .ueca-icon-button {
+    --icon-btn-muted: var(--ink-disabled);
+    --icon-btn-ink: var(--ink);
+    --icon-btn-accent: var(--icon-button-color, var(--accent));
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border: none;
-    border-radius: 50%;
+    border-radius: var(--radius-md);
     background-color: transparent;
-    color: var(--icon-button-color, inherit);
+    color: var(--icon-button-color, var(--icon-btn-muted));
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    /* NAMED, never `all` — see the note in checkbox.css. */
+    transition: background-color var(--motion-fast) var(--ease),
+        border-color var(--motion-fast) var(--ease),
+        color var(--motion-fast) var(--ease),
+        box-shadow var(--motion-fast) var(--ease);
     outline: none;
     padding: 0;
 }
 
+/* The replacement for the `outline: none` above. Covers the dialog and drawer close ×, the CRUD
+   toolbar's Add new / Refresh, the screen overflow menu, and a table row's actions — none of which
+   had any focus indicator. The 1px offset (rather than the Button's 2px) keeps the ring off the
+   neighbouring square in the dense toolbar and off the row-action chip's edge. */
+.ueca-icon-button:focus-visible {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: 1px;
+}
+
 .ueca-icon-button:disabled {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
 .ueca-icon-button:hover:not(:disabled) {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: var(--ink-hover);
+    color: var(--icon-button-color, var(--icon-btn-ink));
 }
 
 .ueca-icon-button:active:not(:disabled) {
-    background-color: rgba(0, 0, 0, 0.12);
+    background-color: var(--active);
+    color: var(--icon-btn-accent);
 }
 
-/* Size variants */
+/* Size variants — the button square comes from the shared control ladder, the glyph from the icon
+   ladder, so both stay in step with Button and with every other icon in the app. */
+.ueca-icon-button-xsmall {
+    width: var(--control-h-xs);
+    height: var(--control-h-xs);
+}
+
+.ueca-icon-button-xsmall svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
 .ueca-icon-button-small {
-    width: 32px;
-    height: 32px;
-    font-size: 1.125rem;
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
 }
 
 .ueca-icon-button-small svg {
-    width: 18px;
-    height: 18px;
+    width: var(--icon-md);
+    height: var(--icon-md);
 }
 
 .ueca-icon-button-medium {
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
+    width: var(--control-h-md);
+    height: var(--control-h-md);
 }
 
 .ueca-icon-button-medium svg {
-    width: 24px;
-    height: 24px;
+    width: var(--icon-xl);
+    height: var(--icon-xl);
 }
 
 .ueca-icon-button-large {
-    width: 48px;
-    height: 48px;
-    font-size: 1.875rem;
+    width: var(--control-h-lg);
+    height: var(--control-h-lg);
 }
 
 .ueca-icon-button-large svg {
-    width: 28px;
-    height: 28px;
+    width: var(--icon-2xl);
+    height: var(--icon-2xl);
+}
+
+/* ---- chromed: icon buttons that sit ON a surface rather than floating in content ---- */
+
+/* The screen toolbar and a table row's action cluster want the same chrome — under MLAdmin, the
+   legacy outlined-primary squares. Applied by an ANCESTOR carrying .ueca-chromed-icon-buttons, so
+   the two contexts share one definition instead of a copy each; the copies had already drifted
+   apart once, and a precedence fix had to be made twice.
+   Every default repeats the bare icon-button look, so only a theme that sets --chrome-btn-* changes
+   anything. SIZE is deliberately absent: a toolbar button and a row action are different sizes, and
+   each context owns that itself. */
+.ueca-chromed-icon-buttons .ueca-icon-button {
+    border: var(--chrome-btn-border, none);
+    border-radius: var(--chrome-btn-radius, var(--radius-md));
+    background-color: var(--chrome-btn-bg, transparent);
+    /* The per-instance `color` prop stays ABOVE the theme token, matching the base rule above — a
+       theme supplies the default ink, it does not overrule a button that asked to be red. */
+    color: var(--icon-button-color, var(--chrome-btn-ink, var(--icon-btn-muted)));
+}
+
+/* The border follows the ink by default, so a theme that darkens --chrome-btn-hover-ink gets the
+   outline darkening with it and needs one token, not two. Harmless where no --chrome-btn-border is
+   set: the border-style is `none` there, so a colour cannot show. */
+.ueca-chromed-icon-buttons .ueca-icon-button:hover:not(:disabled) {
+    background-color: var(--chrome-btn-hover-bg, var(--ink-hover));
+    border-color: var(--chrome-btn-hover-line, currentColor);
+    color: var(--icon-button-color, var(--chrome-btn-hover-ink, var(--icon-btn-ink)));
 }

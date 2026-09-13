@@ -1,30 +1,34 @@
 import * as UECA from "ueca-react";
 import {
-    ButtonModel, Col, EditBaseModel, IconButtonModel, UIBaseModel, UIBaseParams, UIBaseStruct, useButton, useIconButton,
-    useUIBase, useValidator
+    ButtonModel, EditBaseModel, EditBaseParams, EditBaseStruct, IconButtonModel, MenuItemModel,
+    useButton, useEditBase, useIconButton, useMenuItem
 } from "@components";
-import { AppRoute, asyncSafe } from "@core";
+import { AppRoute, asyncSafe, AddIcon, runAsync } from "@core";
 import { Breadcrumb, ScreenLayoutModel, useScreenLayout } from "@core";
 
-type CRUDScreenStruct = UIBaseStruct<{
+// An EditBase, not a UIBase-plus-validator: the CRUDScreen IS the editable entity — the screen's
+// fields register through the inherited modelsToValidate, and validate()/isValid()/
+// getValidationError()/resetValidationErrors() come from the base. The screen-level lifecycle
+// wrapper (busy display, state flags, warning dialog) is validateScreen(), a separate name so it
+// never shadows the EditBase composite contract. Cross-field rules use the inherited onValidate,
+// which follows EditBase semantics: return an error STRING to fail, undefined when valid.
+type CRUDScreenStruct = EditBaseStruct<{
     props: CRUDScreenProps & {
-        modelsToValidate: EditBaseModel["modelsToValidate"];
         _state: CRUDScreenState;
     };
 
     children: {
         screenLayout: ScreenLayoutModel;
-        validator: EditBaseModel;
         actionButton: ButtonModel;
-        saveButton: IconButtonModel;
-        cancelButton: IconButtonModel;
-        deleteButton: IconButtonModel;
+        addButton: IconButtonModel;
+        saveButton: ButtonModel;
+        cancelButton: ButtonModel;
+        deleteMenuItem: MenuItemModel;
         refreshButton: IconButtonModel;
     };
 
     methods: CRUDScreenMethods & {
         _toolsView: () => React.ReactNode;
-        _hiddenToolsView: () => React.ReactNode;
         _canNavigate: (url?: string) => Promise<boolean>;
     };
 
@@ -41,7 +45,7 @@ type CRUDScreenState = {
 };
 
 type CRUDScreenProps = {
-    intent: "none" | "view" | "edit" | "edit-record" | "action";
+    intent: "none" | "view" | "edit" | "edit-record" | "action" | "add-record" | "add-edit-record";
     breadcrumbs: Breadcrumb[];
     toolsView: React.ReactNode;
     contentView: React.ReactNode;
@@ -53,26 +57,29 @@ type CRUDScreenProps = {
 type CRUDScreenMethods = {
     getScreenState: () => CRUDScreenState;
     setScreenState: (state: CRUDScreenState) => void;
+    add: () => Promise<void>;
     refresh: () => Promise<void>;
-    validate: (showDialog?: boolean) => Promise<boolean>;
-    resetValidationErrors: () => void;
+    validateScreen: (showDialog?: boolean) => Promise<boolean>;
     save: () => Promise<void>;
     cancel: () => Promise<void>;
     delete: () => Promise<void>;
     goToParentScreen: (redirect?: boolean) => Promise<void>;
+    scheduleSetRoute: (route: AppRoute) => void;
+    scheduleGoToRoute: (route: AppRoute) => void;
 }
 
+// Validation events (onValidate, onInternalValidate) are inherited from EditBase.
 type CRUDScreenEvents = {
+    onAdd: () => Promise<void>;
     onRefresh: () => Promise<void>;
     onModify: () => Promise<void>;
-    onValidate: () => Promise<boolean>;
     onSave: () => Promise<void>;
     onCancel: () => Promise<void>;
     onDelete: () => Promise<void>;
 }
 
-type CRUDScreenParams = UIBaseParams<CRUDScreenStruct>;
-type CRUDScreenModel = UIBaseModel<CRUDScreenStruct>;
+type CRUDScreenParams = EditBaseParams<CRUDScreenStruct>;
+type CRUDScreenModel = EditBaseModel<CRUDScreenStruct>;
 
 function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
     const struct: CRUDScreenStruct = {
@@ -85,7 +92,6 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
             hiddenToolsView: undefined,
             readonly: false,
             actionButtonText: undefined,
-            modelsToValidate: UECA.bind(() => model.validator, "modelsToValidate"),
             _state: {
                 dataNew: false,
                 dataModified: false,
@@ -110,28 +116,61 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
             screenLayout: useScreenLayout({
                 breadcrumbs: () => model.breadcrumbs,
                 toolsView: () => model._toolsView(),
-                hiddenToolsView: () => _hiddenToolsView(),
+                // The screen's slot with the Delete row folded in. Computed HERE rather than in a
+                // `methods` entry: the layout hides its "…" button on a null slot, and a method is
+                // wrapped by the framework so it can never report null (the legacy baseScreen
+                // carried a TODO about exactly this).
+                hiddenToolsView: () => {
+                    if (!_showDeleteButton()) {
+                        return model.hiddenToolsView;
+                    }
+                    return (
+                        <>
+                            {model.hiddenToolsView}
+                            <model.deleteMenuItem.View />
+                        </>
+                    );
+                },
                 contentView: () => model.contentView
             }),
 
-            validator: useValidator(),
-
-            cancelButton: useIconButton({
-                kind: "cancel",
+            addButton: useIconButton({
+                iconView: <AddIcon />,
+                title: "Add new",
                 size: "large",
-                disabled: () => !model._state.dataModified || model._state.dataSaving || model.readonly,
+                // Disabled while already adding a new record (dataNew), saving, loading, or read-only.
+                disabled: () => model._state.dataNew || model.readonly || model._state.dataSaving || model._state.dataLoading,
+                onClick: () => model.add()
+            }),
+
+            // Cancel and Save are TEXT buttons in the legacy toolbar, not icon squares — outlined,
+            // 32px tall, no glyph. Only Refresh is an icon square. Plain useButton rather than the
+            // useCancelButton/useSaveButton shorthands: those carry a start icon (and Cancel its own
+            // confirm dialog), and the toolbar wants neither — cancel() is already gated on the
+            // button being enabled solely while the record is dirty.
+            cancelButton: useButton({
+                contentView: "Cancel",
+                variant: "outlined",
+                size: "small",
+                title: "Cancel",
+                // A brand-new record (dataNew) is savable/cancelable even before any field is edited.
+                disabled: () => (!model._state.dataModified && !model._state.dataNew) || model._state.dataSaving || model.readonly,
                 onClick: () => model.cancel()
             }),
 
-            deleteButton: useIconButton({
-                kind: "delete",
-                size: "large",
+            // Delete is NOT a toolbar button: legacy puts it in the "…" overflow menu, so the
+            // toolbar carries only the three buttons a record edit needs at a glance.
+            deleteMenuItem: useMenuItem({
+                labelView: "Delete",
+                iconName: "delete",
+                danger: true,
                 disabled: () => _isDeleteDisabled(),
                 onClick: () => model.delete()
             }),
 
             refreshButton: useIconButton({
                 kind: "refresh",
+                title: "Refresh",
                 size: "large",
                 disabled: () => {
                     return model._state.dataNew ||
@@ -142,10 +181,12 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 onClick: () => model.refresh()
             }),
 
-            saveButton: useIconButton({
-                kind: "ok",
-                size: "large",
-                disabled: () => !model._state.dataModified || model._state.dataSaving || model.readonly,
+            saveButton: useButton({
+                contentView: "Save",
+                variant: "outlined",
+                size: "small",
+                title: "Save",
+                disabled: () => (!model._state.dataModified && !model._state.dataNew) || model._state.dataSaving || model.readonly,
                 onClick: () => model.save()
             }),
 
@@ -166,6 +207,12 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 model._state = { ...model._state, ...state };
                 if (!oldModified && model._state.dataModified && model.onModify) {
                     asyncSafe(model.onModify);
+                }
+            },
+
+            add: async () => {
+                if (model.onAdd) {
+                    await model.onAdd();
                 }
             },
 
@@ -190,22 +237,24 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 model.setScreenState({ dataModified: model._state.dataNew });
             },
 
-            validate: async (showDialog) => {
+            validateScreen: async (showDialog) => {
                 let result = true;
                 await model.setAppBusy(true);
                 try {
                     model.setScreenState({ dataValidating: true });
-                    await model.validator.validate();
-                    const customRulesValid = (model.onValidate ? await model.onValidate() : true);
-                    if (!customRulesValid && (customRulesValid ?? true)) {
-                        result = false; // Don't display the warning if custom validation returned undefined/null
-                    } else {
-                        if (!customRulesValid || !model.validator.isValid()) {
-                            if (showDialog) {
-                                model.dialogWarning("Warning", "There are validation errors. Please review your input.");
-                            }
-                            result = false;
+                    // The inherited EditBase validate: fields in modelsToValidate first, then the
+                    // screen's own onInternalValidate/onValidate (which return error TEXT, not a
+                    // boolean). The joined errors ride into the dialog as its details.
+                    await model.validate();
+                    if (!model.isValid()) {
+                        if (showDialog) {
+                            model.dialogWarning(
+                                "Warning",
+                                "There are validation errors. Please review your input.",
+                                model.getValidationError()
+                            );
                         }
+                        result = false;
                     }
                 } finally {
                     model.setScreenState({ dataValidating: false });
@@ -215,12 +264,8 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 return result;
             },
 
-            resetValidationErrors: () => {
-                model.validator.resetValidationErrors();
-            },
-
             save: async () => {
-                if (!await model.validate(true)) {
+                if (!await model.validateScreen(true)) {
                     return;
                 }
 
@@ -240,7 +285,9 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
             cancel: async () => {
                 const newRecord = model._state.dataNew;
                 await _cancel();
-                if (newRecord) {
+                // Add-* intents are self-contained (the screen restores its own context on cancel);
+                // only the record-detail flows navigate back to the parent when a new record is abandoned.
+                if (newRecord && !_isAddIntent()) {
                     await model.goToParentScreen();
                 }
             },
@@ -261,7 +308,11 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                     }
                 }
                 model.setScreenState({ dataNew: false, dataModified: false });
-                await model.goToParentScreen();
+                // Self-contained add-* intents let the screen pick the next record; only the
+                // record-detail flows return to the parent list after a delete.
+                if (!_isAddIntent()) {
+                    await model.goToParentScreen();
+                }
             },
 
             goToParentScreen: async (redirect) => {
@@ -270,51 +321,47 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                     route = model.breadcrumbs[model.breadcrumbs.length - 2].route;
                 }
 
-                // Use timeout to allow the current navigation to complete before navigating to the parent screen                    
-                setTimeout(async () => {
-                    if (redirect) {
-                        await model.setRoute(route);
-                    } else {
-                        await model.goToRoute(route);
-                    }
-                });
-            },
-
-            _toolsView: () =>
-                <>
-                    {model.toolsView}
-                    {(model.intent === "edit" || model.intent === "edit-record") &&
-                        <>
-                            <model.cancelButton.View />
-                            <model.saveButton.View />
-                            <model.deleteButton.View />
-                        </>
-                    }
-                    {model.intent === "action" &&
-                        <>
-                            <model.cancelButton.View />
-                            <model.actionButton.View />
-                        </>
-                    }
-                    {model.intent !== "none" && <model.refreshButton.View />}
-                </>,
-
-            _hiddenToolsView: () => {
-                if (_isDeleteVisible()) {
-                    return (
-                        <Col>
-                            {model.hiddenToolsView}
-                        </Col>
-                    )
-                } else if (model.hiddenToolsView) {
-                    return model.hiddenToolsView;
+                if (redirect) {
+                    model.scheduleSetRoute(route);
+                } else {
+                    model.scheduleGoToRoute(route);
                 }
             },
 
-            _canNavigate: async () => {
-                if (model._state.dataLoading || model._state.dataSaving) return false;
+            // Deferred, never awaited: the route change unmounts this screen, so navigating inline
+            // would tear the model down while the method that asked for it is still on the stack.
+            // Callers must treat goToParentScreen as their last act.
+            scheduleSetRoute: (route) => {
+                runAsync(() => model.setRoute(route));
+            },
 
-                if (!model._state.dataModified) return true;
+            scheduleGoToRoute: (route) => {
+                runAsync(() => model.goToRoute(route));
+            },
+
+            // Legacy order: the screen's own tools, then Refresh, then Cancel and Save (or the
+            // action button). Refresh leads because it is the one button every intent but "none"
+            // shows — see legacy:src/screens/common/baseScreen.tsx:272.
+            _toolsView: () =>
+                <>
+                    {model.toolsView}
+                    <model.addButton.View render={_showAddButton()} />
+                    <model.refreshButton.View render={model.intent !== "none"} />
+                    <model.cancelButton.View render={_showCancelButton()} />
+                    <model.saveButton.View render={_showEditButtons()} />
+                    <model.actionButton.View render={model.intent === "action"} />
+                </>,
+
+            _canNavigate: async () => {
+                if (model._state.dataLoading || model._state.dataSaving) {
+                    return false;
+                }
+
+                // A brand-new record (dataNew) is a dirty state too — leaving loses it, so prompt
+                // just like unsaved edits do.
+                if (!model._state.dataModified && !model._state.dataNew) {
+                    return true;
+                }
 
                 const canNavigate = !!(await model.dialogYesNo(
                     "Unsaved",
@@ -332,7 +379,7 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
         View: () => <model.screenLayout.View />
     }
 
-    const model = useUIBase(struct, params);
+    const model = useEditBase(struct, params);
     return model;
 
 
@@ -341,17 +388,32 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
         return model._state.dataNew || model._state.dataSaving || model.readonly
     }
 
-    function _isDeleteVisible() {
-        return model.intent === "edit-record";
+    function _isAddIntent() {
+        return model.intent === "add-record" || model.intent === "add-edit-record";
     }
 
-    function _hiddenToolsView() {
-        // IMPORTANT: model._hiddenToolsView is an observer. It's never undefined.
-        // ScreenLayout.hiddenToolsView logic uses undefined state to hide the button. 
-        // TODO: Better is to use a flag ScreenLayout.hiddenToolsVisible.
-        if (_isDeleteVisible() || (model.hiddenToolsView)) {
-            return model._hiddenToolsView()
-        }
+    function _showAddButton() {
+        return _isAddIntent();
+    }
+
+    function _showEditButtons() {
+        // Cancel + Save show whenever the current record is editable (edit or add flows).
+        return model.intent === "edit"
+            || model.intent === "edit-record"
+            || model.intent === "add-record"
+            || model.intent === "add-edit-record";
+    }
+
+    function _showCancelButton() {
+        // Cancel also backs the "action" intent (paired with the action button).
+        return _showEditButtons() || model.intent === "action";
+    }
+
+    function _showDeleteButton() {
+        // Record flows only. A plain "edit" screen edits settings, not a record — legacy shows no
+        // delete there (legacy:baseScreen.tsx `_isDeleteVisible`), and "add-record" has nothing
+        // persisted to delete.
+        return model.intent === "edit-record" || model.intent === "add-edit-record";
     }
 
     async function _cancel() {
@@ -372,4 +434,4 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
 
 const CRUDScreen = UECA.getFC(useCRUDScreen);
 
-export { CRUDScreenProps, CRUDScreenEvents, CRUDScreenMethods, CRUDScreenModel, useCRUDScreen, CRUDScreen };
+export { CRUDScreenProps, CRUDScreenEvents, CRUDScreenMethods, CRUDScreenModel, CRUDScreenParams, useCRUDScreen, CRUDScreen };

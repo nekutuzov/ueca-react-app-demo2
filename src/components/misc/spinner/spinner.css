@@ -1,0 +1,43 @@
+/* Timings for a continuous indicator. No --motion-* token fits: that scale stops at 320ms because it
+   is for UI transitions, and the whole family is zeroed under prefers-reduced-motion — which would
+   freeze a busy indicator instead of calming it. Hence local properties, deliberately not named
+   --motion-*. */
+.ueca-spinner {
+    --spinner-cycle: 1.4s;
+    --spinner-value-transition: 300ms;
+}
+
+@keyframes ueca-spinner-rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes ueca-spinner-dash {
+    0% {
+        stroke-dasharray: 1px, 200px;
+        stroke-dashoffset: 0;
+    }
+
+    50% {
+        stroke-dasharray: 100px, 200px;
+        stroke-dashoffset: -15px;
+    }
+
+    100% {
+        stroke-dasharray: 100px, 200px;
+        stroke-dashoffset: -125px;
+    }
+}
+
+.ueca-spinner-svg.indeterminate {
+    animation: ueca-spinner-rotate var(--spinner-cycle) linear infinite;
+}
+
+.ueca-spinner-track.indeterminate {
+    animation: ueca-spinner-dash var(--spinner-cycle) var(--ease-in-out) infinite;
+}
+
+.ueca-spinner-track.determinate {
+    transition: stroke-dashoffset var(--spinner-value-transition);
+}

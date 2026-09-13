@@ -14,6 +14,9 @@ type NavLinkStruct = UIBaseStruct<{
         disabled: boolean;
         newTab: boolean;
         linkView: React.ReactNode;
+        // The route resolved to a real, copyable URL. Held on the model because resolution goes
+        // over the bus and a View cannot await — so it is synchronized on route change instead.
+        _routeURL: string;
     }
 
     events: {
@@ -39,7 +42,14 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
             title: undefined,
             disabled: false,
             newTab: false,
-            linkView: undefined
+            linkView: undefined,
+            _routeURL: undefined
+        },
+
+        events: {
+            onChangeRoute: async () => {
+                await _syncRouteURL();
+            }
         },
 
         methods: {
@@ -63,8 +73,24 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
             }
         },
 
+        // Seeded on MOUNT, not on init, and the difference is load-bearing twice over. `init` runs
+        // before the first `route` assignment has landed — a route reaching a NavItem is bound
+        // through to this child, and that write arrives while the model is still initializing,
+        // where change events are suppressed — so the auto onChange above cannot cover it either.
+        // And `init` can run while the app is BETWEEN activation cycles, when no model is
+        // subscribed to answer the resolution: resolveRoute then yields undefined and the link
+        // keeps no href, because nothing changes afterwards to try again. React StrictMode makes
+        // that window real on every startup (mount → unmount → mount), which is how the whole main
+        // menu lost its hrefs. By `mount` the route has landed and the app is live.
+        mount: async () => {
+            await _syncRouteURL();
+        },
+
         View: () => {
             const colorStyle = resolvePaletteColor(model.color);
+            // No `title` on the anchor: it is the link's own visible label (rendered below as
+            // `linkView || title`), so the browser's hint popup only repeated what is already on
+            // screen — and the accessible name already comes from the content.
             const underlineClass = `nav-link-underline-${model.underline}`;
 
             if (model.disabled) {
@@ -82,8 +108,7 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
                 <a
                     id={model.htmlId()}
                     className={`ueca-nav-link ${underlineClass}`}
-                    href={(model.route?.path.startsWith("/") ? "#" : "") + model.route?.path}
-                    title={model.title}
+                    href={model._routeURL}
                     target={model.newTab ? "_blank" : undefined}
                     rel={model.newTab ? "noopener noreferrer" : undefined}
                     style={{ color: colorStyle }}
@@ -101,11 +126,21 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
     // Private methods
     async function _onLinkClick(e: React.MouseEvent) {
         e.stopPropagation();
+        // A modified click belongs to the browser — with a real href it opens a new tab or window.
+        // Preventing it unconditionally is what used to swallow ctrl/cmd-click into an in-app
+        // navigation. (Middle-click never reaches here: it raises auxclick, not click.)
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
+            return;
+        }
         e.preventDefault();
         return await model.click();
+    }
+
+    async function _syncRouteURL() {
+        model._routeURL = model.route ? await model.resolveRoute(model.route) : undefined;
     }
 }
 
 const NavLink = UECA.getFC(useNavLink);
 
-export { NavLinkModel, NavLinkUnderline, useNavLink, NavLink };
+export { NavLinkModel, NavLinkParams, NavLinkUnderline, useNavLink, NavLink };

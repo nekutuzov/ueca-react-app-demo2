@@ -1,0 +1,49 @@
+/* NumberField — the wrapper defers everything to the inner TextField; only the spin column is its
+   own chrome. */
+
+.ueca-numberfield {
+    display: inline-flex;
+}
+
+.ueca-numberfield-fullwidth {
+    display: flex;
+    width: 100%;
+}
+
+.numberfield-spin {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.numberfield-spin-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0 2px;
+    cursor: pointer;
+    color: var(--ink-dim);
+    line-height: 1;
+    transition: color var(--motion-base) var(--ease);
+}
+
+.numberfield-spin-button:hover:not(:disabled) {
+    color: var(--ink);
+}
+
+/* The `outline: none` above is what keeps a spin click from ringing the arrow, and these are
+   tabIndex={-1} (numberField.tsx:126, :136) — deliberately not tab stops, since the field itself
+   takes Up/Down. So this rule should never fire. It is here so that the day one of them becomes
+   reachable, it is not reachable-and-invisible; and so the file satisfies the app-wide rule that
+   `outline: none` is always paired with its replacement (see focusPolicy.test.ts). */
+.numberfield-spin-button:focus-visible {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: 1px;
+}
+
+.numberfield-spin-button:disabled {
+    cursor: not-allowed;
+}

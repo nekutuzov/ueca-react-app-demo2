@@ -13,9 +13,15 @@ type TabsScreenStruct = UIBaseStruct<{
         tabsContainer: TabsContainerModel;
     }
 
-    methods: CRUDScreenMethods;
+    // resetValidationErrors and onValidate are EditBase members on CRUDScreen; the TabsScreen is a
+    // plain UIBase wrapper, so it re-declares the two it forwards.
+    methods: CRUDScreenMethods & {
+        resetValidationErrors: () => void;
+    };
 
-    events: CRUDScreenEvents;
+    events: CRUDScreenEvents & {
+        onValidate: () => Promise<string>;
+    };
 }>;
 
 type TabsScreenParams = UIBaseParams<TabsScreenStruct>;
@@ -40,7 +46,7 @@ function useTabsScreen(params?: TabsScreenParams): TabsScreenModel {
                 modelsToValidate: () => [model.tabsContainer],
                 onRefresh: async () => await model.onRefresh?.(),
                 onSave: async () => await model.onSave?.(),
-                onValidate: async () => model.onValidate ? await model.onValidate() : true,
+                onValidate: async () => await model.onValidate?.(),
                 onCancel: async () => await model.onCancel?.(),
                 onDelete: async () => await model.onDelete?.(),
                 onModify: async () => await model.onModify?.(),
@@ -57,12 +63,12 @@ function useTabsScreen(params?: TabsScreenParams): TabsScreenModel {
             save: async () => await model.crudScreen.save(),
             cancel: async () => await model.crudScreen.cancel(),
             delete: async () => await model.crudScreen.delete(),
-            validate: async (showDialog) => await model.crudScreen.validate(showDialog),
+            validateScreen: async (showDialog) => await model.crudScreen.validateScreen(showDialog),
             resetValidationErrors: () => model.crudScreen.resetValidationErrors()
         },
 
         View: () =>
-            <Col id={model.htmlId()} fill verticalAlign={"top"}>
+            <Col id={model.htmlId()} fill verticalAlign={"top"} spacing="default">
                 <model.crudScreen.View />
             </Col >
     }
@@ -74,4 +80,4 @@ function useTabsScreen(params?: TabsScreenParams): TabsScreenModel {
 
 const TabsScreen = UECA.getFC(useTabsScreen);
 
-export { TabsScreenModel, useTabsScreen, TabsScreen }
+export { TabsScreenModel, TabsScreenParams, useTabsScreen, TabsScreen }

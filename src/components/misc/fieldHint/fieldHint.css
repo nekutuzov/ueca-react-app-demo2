@@ -1,0 +1,16 @@
+/* FieldHint — the "i" chip beside a control. Colour comes from the Icon's palette prop; what lives
+   here is only the box that carries the tooltip handlers and the focus ring. */
+
+.ueca-field-hint {
+    display: inline-flex;
+    align-items: center;
+    cursor: help;
+    border-radius: var(--radius-circle);
+    outline: none;
+}
+
+/* The pattern the rest of the app was moved to: tabIndex + :focus-visible + a ring. Only the token
+   changed — --focus is a 30% wash and measures 1.4:1, below the 3:1 a focus ring needs. */
+.ueca-field-hint:focus-visible {
+    box-shadow: 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}

@@ -1,0 +1,115 @@
+/* Switch — an on/off toggle. Track and thumb sizes are local to the control (like the checkbox's
+   box); colour, motion, and focus come from tokens. Per-instance accent via --switch-color. */
+
+/* Block-level flex sized to its content, for the reason spelled out in checkbox.css: an inline
+   control sits on a line box and makes its wrapper taller than itself. */
+.ueca-switch {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    gap: var(--space-default);
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    font-family: var(--font-ui);
+    font-size: var(--control-label-font, var(--text-md));
+    color: var(--ink);
+}
+
+.ueca-switch-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* `outline: none` is defensive — see the note in checkbox.css. */
+.switch-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    outline: none;
+}
+
+.switch-track {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: var(--switch-track-w, 36px);
+    height: var(--switch-track-h, 20px);
+    padding: 2px;
+    border-radius: 999px;
+    background-color: var(--disabled-line);
+    transition: background-color var(--motion-base) var(--ease);
+    box-sizing: border-box;
+}
+
+.switch-thumb {
+    width: var(--switch-thumb-size, 16px);
+    height: var(--switch-thumb-size, 16px);
+    border-radius: 50%;
+    background-color: var(--surface-2);
+    box-shadow: var(--shadow-1);
+    transition: transform var(--motion-base) var(--ease);
+}
+
+.switch-input:checked + .switch-track {
+    background-color: var(--switch-color, var(--accent));
+}
+
+.switch-input:checked + .switch-track .switch-thumb {
+    transform: translateX(var(--switch-thumb-travel, 16px));
+}
+
+/* The model the other selection controls were moved TO: :focus-visible, so a pointer click leaves
+   it alone and a Tab lights it. Only the token changed. */
+.switch-input:focus-visible + .switch-track {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* Size variants — thumb travel = track width − thumb − 2×padding */
+.ueca-switch-small .switch-track {
+    width: 28px;
+    height: 16px;
+}
+
+.ueca-switch-small .switch-thumb {
+    width: 12px;
+    height: 12px;
+}
+
+.ueca-switch-small .switch-input:checked + .switch-track .switch-thumb {
+    transform: translateX(12px);
+}
+
+.ueca-switch-large .switch-track {
+    width: 44px;
+    height: 24px;
+}
+
+.ueca-switch-large .switch-thumb {
+    width: 20px;
+    height: 20px;
+}
+
+.ueca-switch-large .switch-input:checked + .switch-track .switch-thumb {
+    transform: translateX(20px);
+}
+
+.switch-label {
+    font-size: inherit;
+    line-height: var(--label-leading, var(--leading-normal));
+}
+
+.ueca-switch-disabled .switch-label {
+    color: var(--disabled-ink);
+}
+
+.switch-helper-text {
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    letter-spacing: var(--tracking-wide);
+    color: var(--ink-dim);
+    margin-top: 4px;
+}

@@ -1,6 +1,8 @@
-/* Snackbar container */
+/* Snackbar container — top of the overlay ladder so transient toasts show above any screen HUD/
+   overlay and even over dialogs/drawers. */
 .ueca-snackbar {
     position: fixed;
+    z-index: var(--z-toast);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -57,17 +59,17 @@
 
 /* Transition animation */
 .snackbar-transition {
-    animation: slideInFromRight 0.3s ease;
+    animation: slideInFromRight var(--motion-slower) var(--ease);
 }
 
 .snackbar-top-left.snackbar-transition,
 .snackbar-bottom-left.snackbar-transition {
-    animation: slideInFromLeft 0.3s ease;
+    animation: slideInFromLeft var(--motion-slower) var(--ease);
 }
 
 .snackbar-top-center.snackbar-transition,
 .snackbar-bottom-center.snackbar-transition {
-    animation: slideInFromBottom 0.3s ease;
+    animation: slideInFromBottom var(--motion-slower) var(--ease);
 }
 
 @keyframes slideInFromRight {
@@ -110,23 +112,26 @@
 .snackbar-content {
     display: flex;
     align-items: center;
-    background-color: #323232;
-    color: white;
-    border-radius: 4px;
-    padding: 6px 16px;
-    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
-        0px 6px 10px 0px rgba(0, 0, 0, 0.14),
-        0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    background-color: var(--surface);
+    color: var(--ink);
+    border-radius: var(--radius-sm);
+    padding: var(--space-default) var(--space-small);
+    /* The ring comes first because a Snackbar draws no border of its own — on a dark theme the
+       shadow alone would leave it with no edge against the surface behind it. */
+    box-shadow: var(--ring), var(--shadow-3);
     min-width: 288px;
     max-width: 568px;
 }
 
 .snackbar-message {
     flex: 1;
-    padding: 8px 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    padding: var(--space-default) 0;
 }
 
 .snackbar-action {
-    margin-left: 16px;
+    margin-left: var(--space-small);
     margin-right: -8px;
 }

@@ -1,58 +1,25 @@
 import { Route } from "@components";
-import {
-    HomeScreen,
-    ButtonScreen,
-    IconButtonScreen,
-    BlockScreen,
-    RowScreen,
-    ColScreen,
-    TextFieldScreen,
-    SelectScreen,
-    RadioGroupScreen,
-    CheckboxScreen,
-    DialogScreen,
-    DrawerScreen,
-    ToastScreen,
-    NavLinkScreen,
-    NavItemScreen,
-    TabsComponentScreen,
-    MiscScreen
-} from "@screens";
+import { HomeScreen } from "@screens";
 
 
 const screenRoutes = {
-    // Add routes within the app layout
-    "/": () => <HomeScreen id={"homeScreen"} page={"welcome"} />, // Default route, can be used for dashboard or welcome screen
-    "/home": () => <HomeScreen id={"homeScreen"} page={"welcome"} />,
-    "/home/architecture": () => <HomeScreen id={"homeScreen"} page={"architecture"} />, // Placeholder for architecture overview screen
-    "/home/diagram": () => <HomeScreen id={"homeScreen"} page={"diagram"} />,
-    "/block": () => <BlockScreen id={"blockScreen"} />,
-    "/row": () => <RowScreen id={"rowScreen"} />,
-    "/col": () => <ColScreen id={"colScreen"} />,
-    "/button": () => <ButtonScreen id={"buttonScreen"} />,
-    "/icon-button": () => <IconButtonScreen id={"iconButtonScreen"} />,
-    "/text-field": () => <TextFieldScreen id={"textFieldScreen"} />,
-    "/select": () => <SelectScreen id={"selectScreen"} />,
-    "/radio-group": () => <RadioGroupScreen id={"radioGroupScreen"} />,
-    "/checkbox": () => <CheckboxScreen id={"checkboxScreen"} />,
-    "/dialogs": () => <DialogScreen id={"dialogScreen"} />,
-    "/drawer": () => <DrawerScreen id={"drawerScreen"} />,
-    "/toast": () => <ToastScreen id={"toastScreen"} />,
-    "/navlink": () => <NavLinkScreen id={"navLinkScreen"} />,
-    "/navitem": () => <NavItemScreen id={"navItemScreen"} />,
-    "/tabs?:tab": (p: { tab?: string }) => <TabsComponentScreen id={"tabsComponentScreen"} routeParams={p} />,
-    "/misc": () => <MiscScreen id={"miscScreen"} />,
+    "/": () => <HomeScreen id={"homeScreen"} />,
+    "/home": () => <HomeScreen id={"homeScreen"} />,
 };
 
 
 const otherRoutes = {
-    // Add routes without the app layout like document viewers and external links
-    "https://cranesoft.net": () => null,
-    "https://ueca-react.carrd.co/": () => null,
-    "https://github.com/nekutuzov/ueca-react-app-demo2": () => null,    
-    "https://youtu.be/SQl8f-qGxwU?si=-YTWPpPB7ExBZ6L0": () => null,
-    "https://www.npmjs.com/package/ueca-react": () => null,
-    "mailto:cranesoft@protonmail.com": () => null
+    // Routes without the app layout, such as external links.
+    // External URLs must be registered here before openNewTab can use them — the route union is
+    // derived from these keys, so an unregistered URL is a compile error at the call site. They
+    // never render: an absolute URL opens in a new tab and never mounts OtherLayout.
+    "https://cranesoft.net": () => null as never,
+    "https://ueca-react.carrd.co/": () => null as never,
+    "https://github.com/nekutuzov/ueca-react-app-demo2": () => null as never,
+    "https://nekutuzov.github.io/ueca-react-doc/": () => null as never,
+    "https://youtu.be/SQl8f-qGxwU?si=-YTWPpPB7ExBZ6L0": () => null as never,
+    "https://www.npmjs.com/package/ueca-react": () => null as never,
+    "mailto:cranesoft@protonmail.com": () => null as never,
 };
 
 type OtherRoutes = typeof otherRoutes;

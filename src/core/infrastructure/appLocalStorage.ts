@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { BaseModel, BaseParams, BaseStruct, useBase } from "@components";
-import { AppStorageKey } from "./appTypes";
+import { AppStorageKey, RETIRED_STORAGE_KEYS } from "./appTypes";
 
 type Struct = BaseStruct<{
     methods: {
@@ -38,6 +38,14 @@ function useAppLocalStorage(params?: BaseParams<Struct>): AppLocalStorageModel {
                 window.localStorage.removeItem(key);
             },
         },
+
+        init: () => {
+            // Sweep records this app no longer understands, so a key it stopped honouring cannot
+            // sit in a browser indefinitely.
+            for (const key of RETIRED_STORAGE_KEYS) {
+                window.localStorage.removeItem(key);
+            }
+        }
     };
 
     const model = useBase(struct, params);

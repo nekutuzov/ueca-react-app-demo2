@@ -1,7 +1,11 @@
+/* MLAdmin insets the whole tab block by 4px top and bottom inside the screen's content area; the
+   template's sits flush. */
 .ueca-tabs-container {
     display: flex;
     width: 100%;
     height: 100%;
+    padding: var(--tabs-block-pad, 0);
+    box-sizing: border-box;
 }
 
 .ueca-tabs-container.horizontal {
@@ -16,13 +20,15 @@
 .ueca-tabs-header {
     display: flex;
     position: relative;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: var(--hairline) solid var(--tab-strip-line, var(--border));
+    /* The rule and the first row of content sit flush by default; MLAdmin puts 24px between them. */
+    margin-bottom: var(--tab-strip-gap, 0);
 }
 
 .ueca-tabs-vertical .ueca-tabs-header {
     flex-direction: column;
     border-bottom: none;
-    border-right: 1px solid rgba(0, 0, 0, 0.12);
+    border-right: var(--hairline) solid var(--border);
 }
 
 /* Tabs wrapper (for scrolling) */
@@ -67,9 +73,10 @@
 }
 
 /* Tabs list */
+/* Tabs that carry their own padding need no gap; MLAdmin's have none and are spaced from here. */
 .ueca-tabs-list {
     display: flex;
-    gap: 0;
+    gap: var(--tab-gap, 0);
     flex-wrap: nowrap;
     min-width: min-content;
 }
@@ -104,15 +111,15 @@
     width: 40px;
     min-width: 40px;
     flex-shrink: 0;
-    background: white;
+    background: var(--surface);
     border: none;
     cursor: pointer;
-    color: rgba(0, 0, 0, 0.54);
-    transition: color 0.2s ease;
+    color: var(--ink-dim);
+    transition: color var(--motion-base) var(--ease);
 }
 
 .ueca-tabs-scroll-button:hover:not(:disabled) {
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--ink);
 }
 
 .ueca-tabs-scroll-button:disabled {
@@ -132,9 +139,14 @@
     min-height: 40px;
 }
 
-/* Content area */
-.ueca-tabs-content {
-    flex: 1;
-    overflow: auto;
-    padding: 16px;
+/* The content panel scrolls, so it clips — and tab content starts flush against that edge, which
+   cut the focus ring off any control sitting there (measured on the site editor: the "Active"
+   Switch lost all 4px of its ring on the left and 2.8px of the top). It therefore wears the shared
+   `ueca-focus-bleed` class from theme.css; `flex` and `overflow` come from the Col's own props, so
+   there is nothing left for this file to say about it. */
+
+/* Same clipping as the tabs themselves, so the same inset ring. */
+.ueca-tabs-scroll-button:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
 }

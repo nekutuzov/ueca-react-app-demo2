@@ -1,3 +1,4 @@
+import * as React from "react";
 import * as UECA from "ueca-react";
 import { UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase } from "@components";
 import { AppURL } from "@core";
@@ -21,11 +22,29 @@ type RouteComp = (params?: Record<string, unknown>) => UECA.ReactElement;
 
 type Routing = Record<string, RouteComp>;
 
+// `section` is an anchor within the page — the fragment of the URL. It sits beside the path rather
+// than inside it: lookupRoute matches the path with a regular expression, so a "#id" glued onto the
+// path would match no route at all.
 type Route<R extends Routing> = {
-    [K in keyof R]: { path: K, params?: Parameters<R[K]>[0] }
+    [K in keyof R]: { path: K, params?: Parameters<R[K]>[0], section?: string }
 }[keyof R];
 
 type AnyRoute = Route<Routing>;
+
+// Canonical route identity: ":seg" path tokens are substituted with their values, query (?:...)
+// params are ignored. Two routes are "the same screen" only when these keys match — so a different
+// path-segment param (e.g. /users/1 vs /users/2) is a DIFFERENT route (switch the screen model), while a
+// query-only change keeps the same screen and just patches its params.
+//
+// `section` is excluded for the same reason a query is: an anchor names a place WITHIN the screen,
+// so moving to one must not tear the screen down and rebuild it at the top.
+function routeKey(route: AnyRoute): string {
+    if (!route) {
+        return "";
+    }
+    const path = route.path.split("?")[0]; // drop the query pattern; query params don't affect screen identity
+    return path.replace(/:([^/?]+)/g, (_m, name) => String(route.params?.[name] ?? ""));
+}
 
 type RouterParams = UIBaseParams<RouterStruct>;
 type RouterModel = UIBaseModel<RouterStruct>;
@@ -42,22 +61,26 @@ function useRouter(params?: RouterParams): RouterModel {
         events: {
             onChangeRoutes: () => {
                 model.__regExRoutes = undefined; // reset routes cache
-                if (model.route && !Reflect.has(model.routes, model.route.path)) {
+                if (model.route && model.routes && !Reflect.has(model.routes, model.route.path)) {
                     model.route = undefined
                 }
             },
 
             onChangingRoute: (newRoute, oldRoute) => {
-                if (newRoute && Reflect.has(model.routes, newRoute.path)) {
+                if (newRoute && model.routes && Reflect.has(model.routes, newRoute.path)) {
                     return newRoute;
                 }
-                if (oldRoute && Reflect.has(model.routes, oldRoute.path)) {
+                if (oldRoute && model.routes && Reflect.has(model.routes, oldRoute.path)) {
                     return oldRoute;
                 }
                 return undefined;
             },
 
             onChangeRoute: () => {
+                if (!model.route || !model.routes) {
+                    model._currentView = undefined;
+                    return;
+                }
                 const RouteView: RouteComp = model.routes[model.route.path];
                 model._currentView = RouteView(model.route.params);
                 //model._currentView = <RouteView p={model.route.params} />;
@@ -83,7 +106,7 @@ function useRouter(params?: RouterParams): RouterModel {
             }
         },
 
-        View: () => <>{model._currentView}</>
+        View: () => <React.Fragment key={routeKey(model.route)}>{model._currentView}</React.Fragment>
     }
 
     const _rootURLTag = "/841408C0-C813-4CE9-9CD4-56968B735962/"; // Fake URL base for routes replacing the base. See routes starting with "//"
@@ -105,7 +128,7 @@ function useRouter(params?: RouterParams): RouterModel {
             }
             const routeUrl = new AppURL(url);
             let regEx = routeUrl.host === "_" ? "" : (routeUrl.protocol + "\\/\\/" + routeUrl.host);
-            const rootParams = {};
+            const rootParams: Record<string, null | undefined> = {};
             const pathParts = routeUrl.pathname.split("/");
             pathParts.splice(0, 1);
             pathParts.map(pathPart => {
@@ -169,4 +192,4 @@ function useRouter(params?: RouterParams): RouterModel {
 
 const Router = UECA.getFC(useRouter);
 
-export { Routing, Route, AnyRoute, RouterModel, useRouter, Router }
+export { Routing, Route, AnyRoute, RouterModel, RouterParams, useRouter, Router, routeKey }

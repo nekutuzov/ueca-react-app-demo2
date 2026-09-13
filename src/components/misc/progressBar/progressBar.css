@@ -1,0 +1,48 @@
+/* ProgressBar. Per-instance accent via --progressbar-color (the `color` prop). */
+
+.ueca-progressbar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-default);
+    width: 100%;
+}
+
+.progressbar-track {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background-color: var(--surface-2);
+    border: var(--hairline) solid var(--border);
+    overflow: hidden;
+    position: relative;
+}
+
+.progressbar-fill {
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--progressbar-color, var(--accent));
+    transition: width var(--motion-base) var(--ease);
+}
+
+.progressbar-track.indeterminate .progressbar-fill {
+    position: absolute;
+    width: 40%;
+    animation: progressbar-sweep 1.2s var(--ease) infinite;
+}
+
+@keyframes progressbar-sweep {
+    0% {
+        left: -40%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+.progressbar-label {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-dim);
+    min-width: 5ch;
+    text-align: right;
+}

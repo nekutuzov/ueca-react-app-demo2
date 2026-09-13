@@ -1,0 +1,166 @@
+/* The app's single tooltip.
+
+   Fixed-position because the anchor rect it is handed is viewport-relative
+   (getBoundingClientRect), and pointer-events:none so it can never sit between the pointer and
+   the element that opened it — which would fire an immediate mouseleave and make it flicker.
+
+   The arrow is a rotated square that carries the same ground and the same two edges as the
+   bubble, so the outline reads as one continuous shape rather than a triangle stuck to a box.
+   Colours come from the --tooltip-* tokens in themes.css, which differ per theme on purpose. */
+
+.ueca-tooltip {
+    position: fixed;
+    z-index: var(--z-tooltip);
+    pointer-events: none;
+
+    max-width: 260px;
+    padding: 5px 9px;
+
+    background: var(--tooltip-bg);
+    color: var(--tooltip-ink);
+    border: var(--hairline) solid var(--tooltip-edge);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-2);
+
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-snug);
+    /* Authored line breaks are honoured — a caller who writes "\n" means it. Spaces still
+       collapse and long lines still wrap at max-width, which `pre` would not do. */
+    white-space: pre-line;
+    /* Long words break rather than forcing the bubble past max-width. */
+    overflow-wrap: anywhere;
+
+    animation: ueca-tooltip-in var(--motion-fast) var(--ease-out);
+}
+
+.ueca-tooltip-body {
+    display: block;
+}
+
+/* A secondary line for a shortcut, a destination, or a unit — mono and dimmed, under a hairline,
+   so it reads as metadata rather than as more sentence. Callers opt in by putting this class in
+   their tooltip content. */
+.ueca-tooltip-detail {
+    display: block;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: var(--hairline) solid var(--tooltip-rule);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: var(--weight-regular);
+    letter-spacing: var(--tracking-wide);
+    color: var(--tooltip-dim);
+}
+
+/* ---- Arrow ---- */
+
+.ueca-tooltip-arrow {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--tooltip-bg);
+    /* Only the two edges that end up facing outward once rotated are drawn, so the arrow's
+       outline continues the bubble's rather than crossing it. */
+    border: var(--hairline) solid var(--tooltip-edge);
+    transform: rotate(45deg);
+}
+
+.ueca-tooltip-top .ueca-tooltip-arrow {
+    bottom: -5px;
+    left: var(--tooltip-arrow-left, 50%);
+    margin-left: -4px;
+    border-top-color: transparent;
+    border-left-color: transparent;
+}
+
+.ueca-tooltip-bottom .ueca-tooltip-arrow {
+    top: -5px;
+    left: var(--tooltip-arrow-left, 50%);
+    margin-left: -4px;
+    border-bottom-color: transparent;
+    border-right-color: transparent;
+}
+
+.ueca-tooltip-left .ueca-tooltip-arrow {
+    right: -5px;
+    top: var(--tooltip-arrow-top, 50%);
+    margin-top: -4px;
+    border-top-color: transparent;
+    border-right-color: transparent;
+}
+
+.ueca-tooltip-right .ueca-tooltip-arrow {
+    left: -5px;
+    top: var(--tooltip-arrow-top, 50%);
+    margin-top: -4px;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+}
+
+/* ---- Entry ---- the bubble emerges FROM the trigger, so the direction follows the placement. */
+
+@keyframes ueca-tooltip-in {
+    from {
+        opacity: 0;
+        transform: translateY(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ueca-tooltip-in-down {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ueca-tooltip-in-left {
+    from {
+        opacity: 0;
+        transform: translateX(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes ueca-tooltip-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(-3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.ueca-tooltip-bottom {
+    animation-name: ueca-tooltip-in-down;
+}
+
+.ueca-tooltip-left {
+    animation-name: ueca-tooltip-in-left;
+}
+
+.ueca-tooltip-right {
+    animation-name: ueca-tooltip-in-right;
+}
+
+/* --motion-fast drops to 0ms under reduced motion, which removes the fade; the slide has to be
+   dropped explicitly or it still runs as an instant jump. */
+@media (prefers-reduced-motion: reduce) {
+    .ueca-tooltip {
+        animation: none;
+    }
+}

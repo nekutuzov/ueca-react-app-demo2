@@ -1,0 +1,73 @@
+/* MenuItem — one menu row. Hover carries the affordance (no roving active-index: rows are real
+   buttons, so pointer and keyboard focus are native), and :focus-visible mirrors it for keyboard
+   users. Ported from the retired singleton menu's row styling. */
+
+.ueca-menuitem {
+    display: flex;
+    align-items: center;
+    gap: var(--space-default);
+    width: 100%;
+    padding: var(--space-default) var(--space-small);
+
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    text-align: left;
+    cursor: pointer;
+}
+
+.ueca-menuitem:hover:not(:disabled),
+.ueca-menuitem:focus-visible:not(:disabled) {
+    background-color: var(--hover);
+    color: var(--accent);
+}
+
+/* …and something focus does that hover does not, so arrowing down a menu is distinguishable from
+   the pointer sitting on a row. Inset: a menu row is flush to the popover's clipped edge. */
+.ueca-menuitem:focus-visible:not(:disabled) {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}
+
+.ueca-menuitem:disabled {
+    color: var(--ink-disabled);
+    cursor: not-allowed;
+}
+
+.ueca-menuitem.danger:not(:disabled) {
+    color: var(--error-ink);
+}
+
+.ueca-menuitem.danger:hover:not(:disabled),
+.ueca-menuitem.danger:focus-visible:not(:disabled) {
+    background-color: var(--error-bg);
+    color: var(--error-ink);
+}
+
+/* Fixed gutter so labels line up whether or not a row has an icon. */
+.ueca-menuitem-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-sm);
+    flex: none;
+}
+
+.ueca-menuitem-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ueca-menuitem-shortcut {
+    flex: none;
+    color: var(--ink-dim);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+}

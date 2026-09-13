@@ -1,0 +1,34 @@
+/* Popover — an anchored floating panel that keeps pointer events, because unlike a tooltip its
+   whole point is that you interact with what is inside it.
+
+   `position: fixed` rather than absolute: the anchor rect is viewport-relative, and fixed also
+   escapes an ancestor's `overflow: hidden`, which is the usual reason libraries reach for a portal.
+   CAVEAT — an ancestor with `transform`, `filter` or `will-change` becomes the containing block for
+   fixed descendants, and then the popover is positioned against THAT rather than the viewport. If a
+   popover ever appears offset inside an animated container, that is why. */
+
+.ueca-popover {
+    position: fixed;
+    z-index: var(--z-dropdown);
+
+    min-width: 180px;
+    max-width: 420px;
+    padding: var(--space-small);
+
+    background-color: var(--surface);
+    color: var(--ink);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-3);
+
+    animation: ueca-popover-in var(--motion-fast) var(--ease);
+}
+
+@keyframes ueca-popover-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

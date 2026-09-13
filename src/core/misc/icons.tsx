@@ -1,11 +1,41 @@
 export type IconProps = {
     render?: boolean;
-    size?: number;
+    // `number` is a pixel size; a string passes straight through, which is how `Icon` sizes these
+    // from a token — it sets font-size on the wrapper and renders the glyph at "1em". Without that
+    // the icon scale would have to be duplicated as numbers here and kept in sync with tokens.css.
+    size?: number | string;
     color?: string;
 };
 
+// The outline family: one stroke weight, round caps and joins, recoloured through currentColor.
+// Drawing every outline glyph through this is what keeps them reading as one set.
+function outline(props: IconProps, children: React.ReactNode) {
+    if (props?.render === false) {
+        return null;
+    }
+    const size = props?.size ?? 24;
+    return (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke={props?.color ?? "currentColor"}
+            strokeWidth={1.75}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            focusable="false"
+        >
+            {children}
+        </svg>
+    );
+}
+
 export function HomeIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -15,8 +45,37 @@ export function HomeIcon(props?: IconProps) {
     );
 }
 
+export function CubeIcon(props?: IconProps) {
+    if (props?.render === false) {
+        return null;
+    }
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round">
+            <path d="M12 2 3 7v10l9 5 9-5V7z" />
+            <path d="M3 7l9 5 9-5M12 12v10" />
+        </svg>
+    );
+}
+
+export function AddIcon(props?: IconProps) {
+    if (props?.render === false) {
+        return null;
+    }
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        </svg>
+    );
+}
+
 export function LayoutIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -27,7 +86,9 @@ export function LayoutIcon(props?: IconProps) {
 }
 
 export function ButtonsIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -38,7 +99,9 @@ export function ButtonsIcon(props?: IconProps) {
 }
 
 export function InputsIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -49,7 +112,9 @@ export function InputsIcon(props?: IconProps) {
 }
 
 export function PopupsIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -60,7 +125,9 @@ export function PopupsIcon(props?: IconProps) {
 }
 
 export function FlyoutsIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -71,7 +138,9 @@ export function FlyoutsIcon(props?: IconProps) {
 }
 
 export function NavigationIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -82,7 +151,9 @@ export function NavigationIcon(props?: IconProps) {
 }
 
 export function TabsIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -93,7 +164,9 @@ export function TabsIcon(props?: IconProps) {
 }
 
 export function MiscIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -105,7 +178,9 @@ export function MiscIcon(props?: IconProps) {
 
 // Icon Button Icons
 export function CheckIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -116,7 +191,9 @@ export function CheckIcon(props?: IconProps) {
 }
 
 export function IndeterminateIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -127,7 +204,9 @@ export function IndeterminateIcon(props?: IconProps) {
 }
 
 export function CancelIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -138,7 +217,9 @@ export function CancelIcon(props?: IconProps) {
 }
 
 export function DeleteIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -148,8 +229,23 @@ export function DeleteIcon(props?: IconProps) {
     );
 }
 
+export function EditIcon(props?: IconProps) {
+    if (props?.render === false) {
+        return null;
+    }
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+        </svg>
+    );
+}
+
 export function RefreshIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -160,7 +256,9 @@ export function RefreshIcon(props?: IconProps) {
 }
 
 export function CloseIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -172,7 +270,9 @@ export function CloseIcon(props?: IconProps) {
 
 // Settings and Profile Icons
 export function SettingsIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -183,7 +283,9 @@ export function SettingsIcon(props?: IconProps) {
 }
 
 export function PersonIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -194,7 +296,9 @@ export function PersonIcon(props?: IconProps) {
 }
 
 export function AccountIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -205,7 +309,9 @@ export function AccountIcon(props?: IconProps) {
 }
 
 export function SecurityIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -216,7 +322,9 @@ export function SecurityIcon(props?: IconProps) {
 }
 
 export function InfoIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -227,7 +335,9 @@ export function InfoIcon(props?: IconProps) {
 }
 
 export function BlockIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -238,7 +348,9 @@ export function BlockIcon(props?: IconProps) {
 }
 
 export function ClipboardIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -250,7 +362,9 @@ export function ClipboardIcon(props?: IconProps) {
 
 // Navigation Icons
 export function MenuIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -261,7 +375,9 @@ export function MenuIcon(props?: IconProps) {
 }
 
 export function MenuCollapseIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -272,7 +388,9 @@ export function MenuCollapseIcon(props?: IconProps) {
 }
 
 export function ChevronDownIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -283,7 +401,9 @@ export function ChevronDownIcon(props?: IconProps) {
 }
 
 export function ChevronRightIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -294,7 +414,9 @@ export function ChevronRightIcon(props?: IconProps) {
 }
 
 export function ChevronLeftIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -305,7 +427,9 @@ export function ChevronLeftIcon(props?: IconProps) {
 }
 
 export function ChevronUpIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -315,8 +439,23 @@ export function ChevronUpIcon(props?: IconProps) {
     );
 }
 
+export function SortIcon(props?: IconProps) {
+    if (props?.render === false) {
+        return null;
+    }
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+            <path d="M12 5.83L15.17 9l1.41-1.41L12 3 7.42 7.59 8.83 9zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15z" />
+        </svg>
+    );
+}
+
 export function GitHubIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -327,7 +466,9 @@ export function GitHubIcon(props?: IconProps) {
 }
 
 export function FolderIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -338,7 +479,9 @@ export function FolderIcon(props?: IconProps) {
 }
 
 export function DocumentIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -348,8 +491,23 @@ export function DocumentIcon(props?: IconProps) {
     );
 }
 
+export function DatabaseIcon(props?: IconProps) {
+    if (props?.render === false) {
+        return null;
+    }
+    const size = props?.size ?? 24;
+    const color = props?.color ?? "currentColor";
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+            <path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4-3.58-4-8-4zM4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4zm0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z" />
+        </svg>
+    );
+}
+
 export function HeartIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -360,7 +518,9 @@ export function HeartIcon(props?: IconProps) {
 }
 
 export function SuccessCircleIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -371,7 +531,9 @@ export function SuccessCircleIcon(props?: IconProps) {
 }
 
 export function InfoCircleIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -382,7 +544,9 @@ export function InfoCircleIcon(props?: IconProps) {
 }
 
 export function WarningIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -393,7 +557,9 @@ export function WarningIcon(props?: IconProps) {
 }
 
 export function ErrorCircleIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -404,7 +570,9 @@ export function ErrorCircleIcon(props?: IconProps) {
 }
 
 export function LogoutIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -415,7 +583,9 @@ export function LogoutIcon(props?: IconProps) {
 }
 
 export function YouTubeIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -426,7 +596,9 @@ export function YouTubeIcon(props?: IconProps) {
 }
 
 export function NpmIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -437,7 +609,9 @@ export function NpmIcon(props?: IconProps) {
 }
 
 export function EmailIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -448,7 +622,9 @@ export function EmailIcon(props?: IconProps) {
 }
 
 export function WebsiteIcon(props?: IconProps) {
-    if (props?.render === false) return null;
+    if (props?.render === false) {
+        return null;
+    }
     const size = props?.size ?? 24;
     const color = props?.color ?? "currentColor";
     return (
@@ -456,4 +632,36 @@ export function WebsiteIcon(props?: IconProps) {
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.93 9h-3.1a15.55 15.55 0 0 0-1.38-5.01A8.03 8.03 0 0 1 18.93 11zM12 4c1.25 1.54 2.16 4.04 2.48 7H9.52C9.84 8.04 10.75 5.54 12 4zM4.24 13h3.1c.11 1.8.57 3.48 1.28 4.9A8.02 8.02 0 0 1 4.24 13zm3.1-2h-3.1a8.02 8.02 0 0 1 4.38-4.9A14.13 14.13 0 0 0 7.34 11zM12 20c-1.25-1.54-2.16-4.04-2.48-7h4.96C14.16 15.96 13.25 18.46 12 20zm2.83-2.1c.71-1.42 1.17-3.1 1.28-4.9h3.1a8.02 8.02 0 0 1-4.38 4.9z" />
         </svg>
     );
+}
+
+export function ArrowLeftIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M19 12H5" />
+        <path d="m11 6-6 6 6 6" />
+    </>);
+}
+
+export function ArrowRightIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M5 12h14" />
+        <path d="m13 6 6 6-6 6" />
+    </>);
+}
+
+export function ListIcon(props?: IconProps) {
+    return outline(props, <>
+        <path d="M8.5 6.5h11M8.5 12h11M8.5 17.5h11" />
+        <path d="M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01" />
+    </>);
+}
+
+export function MoonIcon(props?: IconProps) {
+    return outline(props, <path d="M20.5 14.3A8.6 8.6 0 0 1 9.7 3.5a8.6 8.6 0 1 0 10.8 10.8" />);
+}
+
+export function SunIcon(props?: IconProps) {
+    return outline(props, <>
+        <circle cx="12" cy="12" r="4.1" />
+        <path d="M12 2.6v2.2M12 19.2v2.2M4.3 4.3l1.6 1.6M18.1 18.1l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.3 19.7l1.6-1.6M18.1 5.9l1.6-1.6" />
+    </>);
 }

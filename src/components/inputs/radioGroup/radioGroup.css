@@ -2,7 +2,7 @@
 .ueca-radio-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--space-tiny);
     font-family: inherit;
 }
 
@@ -12,30 +12,30 @@
 
 /* Label */
 .ueca-radio-group-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.87);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    color: var(--ink);
     margin-bottom: 8px;
 }
 
 .ueca-radio-group-required {
-    color: #d32f2f;
+    color: var(--error);
 }
 
 /* Radio options container */
 .ueca-radio-group-options {
     display: flex;
-    gap: 16px;
+    gap: var(--space-small);
 }
 
 .ueca-radio-group-options-column {
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-default);
 }
 
 .ueca-radio-group-options-row {
     flex-direction: row;
-    gap: 16px;
+    gap: var(--space-small);
     flex-wrap: wrap;
 }
 
@@ -43,13 +43,13 @@
 .ueca-radio-item {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-default);
     cursor: pointer;
     user-select: none;
     position: relative;
     font-family: inherit;
-    font-size: 1rem;
-    color: rgba(0, 0, 0, 0.87);
+    font-size: var(--icon-md);
+    color: var(--ink);
 }
 
 .ueca-radio-item-disabled {
@@ -57,13 +57,14 @@
     opacity: 0.5;
 }
 
-/* Hide native radio input */
+/* Hide native radio input. `outline: none` is defensive — see the note in checkbox.css. */
 .ueca-radio-input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
     height: 0;
     width: 0;
+    outline: none;
 }
 
 /* Custom radio button */
@@ -73,9 +74,12 @@
     justify-content: center;
     width: 20px;
     height: 20px;
-    border: 2px solid rgba(0, 0, 0, 0.54);
-    border-radius: 50%;
-    transition: all 0.2s ease;
+    border: var(--stroke-emphasis) solid var(--ink-dim);
+    border-radius: var(--radius-circle);
+    /* NAMED, never `all` — `all` animates outline-color from currentColor and flashes the ring
+       near-white. See the note in checkbox.css. */
+    transition: background-color var(--motion-base) var(--ease),
+        border-color var(--motion-base) var(--ease);
     flex-shrink: 0;
     position: relative;
 }
@@ -93,13 +97,13 @@
 
 /* Hover state */
 .ueca-radio-item:hover:not(.ueca-radio-item-disabled) .ueca-radio-custom {
-    border-color: var(--radio-color, #1976d2);
-    background-color: rgba(25, 118, 210, 0.04);
+    border-color: var(--radio-color, var(--accent));
+    background-color: var(--hover);
 }
 
 /* Checked state - outer circle */
 .ueca-radio-input:checked + .ueca-radio-custom {
-    border-color: var(--radio-color, #1976d2);
+    border-color: var(--radio-color, var(--accent));
 }
 
 /* Checked state - inner dot */
@@ -108,8 +112,8 @@
     position: absolute;
     width: 10px;
     height: 10px;
-    border-radius: 50%;
-    background-color: var(--radio-color, #1976d2);
+    border-radius: var(--radius-circle);
+    background-color: var(--radio-color, var(--accent));
 }
 
 .ueca-radio-group-small .ueca-radio-input:checked + .ueca-radio-custom::after {
@@ -122,43 +126,43 @@
     height: 12px;
 }
 
-/* Focus state */
-.ueca-radio-input:focus + .ueca-radio-custom {
-    outline: 2px solid rgba(25, 118, 210, 0.2);
+/* Focus state — :focus-visible, not :focus. See the note in checkbox.css. */
+.ueca-radio-input:focus-visible + .ueca-radio-custom {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
     outline-offset: 2px;
 }
 
 /* Radio label text */
 .ueca-radio-label {
     font-size: inherit;
-    line-height: 1.5;
+    line-height: var(--leading-normal);
 }
 
 /* Helper text */
 .ueca-radio-group-helper-text {
-    font-size: 0.75rem;
-    color: rgba(0, 0, 0, 0.6);
+    font-size: var(--text-sm);
+    color: var(--ink-dim);
     margin-top: 4px;
 }
 
 .ueca-radio-group-helper-text-error {
-    color: #d32f2f;
+    color: var(--error);
 }
 
 /* Error state */
 .ueca-radio-group-error .ueca-radio-custom {
-    border-color: #d32f2f;
+    border-color: var(--error);
 }
 
 .ueca-radio-group-error .ueca-radio-input:checked + .ueca-radio-custom {
-    border-color: #d32f2f;
+    border-color: var(--error);
 }
 
 .ueca-radio-group-error .ueca-radio-input:checked + .ueca-radio-custom::after {
-    background-color: #d32f2f;
+    background-color: var(--error);
 }
 
 /* Disabled state */
 .ueca-radio-group-disabled .ueca-radio-group-label {
-    color: rgba(0, 0, 0, 0.38);
+    color: var(--ink-disabled);
 }

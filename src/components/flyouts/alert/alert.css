@@ -2,97 +2,101 @@
 .ueca-alert {
     display: flex;
     align-items: center;
-    padding: 6px 16px;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    line-height: 1.43;
+    padding: var(--space-default) var(--space-small);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-md);
+    line-height: var(--leading-normal);
 }
 
 .alert-icon {
     display: flex;
     align-items: center;
     margin-right: 12px;
-    padding: 7px 0;
+    padding: var(--space-default) 0;
     opacity: 0.9;
 }
 
 .alert-message {
     flex: 1;
-    padding: 8px 0;
+    min-width: 0;              /* allow the flex child to shrink so long text wraps */
+    overflow-wrap: anywhere;   /* break long unbroken tokens (e.g. URLs, error strings) */
+    word-break: break-word;
+    padding: var(--space-default) 0;
 }
 
 .alert-action {
     display: flex;
     align-items: flex-start;
-    padding: 4px 0 0 16px;
+    padding: var(--space-tiny) 0 0 var(--space-small);
     margin-left: auto;
     margin-right: -8px;
 }
 
-/* Standard variant */
+/* Standard variant — the status ramp from themes.css. The `-ink` stop rather than the raw status
+   colour: the raw colour on its own tint is unreadable in light themes. */
 .ueca-alert-standard.ueca-alert-success {
-    background-color: #e8f5e9;
-    color: #2e7d32;
+    background-color: var(--success-bg);
+    color: var(--success-ink);
 }
 
 .ueca-alert-standard.ueca-alert-info {
-    background-color: #e3f2fd;
-    color: #0277bd;
+    background-color: var(--info-bg);
+    color: var(--info-ink);
 }
 
 .ueca-alert-standard.ueca-alert-warning {
-    background-color: #fff3e0;
-    color: #ed6c02;
+    background-color: var(--warning-bg);
+    color: var(--warning-ink);
 }
 
 .ueca-alert-standard.ueca-alert-error {
-    background-color: #ffebee;
-    color: #c62828;
+    background-color: var(--error-bg);
+    color: var(--error-ink);
 }
 
 /* Filled variant */
 .ueca-alert-filled.ueca-alert-success {
-    background-color: #2e7d32;
-    color: white;
+    background-color: var(--success);
+    color: var(--ink-on-accent);
 }
 
 .ueca-alert-filled.ueca-alert-info {
-    background-color: #0277bd;
-    color: white;
+    background-color: var(--info);
+    color: var(--ink-on-accent);
 }
 
 .ueca-alert-filled.ueca-alert-warning {
-    background-color: #ed6c02;
-    color: white;
+    background-color: var(--warning);
+    color: var(--ink-on-accent);
 }
 
 .ueca-alert-filled.ueca-alert-error {
-    background-color: #c62828;
-    color: white;
+    background-color: var(--error);
+    color: var(--ink-on-accent);
 }
 
 /* Outlined variant */
 .ueca-alert-outlined {
-    border: 1px solid;
+    border: var(--hairline) solid;
     background-color: transparent;
 }
 
 .ueca-alert-outlined.ueca-alert-success {
-    border-color: #2e7d32;
-    color: #2e7d32;
+    border-color: var(--success-border);
+    color: var(--success-ink);
 }
 
 .ueca-alert-outlined.ueca-alert-info {
-    border-color: #0277bd;
-    color: #0277bd;
+    border-color: var(--info-border);
+    color: var(--info-ink);
 }
 
 .ueca-alert-outlined.ueca-alert-warning {
-    border-color: #ed6c02;
-    color: #ed6c02;
+    border-color: var(--warning-border);
+    color: var(--warning-ink);
 }
 
 .ueca-alert-outlined.ueca-alert-error {
-    border-color: #c62828;
-    color: #c62828;
+    border-color: var(--error-border);
+    color: var(--error-ink);
 }

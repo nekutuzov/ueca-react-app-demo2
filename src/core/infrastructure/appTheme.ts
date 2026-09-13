@@ -11,63 +11,71 @@ type Palette =
     "background.paper" | "background.default" |
     "action.active" | "action.hover" | "action.selected" | "action.disabled" | "action.disabledBackground" | "action.focus" |
     "menu.hover" | "menu.disabled" | "menu.active" |
-    "border.color" |
+    "border.color" | "marker.color" |
     (string & {});
 
-// Color palette mapping - customize these colors as needed
+// Maps the app's palette tokens onto the active theme's CSS variables (defined per theme in
+// src/themes.css, switched via <html data-theme>). Every value is a var(...) reference, so
+// anything that resolves a palette token - layout backgrounds, menu tints, borders, the spinner -
+// follows a theme switch with no re-render and no change at the call site.
+// Change actual colours in src/themes.css, not here.
 const paletteColors: Record<string, string> = {
-    // Primary colors
-    "primary.main": "#1976d2",
-    "primary.light": "#42a5f5",
-    "primary.dark": "#1565c0",
+    // Primary = the theme accent (logo blue). Actions and links.
+    "primary.main": "var(--accent)",
+    "primary.light": "var(--accent-strong)",
+    "primary.dark": "var(--accent-dim)",
 
-    // Secondary colors
-    "secondary.main": "#9c27b0",
-    "secondary.light": "#ba68c8",
-    "secondary.dark": "#7b1fa2",
+    // Secondary (logo green)
+    "secondary.main": "var(--secondary)",
+    "secondary.light": "color-mix(in srgb, var(--secondary) 70%, white)",
+    "secondary.dark": "color-mix(in srgb, var(--secondary) 70%, black)",
 
-    // Error colors
-    "error.main": "#d32f2f",
-    "error.light": "#ef5350",
-    "error.dark": "#c62828",
+    // Error (logo coral)
+    "error.main": "var(--error)",
+    "error.light": "color-mix(in srgb, var(--error) 70%, white)",
+    "error.dark": "color-mix(in srgb, var(--error) 70%, black)",
 
-    // Warning colors
-    "warning.main": "#ed6c02",
-    "warning.light": "#ff9800",
-    "warning.dark": "#e65100",
+    // Warning (logo amber)
+    "warning.main": "var(--warning)",
+    "warning.light": "color-mix(in srgb, var(--warning) 70%, white)",
+    "warning.dark": "color-mix(in srgb, var(--warning) 70%, black)",
 
-    // Info colors
-    "info.main": "#0288d1",
-    "info.light": "#03a9f4",
-    "info.dark": "#01579b",
+    // Info
+    "info.main": "var(--info)",
+    "info.light": "color-mix(in srgb, var(--info) 70%, white)",
+    "info.dark": "color-mix(in srgb, var(--info) 70%, black)",
 
-    // Success colors
-    "success.main": "#2e7d32",
-    "success.light": "#4caf50",
-    "success.dark": "#1b5e20",
+    // Success (logo green)
+    "success.main": "var(--success)",
+    "success.light": "color-mix(in srgb, var(--success) 70%, white)",
+    "success.dark": "color-mix(in srgb, var(--success) 70%, black)",
 
-    // Text colors
-    "text.primary": "rgba(0, 0, 0, 0.87)",
-    "text.secondary": "rgba(0, 0, 0, 0.6)",
-    "text.disabled": "rgba(0, 0, 0, 0.38)",
+    // Text
+    "text.primary": "var(--ink)",
+    "text.secondary": "var(--ink-dim)",
+    "text.disabled": "var(--ink-disabled)",
 
-    // Background colors
-    "background.paper": "#ffffff",
-    "background.default": "#fafafa",
+    // Backgrounds
+    "background.paper": "var(--surface)",
+    "background.default": "var(--bg)",
 
-    // Action colors
-    "action.active": "rgba(0, 0, 0, 0.54)",
-    "action.hover": "rgba(0, 0, 0, 0.04)",
-    "action.selected": "rgba(0, 0, 0, 0.08)",
-    "action.disabled": "rgba(0, 0, 0, 0.26)",
-    "action.disabledBackground": "rgba(0, 0, 0, 0.12)",
-    "action.focus": "rgba(0, 0, 0, 0.12)",
+    // Action tints
+    "action.active": "var(--accent)",
+    "action.hover": "var(--hover)",
+    "action.selected": "var(--selected)",
+    "action.disabled": "var(--disabled-ink)",
+    "action.disabledBackground": "var(--disabled-line)",
+    "action.focus": "var(--focus)",
 
-    "menu.hover": "rgba(0, 0, 0, 0.04)",
-    "menu.disabled": "rgba(0, 0, 0, 0.26)",    
-    "menu.active": "rgba(25, 118, 210, 0.08)",  
-    
-    "border.color": "#e0e0e0",
+    "menu.hover": "var(--hover)",
+    "menu.disabled": "var(--disabled-ink)",
+    "menu.active": "var(--selected)",
+
+    "border.color": "var(--border)",
+
+    // Structural accent (logo amber). Spine markers, chapter numbers, section rules -
+    // never anything interactive, which is what keeps it distinct from primary.
+    "marker.color": "var(--marker)",
 } as const;
 
 // Helper function to resolve palette color to CSS color
@@ -77,4 +85,43 @@ function resolvePaletteColor(color?: Palette): string | undefined {
     return paletteColors[color] ?? color;
 }
 
-export { Palette, paletteColors, resolvePaletteColor };
+// Runtime theme registry. Each id has a matching :root[data-theme="<id>"] block in
+// src/themes.css. `mode` drives <html data-color-mode>, which the markdown preview and
+// native form controls read.
+type ThemeId = "ueca-light" | "ueca-dark";
+
+type ThemeMode = "light" | "dark";
+
+type ThemeDescriptor = { id: ThemeId; label: string; mode: ThemeMode };
+
+const THEMES: ThemeDescriptor[] = [
+    { id: "ueca-light", label: "Light", mode: "light" },
+    { id: "ueca-dark", label: "Dark", mode: "dark" },
+];
+
+// Storage key - shared with the no-flash restore script in index.html.
+const THEME_STORAGE_KEY = "ueca-demo2-theme";
+
+function isThemeId(value: string): value is ThemeId {
+    return THEMES.some((t) => t.id === value);
+}
+
+function themeIdForMode(mode: ThemeMode): ThemeId {
+    return mode === "dark" ? "ueca-dark" : "ueca-light";
+}
+
+function themeMode(id: ThemeId): ThemeMode {
+    return THEMES.find((t) => t.id === id)?.mode ?? "light";
+}
+
+// First visit follows the OS preference; after that the stored choice wins.
+function preferredThemeId(): ThemeId {
+    const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+    return themeIdForMode(prefersDark ? "dark" : "light");
+}
+
+export {
+    Palette, paletteColors, resolvePaletteColor,
+    ThemeId, ThemeMode, ThemeDescriptor, THEMES, THEME_STORAGE_KEY,
+    isThemeId, themeIdForMode, themeMode, preferredThemeId,
+};

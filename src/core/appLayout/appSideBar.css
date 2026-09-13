@@ -1,0 +1,72 @@
+/* The documentation index: a fixed-width rail holding the brand and the guide ladder. */
+
+.app-sidebar {
+    background: var(--sidebar-bg);
+    border-right: var(--hairline) solid var(--border);
+    transition: width var(--motion-slow) var(--ease);
+}
+
+/* Header height matches --topbar-h so the brand and the breadcrumb bar share a baseline. */
+.app-sidebar-header {
+    height: var(--topbar-h);
+    border-bottom: var(--hairline) solid var(--border);
+    flex: 0 0 auto;
+}
+
+.app-sidebar-wordmark {
+    font-family: var(--font-display);
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+/* The version rides as a chip rather than part of the wordmark: it changes on a release and
+   the name does not. */
+.app-sidebar-version {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-wide);
+    color: var(--ink-dim);
+    background: var(--surface-code);
+    border: var(--hairline) solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 1px 7px;
+    white-space: nowrap;
+}
+
+.app-sidebar-logo {
+    display: flex;
+    border-radius: var(--radius-sm);
+}
+
+.app-sidebar-logo img {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+.app-sidebar .ueca-icon-button {
+    color: var(--ink-dim);
+}
+
+.app-sidebar .ueca-icon-button:hover:not(:disabled) {
+    color: var(--accent);
+}
+
+/* Section heading over a group of chapters. */
+.app-sidebar-section {
+    color: var(--ink-disabled);
+    padding: var(--space-medium) var(--space-small) var(--space-default);
+}
+
+/* min-height:0 is what lets this actually scroll: as a flex child it defaults to
+   min-height:auto and grows to the full height of the menu instead of constraining to the
+   space left under the header, so the last chapters end up clipped with no scrollbar.
+   (overflow itself is set as a prop in the JSX - see the note there.) */
+.app-sidebar-scroll {
+    min-height: 0;
+    padding-bottom: var(--space-medium);
+}

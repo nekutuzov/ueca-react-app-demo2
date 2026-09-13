@@ -1,0 +1,21 @@
+/* MenuList — vertical run of menu rows. The hosting Popover provides the panel chrome; adding
+   className="ueca-popover-menu" to that Popover swaps its content padding for these gutters. */
+
+.ueca-menulist {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+    padding: var(--space-tiny) 0;
+}
+
+.ueca-menu-separator {
+    height: var(--hairline);
+    margin: var(--space-tiny) 0;
+    background-color: var(--border);
+}
+
+/* A popover hosting a menu: rows own their horizontal padding, so the panel keeps none. */
+.ueca-popover.ueca-popover-menu {
+    padding: 0;
+    max-width: 320px;
+}

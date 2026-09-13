@@ -1,5 +1,7 @@
 import * as UECA from "ueca-react";
-import { EditBaseModel, EditBaseParams, EditBaseStruct, useEditBase } from "@components";
+import {
+    EditBaseModel, EditBaseParams, EditBaseStruct, fieldLabelText, useEditBase
+} from "@components";
 import { Palette, resolvePaletteColor } from "@core";
 import "./checkbox.css";
 
@@ -43,7 +45,7 @@ function useCheckbox(params?: CheckboxParams): CheckboxModel {
         events: {
             onInternalValidate: async () => {
                 if (model.required && !model.checked) {
-                    const fieldName = UECA.isString(model.labelView) ? model.labelView : "This field";
+                    const fieldName = fieldLabelText(model.labelView) ?? "This field";
                     return `${fieldName} must be checked`;
                 }
             },

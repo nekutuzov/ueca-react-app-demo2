@@ -1,5 +1,5 @@
 import * as UECA from "ueca-react";
-import { Block, Row, NavLinkModel, UIBaseModel, UIBaseParams, UIBaseStruct, useNavLink, useUIBase } from "@components";
+import { Block, Row, NavLinkModel, UIBaseModel, UIBaseParams, UIBaseStruct, useNavLink, useUIBase, routeKey } from "@components";
 import { AppRoute, resolvePaletteColor } from "@core";
 import "./navItem.css";
 
@@ -53,8 +53,11 @@ function useNavItem(params?: NavItemParams): NavItemModel {
                     await model.onClick?.(model);
                 },
                 beforeNavigate: async (route) => {
+                    // routeKey, not raw .path: identity is the resolved path, so a parametric item
+                    // (/docs/:article) would otherwise read as "already here" for every value of
+                    // the parameter and silently swallow the click.
                     const currentRoute = await model.getRoute();
-                    if (currentRoute.path != route.path) {
+                    if (routeKey(currentRoute) !== routeKey(route)) {
                         return route;
                     }
                 }
@@ -63,8 +66,17 @@ function useNavItem(params?: NavItemParams): NavItemModel {
 
         methods: {
             _linkView: () => {
+                // Only when the label is hidden. With the text on screen a tooltip would just
+                // repeat it. Mouse only: focus lands on the ancestor <a>, which a descendant
+                // cannot observe, so keyboard users get the aria-label there instead.
+                const tip = model.mode === "icon-only" && model.text
+                    ? model.tooltipProps(model.text, { placement: "right" })
+                    : undefined;
+
                 return (
                     <Block
+                        onMouseEnter={tip?.onMouseEnter}
+                        onMouseLeave={tip?.onMouseLeave}
                         className={`ueca-nav-item ${model.active ? "active" : ""} ${model.disabled ? "disabled" : ""}`}
                         height={model.extent?.height}
                         width={model.extent?.width}

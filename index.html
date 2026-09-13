@@ -3,30 +3,77 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/x-icon" href="/ueca.ico" />
+  <!-- Relative so it resolves against <base> in dev and on GitHub Pages alike -->
+  <link rel="icon" type="image/x-icon" href="ueca.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UECA-React Vite Application</title>
+  <meta name="description" content="UECA-React Showcase - a live gallery of components built on UECA-React, in light and dark themes." />
+  <title>UECA-React Showcase</title>
   <base href="/ueca-react-app-demo2/" />
+
+  <!-- Space Grotesk carries the headings, IBM Plex Sans the interface and prose, IBM Plex Mono the
+       code and the structural micro-labels. Absolute URLs, so <base> does not apply. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <script>
+    // No-flash theme restore - stamp <html> before first paint, otherwise a dark-theme reload
+    // shows a white page until the bundle's CSS lands. Keep the key and the default in sync with
+    // THEME_STORAGE_KEY / preferredThemeId() in core/infrastructure/appTheme.ts.
+    (function () {
+      var id;
+      try {
+        id = localStorage.getItem("ueca-demo2-theme");
+      } catch (e) { /* private browsing or blocked site data */ }
+      if (id !== "ueca-light" && id !== "ueca-dark") {
+        id = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "ueca-dark"
+          : "ueca-light";
+      }
+      var el = document.documentElement;
+      el.setAttribute("data-theme", id);
+      el.setAttribute("data-color-mode", id === "ueca-dark" ? "dark" : "light");
+    })();
+  </script>
+
   <style>
     html,
 
     * {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;      
+      box-sizing: border-box;
     }
 
     body {
-      height: 100vh;      
+      height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-    }    
+      /* Literal fallbacks appended to the token chain: once themes.css lands both resolve to the
+         same value, and before it does only the literal is reachable. */
+      background: var(--bg, #f7f8fa);
+      color: var(--ink, #131a24);
+      font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    }
 
+    /* The script above stamps data-theme before paint, but themes.css arrives with the bundle -
+       without this a dark reload would flash the light literal. :where() keeps specificity at
+       zero so it can never outrank themes.css. */
+    :where(html[data-theme="ueca-dark"]) body {
+      background: var(--bg, #0e141a);
+      color: var(--ink, #dde5ec);
+    }
+
+    /* hidden, not auto: the shell fills the viewport and every region scrolls internally.
+       Left scrollable, an anchor jump inside a screen drags the whole shell - top bar and
+       sidebar brand included - off screen. */
     .main {
       flex: 1;
       display: flex;
-      overflow: auto;
+      overflow: hidden;
     }
   </style>
 </head>

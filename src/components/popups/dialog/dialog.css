@@ -1,15 +1,27 @@
-/* Dialog backdrop */
+/* Dialog backdrop — high z-index so it sits above any screen HUD/canvas
+   (e.g. absolutely-positioned screen layers in the shared root stacking context).
+   --overlay-z is the band this instance holds while open (overlayStack.ts), so a dialog raised
+   from inside a drawer covers it. The token is only the fallback for a dialog holding no band. */
 .ueca-dialog-backdrop {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    z-index: var(--overlay-z, var(--z-dialog-backdrop));
+    background-color: var(--scrim);
     display: flex;
     align-items: center;
-    justify-content: center;    
-    animation: fadeIn 0.2s ease;
+    justify-content: center;
+    animation: fadeIn var(--motion-base) var(--ease);
+}
+
+/* Suspended, not closed — see Dialog's `hidden`. `display: none` rather than an unmount because the
+   dialog must keep the stacking band it is holding: a dialog raised from inside an edit drawer that
+   released its band here would come back UNDER that drawer. It also stops two scrims stacking into
+   a near-black page when the dialog opens a drawer of its own. */
+.ueca-dialog-backdrop.dialog-hidden {
+    display: none;
 }
 
 @keyframes fadeIn {
@@ -21,19 +33,23 @@
     }
 }
 
-/* Dialog container */
+/* Dialog container. The chrome is theme-overridable exactly as the
+   Drawer's is: MLAdmin's message box is a flat 4px card on Blueprint's grey ground, edged by a
+   hairline ring in the shadow rather than by a border. Every default below is the designed look,
+   so a theme that sets nothing changes nothing. */
 .ueca-dialog {
-    background-color: white;
-    border-radius: 4px;
-    box-shadow: 0px 11px 15px -7px rgba(0,0,0,0.2),
-                0px 24px 38px 3px rgba(0,0,0,0.14),
-                0px 9px 46px 8px rgba(0,0,0,0.12);
+    background-color: var(--dialog-bg, var(--surface));
+    color: var(--ink);
+    border: var(--dialog-border, var(--hairline) solid var(--border));
+    border-radius: var(--dialog-radius, var(--radius-xl));
+    font-family: var(--font-ui);
+    box-shadow: var(--dialog-shadow, var(--shadow-4));
     display: flex;
     flex-direction: column;
-    margin: 32px;
+    margin: var(--space-large);
     position: relative;
     overflow-y: auto;
-    animation: slideIn 0.2s ease;
+    animation: slideIn var(--motion-base) var(--ease);
 }
 
 @keyframes slideIn {
@@ -52,8 +68,10 @@
     max-width: 444px;
 }
 
+/* The rung the AlertDialog rides on, and the only one a theme currently retunes: MLAdmin's message
+   box is Blueprint's own 500px default width. */
 .dialog-max-sm {
-    max-width: 600px;
+    max-width: var(--dialog-max-sm, 600px);
 }
 
 .dialog-max-md {
@@ -82,27 +100,51 @@
     max-width: none;
 }
 
-/* Dialog sections */
+/* Dialog sections. The three bands are separated by hairlines here and flush in MLAdmin, whose
+   message box is ONE padded column — so the separators and the paddings are tokens too. The
+   MLAdmin gaps are reproduced band-by-band: 16px below the title comes from the content's own
+   top padding, and the 16px above the actions from the content's bottom padding, which keeps a
+   dialog with no action bar correctly padded at the foot. */
 .dialog-title {
-    padding: 16px 24px;
+    padding: var(--dialog-title-pad, var(--space-small) var(--space-medium));
     flex-shrink: 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: var(--dialog-title-border, var(--hairline) solid var(--border));
+    color: var(--ink);
+    font-size: var(--dialog-title-font, inherit);
+    font-weight: var(--dialog-title-weight, var(--weight-bold));
+    letter-spacing: var(--dialog-title-tracking, var(--tracking-wide));
+}
+
+/* The × — its own size and ink, because MLAdmin's is a bare 20px grey glyph rather than the
+   40px hit target the IconButton ladder gives it. Defaults repeat the medium rung exactly. */
+.dialog-title .ueca-icon-button {
+    width: var(--dialog-close-box, var(--control-h-md));
+    height: var(--dialog-close-box, var(--control-h-md));
+    color: var(--dialog-close-ink, var(--ink-disabled));
+}
+
+.dialog-title .ueca-icon-button svg {
+    width: var(--dialog-close-icon, var(--icon-xl));
+    height: var(--dialog-close-icon, var(--icon-xl));
 }
 
 .dialog-content {
     flex: 1 1 auto;
-    padding: 20px 24px;
+    padding: var(--dialog-content-pad, var(--space-medium));
     overflow-y: auto;
 }
 
 .dialog-content-text {
-    color: rgba(0, 0, 0, 0.6);
+    color: var(--ink);
+    font-size: var(--dialog-content-font, inherit);
+    line-height: var(--dialog-content-leading, var(--leading-normal));
+    overflow-wrap: anywhere;
 }
 
 .dialog-actions {
     display: flex;
     align-items: center;
-    padding: 8px;
+    padding: var(--dialog-actions-pad, var(--space-default));
     flex-shrink: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-top: var(--dialog-actions-border, var(--hairline) solid var(--border));
 }

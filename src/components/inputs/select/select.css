@@ -1,194 +1,283 @@
-/* Select container */
+/* Select — the app-wide select style.
+   Per-instance accent overridable via the --select-color CSS var (set from the `color` prop). */
+
 .ueca-select {
+    /* theme tokens (see src/themes.css) */
+    --sel-bg: var(--surface-2);
+    --sel-line: var(--input-line, var(--border));
+    --sel-ink: var(--ink);
+    --sel-muted: var(--ink-disabled);
+    --sel-accent: var(--select-color, var(--accent));
+    --sel-accent-dim: var(--accent-dim);
+    /* Shared with TextField/SearchField so the whole input family answers in one accent — legacy
+       renders a select as a .bp6-input too, so it wears the same hover/focus outline. */
+    --sel-line-active: var(--input-line-active, var(--sel-accent-dim));
+    --sel-error: var(--error);
+
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    font-family: inherit;
+    gap: var(--space-tiny);
+    font-family: var(--font-ui);
     position: relative;
 }
 
-/* Label */
+/* Label — type comes from .ueca-label (applied alongside in the TSX); only colour
+   and spacing are this component's business. */
+/* No margin-bottom: the control's own column gap already puts 4px under the label. */
 .ueca-select-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--select-color, rgba(0, 0, 0, 0.87));
-    margin-bottom: 4px;
+    color: var(--label-ink, var(--sel-accent-dim));
 }
 
+/* Leads the label, so the gap goes after it. */
 .ueca-select-required {
-    color: #d32f2f;
+    color: var(--sel-error);
+    margin-right: var(--space-tiny);
 }
 
-/* Select input base */
+/* Select input base. Type, height and radius are token-driven for the same reason TextField's are:
+   a theme sets the voice of every control at once. MLAdmin's selects are plain 14px regular on the
+   32px rung, not the template's semibold micro-type. */
 .ueca-select-input {
-    font-family: inherit;
-    font-size: 1rem;
-    padding: 12px 14px;
-    border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.23);
+    font-family: var(--input-font, var(--font-ui));
+    font-size: var(--select-size, var(--text-xs));
+    font-weight: var(--select-weight, var(--weight-semibold));
+    min-height: var(--input-height, auto);
+    padding: var(--select-padding, 7px 8px);
+    border-radius: var(--input-radius, var(--radius-md));
+    border: var(--hairline) solid var(--sel-line);
     outline: none;
-    transition: all 0.2s ease;
-    background-color: transparent;
-    color: rgba(0, 0, 0, 0.87);
+    /* NAMED, never `all` — see the note in checkbox.css. */
+    transition: background-color var(--motion-base) var(--ease),
+        border-color var(--motion-base) var(--ease),
+        color var(--motion-base) var(--ease),
+        box-shadow var(--motion-base) var(--ease);
+    background-color: var(--sel-bg);
+    color: var(--sel-ink);
     width: 100%;
     box-sizing: border-box;
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(0,0,0,0.54)'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    /* The trigger is a <button> now, so it has to be given the left-aligned single line box a
+       <select> came with. */
+    display: flex;
+    align-items: center;
+    text-align: left;
+    line-height: var(--leading-snug);
+    /* The one literal colour left in this file, and it has to be: a data URI cannot read a custom
+       property, so the fill is baked in and a theme overrides the whole image via --select-arrow.
+       This is the light reading (4.51:1 on white); themes.css carries the dark one. */
+    background-image: var(--select-arrow, url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236f7a66'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e"));
     background-repeat: no-repeat;
-    background-position: right 8px center;
-    background-size: 24px;
-    padding-right: 40px;
+    background-position: right 6px center;
+    background-size: 20px;
+    padding-right: 32px;
 }
 
-.ueca-select-input::placeholder {
-    color: rgba(0, 0, 0, 0.38);
+/* The trigger's text. Ellipsis rather than wrap: the control is one rung tall and a long option
+   ("UNITED ARAB EMIRATES" in a narrow column) must not grow it. */
+.ueca-select-value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Carries what <option value="">'s styling used to: nothing is chosen, and that reads as absent
+   rather than as a choice the user made. */
+.ueca-select-value-placeholder {
+    color: var(--sel-muted);
     font-style: italic;
 }
 
 .ueca-select-input:hover:not(:disabled) {
-    border-color: rgba(0, 0, 0, 0.87);
+    border-color: var(--sel-line-active);
 }
 
-.ueca-select-input:focus {
-    border-color: var(--select-color, #1976d2);
-    border-width: 2px;
-    padding: 11px 13px 11px 13px;
-    padding-right: 39px;
-    /* Adjust for wider border */
+.ueca-select-input:focus-visible {
+    border-color: var(--sel-line-active);
+    box-shadow: var(--input-focus-shadow, none);
 }
 
 .ueca-select-input:disabled {
-    background-color: rgba(0, 0, 0, 0.04);
+    opacity: .4;
     cursor: not-allowed;
-    color: rgba(0, 0, 0, 0.38);
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(0,0,0,0.26)'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-}
-
-/* Option styling */
-.ueca-select-input option {
-    padding: 8px;
-    color: rgba(0, 0, 0, 0.87);
-}
-
-.ueca-select-input option:disabled {
-    color: rgba(0, 0, 0, 0.38);
-}
-
-.ueca-select-input option[value=""]:first-child {
-    font-style: italic;
-    color: rgba(0, 0, 0, 0.38);
+    color: var(--sel-muted);
 }
 
 /* Outlined variant (default) */
 .ueca-select-outlined .ueca-select-input {
-    border: 1px solid rgba(0, 0, 0, 0.23);
-    background-color: transparent;
+    border: var(--hairline) solid var(--sel-line);
+    background-color: var(--sel-bg);
+}
+
+/* This variant's `border` shorthand resets border-color at the same specificity as the generic
+   hover/focus rules above, so the interactive outline has to be restated at the variant's level. */
+.ueca-select-outlined .ueca-select-input:hover:not(:disabled),
+.ueca-select-outlined .ueca-select-input:focus-visible {
+    border-color: var(--sel-line-active);
 }
 
 /* Filled variant */
 .ueca-select-filled .ueca-select-input {
     border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
-    border-radius: 4px 4px 0 0;
-    background-color: rgba(0, 0, 0, 0.06);
-    padding: 16px 12px 8px;
-    padding-right: 40px;
+    border-bottom: var(--hairline) solid var(--sel-line);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    background-color: var(--ink-hover);
 }
 
 .ueca-select-filled .ueca-select-input:hover:not(:disabled) {
-    background-color: rgba(0, 0, 0, 0.09);
+    background-color: var(--hover);
 }
 
-.ueca-select-filled .ueca-select-input:focus {
-    background-color: rgba(0, 0, 0, 0.09);
-    border-bottom-width: 2px;
-    border-bottom-color: var(--select-color, #1976d2);
-    padding: 16px 12px 7px;
-    padding-right: 39px;
+.ueca-select-filled .ueca-select-input:focus-visible {
+    border-bottom-color: var(--sel-line-active);
 }
 
 /* Standard variant */
 .ueca-select-standard .ueca-select-input {
     border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+    border-bottom: var(--hairline) solid var(--sel-line);
     border-radius: 0;
-    padding: 8px 0;
-    padding-right: 32px;
+    background-color: transparent;
 }
 
 .ueca-select-standard .ueca-select-input:hover:not(:disabled) {
-    border-bottom-color: rgba(0, 0, 0, 0.87);
+    border-bottom-color: var(--sel-line-active);
 }
 
-.ueca-select-standard .ueca-select-input:focus {
-    border-bottom-width: 2px;
-    border-bottom-color: var(--select-color, #1976d2);
-    padding-bottom: 7px;
-    padding-right: 31px;
+.ueca-select-standard .ueca-select-input:focus-visible {
+    border-bottom-color: var(--sel-line-active);
+}
+
+/* OPEN — the chrome a pointer user gets, and it has to be its own state rather than a focus one.
+   A native <select> matched :focus-visible on a mouse click; a <button> deliberately does not (the
+   measured table in docs/raw/css-practices.md#focus-indicators), so clicking to open would otherwise
+   say nothing. "Open" is the more accurate claim anyway: the ring still means "the keyboard is
+   here". Placed after the variants so it beats their border shorthands on source order, and before
+   the error rules so an invalid select keeps its own colour. */
+.ueca-select-open .ueca-select-input {
+    border-color: var(--sel-line-active);
+    border-bottom-color: var(--sel-line-active);
+    box-shadow: var(--input-focus-shadow, none);
 }
 
 /* Error state */
-.ueca-select-error .ueca-select-input {
-    border-color: #d32f2f;
-}
-
-.ueca-select-error .ueca-select-input:focus {
-    border-color: #d32f2f;
-}
-
-.ueca-select-error.ueca-select-filled .ueca-select-input {
-    border-bottom-color: #d32f2f;
-}
-
+.ueca-select-error .ueca-select-input,
+.ueca-select-error .ueca-select-input:hover:not(:disabled),
+.ueca-select-error .ueca-select-input:focus-visible,
+.ueca-select-error.ueca-select-filled .ueca-select-input,
 .ueca-select-error.ueca-select-standard .ueca-select-input {
-    border-bottom-color: #d32f2f;
+    border-color: var(--sel-error);
+    border-bottom-color: var(--sel-error);
+    box-shadow: none;
+}
+
+/* The group above deletes the focus glow so the error colour keeps the border, which would leave a
+   focused invalid select looking exactly like an unfocused one — precisely where the cue matters
+   most. Restore the glow rather than adding a ring: the input family has ONE way of saying "the
+   keyboard is here", and a second one for the error state makes it the odd control out. Restated
+   rather than tokenised because a box-shadow's colour cannot be swapped without its geometry; the
+   geometry mirrors --input-focus-shadow deliberately. Same rule as textField.css. */
+.ueca-select-error .ueca-select-input:focus-visible {
+    box-shadow: 0 1px 4px color-mix(in srgb, var(--sel-error) 30%, transparent);
 }
 
 /* Disabled state */
 .ueca-select-disabled .ueca-select-label {
-    color: rgba(0, 0, 0, 0.38);
+    color: var(--sel-muted);
+}
+
+/* Read-only: the element has to be `disabled` (a native <select> has no readOnly), so the disabled
+   fade above is undone and the control repainted as "fixed, still readable" — a filled ground with
+   the value in full ink. Same treatment as a read-only TextField. */
+.ueca-select-readonly .ueca-select-input:disabled {
+    opacity: 1;
+    color: var(--sel-ink);
+    background-color: var(--input-readonly-bg, var(--bg));
+    cursor: default;
 }
 
 /* Helper text */
 .ueca-select-helper-text {
-    font-size: 0.75rem;
-    color: rgba(0, 0, 0, 0.6);
+    font-size: var(--text-2xs);
+    font-family: var(--font-mono);
+    color: var(--sel-muted);
     margin-top: 4px;
 }
 
 .ueca-select-helper-text-error {
-    color: #d32f2f;
+    color: var(--sel-error);
 }
 
 /* Size variants */
 .ueca-select-small .ueca-select-input {
-    font-size: 0.875rem;
-    padding: 8px 10px;
-    padding-right: 36px;
+    font-size: var(--text-xs);
+    padding: 7px 8px;
+    padding-right: 32px;
 }
 
-.ueca-select-small .ueca-select-input:focus {
-    padding: 7px 9px;
-    padding-right: 35px;
+/* ============================================================
+   The listbox.
+
+   This is ours because it cannot be Chrome's: a native <select>'s dropdown is an OS-level window
+   whose border and selection highlight follow the BROWSER's colour scheme, not the page's, so
+   under the dark theme it drew a near-white edge and a light-blue highlight that no page CSS could
+   reach. See the header of select.tsx.
+
+   There is no legacy design to match here — legacy MLAdmin renders a native <select> too, and has
+   no dark theme — so the rows follow this app's OWN menu language (menuItem.css) rather than
+   imitating an OS widget.
+   ============================================================ */
+
+/* A panel for the list, not a card: the rows own the padding, and the width is set from the
+   trigger at open rather than taken from the popover's own 180–420px range. */
+.ueca-popover.ueca-select-popover {
+    padding: 0;
+    min-width: 0;
+    max-width: none;
+    overflow: hidden;
 }
 
-.ueca-select-small.ueca-select-filled .ueca-select-input {
-    padding: 12px 10px 6px;
-    padding-right: 36px;
+.ueca-select-listbox {
+    /* About nine rows: short lists never scroll, and the 70-country list does not cover the
+       screen. A local measurement, like the auth card's width — not a scale worth a token. */
+    max-height: 288px;
+    overflow-y: auto;
+    padding: var(--space-tiny) 0;
+    font-family: var(--font-ui);
+    font-size: var(--select-size, var(--text-xs));
 }
 
-.ueca-select-small.ueca-select-filled .ueca-select-input:focus {
-    padding: 12px 10px 5px;
-    padding-right: 35px;
+.ueca-select-option {
+    display: flex;
+    align-items: center;
+    min-height: var(--input-height, var(--control-h-md));
+    padding: var(--space-default) var(--space-small);
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* NAMED, never `all` — see the note in checkbox.css. */
+    transition: background-color var(--motion-fast) var(--ease),
+        color var(--motion-fast) var(--ease);
 }
 
-.ueca-select-small.ueca-select-standard .ueca-select-input {
-    padding: 6px 0;
-    padding-right: 28px;
+/* One highlight, not two: hovering MOVES the active row, so the pointer and the keyboard can never
+   point at different rows and there is nothing to reconcile. This is also why there is no separate
+   :hover rule — it would be a second answer to the same question. */
+.ueca-select-option.active {
+    background-color: var(--hover);
 }
 
-.ueca-select-small.ueca-select-standard .ueca-select-input:focus {
-    padding-bottom: 5px;
-    padding-right: 27px;
+/* The chosen row stays legible as chosen while the keyboard is somewhere else. */
+.ueca-select-option.selected {
+    color: var(--accent);
+    font-weight: var(--weight-semibold);
+}
+
+.ueca-select-option.disabled {
+    color: var(--ink-disabled);
+    cursor: not-allowed;
 }

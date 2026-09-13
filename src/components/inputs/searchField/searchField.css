@@ -1,0 +1,89 @@
+/* SearchField — a bordered pill hosting glyph + input + clear, styled to sit beside TextField.
+   The input itself is borderless; the wrapper carries the border and the focus ring, which is what
+   keeps the magnifier and the clear button inside the control instead of next to it. */
+
+.ueca-searchfield {
+    --sf-bg: var(--surface-2);
+    --sf-line: var(--border);
+    --sf-ink: var(--ink);
+    --sf-muted: var(--ink-disabled);
+    --sf-accent: var(--accent);
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-tiny);
+    min-width: 200px;
+    height: var(--control-h-sm);
+    padding: 0 var(--space-default);
+    background-color: var(--sf-bg);
+    border: var(--hairline) solid var(--sf-line);
+    border-radius: var(--radius-md);
+    transition: border-color var(--motion-base) var(--ease);
+    font-family: var(--font-ui);
+}
+
+.ueca-searchfield-fullwidth {
+    display: flex;
+    width: 100%;
+}
+
+.ueca-searchfield:hover:not(.ueca-searchfield-disabled),
+.ueca-searchfield:focus-within {
+    border-color: var(--input-line-active, var(--accent-dim));
+}
+
+.ueca-searchfield:focus-within {
+    box-shadow: var(--input-focus-shadow, none);
+}
+
+.ueca-searchfield-glyph {
+    color: var(--sf-muted);
+    flex: none;
+}
+
+.ueca-searchfield:focus-within .ueca-searchfield-glyph {
+    color: var(--sf-accent);
+}
+
+.ueca-searchfield-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--sf-ink);
+    font-family: inherit;
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    padding: 0;
+}
+
+.ueca-searchfield-input::placeholder {
+    color: var(--sf-muted);
+}
+
+.ueca-searchfield-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-circle);
+    background: transparent;
+    color: var(--sf-muted);
+    cursor: pointer;
+    transition: color var(--motion-base) var(--ease), background-color var(--motion-base) var(--ease);
+}
+
+.ueca-searchfield-clear:hover {
+    color: var(--sf-ink);
+    background-color: color-mix(in srgb, var(--sf-ink) 12%, transparent);
+}
+
+.ueca-searchfield-disabled {
+    opacity: 0.55;
+    pointer-events: none;
+}
