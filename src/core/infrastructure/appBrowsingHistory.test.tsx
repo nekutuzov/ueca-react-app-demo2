@@ -264,11 +264,10 @@ describe("AppBrowsingHistory", () => {
             expect(await appMessageBus.unicast("App.BrowsingHistory.ResolveRoute", route)).toBe(location.href);
         });
 
-        // BUG: navigation still resolves through a private copy of the pre-fix rules
-        // (appBrowsingHistory.ts:255-309) instead of routeURL.ts, where a null parameter counts as
-        // absent. ResolveRoute gives the link an href, but following it throws "Cannot read
-        // properties of null (reading 'toString')".
-        it.fails("omits a query parameter whose value is null, as ResolveRoute does", async () => {
+        // Regression: navigation resolved through a private copy of the pre-fix rules instead of
+        // routeURL.ts, where a null parameter counts as absent. ResolveRoute gave the link an href,
+        // but following it threw "Cannot read properties of null (reading 'toString')".
+        it("omits a query parameter whose value is null, as ResolveRoute does", async () => {
             at(`${BASE}/start`);
             await mountHistory();
             const route = { path: "/x?:tab", params: { tab: null } };
@@ -280,9 +279,9 @@ describe("AppBrowsingHistory", () => {
             expect(location.href).toBe(href);
         });
 
-        // BUG: same private copy (appBrowsingHistory.ts:279) — a null path parameter fails with a
-        // TypeError on toString() instead of the error naming the parameter that routeToURL raises.
-        it.fails("rejects a null path parameter by name, as the strict resolver does", async () => {
+        // Regression: same private copy — a null path parameter failed with a TypeError on toString()
+        // instead of the error naming the parameter that routeToURL raises.
+        it("rejects a null path parameter by name, as the strict resolver does", async () => {
             at(`${BASE}/start`);
             await mountHistory();
 

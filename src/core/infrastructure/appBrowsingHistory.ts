@@ -1,7 +1,10 @@
 import * as UECA from "ueca-react";
 import { BaseModel, BaseParams, BaseStruct, useBase, AnyRoute } from "@components";
 import { asyncSafe, runAsync } from "./appUtils";
-import { resolveRouteURL } from "../misc/routeURL";
+// Navigation and ResolveRoute resolve through the same rules. Navigation used to keep a private copy
+// of the rules from before routeURL.ts was fixed, so a link that resolved with a null parameter threw
+// when it was followed.
+import { resolveRouteURL, routeToURL } from "../misc/routeURL";
 
 type AppBrowsingHistoryStruct = BaseStruct<{
     props: {
@@ -104,7 +107,7 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
 
             open: async (route, newTab) => {
                 if (UECA.isObject(route)) {
-                    route = _routeToURL(route);
+                    route = routeToURL(route, model.__baseURL);
                 }
                 if (newTab) {
                     // noopener closes the reverse-tabnabbing hole: without it the opened page
@@ -119,7 +122,7 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
 
             replace: async (route) => {
                 if (UECA.isObject(route)) {
-                    route = _routeToURL(route);
+                    route = routeToURL(route, model.__baseURL);
                 }
                 if (_divertCrossOrigin(route)) {
                     return;
@@ -252,64 +255,8 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
         }
     }
 
-    function _routeToURL(route: AnyRoute): string {
-        if (!route?.path) {
-            return "";
-        }
-
-        let url: URL;
-
-        if (!route.path.startsWith("/")) {
-            // Other origin URL
-            url = new URL(route.path);
-        } else if (route.path.startsWith("//")) {
-            // Current origin new base URL
-            url = new URL(route.path.substring(2), window.location.origin);
-        } else {
-            // Current origin current base URL
-            url = new URL(model.__baseURL + route.path, window.location.origin);
-        }
-        const routeParams = UECA.clone(route.params) || {};
-
-        // Process dynamic path params
-        const parts = url.pathname.split("/");
-        parts.map((p, i) => {
-            if (p.startsWith(":")) {
-                p = p.replace(':', "");
-                parts[i] = UECA.isUndefined(routeParams[p]) ? undefined : routeParams[p].toString();
-                if (parts[i] == null) {
-                    throw Error(`URL parameter "${p}" cannot be null`);
-                }
-                delete routeParams[p];
-            }
-        });
-        url.pathname = parts.join("/"); // update dynamic path with processed path
-
-        // Only ever set, never cleared. A route object with no section is built from its path
-        // alone and so carries no fragment anyway; the one caller that arrives here with a hash
-        // already on it is _navigate, re-parsing a URL this function produced a moment ago.
-        if (route.section) {
-            url.hash = route.section;
-        }
-
-        // Process search params            
-        const searchParams = new URLSearchParams(url.search);
-        searchParams.forEach((_v, p) => {
-            if (!p.startsWith(":")) {
-                return; // don't process non-placeholder parameters
-            }
-            url.searchParams.delete(p); // remove param placeholder
-            url.search = decodeURIComponent(url.search);
-            p = p.slice(1); // strip symbol ':' from param placeholder
-            if (Object.prototype.hasOwnProperty.call(routeParams, p)) {
-                url.searchParams.set(p, UECA.isUndefined(routeParams[p]) ? "" : routeParams[p].toString()); // set parameter value
-            }
-        })
-        return url.href;
-    }
-
     async function _navigate(route: string) {
-        const newURL = _routeToURL({ path: route });
+        const newURL = routeToURL({ path: route }, model.__baseURL);
         if (newURL === window.location.href) {
             return
         }
