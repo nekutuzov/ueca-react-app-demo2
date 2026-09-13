@@ -83,18 +83,17 @@ describe("Back and Forward", { timeout: 20_000 }, () => {
         expect(await currentRoute()).toMatchObject({ path: "/showcase/controls", section: "buttons" });
     });
 
-    // BUG: AppBrowsingHistory.syncWithBrowser stamps the entry the app opens on with index 1
-    // (`history.state?.index ?? 1`, appBrowsingHistory.ts:78) whatever its real position, while
-    // _navigate numbers each pushed entry by its position. A vetoed Back rolls back by the difference
-    // (history.go(rollbackDelta), appBrowsingHistory.ts:241), which is only right when the app was
-    // opened as the tab's second history entry. Opened after a longer history, history.go overshoots
-    // and does nothing: the address bar stays on the page the user tried to go back to while the
-    // vetoing screen stays on show, so a reload loses that screen. (Opened in a fresh tab the delta
-    // is 0 instead, and the rollback's replaceState overwrites the previous entry with this address.)
-    it.fails("a Back that a guard vetoes returns the address to the screen still on show", async () => {
+    // Regression: AppBrowsingHistory.syncWithBrowser stamped the entry the app opens on with index 1
+    // (`history.state?.index ?? 1`) whatever its real position, while _navigate numbered each pushed
+    // entry by its position. A vetoed Back rolls back by the difference (history.go(rollbackDelta)),
+    // which was only right when the app was opened as the tab's second history entry. Opened after a
+    // longer history, history.go overshot and did nothing: the address bar stayed on the page the
+    // user tried to go back to while the vetoing screen stayed on show, so a reload lost that screen.
+    // (Opened in a fresh tab the delta was 0 instead, and the rollback's replaceState overwrote the
+    // previous entry with this address.)
+    it("a Back that a guard vetoes returns the address to the screen still on show", async () => {
         // jsdom's own first entry and this page (plus whatever earlier tests pushed) precede the app,
-        // so it opens past position 1. In a browser a single earlier page would put it at position 1,
-        // where index 1 happens to be right.
+        // so it opens past position 1 — where the fixed index 1 was wrong.
         history.pushState(null, "", "/elsewhere");
         await renderApp({ url: "/showcase/overview", signedIn: true });
         await userEvent.click(menuLink("Design tokens"));

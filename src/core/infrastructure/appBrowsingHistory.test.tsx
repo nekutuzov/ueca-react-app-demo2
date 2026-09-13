@@ -229,7 +229,7 @@ describe("AppBrowsingHistory", () => {
             expect(history.length).toBe(before);
         });
 
-        // BUG: a string route is handed to window.open as it is (appBrowsingHistory.ts:103-111), so
+        // BUG: a string route is handed to window.open as it is (appBrowsingHistory.ts:106-114), so
         // "/home" opens at the origin root instead of under the app's base, and "//docs/x" becomes
         // a protocol-relative URL on host "docs". routeURL.ts: a bare string must still be resolved
         // "rather than using the string directly".
@@ -265,7 +265,7 @@ describe("AppBrowsingHistory", () => {
         });
 
         // BUG: navigation still resolves through a private copy of the pre-fix rules
-        // (appBrowsingHistory.ts:252-306) instead of routeURL.ts, where a null parameter counts as
+        // (appBrowsingHistory.ts:255-309) instead of routeURL.ts, where a null parameter counts as
         // absent. ResolveRoute gives the link an href, but following it throws "Cannot read
         // properties of null (reading 'toString')".
         it.fails("omits a query parameter whose value is null, as ResolveRoute does", async () => {
@@ -280,7 +280,7 @@ describe("AppBrowsingHistory", () => {
             expect(location.href).toBe(href);
         });
 
-        // BUG: same private copy (appBrowsingHistory.ts:276) — a null path parameter fails with a
+        // BUG: same private copy (appBrowsingHistory.ts:279) — a null path parameter fails with a
         // TypeError on toString() instead of the error naming the parameter that routeToURL raises.
         it.fails("rejects a null path parameter by name, as the strict resolver does", async () => {
             at(`${BASE}/start`);
@@ -351,7 +351,7 @@ describe("AppBrowsingHistory", () => {
             expect(location.href).toBe(`${ORIGIN}${BASE}/start?x=1#here`);
         });
 
-        // BUG: replace() uses a string route as it is (appBrowsingHistory.ts:117-127), so an
+        // BUG: replace() uses a string route as it is (appBrowsingHistory.ts:120-130), so an
         // app-relative string reaches `new URL(url)` in _divertCrossOrigin without a base and throws
         // "Invalid URL" — where Open resolves the same string under the base.
         it.fails("resolves an app-relative string path the way Open does", async () => {
@@ -457,12 +457,14 @@ describe("AppBrowsingHistory", () => {
     });
 
     describe("history index", () => {
-        it("stamps the entry it starts on when that entry carries no index", async () => {
+        // Regression: it was stamped 1 whatever its position — in a fresh tab, where it is entry 0,
+        // the same index the page opened next was given.
+        it("stamps the entry it starts on with its position when that entry carries no index", async () => {
             at(`${BASE}/start`);
 
             await mountHistory();
 
-            expect(history.state).toEqual({ index: expect.any(Number) });
+            expect(history.state).toEqual({ index: history.length - 1 });
         });
 
         // A reload keeps the entry's state, so the index it was given survives.
@@ -505,11 +507,11 @@ describe("AppBrowsingHistory", () => {
             expect(go).toHaveBeenCalledExactlyOnceWith(-1);
         });
 
-        // BUG: the entry the app starts on is stamped index 1 ("the top of the list",
-        // appBrowsingHistory.ts:78) whatever its real position, while opened entries are indexed by
-        // position. Arriving after other pages in the same tab, a vetoed Back to that first entry
-        // rolls forward by the wrong distance — here history.go(n > 1), which the browser ignores.
-        it.fails("rolls a vetoed Back to the entry the app started on forward by exactly one", async () => {
+        // Regression: the entry the app starts on was stamped index 1 ("the top of the list")
+        // whatever its real position, while opened entries were indexed by position. Arriving after
+        // other pages in the same tab, a vetoed Back to that first entry rolled forward by the wrong
+        // distance — here history.go(n > 1), which the browser ignores.
+        it("rolls a vetoed Back to the entry the app started on forward by exactly one", async () => {
             // Pages visited in this tab before the app.
             history.pushState(null, "", "/elsewhere/1");
             history.pushState(null, "", "/elsewhere/2");
@@ -524,17 +526,37 @@ describe("AppBrowsingHistory", () => {
             expect(go).toHaveBeenCalledExactlyOnceWith(1);
         });
 
-        // BUG: the resync meant for a truncated history runs only when it was NOT truncated
-        // (appBrowsingHistory.ts:320 tests `=== 1`, the normal case). After going Back and opening
-        // another page, the new entry keeps the old history length as its index, so a vetoed Back
-        // from it rolls forward too far — history.go(2) from an entry with one entry ahead of it.
-        it.fails("rolls a vetoed Back forward by exactly one after a page reached with Back was left", async () => {
+        // Regression: an opened entry was indexed by the history length before the push, and the
+        // resync meant for a truncated history ran only when it was NOT truncated (it tested `=== 1`,
+        // the normal case). After going Back and opening another page, the new entry kept the old
+        // length as its index, so a vetoed Back from it rolled forward too far — history.go(2) from
+        // an entry with one entry ahead of it.
+        it("rolls a vetoed Back forward by exactly one after a page reached with Back was left", async () => {
             at(`${BASE}/start`);
             const { navigate } = await mountHistory();
             await open("/b");
             await open("/c");
             await traverse(() => history.back());
             await open("/d");
+            const go = vi.spyOn(history, "go").mockImplementation(() => { });
+
+            navigate.mockResolvedValueOnce(false);
+            await traverse(() => history.back());
+
+            expect(location.pathname).toBe(`${BASE}/b`);
+            expect(go).toHaveBeenCalledExactlyOnceWith(1);
+        });
+
+        // Regression: a browser keeps a bounded history (50 entries in Chrome). Once it is full, a
+        // push drops the oldest entry and history.length stops growing, so indexing opened entries by
+        // the length gave each of them the same index, and a vetoed Back between two of them had no
+        // distance to roll back by.
+        it("rolls a vetoed Back forward by exactly one once the browser's history is full", async () => {
+            at(`${BASE}/start`, { index: 49 });
+            const { navigate } = await mountHistory();
+            vi.spyOn(history, "length", "get").mockReturnValue(50);
+            await open("/b");
+            await open("/c");
             const go = vi.spyOn(history, "go").mockImplementation(() => { });
 
             navigate.mockResolvedValueOnce(false);
@@ -646,7 +668,7 @@ describe("AppBrowsingHistory", () => {
         });
 
         // BUG: the in-place rollback rebuilds the URL from the path alone
-        // (appBrowsingHistory.ts:247), so the anchor the app is still showing is dropped from the
+        // (appBrowsingHistory.ts:250), so the anchor the app is still showing is dropped from the
         // address — although a section is part of the address everywhere else in this service.
         it.fails("restores the section too when rolling a vetoed entry back in place", async () => {
             at(`${BASE}/a#intro`);
@@ -686,7 +708,7 @@ describe("AppBrowsingHistory", () => {
         });
 
         // BUG: deinit detaches the listener and says a following init may re-add it
-        // (appBrowsingHistory.ts:149-154), but only constr — which a cache retrieval skips —
+        // (appBrowsingHistory.ts:152-157), but only constr — which a cache retrieval skips —
         // attaches it. A model parked in the cache and brought back ignores Back and Forward.
         it.fails("keeps following Back and Forward after being parked in the cache and brought back", async () => {
             at(`${BASE}/a`);

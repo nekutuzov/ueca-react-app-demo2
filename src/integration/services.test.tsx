@@ -229,7 +229,7 @@ describe("App services end to end", { timeout: 20_000 }, () => {
         // "https://cranesoft.net" (or "mailto:…"): _prepareRegExRoutes builds the pattern from the
         // PARSED url, whose pathname is "/", so it demands a trailing slash the registered key does
         // not have — and a mailto address, parsed as the pathname, is dropped from its pattern
-        // altogether (router.tsx:129-142). AppRouter._changeRoute then takes the address for an
+        // altogether (router.tsx:129-145). AppRouter._changeRoute then takes the address for an
         // unknown one and routes to Home instead (appRouter.tsx:67-72), adding a history entry — where
         // appRoutes.tsx and AppBrowsingHistory._divertCrossOrigin promise a new tab for a foreign URL.
         // Fixing the lookup alone is not enough: the found route then hits the bug pinned below.

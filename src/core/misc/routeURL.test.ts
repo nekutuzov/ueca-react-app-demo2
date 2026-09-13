@@ -130,7 +130,7 @@ describe("resolveRouteURL", () => {
         // BUG: after deleting each placeholder, _buildURL runs decodeURIComponent over the WHOLE search
         // string (routeURL.ts:72), so a value set for an earlier placeholder is decoded again: its "&"
         // re-parses as a separator and "+" as a space, and q comes back as "tom ". The navigation
-        // path's private copy does the same (appBrowsingHistory.ts:299).
+        // path's private copy does the same (appBrowsingHistory.ts:302).
         it.fails("keeps an earlier placeholder's value intact when another placeholder follows", () => {
             const url = new URL(resolveRouteURL(route("/search?:q&:page", { q: "tom & jerry + co", page: 1 }), BASE));
 

@@ -165,7 +165,7 @@ describe("Signing in and out", { timeout: 20_000 }, () => {
     });
 
     // BUG: AppBrowsingHistory keeps the name a screen gave itself (SetPageTitle) for as long as the
-    // browser stays at that address (appBrowsingHistory.ts:184). Signing out swaps the screen for the
+    // browser stays at that address (appBrowsingHistory.ts:187). Signing out swaps the screen for the
     // sign-in form WITHOUT changing the address, so the form — which names nothing — keeps the title
     // of the screen it replaced ("Controls · Showcase — UECA-React Showcase"). That contradicts
     // appMessage.ts on SetPageTitle: "a screen that sends nothing gets the app name alone rather than
