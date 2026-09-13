@@ -46,16 +46,17 @@ describe("LayoutTopic", () => {
         expect(parseFloat(demoLabelled(`spacing="none"`).style.gap)).toBe(0);
     });
 
-    // BUG: the Spacing section tells the reader a Row or Col "defaults to `default` (8px), not
+    // Regression: the Spacing section told the reader a Row or Col "defaults to `default` (8px), not
     // zero", but both default to no gap (row.tsx: "No implicit gap"), so the reference page
-    // misstates the one default it warns about (layoutTopic.tsx, _SpacingView).
-    it.fails("states the gap a Row really has without a spacing prop", async () => {
+    // misstated the one default it warned about.
+    it("states the gap a Row really has without a spacing prop", async () => {
         await mount(LayoutTopic, { id: TOPIC });
         const unspaced = render(<Row><i /><i /></Row>, { container: document.createElement("div") }).container.firstElementChild as HTMLElement;
         expect(parseFloat(unspaced.style.gap)).toBe(0);
 
         const description = screen.getByText(/^The gap BETWEEN children/).textContent.replace(/\s+/g, " ");
         expect(description).not.toContain("defaults to `default` (8px)");
+        expect(description).toContain("There is none by default");
     });
 
     it.each([

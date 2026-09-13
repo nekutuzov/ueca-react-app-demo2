@@ -44,9 +44,9 @@ function useLayoutTopic(params?: LayoutTopicParams): LayoutTopicModel {
             _SpacingView: () => (
                 <ShowcaseSection
                     title="Spacing"
-                    description="The gap BETWEEN children of a Row or Col. Note that it defaults to
-                                 `default` (8px), not zero — a container converted from CSS gains
-                                 8px between every child unless you pass spacing='none'."
+                    description="The gap BETWEEN children of a Row or Col. There is none by default:
+                                 children touch unless you pass a spacing, so every gap on screen can
+                                 be read off the JSX."
                 >
                     <Col spacing="small">
                         {SPACING_STEPS.map((step) => (
