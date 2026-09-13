@@ -49,6 +49,9 @@ function useNavItem(params?: NavItemParams): NavItemModel {
             navLink: useNavLink({
                 underline: "none",
                 linkView: () => <model._linkView />,
+                // With the label hidden, the link's only content is an aria-hidden glyph, so it would
+                // have no accessible name at all. The visible label names it in every other mode.
+                ariaLabel: () => model.mode === "icon-only" ? model.text : undefined,
                 onClick: async () => {
                     await model.onClick?.(model);
                 },
@@ -68,7 +71,7 @@ function useNavItem(params?: NavItemParams): NavItemModel {
             _linkView: () => {
                 // Only when the label is hidden. With the text on screen a tooltip would just
                 // repeat it. Mouse only: focus lands on the ancestor <a>, which a descendant
-                // cannot observe, so keyboard users get the aria-label there instead.
+                // cannot observe, so keyboard users get the link's aria-label (set above) instead.
                 const tip = model.mode === "icon-only" && model.text
                     ? model.tooltipProps(model.text, { placement: "right" })
                     : undefined;

@@ -14,6 +14,9 @@ type NavLinkStruct = UIBaseStruct<{
         disabled: boolean;
         newTab: boolean;
         linkView: React.ReactNode;
+        // The link's accessible name when its content carries none — an icon-only link, whose glyph
+        // is aria-hidden. Leave it unset whenever the content already names the link.
+        ariaLabel: string;
         // The route resolved to a real, copyable URL. Held on the model because resolution goes
         // over the bus and a View cannot await — so it is synchronized on route change instead.
         _routeURL: string;
@@ -43,6 +46,7 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
             disabled: false,
             newTab: false,
             linkView: undefined,
+            ariaLabel: undefined,
             _routeURL: undefined
         },
 
@@ -111,6 +115,7 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
                     href={model._routeURL}
                     target={model.newTab ? "_blank" : undefined}
                     rel={model.newTab ? "noopener noreferrer" : undefined}
+                    aria-label={model.ariaLabel}
                     style={{ color: colorStyle }}
                     onClick={(e) => asyncSafe(async () => await _onLinkClick(e))}
                 >

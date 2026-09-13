@@ -115,6 +115,18 @@ describe("NavLink", () => {
         expect(screen.getByRole("link")).toHaveAttribute("class", `ueca-nav-link nav-link-underline-${underline}`);
     });
 
+    // For a link whose content names nothing: NavItem's icon-only mode, where the glyph is aria-hidden.
+    it("takes its accessible name from ariaLabel when given one, and from its content otherwise", async () => {
+        await stubRouter();
+        const { model } = await mount(NavLink, { id: "home", route: HOME, linkView: <svg aria-hidden="true" /> });
+        expect(document.getElementById("home")).not.toHaveAttribute("aria-label");
+
+        model.ariaLabel = "Home";
+        await settle();
+
+        expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("id", "home");
+    });
+
     it("resolves a palette colour to its theme variable and passes a plain CSS colour through", async () => {
         await stubRouter();
         const { model } = await mount(NavLink, { id: "link", route: HOME, title: "Go", color: "error.main" });

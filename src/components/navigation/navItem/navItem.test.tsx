@@ -284,13 +284,36 @@ describe("NavItem", () => {
         });
     });
 
-    // BUG: navItem.tsx says an icon-only item is tooltipped for the mouse only because "keyboard users
-    // get the aria-label" on the enclosing <a> — but nothing sets one. The icons are aria-hidden, so
-    // the link has no accessible name at all once the label is hidden.
-    it.fails("gives an icon-only item's link its text as the accessible name", async () => {
+    // Regression: navItem.tsx said an icon-only item is tooltipped for the mouse only because "keyboard
+    // users get the aria-label" on the enclosing <a> — but nothing set one. The icons are aria-hidden,
+    // so the link had no accessible name at all once the label was hidden: every link in the collapsed
+    // sidebar was announced as just "link".
+    it("gives an icon-only item's link its text as the accessible name", async () => {
         await stubRouter();
         await mount(NavItem, { id: "item", route: HOME, text: "Home", icon: <svg aria-hidden="true" />, mode: "icon-only" });
 
-        expect(screen.getByRole("link", { name: "Home" })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute("aria-label", "Home");
+    });
+
+    // With the label on screen, the content already names the link; an aria-label would only
+    // duplicate it, and would go stale if the two ever differed.
+    it("labels the link only while the label is hidden, following mode and text", async () => {
+        await stubRouter();
+        const { model } = await mount(NavItem, { id: "item", route: HOME, text: "Home", icon: <svg aria-hidden="true" /> });
+        const link = () => document.getElementById("item.navLink");
+        expect(link()).not.toHaveAttribute("aria-label");
+        expect(screen.getByRole("link", { name: "Home" })).toBe(link());
+
+        model.mode = "icon-only";
+        await settle();
+        expect(link()).toHaveAttribute("aria-label", "Home");
+
+        model.text = "Start";
+        await settle();
+        expect(screen.getByRole("link", { name: "Start" })).toBe(link());
+
+        model.mode = "icon-text";
+        await settle();
+        expect(link()).not.toHaveAttribute("aria-label");
     });
 });
