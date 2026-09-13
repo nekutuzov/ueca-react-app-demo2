@@ -174,11 +174,14 @@ class RestApiClient implements IRestApiClient {
     private async _processResponse<T>(response: Response): Promise<T> {
         if (response.ok && !response.bodyUsed) {
             if (!this._isContentLengthIsZero(response)) {
-                return (this._isJson(response))
-                    ? await response.json()
-                    : (this._isStream(response))
-                        ? await this._processBlob(response) as T
-                        : JSON.parse(await response.text());
+                if (this._isStream(response)) {
+                    return await this._processBlob(response) as T;
+                }
+                // Read as text so an empty body resolves undefined. A success need not declare
+                // content-length 0 to have no body — a 204 No Content must not send the header at
+                // all — and parsing its "" as JSON rejected the request.
+                const text = await response.text();
+                return text ? JSON.parse(text) : undefined;
             }
         } 
         

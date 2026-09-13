@@ -228,13 +228,22 @@ describe("RestApiClient", () => {
             await expect(createRestAPIClient(BASE).post("/users/7/touch", {}, {})).resolves.toBeUndefined();
         });
 
-        // BUG: a success without a content-length header is parsed as JSON even when it has no body,
-        // and a 204 No Content must not send that header — so JSON.parse("") rejects the request with a
-        // SyntaxError (restApiClient.ts:173-178).
-        it.fails("resolves undefined for 204 No Content", async () => {
+        // Regression: a success without a content-length header was parsed as JSON even when it had no
+        // body, and a 204 No Content must not send that header — so JSON.parse("") rejected a request
+        // that had succeeded, with a SyntaxError.
+        it("resolves undefined for 204 No Content", async () => {
             serve(() => new Response(null, { status: 204 }));
 
             await expect(createRestAPIClient(BASE).post("/users/7/touch", {}, {})).resolves.toBeUndefined();
+        });
+
+        it.each([
+            ["a 204 that still declares JSON", () => new Response(null, { status: 204, headers: { "content-type": "application/json" } })],
+            ["a 200 with an empty body and no content-length", () => new Response("", { status: 200 })]
+        ])("resolves undefined for %s", async (_case, respond) => {
+            serve(respond);
+
+            await expect(createRestAPIClient(BASE).get("/users/7")).resolves.toBeUndefined();
         });
 
         it("resolves an octet-stream as a File named by content-disposition", async () => {
@@ -386,6 +395,22 @@ describe("RestApiClient", () => {
                 name: "HTTP 503",
                 message: "The server responded with 503."
             });
+        });
+
+        // BUG: the error path reads a body unless it is declared empty, but an empty body need not
+        // declare content-length 0 — the gap the success path had for 204 (restApiClient.ts:193-199).
+        // Declared JSON, it rejects with SyntaxError "Unexpected end of JSON input"; otherwise with a
+        // blank message, and on HTTP/2, which sends no status text, a blank name as well.
+        it.fails.each([
+            ["declared JSON", { "content-type": "application/json" }],
+            ["of no declared type", {}]
+        ])("names the status for an error whose empty body is %s but not declared empty", async (_case, headers) => {
+            serve(() => new Response(null, { status: 500, statusText: "Internal Server Error", headers }));
+
+            const error = await rejectionOf(createRestAPIClient(BASE).get("/boom"));
+
+            expect(error).toBeInstanceOf(DetailedError);
+            expect(error).toMatchObject({ name: "Internal Server Error", message: "The server responded with 500 Internal Server Error." });
         });
 
         it("wraps a network failure in a Connection Error that names the URL", async () => {
