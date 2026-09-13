@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import {
-    EditBaseModel, EditBaseParams, EditBaseStruct, fieldLabelText, Icon, useEditBase
+    EditBaseModel, EditBaseParams, EditBaseStruct, fieldLabelText, Icon, isEmptyValue, useEditBase
 } from "@components";
 import { asyncSafe, Palette, resolvePaletteColor } from "@core";
 import "./textField.css";
@@ -91,13 +91,13 @@ function useTextField<T = string>(params?: TextFieldParams<T>): TextFieldModel<T
                 // unlabelled field to report " cannot be empty" and never reaching the fallback.
                 const fieldName = fieldLabelText(model.labelView) || model.placeholder || "This field";
                 
-                // Required validation
-                if (model.required && (!model.value || model.value.toString().trim() === "")) {
+                // Required validation. A TextField<number> holding 0 shows "0", so 0 is not empty.
+                if (model.required && isEmptyValue(model.value)) {
                     return `${fieldName} cannot be empty`;
                 }
 
                 // Type-specific validation (only if value is not empty)
-                if (model.value && model.value.toString().trim() !== "") {
+                if (!isEmptyValue(model.value)) {
                     const valueStr = model.value.toString();
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     const phoneRegex = /^[\d\s\-+()]+$/;

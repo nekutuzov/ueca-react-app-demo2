@@ -745,9 +745,9 @@ describe("Select", () => {
             expect(document.querySelector(".ueca-select-helper-text")).toBeNull();
         });
 
-        // BUG: `!model.value` treats 0 as empty, although the Select itself shows the option whose
-        // value is 0 as chosen (_isSelected checks `value != null`).
-        it.fails("does not report a required select holding the option 0 as empty", async () => {
+        // Regression: `!model.value` treated 0 as empty, although the Select itself shows the option
+        // whose value is 0 as chosen (_isSelected checks `value != null`).
+        it("does not report a required select holding the option 0 as empty", async () => {
             const levels = [{ value: 0, label: "None" }, { value: 1, label: "Low" }] as unknown as SelectOption[];
             const { model } = await mount(Select, { id: "s", options: levels, value: 0 as unknown as string, labelView: "Level", required: true });
             expect(trigger()).toHaveTextContent("None");

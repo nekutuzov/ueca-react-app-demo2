@@ -474,9 +474,9 @@ describe("TextField", () => {
             expect(document.getElementById("user")).not.toHaveClass("ueca-textfield-error");
         });
 
-        // BUG: `!model.value` treats the number 0 as empty, so a required TextField<number> showing
-        // "0" fails validation with "cannot be empty". NumberField checks `value == null` instead.
-        it.fails("does not report a required numeric field holding 0 as empty", async () => {
+        // Regression: `!model.value` treated the number 0 as empty, so a required TextField<number>
+        // showing "0" failed validation with "cannot be empty". NumberField already checked `value == null`.
+        it("does not report a required numeric field holding 0 as empty", async () => {
             const { model } = await mount(TextField, { id: "qty", labelView: "Quantity", required: true, type: "number", value: 0 as unknown as string });
             expect(screen.getByRole("spinbutton")).toHaveValue(0);
 

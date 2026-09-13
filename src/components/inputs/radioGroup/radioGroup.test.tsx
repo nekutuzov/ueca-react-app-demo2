@@ -221,9 +221,9 @@ describe("RadioGroup", () => {
             expect(helperTextOf("units")).toBeNull();
         });
 
-        // BUG: `!model.value` treats 0 as empty, although the group shows the option whose value is 0
-        // as checked.
-        it.fails("does not report a required group holding the option 0 as empty", async () => {
+        // Regression: `!model.value` treated 0 as empty, although the group shows the option whose
+        // value is 0 as checked.
+        it("does not report a required group holding the option 0 as empty", async () => {
             const { model } = await mount(RadioGroup, { id: "level", options: LEVELS, value: 0 as unknown as string, labelView: "Level", required: true });
             expect(radio("Off")).toBeChecked();
 

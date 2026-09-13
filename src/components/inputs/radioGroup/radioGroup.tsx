@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import {
-    EditBaseModel, EditBaseParams, EditBaseStruct, fieldLabelText, useEditBase
+    EditBaseModel, EditBaseParams, EditBaseStruct, fieldLabelText, isEmptyValue, useEditBase
 } from "@components";
 import { Palette, resolvePaletteColor } from "@core";
 import "./radioGroup.css";
@@ -56,7 +56,8 @@ function useRadioGroup<T = string>(params?: RadioGroupParams<T>): RadioGroupMode
 
         events: {
             onInternalValidate: async () => {
-                if (model.required && !model.value) {
+                // Not `!model.value`: an option whose value is 0 is a choice, and shows as checked.
+                if (model.required && isEmptyValue(model.value)) {
                     return `${fieldLabelText(model.labelView) ?? "This field"} cannot be empty`;
                 }
             },

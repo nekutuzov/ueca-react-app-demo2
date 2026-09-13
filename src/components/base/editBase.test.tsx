@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import * as UECA from "ueca-react";
-import { EditBaseModel, EditBaseParams, EditBaseStruct, useEditBase } from "@components";
+import { EditBaseModel, EditBaseParams, EditBaseStruct, isEmptyValue, useEditBase } from "@components";
 import { mount, settle } from "@test";
 
 async function mountField(id: string, params?: FieldProbeParams): Promise<FieldProbeModel> {
@@ -180,6 +180,28 @@ describe("useEditBase validation", () => {
 
             expect(field.getValidationError()).toBe("Required");
         });
+    });
+});
+
+// The one rule TextField, Select and RadioGroup share for `required`.
+describe("isEmptyValue", () => {
+    it.each([
+        ["undefined", undefined],
+        ["null", null],
+        ["an empty string", ""],
+        ["whitespace", "  \t"]
+    ])("counts %s as empty", (_case, value) => {
+        expect(isEmptyValue(value)).toBe(true);
+    });
+
+    // Regression: the inputs tested `!model.value`, so a chosen 0 was "empty".
+    it.each([
+        ["the number 0", 0],
+        ["false", false],
+        ["the text \"0\"", "0"],
+        ["text", "ada"]
+    ])("counts %s as a value", (_case, value) => {
+        expect(isEmptyValue(value)).toBe(false);
     });
 });
 

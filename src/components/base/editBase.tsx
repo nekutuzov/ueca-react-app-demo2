@@ -74,4 +74,10 @@ function useEditBase<T extends EditBasePartialStruct>(extStruct?: T, params?: Ed
     return model;
 }
 
-export { EditBaseStruct, EditBaseParams, EditBaseModel, useEditBase }
+// What `required` counts as no value: nothing at all, or text that is blank. A number or a boolean is
+// a value even at 0 or false — inputs used to test `!model.value`, which counted a chosen 0 as empty.
+function isEmptyValue(value: unknown): boolean {
+    return value == null || (typeof value === "string" && value.trim() === "");
+}
+
+export { EditBaseStruct, EditBaseParams, EditBaseModel, useEditBase, isEmptyValue }
