@@ -62,6 +62,15 @@ function useDialog(params?: DialogParams): DialogModel {
                     _returnFocus();
                     asyncSafe(() => model.onClose?.(model));
                 }
+            },
+
+            // Shown again after something it opened covered it — AlertDialog's details drawer. A
+            // browser will not focus an element inside a hidden subtree, so the drawer's attempt to
+            // give focus back to "Show details" lands nowhere; the next draw brings it back inside.
+            onChangeHidden: () => {
+                if (model.open && !model.hidden) {
+                    model.__focusPending = true;
+                }
             }
         },
 
@@ -92,7 +101,10 @@ function useDialog(params?: DialogParams): DialogModel {
             const panel = document.getElementById(model.htmlId());
             if (panel) {
                 model.__focusPending = false;
-                panel.focus();
+                // Focus already inside — a control that took it, or one it was given back to — stays.
+                if (!panel.contains(document.activeElement)) {
+                    panel.focus();
+                }
             }
         },
 

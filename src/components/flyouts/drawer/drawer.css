@@ -34,6 +34,12 @@
     z-index: var(--overlay-z, var(--z-drawer-panel));
 }
 
+/* A modal drawer's panel takes focus from code when it opens, so assistive technology starts inside
+   it. It is a container, not a control, so it draws no ring — the panel itself is what shows. */
+.ueca-drawer:focus-visible {
+    outline: none;
+}
+
 /* Anchor positions */
 /* The `width` prop still wins (it is an inline style); the token is the theme default, and takes
    any CSS length — a theme may size drawers as a share of the viewport rather than a fixed pixel

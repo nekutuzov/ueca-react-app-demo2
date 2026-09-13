@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Dialog, Drawer } from "@components";
 import { mount, settle } from "@test";
@@ -131,6 +131,70 @@ describe("Drawer", () => {
             await settle();
 
             expect(model.open).toBe(true);
+        });
+    });
+
+    describe("accessibility", () => {
+        // Regression: a temporary drawer is a modal panel over a backdrop, but it had no dialog role,
+        // no aria-modal and no name, and focus stayed on the page behind it.
+        it("makes a temporary drawer a modal dialog named by its title, outside the tab order", async () => {
+            await mount(Drawer, { id: "drw", open: true, titleView: "Filters", contentView: "Body" });
+
+            const dialog = screen.getByRole("dialog", { name: "Filters" });
+            expect(dialog).toBe(panelOf("drw"));
+            expect(dialog).toHaveAttribute("aria-modal", "true");
+            expect(dialog).toHaveAttribute("tabindex", "-1");
+        });
+
+        // They sit beside the page rather than over it, so they are not dialogs.
+        it.each(["permanent", "persistent"] as const)("claims no dialog semantics for a %s drawer", async (variant) => {
+            await mount(Drawer, { id: "drw", open: true, variant, titleView: "Filters", contentView: "Body" });
+
+            const panel = panelOf("drw");
+            expect(panel).not.toHaveAttribute("role");
+            expect(panel).not.toHaveAttribute("aria-modal");
+            expect(panel).not.toHaveAttribute("tabindex");
+        });
+
+        it("moves focus into a temporary drawer when it opens and gives it back when it closes", async () => {
+            render(<button type="button">Open</button>);
+            const trigger = screen.getByRole("button", { name: "Open" });
+            trigger.focus();
+            const { model } = await mount(Drawer, { id: "drw", titleView: "Filters", contentView: "Body" });
+
+            model.open = true;
+            await settle();
+            expect(screen.getByRole("dialog")).toHaveFocus();
+
+            await userEvent.click(within(panelOf("drw")).getByRole("button", { name: "Close" }));
+            await settle();
+
+            expect(trigger).toHaveFocus();
+        });
+
+        it("leaves focus on the page when a persistent drawer opens", async () => {
+            render(<button type="button">Open</button>);
+            const trigger = screen.getByRole("button", { name: "Open" });
+            trigger.focus();
+            const { model } = await mount(Drawer, { id: "drw", variant: "persistent", titleView: "Filters", contentView: "Body" });
+
+            model.open = true;
+            await settle();
+
+            expect(trigger).toHaveFocus();
+        });
+
+        it("gives focus back when removed while still open", async () => {
+            render(<button type="button">Open</button>);
+            const trigger = screen.getByRole("button", { name: "Open" });
+            trigger.focus();
+            const { unmount } = await mount(Drawer, { id: "drw", open: true, titleView: "Filters", contentView: "Body" });
+            expect(screen.getByRole("dialog")).toHaveFocus();
+
+            unmount();
+            await settle();
+
+            expect(trigger).toHaveFocus();
         });
     });
 

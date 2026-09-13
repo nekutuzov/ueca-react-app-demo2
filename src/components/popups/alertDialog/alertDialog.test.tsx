@@ -231,6 +231,25 @@ describe("AlertDialog", () => {
             expect(onClose).not.toHaveBeenCalled();
         });
 
+        // The details panel is a modal drawer, so it takes focus. In a browser the dialog behind it is
+        // display:none meanwhile, and focus given back to "Show details" there lands nowhere until the
+        // dialog shows again and reclaims it — so what is asserted is where focus ends up: inside the
+        // dialog.
+        it("moves focus into the details panel, and back inside the dialog when that is cancelled", async () => {
+            await mount(AlertDialog, {
+                id: "ad", open: true, titleView: "Save failed", buttons: { details: true }, detailsView: "the details"
+            });
+
+            await clickInDialog("Show details");
+            expect(detailsPanel()).toHaveAttribute("role", "dialog");
+            expect(detailsPanel()).toHaveFocus();
+
+            await userEvent.click(within(detailsPanel()).getByRole("button", { name: "Cancel" }));
+            await settle();
+
+            expect(dialogPanel().contains(document.activeElement)).toBe(true);
+        });
+
         // A message plus a stack trace has to survive verbatim.
         it("keeps string details verbatim in a <pre>", async () => {
             const details = "Error: boom\n    at load (api.ts:12)\n    at run (app.ts:3)";

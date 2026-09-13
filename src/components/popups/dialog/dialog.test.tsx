@@ -346,5 +346,34 @@ describe("Dialog", () => {
             await settle();
             expect(screen.getByRole("dialog")).toHaveFocus();
         });
+
+        // A browser neither keeps nor gives focus to an element inside a hidden subtree, so focus can
+        // be lost while the dialog is suspended; shown again, the dialog takes it back.
+        it("takes focus back when shown again after losing it while hidden", async () => {
+            const { model } = await mount(Dialog, { id: "dlg", open: true, titleView: "Delete site", contentView: "Body" });
+            model.hidden = true;
+            await settle();
+            (document.activeElement as HTMLElement).blur();
+            expect(document.body).toHaveFocus();
+
+            model.hidden = false;
+            await settle();
+
+            expect(screen.getByRole("dialog")).toHaveFocus();
+        });
+
+        it("leaves focus on a control inside it when shown again", async () => {
+            const { model } = await mount(Dialog, {
+                id: "dlg", open: true, titleView: "Delete site", contentView: <button type="button">Show details</button>
+            });
+            model.hidden = true;
+            await settle();
+            screen.getByRole("button", { name: "Show details" }).focus();
+
+            model.hidden = false;
+            await settle();
+
+            expect(screen.getByRole("button", { name: "Show details" })).toHaveFocus();
+        });
     });
 });
