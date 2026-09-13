@@ -71,7 +71,16 @@ function useNumberField(params?: NumberFieldParams): NumberFieldModel {
 
         children: {
             input: useTextField({
-                value: UECA.bind(() => model, "_text"),
+                // Refused in the bond's setter as well as by onChangingValue below. A read-write bond
+                // writes through BEFORE the child's changing handler sees the text, so refusing it in
+                // the child alone left `_text` holding what the box no longer showed: UECA reported a
+                // binding that never settled (an exception dialog on every rejected keystroke), and
+                // leaving the field committed the refused text.
+                value: UECA.bind(() => model._text, (text) => {
+                    if (_allowsText(text)) {
+                        model._text = text;
+                    }
+                }),
                 labelView: () => model.labelView,
                 placeholder: () => model.placeholder,
                 disabled: () => model.disabled,
@@ -82,8 +91,7 @@ function useNumberField(params?: NumberFieldParams): NumberFieldModel {
                 error: () => !model.isValid(),
                 helperTextView: () => model.isValid() ? model.helperTextView : model.getValidationError(),
                 endView: () => model.spinButtons ? _SpinView() : undefined,
-                onChangingValue: (newText: string, oldText: string) =>
-                    CHAR_PATTERNS[model.numberStyle].test(newText) ? newText : oldText,
+                onChangingValue: (newText: string, oldText: string) => _allowsText(newText) ? newText : oldText,
                 onBlur: () => _commit()
             })
         },
@@ -142,6 +150,11 @@ function useNumberField(params?: NumberFieldParams): NumberFieldModel {
                 </button>
             </span>
         );
+    }
+
+    // Whether typing may put `text` in the box: the style's characters, partial entries included.
+    function _allowsText(text: string): boolean {
+        return CHAR_PATTERNS[model.numberStyle].test(text);
     }
 
     function _commit() {

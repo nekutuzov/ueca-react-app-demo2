@@ -21,20 +21,18 @@ async function leave() {
     await userEvent.click(document.body);
 }
 
-// A bound TextField reports a rejected keystroke only after its re-convergence rounds run out.
+// UECA reports a binding that does not settle only after its re-convergence rounds run out, so a
+// refused text is given all of them before anything is asserted.
 async function drainBindingRounds() {
     for (let round = 0; round < 20; round++) {
         await settle();
     }
 }
 
-// Offers `text` as the input's new content in one go, as a paste would. A rejected text currently
-// makes UECA report a binding divergence (the BUG documented below); those reports are discarded
-// here so these tests assert only what they are about.
+// Offers `text` as the input's new content in one go, as a paste would.
 async function offerText(text: string) {
     fireEvent.change(textbox(), { target: { value: text } });
     await drainBindingRounds();
-    takeUecaErrors();
 }
 
 function helperText(): HTMLElement {
@@ -147,32 +145,46 @@ describe("NumberField", () => {
             expect(model.value).toBe(7);
         });
 
-        // BUG: the child's onChangingValue rejects the text, but `value` is bound read-write to `_text`
-        // and the bond writes the rejected text into `_text` before the handler sees it. UECA then
-        // reports "did not settle after 10 binding rounds" — which the app's error handler turns into
-        // an exception dialog on every rejected keystroke.
-        it.fails("rejects a disallowed character without reporting a binding divergence", async () => {
+        // Regression: the child's onChangingValue refused the text, but its read-write bond had
+        // already written it into `_text`. UECA reported "did not settle after 10 binding rounds",
+        // which the app's error handler shows as an exception dialog on every rejected keystroke.
+        it("rejects a disallowed character without reporting a binding divergence", async () => {
             await mount(NumberField, { id: "n", numberStyle: "int", value: 1 });
 
             fireEvent.change(textbox(), { target: { value: "1a" } });
             await drainBindingRounds();
 
             expect(takeUecaErrors()).toEqual([]);
+            expect(textbox()).toHaveValue("1");
         });
 
-        // BUG: the same divergence decides what gets committed. The box keeps showing "12" after a
-        // rejected paste, but `_text` holds "123.4", so leaving the field commits 123.
-        it.fails("commits the text it displays after rejecting a paste", async () => {
-            const { model } = await mount(NumberField, { id: "n", numberStyle: "int", value: 12 });
+        // Regression: the same divergence decided what got committed. The box kept showing "12" after
+        // a rejected paste while `_text` held "123.4", so leaving the field committed 123.
+        it("commits the text it displays after rejecting a paste", async () => {
+            const onChange = vi.fn();
+            const { model } = await mount(NumberField, { id: "n", numberStyle: "int", value: 12, onChange });
             await userEvent.click(textbox());
 
             fireEvent.change(textbox(), { target: { value: "123.4" } });
             await drainBindingRounds();
-            takeUecaErrors();
             expect(textbox()).toHaveValue("12");
             await leave();
 
             expect(model.value).toBe(12);
+            expect(onChange).not.toHaveBeenCalled();
+        });
+
+        it("keeps accepting allowed text after refusing a character", async () => {
+            const { model } = await mount(NumberField, { id: "n", numberStyle: "int", value: 1 });
+            await userEvent.click(textbox());
+
+            fireEvent.change(textbox(), { target: { value: "1a" } });
+            await drainBindingRounds();
+            await userEvent.type(textbox(), "5");
+            await leave();
+
+            expect(textbox()).toHaveValue("15");
+            expect(model.value).toBe(15);
         });
     });
 
