@@ -51,7 +51,10 @@ function useSwitch(params?: SwitchParams): SwitchModel {
                             type="checkbox"
                             role="switch"
                             className="switch-input"
-                            checked={model.checked}
+                            // Always a boolean, as a switch is always on or off: checked={undefined}
+                            // makes React treat it as uncontrolled, and it would keep the state it
+                            // last showed while the value is unset.
+                            checked={!!model.checked}
                             disabled={model.disabled}
                             onChange={_handleChange}
                         />

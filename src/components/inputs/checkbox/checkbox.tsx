@@ -69,7 +69,10 @@ function useCheckbox(params?: CheckboxParams): CheckboxModel {
                         <input
                             type="checkbox"
                             className="checkbox-input"
-                            checked={model.checked}
+                            // Always a boolean: checked={undefined} makes React treat the box as
+                            // uncontrolled, and it would keep the state it last showed while the
+                            // value is unset (a record field not loaded yet, or sent as null).
+                            checked={!!model.checked}
                             disabled={model.disabled}
                             onChange={_handleChange}
                         />

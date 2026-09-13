@@ -266,16 +266,21 @@ describe("TextField", () => {
             expect(onFocus).not.toHaveBeenCalled();
         });
 
-        // BUG: the input renders value={undefined} while the value is undefined (the default), which
-        // makes it an UNCONTROLLED input — React warns on the first keystroke that it is switching to
-        // controlled, and once a value goes back to undefined (the owner loads a record with no email)
-        // the box keeps showing the previous text. SearchField avoids this with `value ?? ""`.
-        it.fails("empties the box when its value becomes undefined again", async () => {
-            vi.spyOn(console, "error").mockImplementation(() => { });
-            const { model } = await mount(TextField, { id: "email" });
+        // Regression: the input rendered value={undefined} while the value was unset (the default),
+        // which made it an UNCONTROLLED input. React warned on the first keystroke that it was
+        // switching to controlled, and once the value was unset again — an owner reloading a record
+        // whose field is empty, or null as a server sends it — the box kept showing the previous
+        // text. SearchField already rendered `value ?? ""`. (React logs each of those warnings once
+        // per page, so the box's content is what is asserted.)
+        it.each([
+            ["undefined", undefined, false],
+            ["null", null, false],
+            ["undefined, in a multiline field", undefined, true]
+        ])("empties the box when its value is unset again: %s", async (_case, unset, multiline) => {
+            const { model } = await mount(TextField, { id: "email", multiline });
             await userEvent.type(screen.getByRole("textbox"), "ada@example.com");
 
-            model.value = undefined;
+            model.value = unset;
             await settle();
 
             expect(screen.getByRole("textbox")).toHaveValue("");

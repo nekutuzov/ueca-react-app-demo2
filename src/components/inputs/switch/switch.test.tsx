@@ -82,6 +82,18 @@ describe("Switch", () => {
         expect(onChange).not.toHaveBeenCalled();
     });
 
+    // Regression: the input rendered checked={model.checked} as it was, so an unset value — a binding
+    // to a record field not loaded yet, or sent as null — made it an UNCONTROLLED checkbox. React
+    // warned, and the switch kept showing its last state, although a Switch has no unset state to show.
+    it.each([undefined, null])("shows a checked value that becomes %s as off", async (unset) => {
+        const { model } = await mount(Switch, { id: "s", checked: true });
+
+        model.checked = unset;
+        await settle();
+
+        expect(toggle()).not.toBeChecked();
+    });
+
     it("cannot be toggled while disabled", async () => {
         const onChange = vi.fn();
         const { model } = await mount(Switch, { id: "s", labelView: "Licensed feature", disabled: true, onChange });
