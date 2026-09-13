@@ -99,6 +99,13 @@ function useAppLoginForm(params?: AppLoginFormParams): AppLoginFormModel {
             model.modelsToValidate = [model.userInput, model.passwordInput];
         },
 
+        // The form names no page, and says so each time it is shown. Signing out puts it in place of
+        // a screen WITHOUT changing the address, and the title the history service keeps for that
+        // address would otherwise go on naming the screen it replaced.
+        mount: async () => {
+            await model.bus.unicast("App.BrowsingHistory.SetPageTitle", undefined);
+        },
+
         View: () => <model.authForm.View />
     }
 

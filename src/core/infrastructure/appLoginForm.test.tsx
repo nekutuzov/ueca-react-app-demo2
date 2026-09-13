@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AppLoginForm } from "@core";
-import { mount, settle } from "@test";
+import { mount, settle, stubMessages } from "@test";
 
 function userInput() {
     return screen.getByRole("textbox", { name: "Username" });
@@ -165,5 +165,16 @@ describe("AppLoginForm", () => {
         model.password = "secret";
         await model.validate();
         expect(model.isValid()).toBe(true);
+    });
+
+    // Regression: the form named nothing and said nothing, so shown in place of a screen at the same
+    // address — on signing out — it kept that screen's title. (The whole sign-out is covered in
+    // integration/auth.test.tsx.)
+    it("tells the history service it names no page when it is shown", async () => {
+        const bus = await stubMessages({ "App.BrowsingHistory.SetPageTitle": vi.fn(async () => { }) });
+
+        await mount(AppLoginForm, { id: "login" });
+
+        expect(bus["App.BrowsingHistory.SetPageTitle"]).toHaveBeenCalledExactlyOnceWith(undefined);
     });
 });

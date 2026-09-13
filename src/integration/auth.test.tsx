@@ -164,13 +164,12 @@ describe("Signing in and out", { timeout: 20_000 }, () => {
         expect(activeMenuItems()).toEqual(["Status"]);
     });
 
-    // BUG: AppBrowsingHistory keeps the name a screen gave itself (SetPageTitle) for as long as the
-    // browser stays at that address (appBrowsingHistory.ts:187). Signing out swaps the screen for the
-    // sign-in form WITHOUT changing the address, so the form — which names nothing — keeps the title
-    // of the screen it replaced ("Controls · Showcase — UECA-React Showcase"). That contradicts
-    // appMessage.ts on SetPageTitle: "a screen that sends nothing gets the app name alone rather than
-    // the previous page's title" — and a signed-out cold visit to the same address gets the app name.
-    it.fails("titles the sign-in form with the app name alone after signing out", async () => {
+    // Regression: AppBrowsingHistory keeps the name a screen gave itself (SetPageTitle) for as long as
+    // the browser stays at that address. Signing out swaps the screen for the sign-in form WITHOUT
+    // changing the address, so the form — which named nothing and said nothing — kept the title of the
+    // screen it replaced ("Controls · Showcase — UECA-React Showcase"), where a signed-out cold visit
+    // to the same address gets the app name alone.
+    it("titles the sign-in form with the app name alone after signing out", async () => {
         await renderApp({ url: "/showcase/controls", signedIn: true });
         await waitFor(() => expect(document.title).toBe(documentTitle("Controls · Showcase")));
 
