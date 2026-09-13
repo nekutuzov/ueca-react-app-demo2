@@ -137,14 +137,12 @@ describe("AppLayout", () => {
         expect(shownScreen().topic).toBe("layout");
     });
 
-    // BUG: `route` is a plain prop, bound two-way into the router's params (appLayout.tsx:33-36),
-    // and nothing at that source rejects what the router's onChangingRoute refuses, as UECA's
-    // re-convergence guidance asks. The router keeps its screen, but the layout keeps the refused
-    // route, and the binding retries until UECA reports "did not settle". AppRouter then answers
-    // GetRoute with a route that is not showing. Reachable: AppRouter assigns the raw route of any
-    // path lookupRoute claims — see the external-address bug above. OtherLayout, bound through its
-    // own struct, stays in step (otherLayout.test.tsx).
-    it.fails("keeps its route in step with the router when the router refuses one", async () => {
+    // Regression: `route` was a plain prop, bound two-way into the router's params, and nothing at that
+    // source rejected what the router's onChangingRoute refuses, as UECA's re-convergence guidance
+    // asks. The router kept its screen, but the layout kept the refused route, and the binding retried
+    // until UECA reported "did not settle". AppRouter then answered GetRoute with a route that was not
+    // showing. OtherLayout, bound through its own struct, stayed in step (otherLayout.test.tsx).
+    it("keeps its route in step with the router when the router refuses one", async () => {
         const { model } = await mount(AppLayout, { id: "appLayout", route: { path: "/showcase/layout" } });
 
         // The binding's retries run on timers; run them all rather than guess how long they take.
