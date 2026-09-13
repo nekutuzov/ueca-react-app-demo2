@@ -177,10 +177,10 @@ describe("RestApiClient", () => {
             expect(requestOf(fetch, 1).url).toBe(requestOf(fetch, 0).url);
         });
 
-        // BUG: a path param is checked for key presence only, and JSON.stringify(undefined) is then
-        // spliced in by String.replace as the text "undefined" (restApiClient.ts:101-104): the request
-        // goes to /users/undefined (or /users/null) instead of failing like a missing key does.
-        it.fails.each([undefined, null])("treats an explicit %s path value as missing", async (id) => {
+        // Regression: a path param was checked for key presence only, and JSON.stringify(undefined) was
+        // then spliced in by String.replace as the text "undefined": the request went to /users/undefined
+        // (or /users/null) instead of failing like a missing key does.
+        it.each([undefined, null])("treats an explicit %s path value as missing", async (id) => {
             serve();
 
             await expect(createRestAPIClient(BASE).get("/users/:id", { id })).rejects.toThrow('Parameter "id" not found');
