@@ -192,11 +192,11 @@ describe("compareValues", () => {
         expect(compareValues("item9", "item10", column())).toBeLessThan(0);
     });
 
-    // BUG: compareValues returns NaN for a number column value that is not a number
-    // (tableFormat.ts:128). Array.sort reads NaN as "equal to everything", which is no order at all,
-    // so one such value leaves the valid numbers around it unsorted. formatValue already expects
-    // these values (it shows them as-is), so sorting should cope with them too.
-    it.fails("still orders the valid numbers of a number column holding a value that is not a number", () => {
+    // Regression: compareValues returned NaN for a number column value that is not a number.
+    // Array.sort reads NaN as "equal to everything", which is no order at all, so one such value left
+    // the valid numbers around it unsorted. formatValue already expects these values (it shows them
+    // as-is), so sorting has to cope with them too.
+    it("still orders the valid numbers of a number column holding a value that is not a number", () => {
         const col = column({ dataType: "number" });
 
         const sorted = [3, "n/a", 1, 2].sort((a, b) => compareValues(a, b, col));
@@ -204,13 +204,28 @@ describe("compareValues", () => {
         expect(sorted.filter((v) => v !== "n/a")).toEqual([1, 2, 3]);
     });
 
-    // BUG: the same NaN for an unparseable date (tableFormat.ts:131) — the value _formatDate
-    // deliberately shows as-is — leaves every valid date around it unsorted.
-    it.fails("still orders the valid dates of a date column holding an unparseable value", () => {
+    // Regression: the same NaN for an unparseable date — the value _formatDate deliberately shows
+    // as-is — left every valid date around it unsorted.
+    it("still orders the valid dates of a date column holding an unparseable value", () => {
         const col = column({ dataType: "date" });
 
         const sorted = ["2024-03-01", "not a date", "2024-01-01", "2024-02-01"].sort((a, b) => compareValues(a, b, col));
 
         expect(sorted.filter((v) => v !== "not a date")).toEqual(["2024-01-01", "2024-02-01", "2024-03-01"]);
+    });
+
+    // Where such values go: after the readable ones, as text among themselves, and still before the
+    // empty ones.
+    it.each([
+        ["number", [3, null, "n/a", 1, "?"], [1, 3, "?", "n/a", null]],
+        ["date", ["2024-03-01", null, "not a date", "2024-01-01"], ["2024-01-01", "2024-03-01", "not a date", null]]
+    ] as const)("sorts the values a %s column cannot read after the readable ones and before empty ones", (dataType, values, expected) => {
+        const col = column({ dataType });
+
+        expect([...values].sort((a, b) => compareValues(a, b, col))).toEqual(expected);
+    });
+
+    it("orders NaN in a column without a data type after the numbers", () => {
+        expect([2, NaN, 1].sort((a, b) => compareValues(a, b, column()))).toEqual([1, 2, NaN]);
     });
 });

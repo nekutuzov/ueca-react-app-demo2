@@ -125,16 +125,32 @@ function compareValues<T>(x: unknown, y: unknown, column: TableColumn<T>): numbe
     }
 
     if (column.dataType === "number") {
-        return Number(x) - Number(y);
+        return _compareReadings(Number(x), Number(y), x, y);
     }
     if (column.dataType === "date" || column.dataType === "time" || column.dataType === "dateTime") {
-        return new Date(x as string).getTime() - new Date(y as string).getTime();
+        return _compareReadings(new Date(x as string).getTime(), new Date(y as string).getTime(), x, y);
     }
     if (typeof x === "number" && typeof y === "number") {
-        return x - y;
+        return _compareReadings(x, y, x, y);
     }
 
     // The shared collator: "Ä" sorts next to "A" and "item10" after "item9" with `numeric`.
+    return textCollator.compare(String(x), String(y));
+}
+
+// Compares two values by what the column reads them as. A value it cannot read — "n/a" in a number
+// column, which formatValue shows as it is — sorts after every readable one, and among its own kind
+// as text. Subtracting gave NaN, which Array.sort takes for "equal to everything": no order at all,
+// and the readable values around it were left unsorted.
+function _compareReadings(a: number, b: number, x: unknown, y: unknown): number {
+    const aReadable = !Number.isNaN(a);
+    const bReadable = !Number.isNaN(b);
+    if (aReadable && bReadable) {
+        return a - b;
+    }
+    if (aReadable !== bReadable) {
+        return aReadable ? -1 : 1;
+    }
     return textCollator.compare(String(x), String(y));
 }
 
