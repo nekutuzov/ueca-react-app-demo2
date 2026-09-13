@@ -54,7 +54,10 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                 () => model.__defaultTabId ?? model.selectedTab?.getTabId(),
                 (v) => {
                     if (model.tabs?.length) {
-                        model.selectedTab = v ? model.getTab(v) : model.tabs[0];
+                        // An id that names no tab falls back to the first, as it does at start-up.
+                        // Looked up alone, it deselected every tab and blanked the panel — a stale
+                        // ?tab= in a route a TabsScreen binds did exactly that.
+                        model.selectedTab = (v && model.getTab(v)) || model.tabs[0];
                     } else {
                         model.__defaultTabId = v;
                     }

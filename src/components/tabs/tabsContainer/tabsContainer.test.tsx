@@ -142,11 +142,11 @@ describe("TabsContainer", () => {
         expect(model.getTabIndex("missing")).toBe(-1);
     });
 
-    // BUG: selectedTabId's setter only guards the moment before tabs exist, while _initTabs (which
-    // falls back to the first tab "when nothing is selected") runs on tab changes alone. So an id
-    // that names no tab — a stale ?tab= in a route a TabsScreen binds — deselects every tab and
-    // blanks the panel, although the same id given at start-up falls back to the first tab.
-    it.fails("keeps a tab selected when selectedTabId is set to an id that names no tab", async () => {
+    // Regression: selectedTabId's setter only guarded the moment before tabs exist, while _initTabs
+    // (which falls back to the first tab "when nothing is selected") runs on tab changes alone. So an
+    // id that names no tab — a stale ?tab= in a route a TabsScreen binds — deselected every tab and
+    // blanked the panel, although the same id given at start-up falls back to the first tab.
+    it("keeps a tab selected when selectedTabId is set to an id that names no tab", async () => {
         const { model } = await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL, ADVANCED] });
 
         model.selectedTabId = "missing";
@@ -154,6 +154,18 @@ describe("TabsContainer", () => {
 
         expect(selectedButtonIds()).toHaveLength(1);
         expect(panelText()).not.toBe("");
+    });
+
+    it("falls back to the first tab, and reports it, for an id that names no tab", async () => {
+        const { model } = await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL, ADVANCED] });
+        model.selectedTabId = "advanced";
+        await settle();
+
+        model.selectedTabId = "missing";
+        await settle();
+
+        expect(selectedButtonIds()).toEqual(["tabs.general"]);
+        expect(model.selectedTabId).toBe("general");
     });
 
     describe("with tab models from its owner", () => {
