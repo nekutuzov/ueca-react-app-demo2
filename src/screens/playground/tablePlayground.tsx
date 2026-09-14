@@ -292,7 +292,9 @@ function useTablePlayground(params?: TablePlaygroundParams): TablePlaygroundMode
             {
                 key: "rowNumber",
                 titleView: "#",
-                width: 64,
+                // Room for five digits, the largest row count's 10,000. At 64px, 13px digits fitted
+                // four inside the cell padding, and row 10,000 read "1000".
+                width: 80,
                 align: "right",
                 // Computed, so it numbers the DISPLAYED order and renumbers on sort.
                 cellView: (cell) => <Block className="ueca-caption">{cell.rowNumber}</Block>

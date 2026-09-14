@@ -131,6 +131,15 @@ describe("DataTopic", () => {
             expect(minimumWidth(features)).toBeGreaterThan(1180);
         });
 
+        // jsdom lays nothing out, so the room is worked out from the type: the table's 13px digits
+        // are 7.8px wide, and a cell keeps 16px of padding on each side. At 56px rows 1,292–1,298
+        // all read "129".
+        it("leaves the row-number column room for its last row number", async () => {
+            await mount(DataTopic, { id: TOPIC });
+
+            expect(parseFloat(table("featureTable").style.gridTemplateColumns)).toBeGreaterThanOrEqual(2 * 16 + String(5000).length * 7.8);
+        });
+
         it("reports a desktop-style multi-selection and clears it on Escape", async () => {
             await mount(DataTopic, { id: TOPIC });
             const features = table("featureTable");

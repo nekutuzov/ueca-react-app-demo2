@@ -139,6 +139,14 @@ describe("TablePlayground", () => {
         expect(cells(bodyRows()[0]).slice(0, 2)).toEqual(["1", "10100"]);
     });
 
+    // jsdom lays nothing out, so the room is worked out from the type: the table's 13px digits are
+    // 7.8px wide, and a cell keeps 16px of padding on each side. At 64px row 10,000 read "1000".
+    it("leaves the row-number column room for the largest row count", async () => {
+        await mountPlayground();
+
+        expect(parseFloat(preview().style.gridTemplateColumns)).toBeGreaterThanOrEqual(2 * 16 + String(10000).length * 7.8);
+    });
+
     // Cached per size: rebuilding 10,000 rows on every render would be wasted work.
     it("reuses the orders it built for a row count it has shown before", async () => {
         const { model } = await mountPlayground();

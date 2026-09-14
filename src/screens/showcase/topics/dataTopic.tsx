@@ -149,7 +149,9 @@ function useDataTopic(params?: DataTopicParams): DataTopicModel {
                 {
                     key: "rowNumber",
                     titleView: "#",
-                    width: 56,
+                    // Room for four digits, the feature table's 5,000. At 56px, 13px digits fitted
+                    // three inside the cell padding: rows 1,292–1,298 all read "129".
+                    width: 72,
                     align: "right",
                     // A computed column: no field, so nothing to sort by — it numbers the DISPLAYED
                     // order and renumbers when the table is sorted.
