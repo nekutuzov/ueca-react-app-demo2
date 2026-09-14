@@ -14,9 +14,7 @@ type Order = {
     number: number;
     customer: string;
     status: "paid" | "pending" | "refunded";
-    items: number;
     total: number;
-    created: string;
 };
 
 const STATUS_INTENT = { paid: "success", pending: "warning", refunded: "error" } as const;
@@ -285,6 +283,9 @@ function useTablePlayground(params?: TablePlaygroundParams): TablePlaygroundMode
         model.preview.filters = {};
     }
 
+    // Five columns: they fit the stage, which the page band holds to about 720px beside the
+    // properties panel. With Items and Created as well, the preview scrolled sideways even at the
+    // widest window.
     function _columns(): TableColumn<Order>[] {
         const sortable = model.sortable;
         const filterable = model.filterable;
@@ -317,9 +318,7 @@ function useTablePlayground(params?: TablePlaygroundParams): TablePlaygroundMode
                     />
                 )
             },
-            { key: "items", titleView: "Items", field: "items", dataType: "number", sortable, width: 90 },
-            { key: "total", titleView: "Total", field: "total", dataType: "number", decimals: 2, sortable, width: 120 },
-            { key: "created", titleView: "Created", field: "created", dataType: "dateTime", sortable, width: 180 }
+            { key: "total", titleView: "Total", field: "total", dataType: "number", decimals: 2, sortable, width: 120 }
         ];
     }
 
@@ -382,9 +381,7 @@ function _orders(count: number): Order[] {
         number: 10001 + i,
         customer: customers[(i * 5) % customers.length],
         status: statuses[(i * 3) % statuses.length],
-        items: ((i * 7) % 12) + 1,
-        total: Math.round((((i * 97) % 90000) + 1500)) / 100,
-        created: new Date(Date.UTC(2026, 7, 1 + (i % 28), 8 + (i % 10), (i * 13) % 60)).toISOString()
+        total: Math.round((((i * 97) % 90000) + 1500)) / 100
     }));
     ORDER_CACHE.set(count, orders);
     return orders;

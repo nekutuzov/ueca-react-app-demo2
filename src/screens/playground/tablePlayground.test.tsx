@@ -46,9 +46,16 @@ function bodyRows(): HTMLElement[] {
     return [...preview().querySelectorAll<HTMLElement>(".ueca-table-body-row")];
 }
 
-// #, Order, Customer, Status, Items, Total, Created
+// #, Order, Customer, Status, Total
 function cells(row: HTMLElement): string[] {
     return [...row.querySelectorAll("[role=gridcell]:not(.ueca-table-filler)")].map((cell) => cell.textContent);
+}
+
+// The narrowest the preview's columns can be laid out: each track's fixed width, or the minimum of
+// a minmax(). The trailing filler track has none.
+function minimumWidth(): number {
+    return [...preview().style.gridTemplateColumns.matchAll(/minmax\((\d+)px,[^)]*\)|(\d+)px/g)]
+        .reduce((sum, [, min, fixed]) => sum + Number(min ?? fixed), 0);
 }
 
 function filterInputs(): HTMLInputElement[] {
@@ -109,13 +116,23 @@ describe("TablePlayground", () => {
     it("draws the same sample orders every time", async () => {
         await mountPlayground();
 
-        expect(bodyRows().slice(0, 5).map((row) => cells(row).slice(0, 6))).toEqual([
-            ["1", "10001", "Northwind Traders", "paid", "1", "15.00"],
-            ["2", "10002", "Wide World Importers", "paid", "8", "15.97"],
-            ["3", "10003", "Fabrikam", "paid", "3", "16.94"],
-            ["4", "10004", "Litware", "refunded", "10", "17.91"],
-            ["5", "10005", "Tailspin Toys", "pending", "5", "18.88"]
+        expect(bodyRows().slice(0, 5).map((row) => cells(row))).toEqual([
+            ["1", "10001", "Northwind Traders", "paid", "15.00"],
+            ["2", "10002", "Wide World Importers", "paid", "15.97"],
+            ["3", "10003", "Fabrikam", "paid", "16.94"],
+            ["4", "10004", "Litware", "refunded", "17.91"],
+            ["5", "10005", "Tailspin Toys", "pending", "18.88"]
         ]);
+    });
+
+    // Regression: with Items and Created as well, the columns needed 874px and the preview
+    // scrolled sideways at any window size. The page band holds the stage to about 720px beside the
+    // properties panel, and to 700px at 1440px with the sidebar open.
+    it("keeps its columns inside the stage", async () => {
+        await mountPlayground();
+
+        expect(within(preview()).getAllByRole("columnheader").map((h) => h.textContent)).toEqual(["#", "Order", "Customer", "Status", "Total"]);
+        expect(minimumWidth()).toBeLessThanOrEqual(700);
     });
 
     it("colours each status by its intent", async () => {
