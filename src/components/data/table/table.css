@@ -400,3 +400,13 @@
     color: var(--warning-ink);
     text-align: left;
 }
+
+/* Both span the grid's full width, which a wide table scrolls: their text stays at the viewport's
+   left edge rather than scrolling away with the columns, and wraps within the viewport. */
+.ueca-table-empty > *,
+.ueca-table-footer > * {
+    position: sticky;
+    left: var(--space-small);
+    width: max-content;
+    max-width: calc(var(--table-viewport-w, 100%) - 2 * var(--space-small));
+}
