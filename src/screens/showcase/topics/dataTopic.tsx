@@ -13,9 +13,24 @@ type Site = {
     drift: number;
     lastReading: string;
     licensed: boolean;
+    battery: number;
+    signal: number;
+    alarms: number;
+    firmware: string;
 };
 
 const STATUS_INTENT = { online: "success", degraded: "warning", offline: "error" } as const;
+
+const FIRMWARE = ["4.2.1", "4.3.0", "5.0.2"];
+
+// The station-health columns only the feature table shows. They make it wider than the page can
+// ever be, so at any window size there are columns to scroll under its pinned first column.
+const HEALTH_COLUMNS: TableColumn<Site>[] = [
+    { key: "battery", titleView: "Battery (V)", field: "battery", dataType: "number", decimals: 1, sortable: true, width: 110 },
+    { key: "signal", titleView: "Signal (dBm)", field: "signal", dataType: "number", sortable: true, width: 120 },
+    { key: "alarms", titleView: "Alarms", field: "alarms", dataType: "number", sortable: true, width: 90 },
+    { key: "firmware", titleView: "Firmware", field: "firmware", sortable: true, width: 110 }
+];
 
 // Deterministic sample data — no Math.random, so the specimen looks the same every reload and a
 // screenshot diff means something.
@@ -29,7 +44,11 @@ function _sites(count: number): Site[] {
         instruments: ((i * 13) % 47) + 3,
         drift: (((i * 37) % 200) - 100) / 10,
         lastReading: new Date(Date.UTC(2026, 7, 15, 6 + (i % 12), (i * 11) % 60)).toISOString(),
-        licensed: i % 4 !== 0
+        licensed: i % 4 !== 0,
+        battery: (118 + ((i * 23) % 22)) / 10,
+        signal: -58 - ((i * 31) % 51),
+        alarms: Math.max(0, ((i * 11) % 9) - 5),
+        firmware: FIRMWARE[(i * 5) % FIRMWARE.length]
     }));
 }
 
@@ -94,10 +113,15 @@ function useDataTopic(params?: DataTopicParams): DataTopicModel {
             // shared rowEditButton is stripped because it already serves sitesTable above, and one
             // child model rendered from two tables at once would duplicate its DOM id (and so its
             // tooltip anchor). Within ONE table, multiSelect is fine: actions render for the
-            // active row alone, not for every selected row.
+            // active row alone, not for every selected row. The health columns make it wider than
+            // its frame, which spans the page like the tables around it: capping the frame's width
+            // instead left this one table visibly narrower than its neighbours.
             featureTable: useTable<Site>({
                 rows: () => MANY_SITES,
-                columns: () => model._columns().map((c: TableColumn<Site>) => ({ ...c, actionView: undefined as typeof c.actionView })),
+                columns: () => [
+                    ...model._columns().map((c: TableColumn<Site>) => ({ ...c, actionView: undefined as typeof c.actionView })),
+                    ...HEALTH_COLUMNS
+                ],
                 rowKeyField: "id",
                 sortKey: "name",
                 virtualized: true,
@@ -246,12 +270,12 @@ function useDataTopic(params?: DataTopicParams): DataTopicModel {
                                  Desktop-style selection — plain click for one row, Ctrl/Cmd+click to toggle,
                                  Shift+click for a range, Ctrl+A for everything, Escape to clear. Click the table,
                                  then drive it from the keyboard: arrows move the current row, Shift+arrow extends,
-                                 Space toggles, Enter opens. The Site column stays pinned while the columns scroll
+                                 Space toggles, Enter opens. The first column stays pinned while the others scroll
                                  under it."
                     framed={false}
                 >
                     <Col spacing="small">
-                        <Block className="showcase-table-frame" maxWidth={640} sx={{ height: 360 }}>
+                        <Block className="showcase-table-frame" sx={{ height: 360 }}>
                             <model.featureTable.View />
                         </Block>
                         <model._SelectionReadoutView />

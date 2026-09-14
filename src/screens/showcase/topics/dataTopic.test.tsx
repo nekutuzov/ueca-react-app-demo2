@@ -18,6 +18,13 @@ function cells(row: HTMLElement): string[] {
     return [...row.querySelectorAll("[role=gridcell]:not(.ueca-table-filler)")].map((cell) => cell.textContent);
 }
 
+// The narrowest a table's columns can be laid out: each track's fixed width, or the minimum of a
+// minmax(). The trailing filler track has none.
+function minimumWidth(tableEl: HTMLElement): number {
+    return [...tableEl.style.gridTemplateColumns.matchAll(/minmax\((\d+)px,[^)]*\)|(\d+)px/g)]
+        .reduce((sum, [, min, fixed]) => sum + Number(min ?? fixed), 0);
+}
+
 function readout(marker: "sorted by:" | "current:"): string {
     return [...document.querySelectorAll(".showcase-specimen-label")]
         .map((el) => el.textContent)
@@ -106,6 +113,22 @@ describe("DataTopic", () => {
             expect(bodyRows(features).length).toBeGreaterThan(0);
             expect(bodyRows(features).length).toBeLessThan(100);
             expect(features.querySelector(".ueca-table-spacer")).not.toBeNull();
+        });
+
+        // Regression: its frame was capped at 640px so its columns would scroll, which left it
+        // visibly narrower than the tables above and below. Its columns now outgrow the widest
+        // frame the page can give it: the 1180px band (--band-w).
+        it("spans the page like its neighbours, with columns to scroll under the pinned one", async () => {
+            await mount(DataTopic, { id: TOPIC });
+            const features = table("featureTable");
+
+            expect(features.parentElement.style.maxWidth).toBe("");
+            expect(within(features).getAllByRole("columnheader").map((h) => h.textContent)).toEqual([
+                "#", "Site", "Status", "Instruments", "Drift (mm)", "Licensed", "Last reading",
+                "Battery (V)", "Signal (dBm)", "Alarms", "Firmware"
+            ]);
+            expect(cells(bodyRows(features)[0]).slice(7)).toEqual(["12.2", "-80", "3", "5.0.2"]);
+            expect(minimumWidth(features)).toBeGreaterThan(1180);
         });
 
         it("reports a desktop-style multi-selection and clears it on Escape", async () => {
