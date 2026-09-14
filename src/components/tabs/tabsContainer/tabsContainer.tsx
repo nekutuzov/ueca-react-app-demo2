@@ -277,8 +277,10 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                         </div>
                     </div>
                     {/* This panel clips and tab content sits flush against its edge, so it reserves
-                        the focus bleed — see theme.css. */}
-                    <Col className="ueca-focus-bleed" fill overflow="auto" spacing="default">
+                        the focus bleed — see theme.css. Its width is auto rather than fill's 100%:
+                        at 100% the bleed's negative margins shifted the panel left instead of
+                        widening it, and its content came in twice the bleed on the right. */}
+                    <Col className="ueca-focus-bleed" fill width={"auto"} overflow="auto" spacing="default">
                         {model.selectedTab?.contentView}
                     </Col>
                 </div>

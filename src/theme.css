@@ -1,5 +1,5 @@
 /* ============================================================
-   Page surface, base typography, and the markdown article retheme.
+   Page surface, base typography, the focus-bleed utility, and the markdown article retheme.
 
    Built on the tokens in tokens.css (scale) and themes.css (colour). Nothing
    here hard-codes a colour: every value is a token, so both themes come from
@@ -50,6 +50,39 @@ body {
 * {
     scrollbar-color: color-mix(in srgb, var(--ink) 24%, transparent) transparent;
     scrollbar-width: thin;
+}
+
+/* ============================================================
+   Focus bleed — the one global utility in this file.
+
+   A container that CLIPS (overflow other than visible) and lets content start flush at its own edge
+   cuts the focus ring off any control sitting there. It is not "a control near the edge of the
+   screen": there can be plenty of visible whitespace beside a control that loses its ring, because
+   the CLIP LINE runs along the container's edge, not the window's.
+
+   Reserve the room inside the clip and pull the box back out by the same amount, so the ring has
+   space and nothing moves. Real padding would inset the container's content, which shows up as
+   tabbed screens sitting further in than plain ones. This works because `overflow` clips at the
+   PADDING box, not the content box, so the pulled-out edges land inside the parent's own padding
+   and still paint.
+
+   Wear it on the CLIPPING CONTAINER, never on the control. Where a container clips deliberately —
+   a `text-overflow: ellipsis` cell, fixed-height chrome — there is nothing to reserve and the
+   control uses an inset ring instead.
+
+   NOT safe everywhere, which is why it is opt-in: a negative margin on a table's body scroller
+   would shift it against its own header, and on the app shell it would push the frame outside the
+   viewport. Both of those clip deliberately and use inset rings.
+   ============================================================ */
+.ueca-focus-bleed {
+    padding: var(--focus-bleed);
+    margin: calc(-1 * var(--focus-bleed));
+    /* Padding alone is not enough on the SCROLL axis: scroll-into-view (what Tab and .focus() do)
+       stops as soon as the control is just barely visible, parking it flush against the scrollport
+       edge — so the reserved room is there but is never scrolled to, and the ring is clipped again
+       at the bottom. scroll-padding shrinks the region scroll-into-view aims for, so it keeps the
+       bleed clear. */
+    scroll-padding: var(--focus-bleed);
 }
 
 /* ============================================================

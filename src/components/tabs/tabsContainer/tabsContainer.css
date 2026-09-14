@@ -21,7 +21,8 @@
     display: flex;
     position: relative;
     border-bottom: var(--hairline) solid var(--tab-strip-line, var(--border));
-    /* The rule and the first row of content sit flush by default; a theme can space them apart. */
+    /* No gap by default, beyond the focus bleed the content panel keeps below the rule; a theme can
+       space them further apart. */
     margin-bottom: var(--tab-strip-gap, 0);
 }
 
@@ -142,8 +143,15 @@
 /* The content panel scrolls, so it clips — and tab content starts flush against that edge, which
    cut the focus ring off any control sitting there (measured at that edge: a
    Switch lost all 4px of its ring on the left and 2.8px of the top). It therefore wears the shared
-   `ueca-focus-bleed` class from theme.css; `flex` and `overflow` come from the Col's own props, so
-   there is nothing left for this file to say about it. */
+   `ueca-focus-bleed` class from theme.css; `flex` and `overflow` come from the Col's own props.
+
+   Except at the top of a horizontal strip, where the bleed would pull the panel up under the strip
+   itself: the scrolled content then showed through the strip's bottom edge, across its rule and the
+   selected tab's underline. The panel is pulled up only as far as a theme's --tab-strip-gap leaves
+   room for; with no gap, the first row sits the bleed below the rule instead of flush against it. */
+.ueca-tabs-container.horizontal > .ueca-focus-bleed {
+    margin-top: calc(-1 * min(var(--focus-bleed), var(--tab-strip-gap, 0px)));
+}
 
 /* Same clipping as the tabs themselves, so the same inset ring. */
 .ueca-tabs-scroll-button:focus-visible {

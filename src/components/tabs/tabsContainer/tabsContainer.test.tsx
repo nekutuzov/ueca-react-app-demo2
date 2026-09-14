@@ -51,6 +51,30 @@ function markupOf(element: React.ReactElement): string {
     return html;
 }
 
+// The content panel, found by its place under the strip rather than by the class it wears.
+function panel(): HTMLElement {
+    return document.querySelector(".ueca-tabs-header").nextElementSibling as HTMLElement;
+}
+
+// Stylesheets are read from disk because Vitest empties every CSS import, `?raw` included. The test
+// tsconfig carries no Node typings, so the one Node API used is typed here.
+declare const process: { getBuiltinModule(id: "node:fs"): { readFileSync(path: string, encoding: "utf8"): string } };
+
+function projectFile(path: string): string {
+    const dir = (import.meta as ImportMeta & { dirname: string }).dirname;
+    return process.getBuiltinModule("node:fs").readFileSync(`${dir}/../../../../${path}`, "utf8");
+}
+
+// The declarations of the stylesheet rule for exactly this selector, comments dropped.
+function ruleDeclarations(css: string, selector: string): Record<string, string> {
+    const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const body = new RegExp(`(?:^|\\})\\s*${escaped}\\s*\\{([^}]*)\\}`).exec(css.replace(/\/\*[\s\S]*?\*\//g, ""))?.[1] ?? "";
+    return Object.fromEntries(body.split(";").map((d) => d.trim()).filter(Boolean).map((d) => {
+        const colon = d.indexOf(":");
+        return [d.slice(0, colon).trim(), d.slice(colon + 1).trim()];
+    }));
+}
+
 describe("TabsContainer", () => {
     it("renders its config tabs, selecting the first and showing its content", async () => {
         const { model } = await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL, ADVANCED] });
@@ -360,6 +384,29 @@ describe("TabsContainer", () => {
             await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL], centered: true });
 
             expect(document.querySelector(".ueca-tabs-list")).toHaveAttribute("class", "ueca-tabs-list centered");
+        });
+
+        // The panel clips and tab content sits flush against its edge, so it wears ueca-focus-bleed. The
+        // class used to be worn with nothing defining it: the panel reserved no room, and a control at its
+        // edge lost its focus ring on three sides.
+        it("reserves the focus bleed around its panel, with a rule theme.css defines", async () => {
+            await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL] });
+
+            expect(panel()).toHaveClass("ueca-focus-bleed");
+            expect(ruleDeclarations(projectFile("src/theme.css"), ".ueca-focus-bleed")).toEqual({
+                padding: "var(--focus-bleed)",
+                margin: "calc(-1 * var(--focus-bleed))",
+                "scroll-padding": "var(--focus-bleed)"
+            });
+            expect(projectFile("src/tokens.css")).toMatch(/--focus-bleed:\s*\d+px;/);
+        });
+
+        // fill's width: 100% held the panel to the container's width, so the bleed's negative margins
+        // shifted it left instead of widening it, and its content came in twice the bleed on the right.
+        it("lets its panel stretch, so the bleed's margins widen it rather than shift it", async () => {
+            await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL] });
+
+            expect(panel().style.width).toBe("auto");
         });
     });
 
