@@ -572,6 +572,89 @@ describe("TabsContainer", () => {
         });
     });
 
+    // Chrome scrolls a focused element into view only when none of it is visible, so a tab partly
+    // scrolled out of the strip stayed partly hidden - and part of its focus ring with it - when it
+    // took focus. jsdom has no layout: the strip shows 300px from x (or y) = 100, and every tab sits in
+    // full view unless a test places it. jsdom's :focus-visible does follow the last input, but its record
+    // of it carries over from earlier tests in the file, so each test says how the focus arrived.
+    describe("a tab taking keyboard focus", () => {
+        function focusArrivesBy(input: "keyboard" | "pointer") {
+            for (const button of screen.getAllByRole("button")) {
+                const matches = button.matches.bind(button);
+                vi.spyOn(button, "matches").mockImplementation((selector) =>
+                    selector === ":focus-visible" ? input === "keyboard" && button === document.activeElement : matches(selector));
+            }
+        }
+
+        function box(start: number, size: number, horizontal = true): DOMRect {
+            const [left, top, width, height] = horizontal ? [start, 0, size, 48] : [0, start, 160, size];
+            return { left, top, width, height, right: left + width, bottom: top + height, x: left, y: top, toJSON: () => ({}) } as DOMRect;
+        }
+
+        async function strip(orientation: "horizontal" | "vertical" = "horizontal") {
+            await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL, ADVANCED, HELP], variant: "scrollable", orientation });
+            const horizontal = orientation === "horizontal";
+            vi.spyOn(scroller(), "getBoundingClientRect").mockReturnValue(box(100, 300, horizontal));
+            measureScroller(horizontal ? { clientWidth: 300 } : { clientHeight: 300 });
+            for (const button of screen.getAllByRole("button")) {
+                vi.spyOn(button, "getBoundingClientRect").mockReturnValue(box(150, 50, horizontal));
+            }
+        }
+
+        function placeTab(name: string, start: number, size: number, horizontal = true) {
+            vi.spyOn(screen.getByRole("button", { name }), "getBoundingClientRect").mockReturnValue(box(start, size, horizontal));
+        }
+
+        // From the page to General, then on to Advanced.
+        async function tabToAdvanced() {
+            await userEvent.tab();
+            await userEvent.tab();
+            expect(screen.getByRole("button", { name: "Advanced" })).toHaveFocus();
+        }
+
+        it.each([
+            ["partly past the strip's end, forward by the part hidden", 350, 120, 0, 70],
+            ["partly before the strip's start, back by the part hidden", 60, 120, 200, 160],
+            ["in full view, not at all", 150, 120, 200, 200],
+            ["wider than the strip, to its start", 150.5, 400, 0, 50],
+            ["a fraction past the end, by a whole pixel", 280.4, 120, 0, 1]
+        ] as const)("scrolls the strip for a tab %s", async (_case, start, size, scrollLeft, expected) => {
+            await strip();
+            placeTab("Advanced", start, size);
+            scroller().scrollLeft = scrollLeft;
+            focusArrivesBy("keyboard");
+
+            await tabToAdvanced();
+
+            expect(scroller().scrollLeft).toBe(expected);
+        });
+
+        it("scrolls a vertical strip along its height", async () => {
+            await strip("vertical");
+            placeTab("Advanced", 370, 48, false);
+            focusArrivesBy("keyboard");
+
+            await tabToAdvanced();
+
+            expect(scroller().scrollTop).toBe(18);
+            expect(scroller().scrollLeft).toBe(0);
+        });
+
+        // A click focuses the tab as well, but sliding it out from under the pointer before the button is
+        // released would lose the click.
+        it("leaves the strip alone when a click focuses the tab", async () => {
+            await strip();
+            placeTab("Advanced", 350, 120);
+            focusArrivesBy("pointer");
+
+            await userEvent.click(screen.getByRole("button", { name: "Advanced" }));
+            await settle();
+
+            expect(selectedButtonIds()).toEqual(["tabs.advanced"]);
+            expect(scroller().scrollLeft).toBe(0);
+        });
+    });
+
     it("listens for window resizes only while mounted", async () => {
         const addListener = vi.spyOn(window, "addEventListener");
         const removeListener = vi.spyOn(window, "removeEventListener");

@@ -179,7 +179,7 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
                 ].filter(Boolean).join(" ");
 
                 return (
-                    <div ref={model.__scrollerRef} className={scrollerClasses}>
+                    <div ref={model.__scrollerRef} className={scrollerClasses} onFocus={_revealFocusedTab}>
                         <div className={listClasses}>
                             {tabs}
                         </div>
@@ -325,6 +325,35 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
 
         // Check overflow after tabs initialization
         setTimeout(() => model._checkOverflow(), 0);
+    }
+
+    // A tab partly scrolled out of the strip stayed partly hidden when it took focus, and with it part of
+    // its focus ring: Chrome scrolls a focused element into view only when none of it is visible. The
+    // strip is scrolled just far enough to show the whole tab - its start, for a tab wider than the strip.
+    // Keyboard focus only: a click focuses the tab too, and sliding the tab out from under the pointer
+    // before the button is released would lose the click.
+    function _revealFocusedTab(e: React.FocusEvent<HTMLDivElement>) {
+        const scroller = e.currentTarget;
+        const tab = e.target as HTMLElement;
+        if (tab === scroller || !tab.matches(":focus-visible")) {
+            return;
+        }
+        const horizontal = model.orientation === "horizontal";
+        const view = scroller.getBoundingClientRect();
+        const box = tab.getBoundingClientRect();
+        const start = horizontal ? box.left - (view.left + scroller.clientLeft) : box.top - (view.top + scroller.clientTop);
+        const pastEnd = horizontal ? start + box.width - scroller.clientWidth : start + box.height - scroller.clientHeight;
+        // Rounded towards the edge being revealed: the scroll position snaps to whole pixels, and a
+        // fraction short would leave the ring's outer pixel under the strip's edge.
+        const delta = start < 0 || pastEnd > start ? Math.floor(start) : Math.ceil(Math.max(0, pastEnd));
+        if (!delta) {
+            return;
+        }
+        if (horizontal) {
+            scroller.scrollLeft += delta;
+        } else {
+            scroller.scrollTop += delta;
+        }
     }
 
     // Whether configured tabs are still to be created by the render.
