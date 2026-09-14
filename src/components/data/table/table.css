@@ -390,9 +390,12 @@
     text-align: center;
 }
 
+/* z-index 2: above the pinned column's body cells (z 1) that scroll beneath it. Without one the
+   pinned cells painted over the footer, so row numbers showed on its band and hid its first words. */
 .ueca-table-footer {
     position: sticky;
     bottom: 0;
+    z-index: 2;
     background-color: var(--surface);
     color: var(--warning-ink);
     text-align: left;
