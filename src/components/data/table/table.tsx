@@ -5,7 +5,8 @@ import { SortDirection, TableColumn, TableModel, TableParams, TableStruct } from
 import { cellClass, cellContent, cellOf, stickyClassFor } from "./tableFormat";
 import { derive, hasFilterRow, headerHeight, rowKeyOf, stableColumns, updateWindow } from "./tableDerive";
 import {
-    endResize, filterKeyDown, keyDown, moveResize, resetColumnWidth, rowClick, rowMouseDown, startResize
+    endResize, filterKeyDown, focusIn, focusOut, keyDown, moveResize, pointerDown, resetColumnWidth, rowClick,
+    rowMouseDown, startResize
 } from "./tableInteractions";
 import "./table.css";
 
@@ -46,6 +47,7 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
             overscan: 6,
             maxRows: 2000,
             emptyView: "No rows to show",
+            _keyboardFocus: false,
             _hoverKey: undefined,
             _winStart: 0,
             _winEnd: 0,
@@ -442,7 +444,8 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
             const className = "ueca-table"
                 + (model.virtualized ? " virtualized" : "")
                 + (model.stickyFirstColumn ? " sticky-first" : "")
-                + (_hasCurrentRow() ? " has-current" : "");
+                + (_hasCurrentRow() ? " has-current" : "")
+                + (model._keyboardFocus ? " keyboard-focus" : "");
 
             // The row height feeds the fixed cell height in virtualized mode.
             const vars = {
@@ -459,6 +462,9 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
                 spacing="none"
                 overflow="auto"
                 tabIndex={_isSelectable() ? 0 : undefined}
+                onFocus={(e) => { focusIn(model, e); }}
+                onBlur={(e) => { focusOut(model, e); }}
+                onPointerDown={() => { pointerDown(model); }}
                 onKeyDown={(e) => { keyDown(model, e); }}
                 onScroll={() => { updateWindow(model); }}
                 sx={vars}

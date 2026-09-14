@@ -67,6 +67,9 @@ type BlockProps = {
     onClick?: React.MouseEventHandler<HTMLDivElement>;
     onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
     onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
+    // A press, which a focusable composite (Table) needs to tell mouse use from keyboard use: it
+    // fires for a press on the element's own scrollbar too, which no click does.
+    onPointerDown?: React.PointerEventHandler<HTMLDivElement>;
     // Focus pair as well as the pointer pair: a hover-only affordance (a tooltip, most often) is
     // invisible to keyboard users without these.
     onFocus?: React.FocusEventHandler<HTMLDivElement>;

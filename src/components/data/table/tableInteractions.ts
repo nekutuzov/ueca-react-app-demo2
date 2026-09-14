@@ -92,10 +92,12 @@ function keyDown<T>(model: TableModel<T>, e: React.KeyboardEvent<HTMLDivElement>
         nextIndex = rows.length - 1;
     } else if (e.key === " " && model.multiSelect && currentIndex >= 0) {
         e.preventDefault();
+        model._keyboardFocus = true;
         model.toggleRowSelected(rows[currentIndex], rowKeyOf(model, rows[currentIndex], currentIndex));
         return;
     } else if ((e.ctrlKey || e.metaKey) && (e.key === "a" || e.key === "A") && model.multiSelect) {
         e.preventDefault();
+        model._keyboardFocus = true;
         model.selectAllDisplayed();
         return;
     } else if (e.key === "Escape" && model.multiSelect && (model.selectedKeys?.length ?? 0) > 0) {
@@ -106,6 +108,7 @@ function keyDown<T>(model: TableModel<T>, e: React.KeyboardEvent<HTMLDivElement>
         return;
     } else if (e.key === "Enter" && currentIndex >= 0) {
         e.preventDefault();
+        model._keyboardFocus = true;
         if (model.onRowClick) {
             model.onRowClick(rows[currentIndex], rowKeyOf(model, rows[currentIndex], currentIndex), model);
         }
@@ -115,6 +118,7 @@ function keyDown<T>(model: TableModel<T>, e: React.KeyboardEvent<HTMLDivElement>
     }
 
     e.preventDefault();
+    model._keyboardFocus = true;
     const row = rows[nextIndex];
     const key = rowKeyOf(model, row, nextIndex);
 
@@ -128,6 +132,32 @@ function keyDown<T>(model: TableModel<T>, e: React.KeyboardEvent<HTMLDivElement>
         model.selectRow(row, key);
     }
     model.scrollToRow(nextIndex);
+}
+
+// ---- focus ----
+//
+// The table shows its focus (table.css) only for keyboard use: focus that arrived from the keyboard,
+// or a key that navigates. Any press inside the table hides it again. Left to :focus-visible, a key
+// pressed after the mouse focused the table — Escape, a lone modifier — lit it too, so a click on the
+// scrollbar followed by Escape outlined the current row in one table and ringed another.
+
+function focusIn<T>(model: TableModel<T>, e: React.FocusEvent<HTMLDivElement>) {
+    // Focus moving onto the table itself, not into one of its controls. A press has already cleared
+    // the mark by now (pointerdown precedes focus), and :focus-visible still tells the keyboard's
+    // focus from the mouse's at this moment.
+    if (e.target === e.currentTarget) {
+        model._keyboardFocus = e.currentTarget.matches(":focus-visible");
+    }
+}
+
+function focusOut<T>(model: TableModel<T>, e: React.FocusEvent<HTMLDivElement>) {
+    if (e.target === e.currentTarget) {
+        model._keyboardFocus = false;
+    }
+}
+
+function pointerDown<T>(model: TableModel<T>) {
+    model._keyboardFocus = false;
 }
 
 function filterKeyDown<T>(model: TableModel<T>, e: React.KeyboardEvent<HTMLInputElement>, column: TableColumn<T>) {
@@ -184,4 +214,7 @@ function resetColumnWidth<T>(model: TableModel<T>, e: React.MouseEvent, column: 
     model._columnWidths = widths;
 }
 
-export { rowClick, rowMouseDown, keyDown, filterKeyDown, startResize, moveResize, endResize, resetColumnWidth };
+export {
+    rowClick, rowMouseDown, keyDown, focusIn, focusOut, pointerDown, filterKeyDown, startResize, moveResize, endResize,
+    resetColumnWidth
+};

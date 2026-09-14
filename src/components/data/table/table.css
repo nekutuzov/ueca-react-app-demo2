@@ -148,8 +148,9 @@
 }
 
 /* The CURRENT row — where keyboard navigation stands — gets a firmer outline, and only while the
-   table actually has keyboard focus; it is a cursor, not a state. */
-.ueca-table:focus-visible .ueca-table-body-row.current {
+   table actually has keyboard focus; it is a cursor, not a state. `keyboard-focus` (see
+   tableInteractions.ts) keeps it off after mouse use, which :focus-visible alone does not. */
+.ueca-table.keyboard-focus:focus-visible .ueca-table-body-row.current {
     --row-line: var(--accent-dim);
 }
 
@@ -324,7 +325,9 @@
    as the indicator whenever there is one and rings the container only as the fallback — rather
    than doing both at once, which would double up on every keystroke. The table sets that class
    from its model; a `:has(.current)` test on the DOM missed a current row scrolled out of a
-   virtualized table's window, which is no longer rendered, and the ring came on mid-scroll.
+   virtualized table's window, which is no longer rendered, and the ring came on mid-scroll. Like
+   the row outline, the ring waits for `keyboard-focus`: after a press on the table, a table whose
+   Escape cleared its current row was ringed while one that kept it was outlined.
 
    The ring is an element of its own, not a shadow or outline on the table: the table is its own
    scroll container, and its sticky header and pinned column painted over those, which left the
@@ -344,7 +347,7 @@
     pointer-events: none;
 }
 
-.ueca-table:focus-visible:not(.has-current) > .ueca-table-ring::after {
+.ueca-table.keyboard-focus:focus-visible:not(.has-current) > .ueca-table-ring::after {
     content: "";
     position: absolute;
     top: 0;

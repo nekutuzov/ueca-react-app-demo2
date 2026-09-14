@@ -124,6 +124,7 @@ describe("Grid", () => {
             onClick: vi.fn(),
             onMouseEnter: vi.fn(),
             onMouseLeave: vi.fn(),
+            onPointerDown: vi.fn(),
             onFocus: vi.fn(),
             onBlur: vi.fn(),
             onScroll: vi.fn(),
@@ -135,6 +136,7 @@ describe("Grid", () => {
         fireEvent.click(grid);
         fireEvent.mouseEnter(grid);
         fireEvent.mouseLeave(grid);
+        fireEvent.pointerDown(grid);
         fireEvent.focus(grid);
         fireEvent.blur(grid);
         fireEvent.scroll(grid);

@@ -566,6 +566,45 @@ describe("Table", () => {
             expect(grid().firstElementChild).toHaveAttribute("aria-hidden", "true");
         });
 
+        // `keyboard-focus` gates both focus marks (table.css). Regression: they followed
+        // :focus-visible alone, which Chromium grants for any key pressed after the mouse focused the
+        // table, so a press on its scrollbar followed by Escape outlined the current row in one table
+        // and ringed another.
+        it("shows its focus for navigation keys, not for a press followed by Escape", async () => {
+            await mountTable({ multiSelect: true, selectedKey: "s0", selectedKeys: ["s0"] });
+            const el = grid();
+
+            fireEvent.pointerDown(el);
+            el.focus();
+            fireEvent.keyDown(el, { key: "Escape" });
+            await settle();
+            expect(el).not.toHaveClass("keyboard-focus");
+
+            fireEvent.keyDown(el, { key: "ArrowDown" });
+            await settle();
+            expect(el).toHaveClass("keyboard-focus");
+
+            fireEvent.pointerDown(el);
+            await settle();
+            expect(el).not.toHaveClass("keyboard-focus");
+        });
+
+        it("shows focus that arrives from the keyboard until the table loses it", async () => {
+            await mountTable({ selectable: true });
+            const el = grid();
+            // jsdom never matches :focus-visible; Tab focus is the case where the browser does.
+            const matches = el.matches.bind(el);
+            vi.spyOn(el, "matches").mockImplementation((selector: string) => selector === ":focus-visible" || matches(selector));
+
+            el.focus();
+            await settle();
+            expect(el).toHaveClass("keyboard-focus");
+
+            el.blur();
+            await settle();
+            expect(el).not.toHaveClass("keyboard-focus");
+        });
+
         it("ignores keys pressed on a control inside a row", async () => {
             const { model } = await mountTable({
                 columns: [{ ...nameColumn, actionView: () => <button>Edit</button> }],

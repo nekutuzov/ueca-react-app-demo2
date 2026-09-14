@@ -141,6 +141,7 @@ describe("Block", () => {
             onClick: vi.fn(),
             onMouseEnter: vi.fn(),
             onMouseLeave: vi.fn(),
+            onPointerDown: vi.fn(),
             onFocus: vi.fn(),
             onBlur: vi.fn(),
             onScroll: vi.fn(),
@@ -151,6 +152,7 @@ describe("Block", () => {
         fireEvent.click(block);
         fireEvent.mouseEnter(block);
         fireEvent.mouseLeave(block);
+        fireEvent.pointerDown(block);
         fireEvent.focus(block);
         fireEvent.blur(block);
         fireEvent.scroll(block);

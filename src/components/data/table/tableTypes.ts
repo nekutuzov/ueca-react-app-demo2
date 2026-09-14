@@ -132,6 +132,11 @@ type TableStruct<T> = UIBaseStruct<{
 
         emptyView: React.ReactNode;
 
+        // Whether the table shows its focus: set when focus arrives from the keyboard or a navigation
+        // key moves the cursor, cleared by any press inside the table — its scrollbar included — and
+        // on blur. :focus-visible alone is not enough: Chromium also grants it for a key pressed after
+        // the mouse focused the table, so a click on the scrollbar followed by Escape lit a focus mark.
+        _keyboardFocus: boolean;
         _hoverKey: string;
         // The rendered window, QUANTIZED: recomputed from the live scrollTop but written only when
         // the snapped start actually moves (one write per `overscan` rows of travel). The body view

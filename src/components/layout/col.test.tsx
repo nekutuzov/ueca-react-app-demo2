@@ -164,6 +164,7 @@ describe("Col", () => {
             onClick: vi.fn(),
             onMouseEnter: vi.fn(),
             onMouseLeave: vi.fn(),
+            onPointerDown: vi.fn(),
             onFocus: vi.fn(),
             onBlur: vi.fn(),
             onScroll: vi.fn(),
@@ -175,6 +176,7 @@ describe("Col", () => {
         fireEvent.click(col);
         fireEvent.mouseEnter(col);
         fireEvent.mouseLeave(col);
+        fireEvent.pointerDown(col);
         fireEvent.focus(col);
         fireEvent.blur(col);
         fireEvent.scroll(col);

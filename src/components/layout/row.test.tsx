@@ -173,6 +173,7 @@ describe("Row", () => {
             onClick: vi.fn(),
             onMouseEnter: vi.fn(),
             onMouseLeave: vi.fn(),
+            onPointerDown: vi.fn(),
             onFocus: vi.fn(),
             onBlur: vi.fn(),
             onScroll: vi.fn(),
@@ -184,6 +185,7 @@ describe("Row", () => {
         fireEvent.click(row);
         fireEvent.mouseEnter(row);
         fireEvent.mouseLeave(row);
+        fireEvent.pointerDown(row);
         fireEvent.focus(row);
         fireEvent.blur(row);
         fireEvent.scroll(row);

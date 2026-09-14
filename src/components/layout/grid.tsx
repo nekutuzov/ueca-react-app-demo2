@@ -75,6 +75,7 @@ function Grid(props: GridProps): UECA.ReactElement {
             onClick={props?.onClick}
             onMouseEnter={props?.onMouseEnter}
             onMouseLeave={props?.onMouseLeave}
+            onPointerDown={props?.onPointerDown}
             onFocus={props?.onFocus}
             onBlur={props?.onBlur}
             onScroll={props?.onScroll}
