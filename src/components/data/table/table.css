@@ -325,8 +325,32 @@
    than doing both at once, which would double up on every keystroke. The table sets that class
    from its model; a `:has(.current)` test on the DOM missed a current row scrolled out of a
    virtualized table's window, which is no longer rendered, and the ring came on mid-scroll.
-   Inset: the table is its own scroll container, so an outward outline would be clipped. */
-.ueca-table:focus-visible:not(.has-current) {
+
+   The ring is an element of its own, not a shadow or outline on the table: the table is its own
+   scroll container, and its sticky header and pinned column painted over those, which left the
+   ring on the right and bottom edges only. `.ueca-table-ring` (rendered first by table.tsx) is
+   pinned to the viewport's top-left corner, takes no room in the grid, and draws a box the size of
+   the viewport (--table-viewport-w/-h, kept by table.tsx) above every sticky cell. Inset, inside the
+   scrollbars: an outward ring would be clipped by whatever frames the table. */
+.ueca-table-ring {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.ueca-table:focus-visible:not(.has-current) > .ueca-table-ring::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--table-viewport-w);
+    height: var(--table-viewport-h);
     box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
 }
 

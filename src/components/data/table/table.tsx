@@ -418,23 +418,16 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
         },
 
         events: {
-            // The viewport is watched while the table is virtualized, however it got there. Watching
-            // started only in `mount`, so a table switched on afterwards — the Table playground's
-            // "Virtualized" switch — never measured its viewport or heard it resize, and a viewport
-            // grown past the overscan showed a blank band below the rows until the next scroll.
-            onChangeVirtualized: (virtualized) => {
-                if (virtualized) {
-                    _observeViewport();
-                } else {
-                    _stopObservingViewport();
-                }
+            // A table switched to virtualized after mounting — the Table playground's "Virtualized"
+            // switch — sizes its window now rather than on the next scroll, which left a first page
+            // of 30 rows, and a blank band below them in a taller viewport.
+            onChangeVirtualized: () => {
+                _syncViewport();
             }
         },
 
         mount: () => {
-            if (model.virtualized) {
-                _observeViewport();
-            }
+            _observeViewport();
         },
 
         unmount: () => {
@@ -470,6 +463,7 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
                 onScroll={() => { updateWindow(model); }}
                 sx={vars}
             >
+                {_isSelectable() && <div className="ueca-table-ring" aria-hidden="true" />}
                 <model._HeaderView />
                 <model._FilterRowView />
                 <model._BodyView />
@@ -499,18 +493,27 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
         return model.displayRows().some((row, i) => rowKeyOf(model, row, i) === model.selectedKey);
     }
 
-    // Sizes the window to the viewport now, and again whenever the viewport resizes. Only a mounted
-    // table has one; an unmounted table is measured when it mounts.
+    // Measures the viewport now, and again whenever it resizes. Only a mounted table has one; an
+    // unmounted table is measured when it mounts.
     function _observeViewport() {
         const el = model.__rootRef.current;
         if (!el || model.__resizeObserver) {
             return;
         }
-        model.__resizeObserver = new ResizeObserver(() => {
-            model.__derived.viewportH = el.clientHeight;
-            updateWindow(model);
-        });
+        model.__resizeObserver = new ResizeObserver(() => { _syncViewport(); });
         model.__resizeObserver.observe(el);
+        _syncViewport();
+    }
+
+    // What the viewport's size feeds: the virtualized window, and the focus ring, which table.css
+    // draws to --table-viewport-w/-h because it cannot take its size from the scrolling grid.
+    function _syncViewport() {
+        const el = model.__rootRef.current;
+        if (!el) {
+            return;
+        }
+        el.style.setProperty("--table-viewport-w", `${el.clientWidth}px`);
+        el.style.setProperty("--table-viewport-h", `${el.clientHeight}px`);
         model.__derived.viewportH = el.clientHeight;
         updateWindow(model);
     }

@@ -552,6 +552,20 @@ describe("Table", () => {
             expect(grid()).not.toHaveClass("has-current");
         });
 
+        // The ring is an element pinned over the viewport: drawn on the grid itself, the sticky
+        // header and pinned column covered its top and left edges. Only a table that takes focus
+        // needs one.
+        it("carries a focus ring element while it can take focus", async () => {
+            const { model } = await mountTable();
+            expect(document.querySelector(".ueca-table-ring")).toBeNull();
+
+            model.selectable = true;
+            await settle();
+
+            expect(grid().firstElementChild).toHaveClass("ueca-table-ring");
+            expect(grid().firstElementChild).toHaveAttribute("aria-hidden", "true");
+        });
+
         it("ignores keys pressed on a control inside a row", async () => {
             const { model } = await mountTable({
                 columns: [{ ...nameColumn, actionView: () => <button>Edit</button> }],
@@ -780,19 +794,20 @@ describe("Table", () => {
             expect(ResizeObserverStub.instances.has(observer)).toBe(false);
         });
 
-        it("observes nothing when it is not virtualized", async () => {
-            await mountTable({ rows: sites(100) });
-
-            expect([...ResizeObserverStub.instances].some((o) => o.targets.has(grid()))).toBe(false);
-        });
-
-        it("stops observing its size when switched off", async () => {
+        // The focus ring is drawn to the viewport's size, which a table needs whether or not it
+        // windows its rows.
+        it("keeps its viewport's size on the grid, virtualized or not", async () => {
             const { model } = await mountTable({ rows: sites(100), virtualized: true });
-
+            const el = grid();
             model.virtualized = false;
             await settle();
 
-            expect([...ResizeObserverStub.instances].some((o) => o.targets.has(grid()))).toBe(false);
+            Object.defineProperty(el, "clientWidth", { configurable: true, value: 480 });
+            Object.defineProperty(el, "clientHeight", { configurable: true, value: 300 });
+            await act(async () => { ResizeObserverStub.trigger(el); });
+
+            expect(el.style.getPropertyValue("--table-viewport-w")).toBe("480px");
+            expect(el.style.getPropertyValue("--table-viewport-h")).toBe("300px");
         });
 
         // "Clamped, because a filter can shrink the data under a deep scroll position before the
