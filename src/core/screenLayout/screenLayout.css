@@ -24,6 +24,11 @@
     min-width: 0;
     overflow: hidden;
     font-size: var(--text-sm);
+    /* That clip runs flush along the first crumb's left edge and the last one's right, and cut the
+       side off a focused crumb's ring. Room inside it for the ring, pulled back out by the same
+       margin, so the trail does not move - see --focus-bleed. */
+    padding-inline: var(--focus-bleed);
+    margin-inline: calc(-1 * var(--focus-bleed));
 }
 
 /* The trail names the article, so it starts where the article's text starts. The offset goes on
@@ -44,9 +49,21 @@
 
 .app-topbar .ueca-breadcrumbs > * {
     white-space: nowrap;
+    min-width: 0;
+}
+
+.app-topbar .ueca-breadcrumbs-separator {
+    overflow: hidden;
+}
+
+/* The ellipsis is the crumb's link's, not the <li>'s. The <li> clipped the link flush on every
+   side, which cut its focus ring off, and an inline link keeps the full width of the text an
+   ellipsis hides, so on a short bar its ring ran on past the end of the crumb. As a block the link
+   is only as wide as the crumb, and its ring draws in the gap beside it. */
+.app-topbar .ueca-breadcrumbs > li > * {
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 0;
 }
 
 .app-topbar .ueca-breadcrumbs-separator svg {
