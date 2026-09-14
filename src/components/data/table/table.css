@@ -306,12 +306,14 @@
 }
 
 /* …and where it does NOT exist, the suppression above leaves a focused table saying nothing. A
-   selectable table is tabIndex=0 (table.tsx:462) but has no `.current` row until a key is pressed,
-   so tabbing into a freshly-mounted grid landed on an unmarked control. The :has() guard keeps the
-   row cursor as the indicator whenever there is one and rings the container only as the fallback —
-   rather than doing both at once, which would double up on every keystroke.
+   selectable table is tabIndex=0 but has no current row until a key is pressed, so tabbing into a
+   freshly-mounted grid landed on an unmarked control. The `has-current` guard keeps the row cursor
+   as the indicator whenever there is one and rings the container only as the fallback — rather
+   than doing both at once, which would double up on every keystroke. The table sets that class
+   from its model; a `:has(.current)` test on the DOM missed a current row scrolled out of a
+   virtualized table's window, which is no longer rendered, and the ring came on mid-scroll.
    Inset: the table is its own scroll container, so an outward outline would be clipped. */
-.ueca-table:focus-visible:not(:has(.ueca-table-body-row.current)) {
+.ueca-table:focus-visible:not(.has-current) {
     box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
 }
 

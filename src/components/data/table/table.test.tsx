@@ -531,6 +531,27 @@ describe("Table", () => {
             expect(rowOf("s1")).toHaveClass("current");
         });
 
+        // The class that spares a focused table its container ring (table.css): while the cursor
+        // stands on a displayed row, that row's outline marks the focus instead.
+        it("says whether the keyboard cursor stands on a displayed row", async () => {
+            const { model } = await mountTable({ selectable: true });
+            expect(grid()).not.toHaveClass("has-current");
+
+            model.selectedKey = "s1";
+            await settle();
+            expect(grid()).toHaveClass("has-current");
+
+            model.filters = { name: "bir" };
+            await settle();
+            expect(grid()).not.toHaveClass("has-current");
+        });
+
+        it("has no cursor while its rows cannot be selected", async () => {
+            await mountTable({ selectedKey: "s1" });
+
+            expect(grid()).not.toHaveClass("has-current");
+        });
+
         it("ignores keys pressed on a control inside a row", async () => {
             const { model } = await mountTable({
                 columns: [{ ...nameColumn, actionView: () => <button>Edit</button> }],
@@ -788,6 +809,20 @@ describe("Table", () => {
             expect(document.querySelector(".ueca-table-empty")).toBeNull();
             expect(rowKeys()).toEqual(["s19"]);
             expect(spacerHeights()).toEqual([`${10 * 40}px`]);
+        });
+
+        // Regression: the focus ring's guard looked for the `.current` row in the DOM, and a
+        // virtualized table unmounts that row once it leaves the window, so dragging the scrollbar
+        // away from the current row switched the ring on.
+        it("keeps reporting a current row that has scrolled out of its window", async () => {
+            const { el } = await mountVirtualized({ selectable: true, selectedKey: "s2" });
+            expect(grid()).toHaveClass("has-current");
+
+            scrollGrid(el, 3600);
+            await settle();
+
+            expect(rowOf("s2")).toBeNull();
+            expect(grid()).toHaveClass("has-current");
         });
 
         // Like mounting virtualized: the window fits the viewport at once. It used to fall back to a

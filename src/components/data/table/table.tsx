@@ -448,7 +448,8 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
         View: () => {
             const className = "ueca-table"
                 + (model.virtualized ? " virtualized" : "")
-                + (model.stickyFirstColumn ? " sticky-first" : "");
+                + (model.stickyFirstColumn ? " sticky-first" : "")
+                + (_hasCurrentRow() ? " has-current" : "");
 
             // The row height feeds the fixed cell height in virtualized mode.
             const vars = {
@@ -485,6 +486,17 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
     // Private methods
     function _isSelectable(): boolean {
         return model.selectable || model.multiSelect;
+    }
+
+    // Whether the keyboard cursor stands on a displayed row, which is what spares a focused table
+    // its container ring (table.css). Answered from the model rather than by looking for the
+    // `.current` row in the DOM: a virtualized table unmounts that row once it scrolls out of the
+    // window, so dragging the scrollbar away from it switched the ring on.
+    function _hasCurrentRow(): boolean {
+        if (!_isSelectable() || model.selectedKey === undefined) {
+            return false;
+        }
+        return model.displayRows().some((row, i) => rowKeyOf(model, row, i) === model.selectedKey);
     }
 
     // Sizes the window to the viewport now, and again whenever the viewport resizes. Only a mounted
