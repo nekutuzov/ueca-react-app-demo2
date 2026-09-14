@@ -66,6 +66,25 @@ function useRouter(params?: RouterParams): RouterModel {
             _currentView: undefined
         },
 
+        methods: {
+            lookupRoute: (path) => {
+                if (!path) {
+                    return;
+                }
+                const routeMeta = _getRegExRoute(path);
+                return routeMeta.regExRoute ? routeMeta.matchedRoute : undefined;
+            },
+
+            setPath: (path) => {
+                const route = model.lookupRoute(path)
+                if (!route) {
+                    return false;
+                }
+                model.route = route;
+                return !!model.route;
+            }
+        },
+
         events: {
             onChangeRoutes: () => {
                 model.__regExRoutes = undefined; // reset routes cache
@@ -103,25 +122,6 @@ function useRouter(params?: RouterParams): RouterModel {
                 return;
             }
             _drawRoute();
-        },
-
-        methods: {
-            lookupRoute: (path) => {
-                if (!path) {
-                    return;
-                }
-                const routeMeta = _getRegExRoute(path);
-                return routeMeta.regExRoute ? routeMeta.matchedRoute : undefined;
-            },
-
-            setPath: (path) => {
-                const route = model.lookupRoute(path)
-                if (!route) {
-                    return false;
-                }
-                model.route = route;
-                return !!model.route;
-            }
         },
 
         View: () => <React.Fragment key={routeKey(model.route)}>{model._currentView}</React.Fragment>

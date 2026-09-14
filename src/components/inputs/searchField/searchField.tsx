@@ -52,16 +52,16 @@ function useSearchField(params?: SearchFieldParams): SearchFieldModel {
             __debounceTimer: undefined
         },
 
-        events: {
-            onSearch: undefined
-        },
-
         methods: {
             clear: () => {
                 _cancelPending();
                 model.value = "";
                 model.onSearch?.("", model);
             }
+        },
+
+        events: {
+            onSearch: undefined
         },
 
         unmount: () => {

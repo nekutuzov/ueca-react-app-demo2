@@ -40,18 +40,18 @@ function useThemeToggle(params?: ThemeToggleParams): ThemeToggleModel {
             })
         },
 
-        messages: {
-            "App.Theme.Changed": async (p) => {
-                model.mode = p.mode;
-            }
-        },
-
         methods: {
             toggle: async () => {
                 await model.bus.unicast("App.Theme.ToggleTheme");
                 // The open tooltip's text was read at hover time, so it now offers the theme that
                 // was just applied. Close it; the next hover reads the new label.
                 await model.button.hideTooltip();
+            }
+        },
+
+        messages: {
+            "App.Theme.Changed": async (p) => {
+                model.mode = p.mode;
             }
         },
 

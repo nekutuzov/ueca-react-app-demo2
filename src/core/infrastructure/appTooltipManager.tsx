@@ -67,18 +67,6 @@ function useAppTooltipManager(params?: AppTooltipManagerParams): AppTooltipManag
             __timers: { open: undefined }
         },
 
-        messages: {
-            "App.Tooltip.Show": async (p) => model.show(p),
-            "App.Tooltip.Hide": async (p) => model.hide(p?.token),
-
-            // Any navigation drops the tooltip: its anchor is about to stop existing. This is a
-            // navigation GUARD, so it must return true - the tooltip never blocks a route change.
-            "App.Router.BeforeRouteChange": async () => {
-                model.hide();
-                return true;
-            }
-        },
-
         methods: {
             show: (p) => {
                 clearTimeout(model.__timers.open);
@@ -147,6 +135,22 @@ function useAppTooltipManager(params?: AppTooltipManagerParams): AppTooltipManag
             }
         },
 
+        messages: {
+            "App.Tooltip.Show": async (p) => model.show(p),
+            "App.Tooltip.Hide": async (p) => model.hide(p?.token),
+
+            // Any navigation drops the tooltip: its anchor is about to stop existing. This is a
+            // navigation GUARD, so it must return true - the tooltip never blocks a route change.
+            "App.Router.BeforeRouteChange": async () => {
+                model.hide();
+                return true;
+            }
+        },
+
+        draw: () => {
+            model._measureAndPlace();
+        },
+
         mount: () => {
             // Scrolling or resizing moves the anchor out from under the tooltip. Recomputing is
             // possible, but the anchor rect we were handed is already stale, so hiding is both
@@ -168,10 +172,6 @@ function useAppTooltipManager(params?: AppTooltipManagerParams): AppTooltipManag
             window.removeEventListener("keydown", _hideOnEscape);
             window.removeEventListener("blur", _hideNow);
             document.removeEventListener("visibilitychange", _hideOnHidden);
-        },
-
-        draw: () => {
-            model._measureAndPlace();
         },
 
         View: () => {

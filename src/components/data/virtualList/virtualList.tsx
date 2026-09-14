@@ -75,10 +75,6 @@ function useVirtualList(params?: VirtualListParams): VirtualListModel {
             __resizeObserver: undefined
         },
 
-        events: {
-            onRenderItem: undefined
-        },
-
         methods: {
             range: () => {
                 return _range();
@@ -131,6 +127,10 @@ function useVirtualList(params?: VirtualListParams): VirtualListModel {
                     </div>
                 );
             }
+        },
+
+        events: {
+            onRenderItem: undefined
         },
 
         mount: () => {

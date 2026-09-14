@@ -82,15 +82,6 @@ function useDialog(params?: DialogParams): DialogModel {
             }
         },
 
-        // A dialog torn down while still open would otherwise hold its band for the session, and
-        // leave focus on the page it no longer covers.
-        unmount: () => {
-            _releaseStackBand();
-            if (model.open) {
-                _returnFocus();
-            }
-        },
-
         // Focus moves into the panel once it is on screen. aria-modal tells a screen reader to stay
         // inside the dialog, so focus left on the trigger behind the backdrop would sit somewhere it
         // has just been told to ignore. Not while the dialog is suspended by `hidden`.
@@ -105,6 +96,15 @@ function useDialog(params?: DialogParams): DialogModel {
                 if (!panel.contains(document.activeElement)) {
                     panel.focus();
                 }
+            }
+        },
+
+        // A dialog torn down while still open would otherwise hold its band for the session, and
+        // leave focus on the page it no longer covers.
+        unmount: () => {
+            _releaseStackBand();
+            if (model.open) {
+                _returnFocus();
             }
         },
 

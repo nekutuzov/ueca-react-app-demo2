@@ -89,17 +89,6 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
             __tooltipToken: undefined
         },
 
-        // A trigger that unmounts while its tooltip is up can never fire its own mouseleave — a
-        // dialog's × closes the dialog it lives in, a row action removes its own row — which left
-        // the bubble stranded on screen. `hideTooltip` carries the token this component opened with,
-        // so it can only ever close a tooltip this component opened. Base and extended lifecycle
-        // hooks chain (extended runs first, then this), so declaring it here costs call sites nothing.
-        unmount: async () => {
-            if (model.__tooltipToken) {
-                await model.hideTooltip();
-            }
-        },
-
         methods: {
             // Shorthand Methods
 
@@ -152,6 +141,17 @@ function useBase<T extends BasePartialStruct>(extStruct: T, params?: BaseParams<
             },
             hideTooltip: async (trigger) => {
                 await _hideTooltip(trigger === undefined ? (model.__tooltipToken ?? model.htmlId()) : _tooltipToken(trigger));
+            }
+        },
+
+        // A trigger that unmounts while its tooltip is up can never fire its own mouseleave — a
+        // dialog's × closes the dialog it lives in, a row action removes its own row — which left
+        // the bubble stranded on screen. `hideTooltip` carries the token this component opened with,
+        // so it can only ever close a tooltip this component opened. Base and extended lifecycle
+        // hooks chain (extended runs first, then this), so declaring it here costs call sites nothing.
+        unmount: async () => {
+            if (model.__tooltipToken) {
+                await model.hideTooltip();
             }
         }
     }

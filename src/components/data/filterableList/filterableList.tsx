@@ -98,29 +98,6 @@ function useFilterableList<T>(params?: FilterableListParams<T>): FilterableListM
             })
         },
 
-        events: {
-            onItemSelect: undefined,
-            onMatchItem: undefined,
-            onRenderItem: undefined,
-
-            // Fires on click selection too, where the row is already visible and "nearest" is a
-            // no-op — the case it exists for is a caller assigning activeKey.
-            onChangeActiveKey: () => {
-                model.scrollToActive();
-            },
-
-            // The box shows the search a caller assigns, not only what was typed there. Nothing
-            // carried it into the SearchField, so a preseeded search narrowed the list under an
-            // empty box, and a cleared one stayed in the box for the next keystroke to bring back.
-            onChangeSearch: () => {
-                _showSearchInBox();
-            }
-        },
-
-        init: () => {
-            _showSearchInBox();
-        },
-
         methods: {
             filteredItems: () => {
                 const items = model.items ?? [];
@@ -152,6 +129,29 @@ function useFilterableList<T>(params?: FilterableListParams<T>): FilterableListM
                     model.virtualList.scrollToIndex(index, align);
                 }
             }
+        },
+
+        events: {
+            onItemSelect: undefined,
+            onMatchItem: undefined,
+            onRenderItem: undefined,
+
+            // Fires on click selection too, where the row is already visible and "nearest" is a
+            // no-op — the case it exists for is a caller assigning activeKey.
+            onChangeActiveKey: () => {
+                model.scrollToActive();
+            },
+
+            // The box shows the search a caller assigns, not only what was typed there. Nothing
+            // carried it into the SearchField, so a preseeded search narrowed the list under an
+            // empty box, and a cleared one stayed in the box for the next keystroke to bring back.
+            onChangeSearch: () => {
+                _showSearchInBox();
+            }
+        },
+
+        init: () => {
+            _showSearchInBox();
         },
 
         mount: () => {

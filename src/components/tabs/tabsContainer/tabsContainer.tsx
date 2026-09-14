@@ -79,41 +79,6 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             __scrollerRef: { current: null },
         },
 
-        events: {
-            onChangeTabs: () => {
-                _initTabs();
-            },
-
-            onChangeTabsConfig: () => {
-                // Tab models announce themselves through their constr hook, which runs only for a
-                // model that is actually created. Cached tabs are reused and never re-announce, so
-                // emptying the list here would leave it holding just the newly created tab, and the
-                // "clear every tab, then select one" logic below would stop clearing the rest.
-                // Reconcile instead: drop the models whose config is gone and keep the others,
-                // letting constr append the ones that are genuinely new.
-                const configIds = model.tabsConfig?.map(c => _configTabId(c)) ?? [];
-                model.tabs = model.tabs?.filter(t => configIds.includes(t.getTabId())) ?? [];
-            },
-
-            onChangeSelectedTab: () => {
-                model.tabs?.map(x => x.selected = false);
-                if (model.selectedTab) {
-                    model.selectedTab.selected = true;
-                }
-                if (model.onChange) {
-                    asyncSafe(() => model.onChange(model));
-                }
-            },
-
-            onChangeOrientation: () => {
-                setTimeout(() => model._checkOverflow(), 0);
-            },
-
-            onChangeVariant: () => {
-                setTimeout(() => model._checkOverflow(), 0);
-            }
-        },
-
         methods: {
             getTab: (tabId) => model.tabs?.find(t => t.getTabId() === tabId),
 
@@ -240,8 +205,50 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
             }
         },
 
+        events: {
+            onChangeTabs: () => {
+                _initTabs();
+            },
+
+            onChangeTabsConfig: () => {
+                // Tab models announce themselves through their constr hook, which runs only for a
+                // model that is actually created. Cached tabs are reused and never re-announce, so
+                // emptying the list here would leave it holding just the newly created tab, and the
+                // "clear every tab, then select one" logic below would stop clearing the rest.
+                // Reconcile instead: drop the models whose config is gone and keep the others,
+                // letting constr append the ones that are genuinely new.
+                const configIds = model.tabsConfig?.map(c => _configTabId(c)) ?? [];
+                model.tabs = model.tabs?.filter(t => configIds.includes(t.getTabId())) ?? [];
+            },
+
+            onChangeSelectedTab: () => {
+                model.tabs?.map(x => x.selected = false);
+                if (model.selectedTab) {
+                    model.selectedTab.selected = true;
+                }
+                if (model.onChange) {
+                    asyncSafe(() => model.onChange(model));
+                }
+            },
+
+            onChangeOrientation: () => {
+                setTimeout(() => model._checkOverflow(), 0);
+            },
+
+            onChangeVariant: () => {
+                setTimeout(() => model._checkOverflow(), 0);
+            }
+        },
+
         init: () => {
             _initTabs();
+        },
+
+        draw: () => {
+            setTimeout(() => {
+                // Check overflow after render
+                model._checkOverflow();
+            }, 0);
         },
 
         mount: () => {
@@ -252,13 +259,6 @@ function useTabsContainer(params?: TabsContainerParams): TabsContainerModel {
         unmount: () => {
             // Cleanup resize listener
             window.removeEventListener('resize', model._checkOverflow);
-        },
-
-        draw: () => {
-            setTimeout(() => {
-                // Check overflow after render
-                model._checkOverflow();
-            }, 0);
         },
 
         View: () => {

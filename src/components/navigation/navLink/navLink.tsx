@@ -50,12 +50,6 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
             _routeURL: undefined
         },
 
-        events: {
-            onChangeRoute: async () => {
-                await _syncRouteURL();
-            }
-        },
-
         methods: {
             click: async () => {
                 if (model.onClick) {
@@ -74,6 +68,12 @@ function useNavLink(params?: NavLinkParams): NavLinkModel {
                 } else {
                     await model.goToRoute(route);
                 }
+            }
+        },
+
+        events: {
+            onChangeRoute: async () => {
+                await _syncRouteURL();
             }
         },
 

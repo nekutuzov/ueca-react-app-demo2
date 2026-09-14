@@ -36,13 +36,6 @@ function useAppAlertManager(params?: AppAlertManagerParams): AppAlertManagerMode
             _alerts: []
         },
 
-        messages: {
-            "Alert.Success": async (p) => model.addAlert(p.message, "success"),
-            "Alert.Information": async (p) => model.addAlert(p.message, "info"),
-            "Alert.Warning": async (p) => model.addAlert(p.message, "warning"),
-            "Alert.Error": async (p) => model.addAlert(p.message, "error")
-        },
-
         methods: {
             addAlert: (message, intent) => {
                 const lastAlert = model._alerts[model._alerts.length - 1];
@@ -74,6 +67,13 @@ function useAppAlertManager(params?: AppAlertManagerParams): AppAlertManagerMode
                     }
                 </>
             }
+        },
+
+        messages: {
+            "Alert.Success": async (p) => model.addAlert(p.message, "success"),
+            "Alert.Information": async (p) => model.addAlert(p.message, "info"),
+            "Alert.Warning": async (p) => model.addAlert(p.message, "warning"),
+            "Alert.Error": async (p) => model.addAlert(p.message, "error")
         },
 
         View: () => {

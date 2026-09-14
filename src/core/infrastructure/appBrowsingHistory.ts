@@ -42,35 +42,6 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
             id: useAppBrowsingHistory.name
         },
 
-        messages: {
-            // Both halves in one reply. The two methods below stay separate because a method call
-            // is synchronous and nothing can interleave; a bus round trip is where time passes, so
-            // that is where the address has to be read atomically.
-            "App.BrowsingHistory.GetActiveAddress": async () => ({
-                path: model.getActivePath(),
-                section: model.getActiveSection()
-            }),
-
-            "App.BrowsingHistory.Open": async (p) => await model.open(p.path, p.newTab),
-
-            "App.BrowsingHistory.Replace": async (p) => await model.replace(p.path),
-
-            // The URL a route would navigate to, for a link's href. Total, unlike the strict
-            // resolution navigation uses: an unresolvable route yields undefined, so a link renders
-            // without an href instead of raising. Without this handler every NavLink lost its href —
-            // a unicast with no subscriber returns undefined rather than failing.
-            "App.BrowsingHistory.ResolveRoute": async (route) => resolveRouteURL(route, model.__baseURL),
-
-            // Keyed to window.location rather than to the synced active path: on Back and Forward
-            // the router renders the new screen BEFORE the path is synced, so the new screen can name
-            // itself while __activePath still holds the page being left.
-            "App.BrowsingHistory.SetPageTitle": async (title) => {
-                model.__pageTitle = title;
-                model.__pageTitlePath = window.location.pathname;
-                _syncDocumentTitle();
-            }
-        },
-
         methods: {
             getActivePath: () => model.__activePath,
 
@@ -135,6 +106,35 @@ function useAppBrowsingHistory(params?: BaseParams<AppBrowsingHistoryStruct>): A
                 // history.state isn't ready yet due to async logic
                 runAsync(() => { model.__currentHistoryIndex = history.state?.index ?? index });
                 _syncCurrentPath();
+            }
+        },
+
+        messages: {
+            // Both halves in one reply. The two methods above stay separate because a method call
+            // is synchronous and nothing can interleave; a bus round trip is where time passes, so
+            // that is where the address has to be read atomically.
+            "App.BrowsingHistory.GetActiveAddress": async () => ({
+                path: model.getActivePath(),
+                section: model.getActiveSection()
+            }),
+
+            "App.BrowsingHistory.Open": async (p) => await model.open(p.path, p.newTab),
+
+            "App.BrowsingHistory.Replace": async (p) => await model.replace(p.path),
+
+            // The URL a route would navigate to, for a link's href. Total, unlike the strict
+            // resolution navigation uses: an unresolvable route yields undefined, so a link renders
+            // without an href instead of raising. Without this handler every NavLink lost its href —
+            // a unicast with no subscriber returns undefined rather than failing.
+            "App.BrowsingHistory.ResolveRoute": async (route) => resolveRouteURL(route, model.__baseURL),
+
+            // Keyed to window.location rather than to the synced active path: on Back and Forward
+            // the router renders the new screen BEFORE the path is synced, so the new screen can name
+            // itself while __activePath still holds the page being left.
+            "App.BrowsingHistory.SetPageTitle": async (title) => {
+                model.__pageTitle = title;
+                model.__pageTitlePath = window.location.pathname;
+                _syncDocumentTitle();
             }
         },
 

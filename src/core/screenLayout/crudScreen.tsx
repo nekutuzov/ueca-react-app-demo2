@@ -106,16 +106,6 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
             }
         },
 
-        messages: {
-            "App.Router.BeforeRouteChange": async () => {
-                const allow = await model._canNavigate();
-                if (allow) {
-                    await model.clearAppBusy();
-                }
-                return allow;
-            }
-        },
-
         children: {
             screenLayout: useScreenLayout({
                 breadcrumbs: () => model.breadcrumbs,
@@ -377,6 +367,16 @@ function useCRUDScreen(params?: CRUDScreenParams): CRUDScreenModel {
                 }
 
                 return canNavigate;
+            }
+        },
+
+        messages: {
+            "App.Router.BeforeRouteChange": async () => {
+                const allow = await model._canNavigate();
+                if (allow) {
+                    await model.clearAppBusy();
+                }
+                return allow;
             }
         },
 

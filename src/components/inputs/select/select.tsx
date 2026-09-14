@@ -137,17 +137,6 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
             })
         },
 
-        events: {
-            onInternalValidate: async () => {
-                // Not `!model.value`: an option whose value is 0 is a choice, and shows as chosen.
-                if (model.required && isEmptyValue(model.value)) {
-                    return `${fieldLabelText(model.labelView) ?? "This field"} cannot be empty`;
-                }
-            },
-
-            onChangeValue: () => model.resetValidationErrors(),
-        },
-
         methods: {
             // Its OWN MobX boundary, and that is the entire point of splitting it out: it reads
             // _activeIndex, which changes on every hover. Left in the main View, those reads
@@ -218,6 +207,17 @@ function useSelect<T = string>(params?: SelectParams<T>): SelectModel<T> {
                     ))}
                 </div>
             )
+        },
+
+        events: {
+            onInternalValidate: async () => {
+                // Not `!model.value`: an option whose value is 0 is a choice, and shows as chosen.
+                if (model.required && isEmptyValue(model.value)) {
+                    return `${fieldLabelText(model.labelView) ?? "This field"} cannot be empty`;
+                }
+            },
+
+            onChangeValue: () => model.resetValidationErrors(),
         },
 
         // The opening render: when _openMenu runs, the list is not on screen yet, so the flag it sets

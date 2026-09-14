@@ -18,12 +18,6 @@ function useAppLocalStorage(params?: BaseParams<Struct>): AppLocalStorageModel {
             id: useAppLocalStorage.name,
         },
 
-        messages: {
-            "App.LocalStorage.Read": async (key: AppStorageKey) => model.read(key),
-            "App.LocalStorage.Write": async (p: { key: AppStorageKey; value: string }) => model.write(p.key, p.value),
-            "App.LocalStorage.Clear": async (key: AppStorageKey) => model.clear(key),
-        },
-
         methods: {
             read: (key) => {
                 const value = window.localStorage.getItem(key);
@@ -37,6 +31,12 @@ function useAppLocalStorage(params?: BaseParams<Struct>): AppLocalStorageModel {
             clear: (key) => {
                 window.localStorage.removeItem(key);
             },
+        },
+
+        messages: {
+            "App.LocalStorage.Read": async (key: AppStorageKey) => model.read(key),
+            "App.LocalStorage.Write": async (p: { key: AppStorageKey; value: string }) => model.write(p.key, p.value),
+            "App.LocalStorage.Clear": async (key: AppStorageKey) => model.clear(key),
         },
 
         init: () => {

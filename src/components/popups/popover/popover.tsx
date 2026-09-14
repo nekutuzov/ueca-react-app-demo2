@@ -71,14 +71,6 @@ function usePopover(params?: PopoverParams): PopoverModel {
             __ref: { current: null }
         },
 
-        events: {
-            // Re-measure from scratch each time it opens: the anchor will have moved.
-            onChangeOpen: () => {
-                model._measured = false;
-                model._pos = undefined;
-            }
-        },
-
         methods: {
             close: () => {
                 if (!model.open) {
@@ -114,6 +106,18 @@ function usePopover(params?: PopoverParams): PopoverModel {
             }
         },
 
+        events: {
+            // Re-measure from scratch each time it opens: the anchor will have moved.
+            onChangeOpen: () => {
+                model._measured = false;
+                model._pos = undefined;
+            }
+        },
+
+        draw: () => {
+            model._measureAndPlace();
+        },
+
         mount: () => {
             window.addEventListener("mousedown", _onOutsideMouseDown, true);
             window.addEventListener("keydown", _onKeyDown, true);
@@ -127,10 +131,6 @@ function usePopover(params?: PopoverParams): PopoverModel {
             window.removeEventListener("keydown", _onKeyDown, true);
             window.removeEventListener("scroll", _onAnyScroll, true);
             window.removeEventListener("resize", _onWindowResize);
-        },
-
-        draw: () => {
-            model._measureAndPlace();
         },
 
         View: () => {
