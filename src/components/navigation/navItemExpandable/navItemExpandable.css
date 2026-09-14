@@ -24,3 +24,10 @@
     background-color: transparent;
     color: var(--ink);
 }
+
+/* Inside the heading, as NavItem's rows draw theirs: the heading is flush with the sidebar rail,
+   which clips, so an outward ring lost both sides. */
+.ueca-nav-item-expandable:focus-visible {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: calc(-1 * var(--stroke-emphasis));
+}

@@ -113,7 +113,7 @@ function useNavItem(params?: NavItemParams): NavItemModel {
         },
 
         View: () => (
-            <Block id={model.htmlId()}>
+            <Block id={model.htmlId()} className="ueca-nav-item-host">
                 <model.navLink.View />
             </Block>
         )

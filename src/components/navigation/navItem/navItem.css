@@ -41,3 +41,16 @@
     width: 3px;
     background: var(--marker);
 }
+
+/* Focus lands on the <a> around the row, and an outward ring there was cut off: the rows sit flush
+   with the sidebar rail, which clips, so the ring lost both sides (and its top or bottom when the
+   focused row was scrolled to the edge). The ring is drawn inside the row instead, on the element
+   that looks like the control, as the hover and active fills are. */
+.ueca-nav-item-host .ueca-nav-link:focus-visible {
+    outline: none;
+}
+
+.ueca-nav-item-host .ueca-nav-link:focus-visible .ueca-nav-item {
+    outline: var(--stroke-emphasis) solid var(--focus-ring);
+    outline-offset: calc(-1 * var(--stroke-emphasis));
+}
