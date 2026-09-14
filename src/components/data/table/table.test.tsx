@@ -531,45 +531,23 @@ describe("Table", () => {
             expect(rowOf("s1")).toHaveClass("current");
         });
 
-        // The class that spares a focused table its container ring (table.css): while the cursor
-        // stands on a displayed row, that row's outline marks the focus instead.
-        it("says whether the keyboard cursor stands on a displayed row", async () => {
-            const { model } = await mountTable({ selectable: true });
-            expect(grid()).not.toHaveClass("has-current");
+        // Regression: a ring around the table stood in for a missing current row, so a multi-select
+        // table whose Escape had cleared the cursor was ringed where a single-select one kept its row
+        // outline. The current row's outline is now the only focus mark.
+        it("draws no ring around itself", async () => {
+            await mountTable({ multiSelect: true });
 
-            model.selectedKey = "s1";
-            await settle();
-            expect(grid()).toHaveClass("has-current");
-
-            model.filters = { name: "bir" };
-            await settle();
-            expect(grid()).not.toHaveClass("has-current");
-        });
-
-        it("has no cursor while its rows cannot be selected", async () => {
-            await mountTable({ selectedKey: "s1" });
-
-            expect(grid()).not.toHaveClass("has-current");
-        });
-
-        // The ring is an element pinned over the viewport: drawn on the grid itself, the sticky
-        // header and pinned column covered its top and left edges. Only a table that takes focus
-        // needs one.
-        it("carries a focus ring element while it can take focus", async () => {
-            const { model } = await mountTable();
-            expect(document.querySelector(".ueca-table-ring")).toBeNull();
-
-            model.selectable = true;
+            fireEvent.keyDown(grid(), { key: "ArrowDown" });
             await settle();
 
-            expect(grid().firstElementChild).toHaveClass("ueca-table-ring");
-            expect(grid().firstElementChild).toHaveAttribute("aria-hidden", "true");
+            expect(grid()).toHaveClass("keyboard-focus");
+            expect(grid().querySelector(".ueca-table-ring")).toBeNull();
+            expect(grid().firstElementChild).toHaveClass("ueca-table-header");
         });
 
-        // `keyboard-focus` gates both focus marks (table.css). Regression: they followed
+        // `keyboard-focus` gates the current row's outline (table.css). Regression: it followed
         // :focus-visible alone, which Chromium grants for any key pressed after the mouse focused the
-        // table, so a press on its scrollbar followed by Escape outlined the current row in one table
-        // and ringed another.
+        // table, so a press on its scrollbar followed by Escape outlined the current row.
         it("shows its focus for navigation keys, not for a press followed by Escape", async () => {
             await mountTable({ multiSelect: true, selectedKey: "s0", selectedKeys: ["s0"] });
             const el = grid();
@@ -833,20 +811,18 @@ describe("Table", () => {
             expect(ResizeObserverStub.instances.has(observer)).toBe(false);
         });
 
-        // The focus ring is drawn to the viewport's size, which a table needs whether or not it
-        // windows its rows.
-        it("keeps its viewport's size on the grid, virtualized or not", async () => {
+        // The footer and empty-view text wrap within the viewport's width, which a table needs
+        // whether or not it windows its rows.
+        it("keeps its viewport's width on the grid, virtualized or not", async () => {
             const { model } = await mountTable({ rows: sites(100), virtualized: true });
             const el = grid();
             model.virtualized = false;
             await settle();
 
             Object.defineProperty(el, "clientWidth", { configurable: true, value: 480 });
-            Object.defineProperty(el, "clientHeight", { configurable: true, value: 300 });
             await act(async () => { ResizeObserverStub.trigger(el); });
 
             expect(el.style.getPropertyValue("--table-viewport-w")).toBe("480px");
-            expect(el.style.getPropertyValue("--table-viewport-h")).toBe("300px");
         });
 
         // "Clamped, because a filter can shrink the data under a deep scroll position before the
@@ -863,20 +839,6 @@ describe("Table", () => {
             expect(document.querySelector(".ueca-table-empty")).toBeNull();
             expect(rowKeys()).toEqual(["s19"]);
             expect(spacerHeights()).toEqual([`${10 * 40}px`]);
-        });
-
-        // Regression: the focus ring's guard looked for the `.current` row in the DOM, and a
-        // virtualized table unmounts that row once it leaves the window, so dragging the scrollbar
-        // away from the current row switched the ring on.
-        it("keeps reporting a current row that has scrolled out of its window", async () => {
-            const { el } = await mountVirtualized({ selectable: true, selectedKey: "s2" });
-            expect(grid()).toHaveClass("has-current");
-
-            scrollGrid(el, 3600);
-            await settle();
-
-            expect(rowOf("s2")).toBeNull();
-            expect(grid()).toHaveClass("has-current");
         });
 
         // Like mounting virtualized: the window fits the viewport at once. It used to fall back to a

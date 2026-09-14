@@ -444,7 +444,6 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
             const className = "ueca-table"
                 + (model.virtualized ? " virtualized" : "")
                 + (model.stickyFirstColumn ? " sticky-first" : "")
-                + (_hasCurrentRow() ? " has-current" : "")
                 + (model._keyboardFocus ? " keyboard-focus" : "");
 
             // The row height feeds the fixed cell height in virtualized mode.
@@ -469,7 +468,6 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
                 onScroll={() => { updateWindow(model); }}
                 sx={vars}
             >
-                {_isSelectable() && <div className="ueca-table-ring" aria-hidden="true" />}
                 <model._HeaderView />
                 <model._FilterRowView />
                 <model._BodyView />
@@ -488,17 +486,6 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
         return model.selectable || model.multiSelect;
     }
 
-    // Whether the keyboard cursor stands on a displayed row, which is what spares a focused table
-    // its container ring (table.css). Answered from the model rather than by looking for the
-    // `.current` row in the DOM: a virtualized table unmounts that row once it scrolls out of the
-    // window, so dragging the scrollbar away from it switched the ring on.
-    function _hasCurrentRow(): boolean {
-        if (!_isSelectable() || model.selectedKey === undefined) {
-            return false;
-        }
-        return model.displayRows().some((row, i) => rowKeyOf(model, row, i) === model.selectedKey);
-    }
-
     // Measures the viewport now, and again whenever it resizes. Only a mounted table has one; an
     // unmounted table is measured when it mounts.
     function _observeViewport() {
@@ -511,15 +498,14 @@ function useTable<T extends Record<string, unknown>>(params?: TableParams<T>): T
         _syncViewport();
     }
 
-    // What the viewport's size feeds: the virtualized window, and the focus ring, which table.css
-    // draws to --table-viewport-w/-h because it cannot take its size from the scrolling grid.
+    // What the viewport's size feeds: the virtualized window, and the footer and empty-view text,
+    // which table.css keeps within --table-viewport-w because the scrolling grid is wider.
     function _syncViewport() {
         const el = model.__rootRef.current;
         if (!el) {
             return;
         }
         el.style.setProperty("--table-viewport-w", `${el.clientWidth}px`);
-        el.style.setProperty("--table-viewport-h", `${el.clientHeight}px`);
         model.__derived.viewportH = el.clientHeight;
         updateWindow(model);
     }

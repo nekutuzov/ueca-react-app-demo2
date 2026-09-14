@@ -314,47 +314,14 @@
 /* ---- keyboard navigation ----
    Deliberately NO outline around the table and NO rings around cells: the current-row outline
    (see the --row-line rules above) is the whole focus indication. Suppressing the UA ring is
-   safe only BECAUSE that row outline exists. */
+   safe only BECAUSE that row outline exists.
+
+   A focused table with no current row therefore shows no mark until a key moves the cursor. A ring
+   around the table stood in for that case and was removed: the sticky header and pinned column
+   painted over it, and it marked one table's focus differently from another's — ringed where the
+   current row had gone, outlined where it had not. */
 .ueca-table:focus-visible {
     outline: none;
-}
-
-/* …and where it does NOT exist, the suppression above leaves a focused table saying nothing. A
-   selectable table is tabIndex=0 but has no current row until a key is pressed, so tabbing into a
-   freshly-mounted grid landed on an unmarked control. The `has-current` guard keeps the row cursor
-   as the indicator whenever there is one and rings the container only as the fallback — rather
-   than doing both at once, which would double up on every keystroke. The table sets that class
-   from its model; a `:has(.current)` test on the DOM missed a current row scrolled out of a
-   virtualized table's window, which is no longer rendered, and the ring came on mid-scroll. Like
-   the row outline, the ring waits for `keyboard-focus`: after a press on the table, a table whose
-   Escape cleared its current row was ringed while one that kept it was outlined.
-
-   The ring is an element of its own, not a shadow or outline on the table: the table is its own
-   scroll container, and its sticky header and pinned column painted over those, which left the
-   ring on the right and bottom edges only. `.ueca-table-ring` (rendered first by table.tsx) is
-   pinned to the viewport's top-left corner, takes no room in the grid, and draws a box the size of
-   the viewport (--table-viewport-w/-h, kept by table.tsx) above every sticky cell. Inset, inside the
-   scrollbars: an outward ring would be clipped by whatever frames the table. */
-.ueca-table-ring {
-    grid-row: 1;
-    grid-column: 1 / -1;
-    position: sticky;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 0;
-    z-index: 4;
-    pointer-events: none;
-}
-
-.ueca-table.keyboard-focus:focus-visible:not(.has-current) > .ueca-table-ring::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--table-viewport-w);
-    height: var(--table-viewport-h);
-    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
 }
 
 /* ---- virtualisation ---- */

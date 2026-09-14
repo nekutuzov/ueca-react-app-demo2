@@ -139,7 +139,7 @@ function keyDown<T>(model: TableModel<T>, e: React.KeyboardEvent<HTMLDivElement>
 // The table shows its focus (table.css) only for keyboard use: focus that arrived from the keyboard,
 // or a key that navigates. Any press inside the table hides it again. Left to :focus-visible, a key
 // pressed after the mouse focused the table — Escape, a lone modifier — lit it too, so a click on the
-// scrollbar followed by Escape outlined the current row in one table and ringed another.
+// scrollbar followed by Escape outlined the current row.
 
 function focusIn<T>(model: TableModel<T>, e: React.FocusEvent<HTMLDivElement>) {
     // Focus moving onto the table itself, not into one of its controls. A press has already cleared
