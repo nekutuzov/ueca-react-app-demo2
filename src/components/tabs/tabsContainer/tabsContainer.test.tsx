@@ -65,6 +65,23 @@ function projectFile(path: string): string {
     return process.getBuiltinModule("node:fs").readFileSync(`${dir}/../../../../${path}`, "utf8");
 }
 
+// What a stylesheet declares for this element: every rule whose selector matches it, later rules
+// overriding earlier ones, comments and pseudo-class rules dropped. It is matched against the real
+// markup, so a selector that cannot reach its element shows up as a missing declaration.
+function declarationsFor(css: string, element: Element): Record<string, string> {
+    const declarations: Record<string, string> = {};
+    for (const [, prelude, body] of css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+        const selectors = prelude.split(",").map((s) => s.trim()).filter((s) => !s.includes(":") && !s.startsWith("@"));
+        if (selectors.some((s) => element.matches(s))) {
+            for (const declaration of body.split(";").map((d) => d.trim()).filter(Boolean)) {
+                const colon = declaration.indexOf(":");
+                declarations[declaration.slice(0, colon).trim()] = declaration.slice(colon + 1).trim();
+            }
+        }
+    }
+    return declarations;
+}
+
 // The declarations of the stylesheet rule for exactly this selector, comments dropped.
 function ruleDeclarations(css: string, selector: string): Record<string, string> {
     const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -353,6 +370,26 @@ describe("TabsContainer", () => {
             expect(document.getElementById("tabs")).toHaveAttribute("class", "ueca-tabs-container horizontal");
             expect(document.querySelector(".ueca-tabs-header")).not.toHaveClass("ueca-tabs-vertical");
             expect(document.querySelector(".ueca-tabs-list")).toHaveAttribute("class", "ueca-tabs-list");
+        });
+
+        // The vertical header's rule was written `.ueca-tabs-vertical .ueca-tabs-header`, asking for an
+        // ancestor with the class the header carries itself, so it never matched: a vertical strip kept
+        // the horizontal rule under it and had no divider beside the panel.
+        it("draws a vertical strip's divider beside the panel, and a horizontal one's under the strip", async () => {
+            const { model } = await mount(TabsContainer, { id: "tabs", tabsConfig: [GENERAL], orientation: "vertical" });
+            const css = projectFile("src/components/tabs/tabsContainer/tabsContainer.css");
+
+            expect(declarationsFor(css, document.querySelector(".ueca-tabs-header"))).toMatchObject({
+                "flex-direction": "column",
+                "border-bottom": "none",
+                "border-right": "var(--hairline) solid var(--tab-strip-line, var(--border))"
+            });
+
+            model.orientation = "horizontal";
+            await settle();
+            const horizontal = declarationsFor(css, document.querySelector(".ueca-tabs-header"));
+            expect(horizontal["border-bottom"]).toBe("var(--hairline) solid var(--tab-strip-line, var(--border))");
+            expect(horizontal).not.toHaveProperty("border-right");
         });
 
         it("marks the container, header and list when vertical", async () => {

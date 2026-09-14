@@ -26,10 +26,14 @@
     margin-bottom: var(--tab-strip-gap, 0);
 }
 
-.ueca-tabs-vertical .ueca-tabs-header {
+/* The header carries ueca-tabs-vertical itself, so this is a compound selector. Written as a descendant
+   one (`.ueca-tabs-vertical .ueca-tabs-header`) it asked for an ancestor that does not exist and never
+   matched: a vertical strip kept the horizontal rule under it and had no divider beside the panel. The
+   divider reads the same theme hook as that rule. */
+.ueca-tabs-header.ueca-tabs-vertical {
     flex-direction: column;
     border-bottom: none;
-    border-right: var(--hairline) solid var(--border);
+    border-right: var(--hairline) solid var(--tab-strip-line, var(--border));
 }
 
 /* Tabs wrapper (for scrolling) */
