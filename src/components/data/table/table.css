@@ -297,6 +297,19 @@
     overflow: visible;
 }
 
+/* …except past the last column, where the next cell is the filler, and the filler can be 0px wide:
+   a minmax() column takes the free space before a flexible track gets any. A handle hanging past
+   the table's content then widened what scrolls, so a table whose columns filled it exactly
+   scrolled sideways by 4px. The last handle stays inside its cell, its line on the cell's edge. */
+.ueca-table-header-cell:nth-last-child(2) > .ueca-table-resize-handle {
+    right: 0;
+}
+
+.ueca-table-header-cell:nth-last-child(2) > .ueca-table-resize-handle::after {
+    left: auto;
+    right: 0;
+}
+
 /* ---- keyboard navigation ----
    Deliberately NO outline around the table and NO rings around cells: the current-row outline
    (see the --row-line rules above) is the whole focus indication. Suppressing the UA ring is
