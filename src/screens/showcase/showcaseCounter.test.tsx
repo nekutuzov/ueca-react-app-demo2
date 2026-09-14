@@ -120,10 +120,6 @@ function useCounterHost(params?: UECA.ComponentParams<CounterHostStruct>) {
             cacheable: true
         },
 
-        events: {
-            onLifecycle: undefined
-        },
-
         View: () => (
             <div id={model.htmlId()}>
                 {model.shown

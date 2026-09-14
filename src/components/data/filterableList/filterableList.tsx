@@ -132,10 +132,6 @@ function useFilterableList<T>(params?: FilterableListParams<T>): FilterableListM
         },
 
         events: {
-            onItemSelect: undefined,
-            onMatchItem: undefined,
-            onRenderItem: undefined,
-
             // Fires on click selection too, where the row is already visible and "nearest" is a
             // no-op — the case it exists for is a caller assigning activeKey.
             onChangeActiveKey: () => {

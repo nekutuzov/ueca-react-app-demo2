@@ -60,10 +60,6 @@ function useSearchField(params?: SearchFieldParams): SearchFieldModel {
             }
         },
 
-        events: {
-            onSearch: undefined
-        },
-
         unmount: () => {
             _cancelPending();
         },

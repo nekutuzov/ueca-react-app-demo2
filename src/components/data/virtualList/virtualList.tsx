@@ -129,10 +129,6 @@ function useVirtualList(params?: VirtualListParams): VirtualListModel {
             }
         },
 
-        events: {
-            onRenderItem: undefined
-        },
-
         mount: () => {
             const el = model.__viewportRef.current;
             if (el) {

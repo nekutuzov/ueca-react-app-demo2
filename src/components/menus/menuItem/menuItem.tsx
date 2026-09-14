@@ -48,10 +48,6 @@ function useMenuItem(params?: MenuItemParams): MenuItemModel {
             separatorBefore: false
         },
 
-        events: {
-            onClick: undefined
-        },
-
         View: () => (
             <>
                 {model.separatorBefore && <MenuSeparator />}
