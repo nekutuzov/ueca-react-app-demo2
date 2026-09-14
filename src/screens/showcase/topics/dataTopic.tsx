@@ -270,7 +270,7 @@ function useDataTopic(params?: DataTopicParams): DataTopicModel {
                     title="Virtualized + multi-select + pinned column — 5,000 rows"
                     description="Only the visible slice is in the DOM; the spacers keep the scrollbar honest.
                                  Desktop-style selection — plain click for one row, Ctrl/Cmd+click to toggle,
-                                 Shift+click for a range, Ctrl+A for everything, Escape to clear. Click the table,
+                                 Shift+click for a range, Ctrl+A for everything. Click the table,
                                  then drive it from the keyboard: arrows move the current row, Shift+arrow extends,
                                  Space toggles, Enter opens. The first column stays pinned while the others scroll
                                  under it."

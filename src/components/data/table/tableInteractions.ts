@@ -65,6 +65,10 @@ function _selectRange<T>(model: TableModel<T>, anchorKey: string, targetIndex: n
 // multi-select set, Enter fires onRowClick, Shift+arrow extends the selection. Rows themselves
 // are never tab stops, so a row's own interactive content (action buttons) keeps its ordinary
 // behaviour — which is what makes this safe where a roving tabindex would need real design.
+//
+// Escape is not the table's: it reaches whatever hosts the table, a dialog closing on it. A
+// multi-select table used to clear its selection on Escape, current row included, which a
+// single-select table never did; a screen that offers clearing calls clearSelection().
 
 function keyDown<T>(model: TableModel<T>, e: React.KeyboardEvent<HTMLDivElement>) {
     if (!model.selectable && !model.multiSelect) {
@@ -99,12 +103,6 @@ function keyDown<T>(model: TableModel<T>, e: React.KeyboardEvent<HTMLDivElement>
         e.preventDefault();
         model._keyboardFocus = true;
         model.selectAllDisplayed();
-        return;
-    } else if (e.key === "Escape" && model.multiSelect && (model.selectedKeys?.length ?? 0) > 0) {
-        // Only swallow Escape while there is a selection to clear; empty, it bubbles so a host
-        // dialog can close on the same key (the SearchField convention).
-        e.stopPropagation();
-        model.clearSelection();
         return;
     } else if (e.key === "Enter" && currentIndex >= 0) {
         e.preventDefault();

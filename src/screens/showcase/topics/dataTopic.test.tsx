@@ -140,7 +140,7 @@ describe("DataTopic", () => {
             expect(parseFloat(table("featureTable").style.gridTemplateColumns)).toBeGreaterThanOrEqual(2 * 16 + String(5000).length * 7.8);
         });
 
-        it("reports a desktop-style multi-selection and clears it on Escape", async () => {
+        it("reports a desktop-style multi-selection, which Escape leaves alone", async () => {
             await mount(DataTopic, { id: TOPIC });
             const features = table("featureTable");
             const total = (5000).toLocaleString();
@@ -156,7 +156,7 @@ describe("DataTopic", () => {
             expect(readout("current:")).toBe(`selected: 2 of ${total}  ·  current: site-11`);
 
             fireEvent.keyDown(features, { key: "Escape" });
-            expect(readout("current:")).toBe(`selected: 0 of ${total}  ·  current: —`);
+            expect(readout("current:")).toBe(`selected: 2 of ${total}  ·  current: site-11`);
         });
     });
 

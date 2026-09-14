@@ -97,7 +97,7 @@ type TableStruct<T> = UIBaseStruct<{
         // Multi-row selection, desktop style — selection is shown by row highlight alone, no
         // checkbox column: plain click selects just that row, Ctrl/Cmd+click toggles, Shift+click
         // ranges from the last plain click, and with the table focused Ctrl+A selects everything
-        // displayed while Escape clears. `selectedKeys` holds the set — reassigned whole on every
+        // displayed. Escape is left to the host. `selectedKeys` holds the set — reassigned whole on every
         // change (MobX is shallow), so the auto `onChangeSelectedKeys` event fires and is how a
         // parent observes it; `selectAllDisplayed()`/`clearSelection()` stay public for screens
         // that want their own button. `selectedKey` keeps tracking the CURRENT row (the one

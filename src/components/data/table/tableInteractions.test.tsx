@@ -430,7 +430,9 @@ describe("keyDown", () => {
             expect(event.preventDefault).toHaveBeenCalled();
         });
 
-        it("Escape clears the selection and stops there", async () => {
+        // Regression: Escape cleared a multi-select table's selection, current row included, which a
+        // single-select table never did. It now does nothing, and reaches a host dialog.
+        it("leaves the selection to Escape's host", async () => {
             const model = await mountTable({ multiSelect: true });
             clickRow(model, 1);
             clickRow(model, 3, { shiftKey: true });
@@ -438,21 +440,10 @@ describe("keyDown", () => {
 
             keyDown(model, escape);
 
-            expect(model.selectedKeys).toEqual([]);
-            expect(model.selectedKey).toBeUndefined();
-            expect(escape.stopPropagation).toHaveBeenCalled();
-        });
-
-        // "Only swallow Escape while there is a selection to clear; empty, it bubbles so a host
-        // dialog can close on the same key."
-        it("lets Escape bubble when there is no selection to clear", async () => {
-            const model = await mountTable({ multiSelect: true, selectedKey: "s1" });
-            const escape = keyEvent("Escape");
-
-            keyDown(model, escape);
-
+            expect(model.selectedKeys).toEqual(["s1", "s2", "s3"]);
+            expect(model.selectedKey).toBe("s3");
+            expect(escape.preventDefault).not.toHaveBeenCalled();
             expect(escape.stopPropagation).not.toHaveBeenCalled();
-            expect(model.selectedKey).toBe("s1");
         });
     });
 
