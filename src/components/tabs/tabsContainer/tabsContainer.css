@@ -157,6 +157,14 @@
     margin-top: calc(-1 * min(var(--focus-bleed), var(--tab-strip-gap, 0px)));
 }
 
+/* Beside a vertical strip the same happened sideways: content scrolled left slid under the divider, and
+   a control scrolled there covered the selected tab's marker and took the clicks on that edge of the
+   tab. Nothing spaces a vertical strip from its panel, so the panel is not pulled under it at all: its
+   first column sits the bleed to the right of the divider. */
+.ueca-tabs-container.vertical > .ueca-focus-bleed {
+    margin-left: 0;
+}
+
 /* Same clipping as the tabs themselves, so the same inset ring. */
 .ueca-tabs-scroll-button:focus-visible {
     outline: none;
