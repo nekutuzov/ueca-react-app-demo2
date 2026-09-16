@@ -161,10 +161,11 @@ function clampDateTime(value: Date, min: Date, max: Date): Date {
     return value;
 }
 
-// What the field shows, and what an empty field offers as a placeholder. ISO order because it is
-// the one form that is never ambiguous: 03/04 is a different day either side of the Atlantic.
+// The CANONICAL pattern for a mode — what a value is stored as, whatever the field displays. ISO
+// order because it is the one form that is never ambiguous: 03/04 is a different day either side
+// of the Atlantic, so a stored value must never be written that way.
 function dateTimePattern(mode: DateTimeMode, secondsShown: boolean): string {
-    const time = secondsShown ? "HH:MM:SS" : "HH:MM";
+    const time = secondsShown ? "HH:mm:ss" : "HH:mm";
     switch (mode) {
         case "date":
             return "YYYY-MM-DD";
@@ -175,18 +176,9 @@ function dateTimePattern(mode: DateTimeMode, secondsShown: boolean): string {
     }
 }
 
+// The canonical writer — `formatBy` over the canonical pattern, so the two can never drift apart.
 function formatDateTime(value: Date, mode: DateTimeMode, secondsShown: boolean): string {
-    if (!isValidDate(value)) {
-        return "";
-    }
-    switch (mode) {
-        case "date":
-            return _formatDate(value);
-        case "time":
-            return _formatTime(value, secondsShown);
-        default:
-            return `${_formatDate(value)} ${_formatTime(value, secondsShown)}`;
-    }
+    return formatBy(value, dateTimePattern(mode, secondsShown));
 }
 
 // Reads what the user typed, or returns undefined if it is not a date at all — the caller keeps
@@ -236,12 +228,128 @@ function parseAnyDateTime(text: string, base?: Date): Date {
     return parseDateTime(text, "datetime", base) ?? parseDateTime(text, "time", base);
 }
 
+// ============================================================================
+// Patterns.
+//
+// A pattern is the day.js / moment vocabulary, because that is the one people already know:
+//
+//   YYYY 2026   YY 26                          MMMM September  MMM Sep   MM 09   M 9
+//   DD 04       D 4                            HH 14  H 14     hh 02  h 2        A PM   a pm
+//   mm 07       m 7                            ss 05  s 5
+//
+// Anything that is not a token is a literal, and text in [SQUARE BRACKETS] is a literal even when
+// it looks like one — "HH[h]mm" is 14h30, which the bare "HHhmm" could not say, since `h` is the
+// 12-hour token. The same trap waits for a stray `a`, `D` or `M` in a word.
+//
+// Reading back is deliberately LOOSER than writing: -, / and . are interchangeable, spacing is
+// free, one digit is accepted where two are written, and a month name matches on its prefix. So a
+// DD/MM/YYYY field takes "4/9/2026" as well as "04/09/2026". What it will NOT do is guess: a value
+// the pattern cannot account for comes back undefined, and the caller keeps the text.
+// ============================================================================
+
+type FormatToken =
+    | "YYYY" | "YY" | "MMMM" | "MMM" | "MM" | "M" | "DD" | "D"
+    | "HH" | "H" | "hh" | "h" | "mm" | "m" | "ss" | "s" | "A" | "a";
+
+type FormatPart =
+    | { kind: "token"; token: FormatToken }
+    | { kind: "literal"; text: string };
+
+// Longest alternative first, or "YYYY" would be read as two "YY"s.
+const FORMAT_TOKENS = /\[([^\]]*)\]|YYYY|YY|MMMM|MMM|MM|M|DD|D|HH|H|hh|h|mm|m|ss|s|A|a/g;
+
+// Two-digit years, split the way everything else does: 00–68 is this century, 69–99 the last.
+const SHORT_YEAR_PIVOT = 69;
+
+// Cuts a pattern into the tokens it names and the literal text between them.
+function parseFormat(pattern: string): FormatPart[] {
+    const parts: FormatPart[] = [];
+    let at = 0;
+
+    // A fresh regex each call: the /g one above carries lastIndex between uses.
+    const tokens = new RegExp(FORMAT_TOKENS.source, "g");
+    for (let match = tokens.exec(pattern ?? ""); match; match = tokens.exec(pattern)) {
+        if (match.index > at) {
+            parts.push({ kind: "literal", text: pattern.slice(at, match.index) });
+        }
+        // Group 1 is set only for [bracketed] text, which is a literal however it reads.
+        parts.push(match[1] !== undefined
+            ? { kind: "literal", text: match[1] }
+            : { kind: "token", token: match[0] as FormatToken });
+        at = match.index + match[0].length;
+    }
+
+    if (at < (pattern?.length ?? 0)) {
+        parts.push({ kind: "literal", text: pattern.slice(at) });
+    }
+    return parts;
+}
+
+function formatTokens(pattern: string): FormatToken[] {
+    return parseFormat(pattern).filter((p) => p.kind === "token").map((p: { token: FormatToken }) => p.token);
+}
+
+function formatHasSeconds(pattern: string): boolean {
+    return formatTokens(pattern).some((t) => t === "ss" || t === "s");
+}
+
+// Whether the pattern counts hours 1–12. Such a pattern should carry `A` or `a` as well, or
+// nothing in it says which half of the day it means.
+function formatIsTwelveHour(pattern: string): boolean {
+    return formatTokens(pattern).some((t) => t === "hh" || t === "h");
+}
+
+function formatBy(value: Date, pattern: string): string {
+    if (!isValidDate(value)) {
+        return "";
+    }
+    return parseFormat(pattern)
+        .map((part) => part.kind === "literal" ? part.text : _writeToken(value, part.token))
+        .join("");
+}
+
+// Reads text written in `pattern`. `base` fills in whatever the pattern does not mention — the day
+// under a time-only pattern, the clock under a date-only one — so retyping the day of an
+// appointment does not silently move it to midnight.
+function parseBy(text: string, pattern: string, base?: Date): Date {
+    const trimmed = text?.trim();
+    if (!trimmed) {
+        return undefined;
+    }
+
+    const parts = parseFormat(pattern);
+    const tokens = parts.filter((p) => p.kind === "token").map((p: { token: FormatToken }) => p.token);
+    if (!tokens.length) {
+        return undefined;
+    }
+
+    const source = parts
+        .map((part) => part.kind === "literal" ? _literalSource(part.text) : _tokenSource(part.token))
+        .join("");
+    // Case-insensitive throughout, so "sep"/"SEP" and "pm"/"PM" both read.
+    const match = new RegExp(`^\\s*${source}\\s*$`, "i").exec(trimmed);
+    if (!match) {
+        return undefined;
+    }
+
+    const read: _ReadFields = {};
+    // `every` short-circuits, which is the point: a token the regex matched but that says nothing
+    // real — "4 Foo 2026" against D MMM YYYY — must fail the whole read. Left to _buildDate's
+    // fallbacks it would quietly become today's month.
+    if (!tokens.every((token, index) => _readToken(read, token, match[index + 1]))) {
+        return undefined;
+    }
+    return _buildDate(read, base);
+}
+
 export {
-    DateTimeMode, TimeParts, MONTH_NAMES, WEEKDAY_NAMES, WEEKDAY_INITIALS, DAYS_IN_WEEK, WEEKS_IN_GRID,
+    DateTimeMode, TimeParts, FormatToken, FormatPart, MONTH_NAMES, WEEKDAY_NAMES, WEEKDAY_INITIALS,
+    DAYS_IN_WEEK, WEEKS_IN_GRID,
     isValidDate, startOfDay, startOfMonth, daysInMonth, addDays, addMonths, isSameDay, isSameMonth,
     withDatePart, withTimePart, monthLabel, dayLabel, weekdayInitials, monthGrid, monthWeeks,
     startOfWeek, isDayInRange, clampDateTime, dateTimePattern, formatDateTime, parseDateTime,
-    parseAnyDateTime
+    parseAnyDateTime,
+    parseFormat, formatTokens, formatHasSeconds, formatIsTwelveHour, formatBy, parseBy
 };
 
 // Private helpers
@@ -256,13 +364,165 @@ function _pad(value: number, width = 2): string {
     return String(value).padStart(width, "0");
 }
 
-function _formatDate(value: Date): string {
-    return `${_pad(value.getFullYear(), 4)}-${_pad(value.getMonth() + 1)}-${_pad(value.getDate())}`;
+function _twelveHour(hours: number): number {
+    // Midnight and noon are 12, not 0 — the one pair the modulo does not give you.
+    return hours % 12 || 12;
 }
 
-function _formatTime(value: Date, secondsShown: boolean): string {
-    const hm = `${_pad(value.getHours())}:${_pad(value.getMinutes())}`;
-    return secondsShown ? `${hm}:${_pad(value.getSeconds())}` : hm;
+function _writeToken(value: Date, token: FormatToken): string {
+    switch (token) {
+        case "YYYY": return _pad(value.getFullYear(), 4);
+        case "YY": return _pad(value.getFullYear() % 100);
+        case "MMMM": return MONTH_NAMES[value.getMonth()];
+        case "MMM": return MONTH_NAMES[value.getMonth()].slice(0, 3);
+        case "MM": return _pad(value.getMonth() + 1);
+        case "M": return String(value.getMonth() + 1);
+        case "DD": return _pad(value.getDate());
+        case "D": return String(value.getDate());
+        case "HH": return _pad(value.getHours());
+        case "H": return String(value.getHours());
+        case "hh": return _pad(_twelveHour(value.getHours()));
+        case "h": return String(_twelveHour(value.getHours()));
+        case "mm": return _pad(value.getMinutes());
+        case "m": return String(value.getMinutes());
+        case "ss": return _pad(value.getSeconds());
+        case "s": return String(value.getSeconds());
+        case "A": return value.getHours() < 12 ? "AM" : "PM";
+        default: return value.getHours() < 12 ? "am" : "pm";
+    }
+}
+
+// What a token matches when read back. Wider than what it writes, on purpose: a field that insists
+// on "04" where the user typed "4" is a field people fight.
+function _tokenSource(token: FormatToken): string {
+    switch (token) {
+        case "YYYY": return "(\\d{4})";
+        case "YY": return "(\\d{2})";
+        case "MMMM":
+        case "MMM": return "([A-Za-z]+)";
+        case "A":
+        case "a": return "([AaPp])\\.?[Mm]?\\.?";
+        default: return "(\\d{1,2})";
+    }
+}
+
+// Separators are read loosely: -, / and . are interchangeable (the difference between a European
+// and an ISO habit, not between two dates), and spacing is free.
+function _literalSource(text: string): string {
+    return text.split("").map((ch) => {
+        if (/\s/.test(ch)) {
+            return "\\s*";
+        }
+        if (/[-/.]/.test(ch)) {
+            return "[-/.]";
+        }
+        return ch.replace(/[\\^$*+?.()|[\]{}]/, "\\$&");
+    }).join("");
+}
+
+// What a pattern read out of some text: only the fields it actually named.
+type _ReadFields = {
+    year?: number;
+    month?: number;
+    day?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+    twelveHour?: boolean;
+    meridiem?: "a" | "p";
+};
+
+// False when the text matched the token's shape but means nothing — the only token that can fail
+// this way is a month NAME, since every other one is pinned to digits by its own regex.
+function _readToken(read: _ReadFields, token: FormatToken, text: string): boolean {
+    switch (token) {
+        case "YYYY":
+            read.year = Number(text);
+            break;
+        case "YY": {
+            const short = Number(text);
+            read.year = short < SHORT_YEAR_PIVOT ? 2000 + short : 1900 + short;
+            break;
+        }
+        case "MMMM":
+        case "MMM":
+            read.month = _readMonthName(text);
+            if (read.month == null) {
+                return false;
+            }
+            break;
+        case "MM":
+        case "M":
+            read.month = Number(text);
+            break;
+        case "DD":
+        case "D":
+            read.day = Number(text);
+            break;
+        case "hh":
+        case "h":
+            read.twelveHour = true;
+            read.hours = Number(text);
+            break;
+        case "HH":
+        case "H":
+            read.hours = Number(text);
+            break;
+        case "mm":
+        case "m":
+            read.minutes = Number(text);
+            break;
+        case "ss":
+        case "s":
+            read.seconds = Number(text);
+            break;
+        default:
+            read.meridiem = text.toLowerCase() as "a" | "p";
+            break;
+    }
+    return true;
+}
+
+// By prefix, so "Sep", "Sept" and "September" all land on the same month whichever token asked.
+function _readMonthName(text: string): number {
+    const wanted = text.toLowerCase();
+    const index = MONTH_NAMES.findIndex((name) => name.toLowerCase().startsWith(wanted));
+    return index < 0 ? undefined : index + 1;
+}
+
+// Assembles what the pattern read, over what `base` already held. Rejects on the same terms as the
+// canonical parser: a day the month does not have, or a clock off the end of the day.
+function _buildDate(read: _ReadFields, base: Date): Date {
+    const fallback = isValidDate(base) ? base : undefined;
+    const year = read.year ?? fallback?.getFullYear() ?? new Date().getFullYear();
+    const month = read.month ?? (fallback ? fallback.getMonth() + 1 : new Date().getMonth() + 1);
+    const day = read.day ?? fallback?.getDate() ?? new Date().getDate();
+
+    if (month == null || month < 1 || month > 12 || day < 1 || day > daysInMonth(year, month - 1)) {
+        return undefined;
+    }
+
+    let hours = read.hours ?? fallback?.getHours() ?? 0;
+    const minutes = read.minutes ?? (read.hours != null ? 0 : fallback?.getMinutes() ?? 0);
+    // Seconds follow the minutes: a pattern that names a clock down to the minute means :00, not
+    // whatever second the value happened to carry.
+    const seconds = read.seconds ?? (read.hours != null ? 0 : fallback?.getSeconds() ?? 0);
+
+    if (minutes > 59 || seconds > 59) {
+        return undefined;
+    }
+
+    if (read.meridiem) {
+        if (hours < 1 || hours > 12) {
+            return undefined;
+        }
+        hours = hours % 12 + (read.meridiem === "p" ? 12 : 0);
+    }
+    else if (hours > 23 || (read.twelveHour && hours > 12)) {
+        return undefined;
+    }
+
+    return new Date(year, month - 1, day, hours, minutes, seconds, 0);
 }
 
 // Rejects rather than rolls over: new Date(2026, 1, 31) is 3 March, and accepting "2026-02-31" as

@@ -91,10 +91,10 @@ describe("DateTimePicker", () => {
         // The pattern is the most useful thing an empty box can say about what it will accept.
         it.each([
             ["date", false, "YYYY-MM-DD"],
-            ["time", false, "HH:MM"],
-            ["time", true, "HH:MM:SS"],
-            ["datetime", false, "YYYY-MM-DD HH:MM"],
-            ["datetime", true, "YYYY-MM-DD HH:MM:SS"]
+            ["time", false, "HH:mm"],
+            ["time", true, "HH:mm:ss"],
+            ["datetime", false, "YYYY-MM-DD HH:mm"],
+            ["datetime", true, "YYYY-MM-DD HH:mm:ss"]
         ] as const)("offers the %s pattern as its placeholder", async (mode, secondsShown, pattern) => {
             await mount(DateTimePicker, { id: "d", mode, secondsShown });
             expect(textbox()).toHaveAttribute("placeholder", pattern);
@@ -257,6 +257,209 @@ describe("DateTimePicker", () => {
             await leave();
 
             expect(model.value).toBe("21:30");
+        });
+    });
+
+    describe("formats", () => {
+        it("shows the value in the format while storing it canonically", async () => {
+            const { model } = await mount(DateTimePicker, { id: "d", format: "DD/MM/YYYY", value: MONDAY });
+
+            expect(textbox()).toHaveValue("14/09/2026");
+            expect(model.value).toBe("2026-09-14");
+            expect(textbox()).toHaveAttribute("placeholder", "DD/MM/YYYY");
+        });
+
+        it.each([
+            ["DD/MM/YYYY", "14/09/2026"],
+            ["MM/DD/YYYY", "09/14/2026"],
+            ["D MMM YYYY", "14 Sep 2026"],
+            ["MMMM D, YYYY", "September 14, 2026"],
+            ["D.M.YY", "14.9.26"]
+        ])("writes the box in %s", async (format, text) => {
+            await mount(DateTimePicker, { id: "d", format, value: MONDAY });
+            expect(textbox()).toHaveValue(text);
+        });
+
+        it("commits what was typed in the field's own format", async () => {
+            const onChange = vi.fn();
+            const { model } = await mount(DateTimePicker, { id: "d", format: "DD/MM/YYYY", onChange });
+
+            await typeText("4/7/2026");
+            await leave();
+
+            expect(model.value).toBe("2026-07-04");
+            expect(textbox()).toHaveValue("04/07/2026");
+            expect(onChange).toHaveBeenCalledWith("2026-07-04", model);
+        });
+
+        // 03/04 is a different day either side of the Atlantic; the format is what decides.
+        it.each([
+            ["DD/MM/YYYY", "2026-04-03"],
+            ["MM/DD/YYYY", "2026-03-04"]
+        ])("reads an ambiguous date the way %s says", async (format, expected) => {
+            const { model } = await mount(DateTimePicker, { id: "d", format });
+
+            await typeText("03/04/2026");
+            await leave();
+
+            expect(model.value).toBe(expected);
+        });
+
+        // The canonical form is never ambiguous, and it is what arrives from a log or an API, so a
+        // formatted field takes it too.
+        it("also takes the canonical form, whatever the format", async () => {
+            const { model } = await mount(DateTimePicker, { id: "d", format: "DD/MM/YYYY" });
+
+            await typeText("2026-07-04");
+            await leave();
+
+            expect(model.value).toBe("2026-07-04");
+            expect(textbox()).toHaveValue("04/07/2026");
+        });
+
+        it("restyles the box when the format changes, and leaves the value alone", async () => {
+            const { model } = await mount(DateTimePicker, { id: "d", value: MONDAY });
+            expect(textbox()).toHaveValue("2026-09-14");
+
+            model.format = "D MMM YYYY";
+            await settle();
+
+            expect(textbox()).toHaveValue("14 Sep 2026");
+            expect(model.value).toBe("2026-09-14");
+        });
+
+        it("names the format in what it asks for", async () => {
+            const { model } = await mount(DateTimePicker, { id: "d", labelView: "Starts", format: "DD/MM/YYYY" });
+
+            await typeText("nonsense");
+            await leave();
+
+            expect(model.isValid()).toBe(false);
+            expect(helperText()).toHaveTextContent("Starts must look like DD/MM/YYYY");
+        });
+
+        it("states a bound in the format too, rather than in the stored form", async () => {
+            const { model } = await mount(DateTimePicker, {
+                id: "d",
+                labelView: "Starts",
+                format: "DD/MM/YYYY",
+                min: "2026-09-10"
+            });
+
+            await typeText("01/09/2026");
+            await model.validate();
+            await settle();
+
+            expect(helperText()).toHaveTextContent("Starts cannot be earlier than 10/09/2026");
+        });
+
+        it("writes the box in the format when a day is picked from the calendar", async () => {
+            const { model } = await mount(DateTimePicker, { id: "d", format: "D MMM YYYY", value: MONDAY });
+            await openPanel();
+
+            await userEvent.click(day("Thursday, 17 September 2026"));
+            await settle();
+
+            expect(model.value).toBe("2026-09-17");
+            expect(textbox()).toHaveValue("17 Sep 2026");
+        });
+
+        // A format that names seconds is itself a request for them — the box and the value must
+        // not disagree about whether this field counts that far.
+        it("turns seconds on because the format asked for them", async () => {
+            const { model } = await mount(DateTimePicker, {
+                id: "d",
+                mode: "datetime",
+                format: "YYYY-MM-DD HH:mm:ss",
+                value: "2026-09-14 09:30"
+            });
+            await openPanel();
+
+            expect(model.value).toBe("2026-09-14 09:30:00");
+            expect(textbox()).toHaveValue("2026-09-14 09:30:00");
+            expect(segment("Second")).toHaveTextContent("00");
+        });
+
+        describe("a 12-hour clock", () => {
+            it("writes the box on a 12-hour clock, midnight and noon included", async () => {
+                const { update } = await mount(TimePicker, { id: "d", format: "h:mm A", value: "14:05" });
+                expect(textbox()).toHaveValue("2:05 PM");
+
+                await update({ id: "d", mode: "time", format: "h:mm A", value: "00:30" });
+                expect(textbox()).toHaveValue("12:30 AM");
+
+                await update({ id: "d", mode: "time", format: "h:mm A", value: "12:30" });
+                expect(textbox()).toHaveValue("12:30 PM");
+            });
+
+            it("takes a 12-hour time typed in, and stores it on the 24-hour clock", async () => {
+                const { model } = await mount(TimePicker, { id: "d", format: "h:mm A" });
+
+                await typeText("2:05 pm");
+                await leave();
+
+                expect(model.value).toBe("14:05");
+                expect(textbox()).toHaveValue("2:05 PM");
+            });
+
+            it("counts the panel's hour 1–12 and offers the AM/PM the hours need", async () => {
+                await mount(TimePicker, { id: "d", format: "h:mm A", value: "14:05" });
+                await openPanel();
+
+                expect(segment("Hour")).toHaveTextContent("02");
+                expect(segment("Hour")).toHaveAttribute("aria-valuenow", "2");
+                expect(segment("Hour")).toHaveAttribute("aria-valuemin", "1");
+                expect(segment("Hour")).toHaveAttribute("aria-valuemax", "12");
+                expect(action("Afternoon, switch to morning")).toHaveTextContent("PM");
+            });
+
+            it("moves the value half a day when the meridiem is switched", async () => {
+                const { model } = await mount(TimePicker, { id: "d", format: "h:mm A", value: "14:05" });
+                await openPanel();
+
+                await userEvent.click(action("Afternoon, switch to morning"));
+                await settle();
+
+                expect(model.value).toBe("02:05");
+                expect(textbox()).toHaveValue("2:05 AM");
+                expect(action("Morning, switch to afternoon")).toHaveTextContent("AM");
+            });
+
+            // Stepping moves the real hour, so the clock face rolls over and the half-day with it.
+            it("carries the meridiem when the hour steps past noon", async () => {
+                const { model } = await mount(TimePicker, { id: "d", format: "h:mm A", value: "11:05" });
+                await openPanel();
+
+                await userEvent.click(action("Increment hour"));
+                await settle();
+
+                expect(model.value).toBe("12:05");
+                expect(textbox()).toHaveValue("12:05 PM");
+            });
+
+            // The panel's width is set from a count, not left to the content, because the ANCHOR
+            // needs it before the panel renders — an anchor that does not match puts the panel
+            // half its error off to one side. These are the arithmetic in _panelWidth, which
+            // mirrors the measured parts in dateTimePicker.css.
+            it.each([
+                [{}, 176],
+                [{ format: "h:mm A" }, 176],
+                [{ secondsShown: true }, 178],
+                [{ format: "h:mm:ss A" }, 215]
+            ])("sizes the clock panel to the row it holds (%j)", async (params, width) => {
+                await mount(TimePicker, { id: "d", value: "14:05", ...params });
+                await openPanel();
+
+                expect(document.querySelector(".dtp-panel")).toHaveStyle({ width: `${width}px` });
+            });
+
+            it("offers no AM/PM on a 24-hour field", async () => {
+                await mount(TimePicker, { id: "d", value: "14:05" });
+                await openPanel();
+
+                expect(segment("Hour")).toHaveTextContent("14");
+                expect(screen.queryByRole("button", { name: /switch to/ })).toBeNull();
+            });
         });
     });
 

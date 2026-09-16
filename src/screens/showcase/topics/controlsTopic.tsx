@@ -20,6 +20,18 @@ const PAIRED_SIZES = [
     { button: "large", icon: "large", token: "--control-h-lg" }
 ] as const;
 
+// One value, six presentations. Every specimen below holds 2026-09-14 09:30 and stores it that
+// way; only `format` differs. `[h]` in the last one is a LITERAL — without the brackets `h` is the
+// 12-hour token, and "09h30" could not be written at all.
+const FORMAT_SPECIMENS = [
+    { id: "dtp-fmt-eu", label: "Delivery", mode: "date", format: "DD/MM/YYYY", value: "2026-09-14" },
+    { id: "dtp-fmt-us", label: "Invoiced", mode: "date", format: "MM/DD/YYYY", value: "2026-09-14" },
+    { id: "dtp-fmt-long", label: "Published", mode: "date", format: "MMMM D, YYYY", value: "2026-09-14" },
+    { id: "dtp-fmt-12h", label: "Opens at", mode: "time", format: "h:mm A", value: "09:30" },
+    { id: "dtp-fmt-full", label: "Embargo lifts", mode: "datetime", format: "MMM D, YYYY h:mm A", value: "2026-09-14 09:30" },
+    { id: "dtp-fmt-escaped", label: "Shift starts", mode: "datetime", format: "DD.MM.YYYY HH[h]mm", value: "2026-09-14 09:30" }
+] as const;
+
 type ControlsTopicStruct = UIBaseStruct<{
     methods: {
         _ButtonsView: () => React.JSX.Element;
@@ -233,12 +245,43 @@ function useControlsTopic(params?: ControlsTopicParams): ControlsTopicModel {
                     </ShowcaseSection>
 
                     <ShowcaseSection
+                        title="DateTimePicker — format"
+                        description="Every field below holds the SAME value, 2026-09-14 09:30, and stores it
+                                     the same way. `format` changes only what the box shows and what it reads
+                                     back, in the day.js vocabulary — so a European field can present
+                                     14/09/2026 while what is sorted and sent to a server stays 2026-09-14.
+                                     Reading back is looser than writing: 4/9/2026 is accepted, separators are
+                                     interchangeable, and the canonical form always works whatever the format."
+                    >
+                    {/* Each field is NAMED for its job and states its pattern underneath, rather than
+                        being labelled with the pattern itself — which also lets the validation
+                        message read "Delivery must look like DD/MM/YYYY" instead of repeating the
+                        pattern twice. Type something that is not a date into one and see it. */}
+                        <Row spacing="medium" flexWrap="wrap" verticalAlign="top">
+                            {FORMAT_SPECIMENS.map((specimen) => (
+                                <DateTimePicker
+                                    key={specimen.id}
+                                    id={specimen.id}
+                                    labelView={specimen.label}
+                                    mode={specimen.mode}
+                                    format={specimen.format}
+                                    value={specimen.value}
+                                    helperTextView={specimen.format}
+                                    fullWidth={false}
+                                    extent={{ width: 240 }}
+                                />
+                            ))}
+                        </Row>
+                    </ShowcaseSection>
+
+                    <ShowcaseSection
                         title="DateTimePicker — bounds, seconds and states"
                         description="min and max grey out the days outside the window and clamp a typed value
-                                     into it. The value is TEXT in the mode's own format, which is what makes
-                                     the box and the field agree: seconds are in both or in neither. Type
-                                     something that is not a date and leave the field — the text stays, and
-                                     the field says so rather than guessing."
+                                     into it, and say so in the field's own format. A format naming seconds
+                                     turns them on by itself, so the box and the stored value can never
+                                     disagree about how far down this field counts. Type something that is
+                                     not a date and leave the field — the text stays, and the field says so
+                                     rather than guessing."
                     >
                         <Row spacing="medium" flexWrap="wrap" verticalAlign="top">
                             <DateTimePicker id="dtp-bounded" labelView="Within the window" mode="date"

@@ -74,7 +74,7 @@ Application
 - Select`<T>`: variants, sizes (small/medium), fullWidth, themed listbox, built-in validation
 - Checkbox: sizes, indeterminate, built-in `required` validation
 - Switch: sizes (small/medium/large), color palette, helper text. Always on or off, with no unset state to display, so it has no `required` validation
-- DateTimePicker: modes (date/time/datetime), typed entry **and** a calendar/clock panel, min/max, `secondsShown`, `firstDayOfWeek`, built-in validation; `TimePicker` is the time-mode factory. The **value is text** in the mode's own format (`dateTimePattern`), never a Date — see the Date rule under Critical Conventions; `valueAsDate()`/`setValueAsDate()` convert. Parsing and the month grid live in `dateTimeFormat.ts`
+- DateTimePicker: modes (date/time/datetime), typed entry **and** a calendar/clock panel, `format`, min/max, `secondsShown`, `firstDayOfWeek`, built-in validation; `TimePicker` is the time-mode factory. The **value is text** and always **canonical** (`dateTimePattern` — ISO order), never a Date — see the Date rule under Critical Conventions; `valueAsDate()`/`setValueAsDate()` convert. `format` changes only what the box shows and reads back, in the day.js vocabulary (`DD/MM/YYYY`, `MMM D, YYYY`, `h:mm A`, `HH[h]mm` — `[…]` is a literal); reads are looser than writes, and the canonical form is always accepted. A 12-hour format gives the panel 1–12 hours and an AM/PM control. Patterns, parsing and the month grid live in `dateTimeFormat.ts`
 
 **Note**: TextField, RadioGroup, Select, Checkbox and DateTimePicker:
 - TextField, RadioGroup, and Select accept generic type parameter `<T>` for type-safe values

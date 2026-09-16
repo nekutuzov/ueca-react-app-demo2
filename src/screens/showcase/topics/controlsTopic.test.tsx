@@ -138,8 +138,8 @@ describe("ControlsTopic", () => {
     describe("date and time", () => {
         it.each([
             ["dtp-date", "Inspection date", "2026-09-14", "YYYY-MM-DD"],
-            ["dtp-time", "Reading taken", "09:30", "HH:MM"],
-            ["dtp-datetime", "Next service", "2026-09-14 09:30", "YYYY-MM-DD HH:MM"]
+            ["dtp-time", "Reading taken", "09:30", "HH:mm"],
+            ["dtp-datetime", "Next service", "2026-09-14 09:30", "YYYY-MM-DD HH:mm"]
         ])("shows %s in the mode's own format", async (id, label, text, pattern) => {
             await mount(ControlsTopic, { id: TOPIC });
 
@@ -167,6 +167,52 @@ describe("ControlsTopic", () => {
 
             expect(screen.queryByRole("grid")).toBeNull();
             expect(screen.getByRole("spinbutton", { name: "Hour" })).toHaveTextContent("09");
+        });
+
+        // The point of the section: one value, six presentations. That the stored value stays
+        // canonical under each of them is the picker's own test; here it is the WALL that matters.
+        it.each([
+            ["dtp-fmt-eu", "DD/MM/YYYY", "14/09/2026"],
+            ["dtp-fmt-us", "MM/DD/YYYY", "09/14/2026"],
+            ["dtp-fmt-long", "MMMM D, YYYY", "September 14, 2026"],
+            ["dtp-fmt-12h", "h:mm A", "9:30 AM"],
+            ["dtp-fmt-full", "MMM D, YYYY h:mm A", "Sep 14, 2026 9:30 AM"],
+            ["dtp-fmt-escaped", "DD.MM.YYYY HH[h]mm", "14.09.2026 09h30"]
+        ])("shows %s, whose format is %s, as %s", async (id, format, text) => {
+            await mount(ControlsTopic, { id: TOPIC });
+
+            expect(byId(id).querySelector("input")).toHaveValue(text);
+            // The pattern is stated under each field, and is what an empty one would offer.
+            expect(byId(id)).toHaveTextContent(format);
+            expect(byId(id).querySelector("input")).toHaveAttribute("placeholder", format);
+        });
+
+        // The reason the pattern is helper text rather than the label: a field named for its job
+        // asks for what it wants in a sentence, instead of repeating the pattern twice.
+        it("asks for the format by the field's name when the text does not parse", async () => {
+            await mount(ControlsTopic, { id: TOPIC });
+            const input = byId("dtp-fmt-eu").querySelector("input");
+
+            await userEvent.clear(input);
+            await userEvent.type(input, "not a date");
+            await userEvent.click(document.body);
+            await settle();
+
+            expect(input).toHaveValue("not a date");
+            expect(byId("dtp-fmt-eu").querySelector(".textfield-helper-text-error"))
+                .toHaveTextContent("Delivery must look like DD/MM/YYYY");
+        });
+
+        it("offers an AM/PM only where the format counts hours 1–12", async () => {
+            await mount(ControlsTopic, { id: TOPIC });
+
+            await userEvent.click(byId("dtp-fmt-12h").querySelector(".dtp-toggle"));
+            await settle();
+            expect(screen.getByRole("button", { name: /switch to/ })).toHaveTextContent("AM");
+
+            await userEvent.click(byId("dtp-time").querySelector(".dtp-toggle"));
+            await settle();
+            expect(screen.queryByRole("button", { name: /switch to/ })).toBeNull();
         });
 
         it("shows the required, read-only and disabled states", async () => {

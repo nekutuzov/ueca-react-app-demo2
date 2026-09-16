@@ -7,9 +7,9 @@ import {
 import { asyncSafe } from "@core";
 import {
     DAYS_IN_WEEK, DateTimeMode, addDays, addMonths, clampDateTime, dateTimePattern, dayLabel,
-    formatDateTime, isDayInRange, isSameDay, isSameMonth, isValidDate, monthLabel, monthWeeks,
-    parseAnyDateTime, parseDateTime, startOfDay, startOfMonth, startOfWeek, weekdayInitials,
-    withDatePart, withTimePart
+    formatBy, formatDateTime, formatHasSeconds, formatIsTwelveHour, isDayInRange, isSameDay,
+    isSameMonth, isValidDate, monthLabel, monthWeeks, parseAnyDateTime, parseBy, parseDateTime,
+    startOfDay, startOfMonth, startOfWeek, weekdayInitials, withDatePart, withTimePart
 } from "./dateTimeFormat";
 import "./dateTimePicker.css";
 
@@ -35,9 +35,15 @@ import "./dateTimePicker.css";
 // two non-null objects as equal when their own keys match; a Date has NO own keys, so any two
 // Dates compare equal and the second assignment is silently dropped. It fails identically through
 // a direct assignment, a binding and a JSX prop, so no amount of care at this end would fix it.
-// Text is a primitive, so it simply works — and it carries its own invariant with it: the value is
-// exactly what the box shows, in the format `dateTimePattern` names for the mode. `valueAsDate()`
-// hands back a Date for anyone who wants to compute with it.
+// Text is a primitive, so it simply works. `valueAsDate()` hands back a Date for anyone who wants
+// to compute with it.
+//
+// The value is always CANONICAL — ISO order, the shape `dateTimePattern` names for the mode —
+// whatever the field displays. `format` decides only what the BOX shows and what it reads back, so
+// a field can present 14/09/2026 or "14 Sep 2026, 9:30 AM" while what is stored, compared, sorted
+// and sent to a server stays 2026-09-14. Changing the format restyles the box and leaves the value
+// alone. An unset format means the canonical pattern, which is why the two used to be the same
+// string and every default still behaves exactly as it did.
 
 type TimeUnit = "hour" | "minute" | "second";
 
@@ -66,23 +72,42 @@ const SEGMENT_STEPS: Record<string, number> = {
 
 const MONTHS_IN_YEAR = 12;
 
-// The panel's width is a NUMBER here rather than only a CSS rule because the anchor needs it: an
-// anchor as wide as the panel makes centring and left-aligning the same thing, which is how the
-// panel lines up with the left edge of the field (the trick Select uses for its listbox).
+// The panel's width is a NUMBER here rather than only a CSS rule because the ANCHOR needs it
+// before the panel has rendered: an anchor as wide as the panel makes centring and left-aligning
+// the same thing, which is how the panel lines up with the left edge of the field (the trick
+// Select uses for its listbox). Get it wrong and the panel sits half its error off to one side.
+//
+// The time row therefore has to be MEASURED IN ADVANCE rather than left to size itself: two
+// segments fit the minimum, but seconds and an AM/PM pill do not. These mirror dateTimePicker.css
+// — the same arrangement tokens.css and layoutShared.ts already keep in step.
 const CALENDAR_PANEL_WIDTH = 256;
-const TIME_PANEL_WIDTH = 176;
+const MIN_TIME_PANEL_WIDTH = 176;
+// Measured off the rendered row, not estimated: a spinner column, the ":" between two of them, the
+// AM/PM pill, the flex gap, and --space-default on each side of the border-box panel.
+const SEGMENT_WIDTH = 40;
+const SEPARATOR_WIDTH = 9;
+const MERIDIEM_WIDTH = 33;
+const ROW_GAP = 4;
+const PANEL_PADDING = 16;
+// Erring wide costs a few pixels of panel; erring narrow clips the row, so the slack is deliberate
+// — a fallback font would push these numbers up rather than down.
+const PANEL_SLACK = 8;
 
 type DateTimePickerStruct = EditBaseStruct<{
     props: {
-        // The committed value, as text in the mode's own format — see the header for why it is not
-        // a Date. Undefined when the field is empty.
+        // The committed value, as CANONICAL text — see the header for why it is not a Date, and
+        // why it does not follow `format`. Undefined when the field is empty.
         value: string;
-        // What is being edited: a day, a clock, or both. Decides the text format, what the panel
-        // holds, and whether clicking a day finishes the job.
+        // What is being edited: a day, a clock, or both. Decides what the panel holds, whether
+        // clicking a day finishes the job, and the canonical shape of the value.
         mode: DateTimeMode;
+        // How the BOX reads and writes, in the day.js vocabulary — "DD/MM/YYYY", "MMM D, YYYY",
+        // "h:mm A", "HH[h]mm". Unset means the canonical pattern for the mode. See dateTimeFormat.ts
+        // for the tokens, and for what a read accepts that a write would not.
+        format: string;
         labelView: React.ReactNode;
-        // Defaults to the mode's own pattern ("YYYY-MM-DD"), which is the most useful thing an
-        // empty box can say about what it will accept.
+        // Defaults to the format itself, which is the most useful thing an empty box can say about
+        // what it will accept.
         placeholder: string;
         disabled: boolean;
         readOnly: boolean;
@@ -95,8 +120,9 @@ type DateTimePickerStruct = EditBaseStruct<{
         // midnight on that day. Days outside them are unchoosable, and a typed value is clamped.
         min: string;
         max: string;
-        // Seconds in the text and a third segment in the time row. Off by default: most fields
-        // that want a time want a minute.
+        // Seconds in the value and a third segment in the time row. Off by default: most fields
+        // that want a time want a minute. A `format` carrying `ss` turns them on by itself, so the
+        // box and the value can never disagree about whether this field counts seconds.
         secondsShown: boolean;
         // 0 = Sunday … 6 = Saturday. Monday by default.
         firstDayOfWeek: number;
@@ -146,6 +172,7 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
             id: useDateTimePicker.name,
             value: undefined,
             mode: "date",
+            format: undefined,
             labelView: undefined,
             placeholder: undefined,
             disabled: false,
@@ -177,7 +204,7 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
                     model.resetValidationErrors();
                 }),
                 labelView: () => model.labelView,
-                placeholder: () => model.placeholder ?? dateTimePattern(model.mode, model.secondsShown),
+                placeholder: () => model.placeholder ?? _format(),
                 disabled: () => model.disabled,
                 readOnly: () => model.readOnly,
                 required: () => model.required,
@@ -317,13 +344,17 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
                 </div>
             ),
 
+            // The panel counts the way the FORMAT counts: a 12-hour field gets 1–12 and the AM/PM
+            // control that makes those hours mean anything, and the seconds column appears only
+            // where seconds are part of the value.
             _TimeView: () => (
                 <div className="dtp-time" role="group" aria-label="Time">
                     {_SegmentView("hour")}
                     <span className="dtp-time-separator" aria-hidden="true">:</span>
                     {_SegmentView("minute")}
-                    {model.secondsShown && <span className="dtp-time-separator" aria-hidden="true">:</span>}
-                    {model.secondsShown && _SegmentView("second")}
+                    {_hasSeconds() && <span className="dtp-time-separator" aria-hidden="true">:</span>}
+                    {_hasSeconds() && _SegmentView("second")}
+                    {_isTwelveHour() && _MeridiemView()}
                 </div>
             )
         },
@@ -339,38 +370,44 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
                     return model.required ? `${fieldName} cannot be empty` : undefined;
                 }
 
-                const parsed = parseDateTime(text, model.mode, _valueDate());
+                const parsed = _read(text);
                 if (!parsed) {
-                    return `${fieldName} must look like ${dateTimePattern(model.mode, model.secondsShown)}`;
+                    return `${fieldName} must look like ${_format()}`;
                 }
                 if (isValidDate(_minDate()) && parsed < _minDate()) {
-                    return `${fieldName} cannot be earlier than ${_formatted(_minDate())}`;
+                    return `${fieldName} cannot be earlier than ${_displayed(_minDate())}`;
                 }
                 if (isValidDate(_maxDate()) && parsed > _maxDate()) {
-                    return `${fieldName} cannot be later than ${_formatted(_maxDate())}`;
+                    return `${fieldName} cannot be later than ${_displayed(_maxDate())}`;
                 }
             },
 
             // The owner setting the value from outside is what this is for: the box follows it.
             onChangeValue: () => {
-                model._text = model.value ?? "";
+                _showValue();
                 model.resetValidationErrors();
             },
 
-            // A field that changes what it edits re-reads what it is holding in the new format —
-            // and drops whatever the new format cannot say, which is the honest reading of "the
-            // value is what the box shows".
+            // A field that changes what it EDITS re-reads what it is holding, and drops whatever
+            // the new mode cannot say — a datetime that becomes a date loses its clock.
             onChangeMode: () => {
-                _reformatValue();
+                _recanonicalizeValue();
             },
 
             onChangeSecondsShown: () => {
-                _reformatValue();
+                _recanonicalizeValue();
+            },
+
+            // A field that changes how it PRESENTS restyles the box and leaves the value alone —
+            // except that a format naming seconds is itself a request for them, which the value
+            // has to answer.
+            onChangeFormat: () => {
+                _recanonicalizeValue();
             }
         },
 
         init: () => {
-            model._text = model.value ?? "";
+            _recanonicalizeValue();
         },
 
         // Reads NOTHING that changes while the panel is open — see the note in select.tsx: a main
@@ -411,14 +448,67 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
         return !model.disabled && !model.readOnly;
     }
 
-    function _formatted(value: Date): string {
-        return formatDateTime(value, model.mode, model.secondsShown);
+    // How the box presents. Unset means the canonical pattern, which is what makes an unformatted
+    // field show exactly what it stores.
+    function _format(): string {
+        return model.format || dateTimePattern(model.mode, model.secondsShown);
     }
 
-    // The committed value as an instant. Read with the field's own mode, so a time-only value
-    // lands on today and a datetime one keeps its day.
+    // A format that names seconds is a request for them, so the value carries them too — otherwise
+    // the box would show :05 over a value that had already thrown it away.
+    function _hasSeconds(): boolean {
+        return model.secondsShown || formatHasSeconds(_format());
+    }
+
+    function _isTwelveHour(): boolean {
+        return formatIsTwelveHour(_format());
+    }
+
+    // What the VALUE looks like: canonical, never the display format.
+    function _canonical(value: Date): string {
+        return formatDateTime(value, model.mode, _hasSeconds());
+    }
+
+    // What the BOX looks like.
+    function _displayed(value: Date): string {
+        return formatBy(value, _format());
+    }
+
+    // The committed value as an instant. Read canonically with the field's own mode, so a
+    // time-only value lands on today and a datetime one keeps its day.
     function _valueDate(): Date {
         return parseDateTime(model.value, model.mode);
+    }
+
+    // Reads the box. The field's own format first, then the canonical form as a fallback — so a
+    // DD/MM/YYYY field also takes an ISO date pasted into it, which is never ambiguous and is what
+    // arrives from a log, a spreadsheet or an API.
+    function _read(text: string): Date {
+        return parseBy(text, _format(), _valueDate()) ?? parseDateTime(text, model.mode, _valueDate());
+    }
+
+    // Puts the value in the box. Text the format cannot account for is shown as it stands, so an
+    // owner who assigns something unreadable sees it rather than an empty field.
+    function _showValue() {
+        const value = _valueDate();
+        model._text = isValidDate(value) ? _displayed(value) : (model.value ?? "");
+    }
+
+    // Pulls the value back into the canonical shape the field's mode and precision call for —
+    // after one of them changes, and once at startup, so "the value carries seconds exactly when
+    // the field counts them" holds from the first render rather than from the first edit.
+    //
+    // GUARDED, so a value that is already canonical is never written back. A read-only field may
+    // be bound to a getter with nowhere to write, and it must not be asked to.
+    function _recanonicalizeValue() {
+        const parsed = parseAnyDateTime(model.value);
+        const canonical = isValidDate(parsed) ? _canonical(parsed) || undefined : undefined;
+        if (canonical !== undefined && canonical !== model.value) {
+            model.value = canonical;
+        }
+        // Unconditional: onChangeValue only fires when the value itself moved, and a format change
+        // restyles the box without touching it.
+        _showValue();
     }
 
     // Bounds are read LENIENTLY, so a datetime field can be bounded by a plain day.
@@ -430,8 +520,22 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
         return parseAnyDateTime(model.max);
     }
 
+    // The calendar's grid sets the width wherever there is one; a clock on its own is as wide as
+    // the columns it is showing. The 256px grid already covers the widest time row, so a datetime
+    // panel never needs to ask.
     function _panelWidth(): number {
-        return _showsCalendar() ? CALENDAR_PANEL_WIDTH : TIME_PANEL_WIDTH;
+        if (_showsCalendar()) {
+            return CALENDAR_PANEL_WIDTH;
+        }
+        const segments = _hasSeconds() ? 3 : 2;
+        const meridiem = _isTwelveHour() ? 1 : 0;
+        // Spinners, the separators between them, the pill, and a gap between every pair.
+        const children = segments + (segments - 1) + meridiem;
+        const row = segments * SEGMENT_WIDTH
+            + (segments - 1) * SEPARATOR_WIDTH
+            + meridiem * MERIDIEM_WIDTH
+            + (children - 1) * ROW_GAP;
+        return Math.max(MIN_TIME_PANEL_WIDTH, PANEL_PADDING + row + PANEL_SLACK);
     }
 
     function _panelLabel(): string {
@@ -533,8 +637,8 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
                     tabIndex={_isEditable() ? 0 : -1}
                     aria-label={_segmentLabel(unit)}
                     aria-valuenow={_segmentValue(unit)}
-                    aria-valuemin={0}
-                    aria-valuemax={UNIT_RANGE[unit] - 1}
+                    aria-valuemin={_segmentMin(unit)}
+                    aria-valuemax={_segmentMax(unit)}
                     aria-valuetext={_segmentText(unit)}
                     onKeyDown={(e) => _handleSegmentKeyDown(unit, e)}
                 >
@@ -555,24 +659,56 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
         );
     }
 
+    // A two-state control rather than a spinbutton with two stops: AM and PM are a choice, not a
+    // count, and a button that says which one it is now is the plainest way to offer it.
+    function _MeridiemView(): React.JSX.Element {
+        const meridiem = formatBy(_baseDate(), "A");
+        return (
+            <button
+                type="button"
+                className="dtp-meridiem"
+                aria-label={meridiem === "AM" ? "Morning, switch to afternoon" : "Afternoon, switch to morning"}
+                disabled={!_isEditable()}
+                onMouseDown={_keepFocus}
+                onClick={() => _toggleMeridiem()}
+            >
+                {meridiem}
+            </button>
+        );
+    }
+
     function _segmentLabel(unit: TimeUnit): string {
         return unit.charAt(0).toUpperCase() + unit.slice(1);
     }
 
+    // Read through the format engine rather than off the Date, so a 12-hour panel and a 12-hour
+    // box can never disagree about what "12" means at midnight.
+    function _segmentText(unit: TimeUnit): string {
+        return formatBy(_baseDate(), _segmentToken(unit, true));
+    }
+
     function _segmentValue(unit: TimeUnit): number {
-        const base = _baseDate();
+        return Number(formatBy(_baseDate(), _segmentToken(unit, false)));
+    }
+
+    function _segmentToken(unit: TimeUnit, padded: boolean): string {
         switch (unit) {
             case "hour":
-                return base.getHours();
+                return _isTwelveHour() ? (padded ? "hh" : "h") : (padded ? "HH" : "H");
             case "minute":
-                return base.getMinutes();
+                return padded ? "mm" : "m";
             default:
-                return base.getSeconds();
+                return padded ? "ss" : "s";
         }
     }
 
-    function _segmentText(unit: TimeUnit): string {
-        return String(_segmentValue(unit)).padStart(2, "0");
+    // An hour on a 12-hour clock starts at 1, not 0 — the announced range has to say so.
+    function _segmentMin(unit: TimeUnit): number {
+        return unit === "hour" && _isTwelveHour() ? 1 : 0;
+    }
+
+    function _segmentMax(unit: TimeUnit): number {
+        return unit === "hour" && _isTwelveHour() ? 12 : UNIT_RANGE[unit] - 1;
     }
 
     function _open() {
@@ -673,6 +809,18 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
         return ((value % range) + range) % range;
     }
 
+    // Twelve hours forward, which lands on the same clock face in the other half of the day —
+    // and stays inside the day, as every other step in this row does.
+    function _toggleMeridiem() {
+        if (!_isEditable()) {
+            return;
+        }
+        const base = _baseDate();
+        const next = withTimePart(base, _wrap(base.getHours() + 12, UNIT_RANGE.hour),
+            base.getMinutes(), base.getSeconds());
+        _applyDate(clampDateTime(next, _minDate(), _maxDate()));
+    }
+
     function _setToNow() {
         if (!_isEditable()) {
             return;
@@ -683,7 +831,7 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
             ? startOfDay(now)
             // Milliseconds always go, and the seconds with them unless the field shows them —
             // otherwise "Now" would write a value the text cannot say.
-            : withTimePart(now, now.getHours(), now.getMinutes(), model.secondsShown ? now.getSeconds() : 0);
+            : withTimePart(now, now.getHours(), now.getMinutes(), _hasSeconds() ? now.getSeconds() : 0);
 
         _moveFocus(next);
         _applyDate(clampDateTime(next, _minDate(), _maxDate()));
@@ -712,7 +860,7 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
             return;
         }
 
-        const parsed = parseDateTime(text, model.mode, _valueDate());
+        const parsed = _read(text);
         if (!parsed) {
             asyncSafe(() => model.validate());
             return;
@@ -721,30 +869,19 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
     }
 
     function _applyDate(next: Date) {
-        const text = _formatted(next);
         // Undefined rather than "", so `required` and the Clear button read an empty field the
         // same way an unset one reads.
-        const value = text || undefined;
+        const value = _canonical(next) || undefined;
         const changed = value !== model.value;
 
         model.value = value;
-        // Written even when the value did not change, so "2026/9/4" is tidied to "2026-09-04";
-        // onChangeValue only fires on an actual change. Same split as NumberField's.
-        model._text = text;
+        // Written even when the value did not change, so "4/9/26" is tidied to whatever the format
+        // actually says; onChangeValue only fires on an actual change. Same split as NumberField's.
+        model._text = _displayed(next);
         model.resetValidationErrors();
         if (changed && model.onChange) {
             asyncSafe(() => model.onChange(value, model));
         }
-    }
-
-    // Re-reads the value after the field changed what it edits. Text the new format cannot say at
-    // all is left alone for validation to report, rather than thrown away.
-    function _reformatValue() {
-        const parsed = parseAnyDateTime(model.value);
-        if (!isValidDate(parsed)) {
-            return;
-        }
-        model.value = _formatted(parsed) || undefined;
     }
 
     // Every key the panel answers to, caught on the ROOT so it works wherever focus is inside the

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-    addMonths, clampDateTime, dateTimePattern, dayLabel, daysInMonth, formatDateTime, isDayInRange,
-    isSameDay, isSameMonth, isValidDate, monthGrid, monthLabel, monthWeeks, parseDateTime, startOfDay,
+    addMonths, clampDateTime, dateTimePattern, dayLabel, daysInMonth, formatBy, formatDateTime,
+    formatHasSeconds, formatIsTwelveHour, formatTokens, isDayInRange, isSameDay, isSameMonth,
+    isValidDate, monthGrid, monthLabel, monthWeeks, parseBy, parseDateTime, parseFormat, startOfDay,
     startOfMonth, startOfWeek, weekdayInitials, withDatePart, withTimePart
 } from "./dateTimeFormat";
 
@@ -30,10 +31,10 @@ describe("dateTimeFormat", () => {
     describe("dateTimePattern", () => {
         it("names the shape each mode accepts, seconds included only when they are shown", () => {
             expect(dateTimePattern("date", false)).toBe("YYYY-MM-DD");
-            expect(dateTimePattern("time", false)).toBe("HH:MM");
-            expect(dateTimePattern("time", true)).toBe("HH:MM:SS");
-            expect(dateTimePattern("datetime", false)).toBe("YYYY-MM-DD HH:MM");
-            expect(dateTimePattern("datetime", true)).toBe("YYYY-MM-DD HH:MM:SS");
+            expect(dateTimePattern("time", false)).toBe("HH:mm");
+            expect(dateTimePattern("time", true)).toBe("HH:mm:ss");
+            expect(dateTimePattern("datetime", false)).toBe("YYYY-MM-DD HH:mm");
+            expect(dateTimePattern("datetime", true)).toBe("YYYY-MM-DD HH:mm:ss");
         });
     });
 
@@ -237,6 +238,196 @@ describe("dateTimeFormat", () => {
             expect(clampDateTime(new Date(2026, 8, 30), min, max)).toEqual(max);
             expect(clampDateTime(new Date(2026, 8, 15), min, max)).toEqual(new Date(2026, 8, 15));
             expect(clampDateTime(undefined, min, max)).toBeUndefined();
+        });
+    });
+
+    describe("parseFormat", () => {
+        it("cuts a pattern into its tokens and the literals between them", () => {
+            expect(parseFormat("DD/MM/YYYY")).toEqual([
+                { kind: "token", token: "DD" },
+                { kind: "literal", text: "/" },
+                { kind: "token", token: "MM" },
+                { kind: "literal", text: "/" },
+                { kind: "token", token: "YYYY" }
+            ]);
+        });
+
+        // Longest-first, or a four-digit year would read as two two-digit ones.
+        it("prefers the longest token that fits", () => {
+            expect(formatTokens("YYYY MMMM DD")).toEqual(["YYYY", "MMMM", "DD"]);
+            expect(formatTokens("YY MMM D")).toEqual(["YY", "MMM", "D"]);
+        });
+
+        // "HHhmm" cannot mean 14h30, because `h` is the 12-hour token.
+        it("takes bracketed text as a literal even when it reads as a token", () => {
+            expect(formatTokens("HH[h]mm")).toEqual(["HH", "mm"]);
+            expect(parseFormat("HH[h]mm")[1]).toEqual({ kind: "literal", text: "h" });
+        });
+
+        it("reports what a pattern counts", () => {
+            expect(formatHasSeconds("HH:mm")).toBe(false);
+            expect(formatHasSeconds("HH:mm:ss")).toBe(true);
+            expect(formatHasSeconds("H:m:s")).toBe(true);
+            expect(formatIsTwelveHour("HH:mm")).toBe(false);
+            expect(formatIsTwelveHour("h:mm A")).toBe(true);
+            expect(formatIsTwelveHour("hh:mm a")).toBe(true);
+        });
+    });
+
+    describe("formatBy", () => {
+        // 4 July 2026 is a Saturday; 14:05:09 exercises both the padded and the bare tokens, and
+        // an afternoon hour exercises the 12-hour ones.
+        const AFTERNOON = new Date(2026, 6, 4, 14, 5, 9);
+
+        it.each([
+            ["YYYY", "2026"],
+            ["YY", "26"],
+            ["MMMM", "July"],
+            ["MMM", "Jul"],
+            ["MM", "07"],
+            ["M", "7"],
+            ["DD", "04"],
+            ["D", "4"],
+            ["HH", "14"],
+            ["H", "14"],
+            ["hh", "02"],
+            ["h", "2"],
+            ["mm", "05"],
+            ["m", "5"],
+            ["ss", "09"],
+            ["s", "9"],
+            ["A", "PM"],
+            ["a", "pm"]
+        ])("writes %s as %s", (pattern, text) => {
+            expect(formatBy(AFTERNOON, pattern)).toBe(text);
+        });
+
+        it.each([
+            ["YYYY-MM-DD", "2026-07-04"],
+            ["DD/MM/YYYY", "04/07/2026"],
+            ["MM/DD/YYYY", "07/04/2026"],
+            ["D MMM YYYY", "4 Jul 2026"],
+            ["MMMM D, YYYY", "July 4, 2026"],
+            ["D.M.YY", "4.7.26"],
+            ["h:mm A", "2:05 PM"],
+            ["hh:mm:ss a", "02:05:09 pm"],
+            ["HH[h]mm", "14h05"],
+            ["MMM D, YYYY h:mm A", "Jul 4, 2026 2:05 PM"]
+        ])("writes the whole of %s as %s", (pattern, text) => {
+            expect(formatBy(AFTERNOON, pattern)).toBe(text);
+        });
+
+        it("writes midnight and noon as 12 on a 12-hour clock", () => {
+            expect(formatBy(new Date(2026, 6, 4, 0, 30), "h:mm A")).toBe("12:30 AM");
+            expect(formatBy(new Date(2026, 6, 4, 12, 30), "h:mm A")).toBe("12:30 PM");
+        });
+
+        it("writes an empty string for a missing or unusable value", () => {
+            expect(formatBy(undefined, "YYYY-MM-DD")).toBe("");
+            expect(formatBy(INVALID, "YYYY-MM-DD")).toBe("");
+        });
+
+        // The canonical writer is formatBy over the canonical pattern, so the two cannot drift.
+        it("agrees with the canonical writer on the canonical pattern", () => {
+            for (const mode of ["date", "time", "datetime"] as const) {
+                for (const seconds of [false, true]) {
+                    expect(formatDateTime(AFTERNOON, mode, seconds))
+                        .toBe(formatBy(AFTERNOON, dateTimePattern(mode, seconds)));
+                }
+            }
+        });
+    });
+
+    describe("parseBy", () => {
+        it.each([
+            ["DD/MM/YYYY", "04/07/2026"],
+            ["MM/DD/YYYY", "07/04/2026"],
+            ["D MMM YYYY", "4 Jul 2026"],
+            ["MMMM D, YYYY", "July 4, 2026"],
+            ["D.M.YY", "4.7.26"]
+        ])("reads back what %s wrote", (pattern, text) => {
+            expect(parseBy(text, pattern)).toEqual(new Date(2026, 6, 4));
+        });
+
+        // 03/04 is a different day either side of the Atlantic, and the pattern is what decides.
+        it("reads an ambiguous date the way its own pattern says", () => {
+            expect(parseBy("03/04/2026", "DD/MM/YYYY")).toEqual(new Date(2026, 3, 3));
+            expect(parseBy("03/04/2026", "MM/DD/YYYY")).toEqual(new Date(2026, 2, 4));
+        });
+
+        it("takes one digit where the pattern writes two", () => {
+            expect(parseBy("4/7/2026", "DD/MM/YYYY")).toEqual(new Date(2026, 6, 4));
+        });
+
+        // -, / and . are a habit, not a different date.
+        it("takes any of the separators for the one the pattern names", () => {
+            expect(parseBy("04-07-2026", "DD/MM/YYYY")).toEqual(new Date(2026, 6, 4));
+            expect(parseBy("04.07.2026", "DD/MM/YYYY")).toEqual(new Date(2026, 6, 4));
+        });
+
+        it("is free about spacing and about the case of a name", () => {
+            expect(parseBy("  4   jul   2026 ", "D MMM YYYY")).toEqual(new Date(2026, 6, 4));
+            expect(parseBy("4 JULY 2026", "D MMM YYYY")).toEqual(new Date(2026, 6, 4));
+        });
+
+        it("matches a month name on its prefix, whichever name token asked", () => {
+            expect(parseBy("4 Sept 2026", "D MMM YYYY")).toEqual(new Date(2026, 8, 4));
+            expect(parseBy("4 Sep 2026", "D MMMM YYYY")).toEqual(new Date(2026, 8, 4));
+        });
+
+        it("reads a 12-hour clock, with the meridiem written any of the usual ways", () => {
+            expect(parseBy("2:05 PM", "h:mm A", MONDAY)).toEqual(new Date(2026, 8, 14, 14, 5));
+            expect(parseBy("2:05pm", "h:mm A", MONDAY)).toEqual(new Date(2026, 8, 14, 14, 5));
+            expect(parseBy("2:05 p.m.", "h:mm A", MONDAY)).toEqual(new Date(2026, 8, 14, 14, 5));
+            expect(parseBy("12:05 AM", "h:mm A", MONDAY)).toEqual(new Date(2026, 8, 14, 0, 5));
+        });
+
+        it("splits two-digit years at 69, so 26 is this century and 90 the last", () => {
+            expect(parseBy("4.7.26", "D.M.YY").getFullYear()).toBe(2026);
+            expect(parseBy("4.7.68", "D.M.YY").getFullYear()).toBe(2068);
+            expect(parseBy("4.7.69", "D.M.YY").getFullYear()).toBe(1969);
+            expect(parseBy("4.7.90", "D.M.YY").getFullYear()).toBe(1990);
+        });
+
+        it("reads a bracketed literal as the character it stands for", () => {
+            expect(parseBy("14h05", "HH[h]mm", MONDAY)).toEqual(new Date(2026, 8, 14, 14, 5));
+        });
+
+        it("takes the day from the base when the pattern names only a clock", () => {
+            expect(parseBy("14:05", "HH:mm", MONDAY)).toEqual(new Date(2026, 8, 14, 14, 5));
+        });
+
+        // ...and the clock from the base when the pattern names only a day, so correcting the day
+        // of an appointment does not silently move it to midnight.
+        it("takes the clock from the base when the pattern names only a day", () => {
+            expect(parseBy("01/10/2026", "DD/MM/YYYY", MONDAY)).toEqual(new Date(2026, 9, 1, 9, 5, 30));
+        });
+
+        // A pattern that counts to the minute means :00, not whatever second was left over.
+        it("zeroes the seconds when the pattern names a clock without them", () => {
+            expect(parseBy("14:05", "HH:mm", MONDAY)).toEqual(new Date(2026, 8, 14, 14, 5, 0));
+        });
+
+        it("refuses text the pattern cannot account for", () => {
+            expect(parseBy("2026-07-04", "DD/MM/YYYY")).toBeUndefined();
+            expect(parseBy("4 Jul", "D MMM YYYY")).toBeUndefined();
+            expect(parseBy("4 Foo 2026", "D MMM YYYY")).toBeUndefined();
+            expect(parseBy("nonsense", "DD/MM/YYYY")).toBeUndefined();
+            expect(parseBy("", "DD/MM/YYYY")).toBeUndefined();
+        });
+
+        it("refuses a day the month does not have, and a clock off the end of the day", () => {
+            expect(parseBy("31/02/2026", "DD/MM/YYYY")).toBeUndefined();
+            expect(parseBy("25:00", "HH:mm")).toBeUndefined();
+            expect(parseBy("14:60", "HH:mm")).toBeUndefined();
+            // 13 is an hour, but not on a 12-hour clock.
+            expect(parseBy("13:05 PM", "h:mm A")).toBeUndefined();
+            expect(parseBy("13:05", "h:mm")).toBeUndefined();
+        });
+
+        it("refuses a pattern that names nothing at all", () => {
+            expect(parseBy("whatever", "")).toBeUndefined();
+            expect(parseBy("-/-", "[-]/[-]")).toBeUndefined();
         });
     });
 
