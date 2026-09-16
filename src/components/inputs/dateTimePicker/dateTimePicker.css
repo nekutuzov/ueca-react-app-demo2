@@ -127,10 +127,13 @@
 
 /* One grid for the whole month: each row is `display: contents`, so its cells become direct grid
    children and the columns stay aligned — the mechanism Table uses for its rows. */
+/* The column gap is not decoration. Two neighbouring days can each be carrying chrome — the
+   selected fill on one, today's ring on the next — and edge to edge those two boxes touch and read
+   as a single two-cell shape. The gap is what keeps them two days. */
 .dtp-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: var(--space-tiny) 0;
+    gap: var(--space-tiny);
 }
 
 .dtp-week {
