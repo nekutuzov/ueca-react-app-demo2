@@ -32,7 +32,7 @@ import "./dateTimePicker.css";
 // guess at what the user meant. See dateTimeFormat.ts for what counts as a date.
 //
 // THE VALUE IS TEXT, not a Date, and that is not a stylistic choice — a Date CANNOT be a reactive
-// prop. ueca-react (3.0.2) decides whether a prop changed with a structural comparison that reads
+// prop. ueca-react (3.0.3) decides whether a prop changed with a structural comparison that reads
 // two non-null objects as equal when their own keys match; a Date has NO own keys, so any two
 // Dates compare equal and the second assignment is silently dropped. It fails identically through
 // a direct assignment, a binding and a JSX prop, so no amount of care at this end would fix it.

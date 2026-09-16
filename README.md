@@ -39,7 +39,7 @@ Then open `http://localhost:5001/ueca-react-app-demo2/`.
 | `npm run preview` | Serve the production build |
 | `npm run deploy` | Build and copy to the GitHub Pages checkout (`deploy.ps1`) |
 
-`npm install` also copies the UECA agent skills shipped with `ueca-react` into `.claude/skills/`.
+The UECA agent skills shipped with `ueca-react` are installed by `npx ueca-react-skills`, which the postinstall runs after every `npm install`.
 
 ## Project structure
 

@@ -9,7 +9,7 @@ npm install
 ```
 
 This will install all required packages including:
-- `ueca-react@^3.0.2` - The UECA framework
+- `ueca-react@^3.0.3` - The UECA framework
 - React 19, MobX, Vite, TypeScript, MSW, and more
 
 ### 2. Initialize MSW (Mock Service Worker)
@@ -200,7 +200,7 @@ Comment out in `src/main.tsx`:
 
 1. **Start Here**: Read `README.md`
 2. **UECA Docs**: `node_modules/ueca-react/docs/raw/index.md`
-3. **AI Instructions**: `CLAUDE.md`, and the UECA skills `npm install` copies into `.claude/skills/`
+3. **AI Instructions**: `CLAUDE.md`, and the UECA skills `npx ueca-react-skills` installs into `.claude/skills/`
 4. **Base Components**: Study `src/components/base/`
 5. **The Showcase**: https://nekutuzov.github.io/ueca-react-app-demo2/
 6. **UECA-React Documentation**: https://nekutuzov.github.io/ueca-react-doc/

@@ -26,6 +26,6 @@ coverage
 *.sln
 *.sw?
 
-# Agent skills copied from node_modules/ueca-react/skills by the postinstall script.
-# Generated - do not edit in place; re-run "npm install" after upgrading ueca-react.
+# Agent skills the ueca-react package ships, copied in by "npx ueca-react-skills" - which the
+# postinstall runs too. Generated - do not edit in place; re-run it after upgrading ueca-react.
 .claude/skills/

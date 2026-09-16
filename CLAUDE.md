@@ -3,7 +3,7 @@
 ## Quick Reference
 
 **UECA Documentation**: `node_modules/ueca-react/docs/raw/index.md` - Complete framework documentation (also https://nekutuzov.github.io/ueca-react-doc/)  
-**UECA Skills**: `.claude/skills/ueca-app-development`, `.claude/skills/ueca-app-architecture` - copied from the package on `npm install`  
+**UECA Skills**: `.claude/skills/ueca-app-development`, `.claude/skills/ueca-app-architecture` - installed by `npx ueca-react-skills`, which the postinstall runs  
 **Example Project**: `https://github.com/nekutuzov/ueca-react-app`
 
 **Core Principles**:
@@ -549,11 +549,11 @@ options: [{ value: "none", label: "None" }]
 
 ## Critical Conventions
 
-**Lifecycle** (replace useEffect): `constr`, `init`, `mount`, `draw`, `erase`, `unmount`, `deinit` (see UECA docs)
+**Lifecycle** (replace useEffect), in the order they run: `constr`, `init`, `draw`, `mount`, `erase`, `unmount`, `deinit` (see UECA docs)
 
 **State**: Direct assignment: `model.count++`, `model.user = newUser` (MobX reactive)
 
-**No `Date` (or any zero-own-key object) in a reactive prop**: ueca-react 3.0.2 decides whether a prop changed with a structural comparison that reads two non-null objects as equal when their own keys match. A `Date` has no own keys, so **any two Dates compare equal and the second assignment is silently dropped** — on every path: direct assignment, a binding, and a JSX prop. Store the instant as a primitive (text, as DateTimePicker does, or epoch ms) and convert at the edges. The same trap waits for any class instance without own enumerable properties.
+**No `Date` (or any zero-own-key object) in a reactive prop**: ueca-react 3.0.3 decides whether a prop changed with a structural comparison that reads two non-null objects as equal when their own keys match. A `Date` has no own keys, so **any two Dates compare equal and the second assignment is silently dropped** — on every path: direct assignment, a binding, and a JSX prop. Store the instant as a primitive (text, as DateTimePicker does, or epoch ms) and convert at the edges. The same trap waits for any class instance without own enumerable properties.
 
 **Event Handlers**: Auto-generated `onChange<Prop>` (after), `onChanging<Prop>` (before, can transform/block)
 

@@ -23,7 +23,7 @@
     "coverage": "vitest run --coverage",
     "preview": "vite preview",
     "deploy": "powershell -ExecutionPolicy Bypass -File ./deploy.ps1",
-    "postinstall": "node -e \"const fs=require('fs'),s='node_modules/ueca-react/skills';if(fs.existsSync(s))for(const d of fs.readdirSync(s,{withFileTypes:true}).filter(e=>e.isDirectory()))fs.cpSync(s+'/'+d.name,'.claude/skills/'+d.name,{recursive:true})\""
+    "postinstall": "ueca-react-skills --auto"
   },
   "dependencies": {
     "@uiw/react-markdown-preview": "^5.2.0",
@@ -32,7 +32,7 @@
     "mobx-utils": "^6.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "ueca-react": "^3.0.2"
+    "ueca-react": "^3.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
