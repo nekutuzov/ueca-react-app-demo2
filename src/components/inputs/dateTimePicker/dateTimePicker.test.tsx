@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { DateTimePicker, TimePicker } from "@components";
 import { mount, settle } from "@test";
@@ -609,6 +609,256 @@ describe("DateTimePicker", () => {
             await userEvent.click(document.body);
             await settle();
             expect(panel()).toBeNull();
+        });
+    });
+
+    // Stepping ‹ › a month at a time is no way to reach 1987, so the heading is a way up: days to
+    // the months of their year, months to a decade of years.
+    describe("finding a year", () => {
+        it("opens the months of the year from the heading, marking the one in the value", async () => {
+            await mount(DateTimePicker, { id: "d", value: MONDAY });
+            await openPanel();
+
+            await userEvent.click(action("September 2026, choose a month"));
+            await settle();
+
+            expect(grid()).toHaveAttribute("aria-label", "Choose a month");
+            expect(screen.getByRole("gridcell", { name: "September 2026" })).toHaveClass("selected");
+            expect(screen.getAllByRole("gridcell")).toHaveLength(12);
+            expect(document.querySelector(".dtp-month-label")).toHaveTextContent("2026");
+        });
+
+        it("opens a decade from the months' heading, with the strays either side marked as outside", async () => {
+            await mount(DateTimePicker, { id: "d", value: MONDAY });
+            await openPanel();
+            await userEvent.click(action("September 2026, choose a month"));
+            await settle();
+
+            await userEvent.click(action("2026, choose a year"));
+            await settle();
+
+            expect(grid()).toHaveAttribute("aria-label", "Choose a year");
+            // The heading names the DECADE; the grid shows a year either side of it to fill 4×3.
+            expect(document.querySelector(".dtp-month-label")).toHaveTextContent("2020 – 2029");
+            expect(screen.getAllByRole("gridcell")).toHaveLength(12);
+            expect(screen.getByRole("gridcell", { name: "2026" })).toHaveClass("selected");
+            expect(screen.getByRole("gridcell", { name: "2019" })).toHaveClass("outside");
+            expect(screen.getByRole("gridcell", { name: "2030" })).toHaveClass("outside");
+            expect(screen.getByRole("gridcell", { name: "2020" })).not.toHaveClass("outside");
+        });
+
+        // The heading at the top level is not a way further up, so it stops being a button.
+        it("offers no way up from the years", async () => {
+            await mount(DateTimePicker, { id: "d", value: MONDAY });
+            await openPanel();
+            await userEvent.click(action("September 2026, choose a month"));
+            await userEvent.click(action("2026, choose a year"));
+            await settle();
+
+            expect(document.querySelector(".dtp-month-label-action")).toBeNull();
+        });
+
+        it.each([
+            ["days", [], "Previous month", "Next month"],
+            ["months", ["September 2026, choose a month"], "Previous year", "Next year"],
+            ["years", ["September 2026, choose a month", "2026, choose a year"], "Previous years", "Next years"]
+        ])("steps a %s page from the arrows", async (_level, drills, back, forward) => {
+            await mount(DateTimePicker, { id: "d", value: MONDAY });
+            await openPanel();
+            for (const drill of drills) {
+                await userEvent.click(action(drill));
+            }
+            await settle();
+
+            expect(action(back)).toBeInTheDocument();
+            expect(action(forward)).toBeInTheDocument();
+        });
+
+        it("walks a year at a time through the months, and a decade through the years", async () => {
+            await mount(DateTimePicker, { id: "d", value: MONDAY });
+            await openPanel();
+            await userEvent.click(action("September 2026, choose a month"));
+            await settle();
+
+            await userEvent.click(action("Next year"));
+            await settle();
+            expect(document.querySelector(".dtp-month-label")).toHaveTextContent("2027");
+
+            await userEvent.click(action("2027, choose a year"));
+            await userEvent.click(action("Previous years"));
+            await settle();
+            expect(document.querySelector(".dtp-month-label")).toHaveTextContent("2010 – 2019");
+        });
+
+        // Two clicks from a day in 2026 to the same day in 2031 — the whole point of the drill-down.
+        it("travels down through a year and a month back to the days", async () => {
+            const { model } = await mount(DateTimePicker, { id: "d", value: MONDAY });
+            await openPanel();
+
+            await userEvent.click(action("September 2026, choose a month"));
+            await userEvent.click(action("2026, choose a year"));
+            await settle();
+            await userEvent.click(screen.getByRole("gridcell", { name: "2021" }));
+            await settle();
+
+            expect(grid()).toHaveAttribute("aria-label", "Choose a month");
+            expect(document.querySelector(".dtp-month-label")).toHaveTextContent("2021");
+
+            await userEvent.click(screen.getByRole("gridcell", { name: "March 2021" }));
+            await settle();
+
+            expect(grid()).toHaveAttribute("aria-label", "March 2021");
+            expect(day("Sunday, 14 March 2021")).toHaveClass("focused");
+            // Travelling is not choosing: the value still waits for a day.
+            expect(model.value).toBe(MONDAY);
+        });
+
+        it("clamps the focused day to the length of the month it lands in", async () => {
+            await mount(DateTimePicker, { id: "d", value: "2026-01-31" });
+            await openPanel();
+
+            await userEvent.click(action("January 2026, choose a month"));
+            await settle();
+            await userEvent.click(screen.getByRole("gridcell", { name: "February 2026" }));
+            await settle();
+
+            expect(day("Saturday, 28 February 2026")).toHaveClass("focused");
+        });
+
+        it("always reopens on the days", async () => {
+            await mount(DateTimePicker, { id: "d", value: MONDAY });
+            await openPanel();
+            await userEvent.click(action("September 2026, choose a month"));
+            await settle();
+
+            await userEvent.click(toggle());
+            await openPanel();
+
+            expect(grid()).toHaveAttribute("aria-label", "September 2026");
+        });
+
+        // The keyboard only ever works on days, so a key part-way through the journey lands back
+        // where the keys mean something.
+        it("drops back to the days when a key is pressed in a chooser", async () => {
+            await mount(DateTimePicker, { id: "d", value: MONDAY });
+            await userEvent.click(textbox());
+            await openPanel();
+            await userEvent.click(action("September 2026, choose a month"));
+            await settle();
+
+            await userEvent.keyboard("{ArrowRight}");
+            await settle();
+
+            expect(grid()).toHaveAttribute("aria-label", "September 2026");
+            expect(day("Tuesday, 15 September 2026")).toHaveClass("focused");
+        });
+    });
+
+    describe("press and hold", () => {
+        // The repeat's own numbers, pinned here because they are what the control FEELS like: a
+        // click must never start one, and once it does the value has to move at a usable rate.
+        const DELAY = 400;
+        const INTERVAL = 80;
+
+        function hold(button: HTMLElement, ms: number) {
+            vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval"] });
+            fireEvent.mouseDown(button);
+            if (ms) {
+                act(() => { vi.advanceTimersByTime(ms); });
+            }
+        }
+
+        function release(button: HTMLElement) {
+            fireEvent.mouseUp(button);
+            act(() => { vi.advanceTimersByTime(10_000); });
+            vi.useRealTimers();
+        }
+
+        it("steps once on a press and keeps going once the press outlasts a click", async () => {
+            const { model } = await mount(TimePicker, { id: "d", value: "09:30" });
+            await openPanel();
+            const up = action("Increment minute");
+
+            hold(up, 0);
+            expect(model.value).toBe("09:31");
+
+            // The delay elapses, which only ARMS the repeat — the first tick is an interval later.
+            act(() => { vi.advanceTimersByTime(DELAY); });
+            expect(model.value).toBe("09:31");
+
+            act(() => { vi.advanceTimersByTime(INTERVAL); });
+            expect(model.value).toBe("09:32");
+
+            act(() => { vi.advanceTimersByTime(3 * INTERVAL); });
+            expect(model.value).toBe("09:35");
+
+            release(up);
+            expect(model.value).toBe("09:35");
+        });
+
+        it("stops the moment the button is released", async () => {
+            const { model } = await mount(TimePicker, { id: "d", value: "09:30" });
+            await openPanel();
+            const up = action("Increment hour");
+
+            hold(up, DELAY + 2 * INTERVAL);
+            expect(model.value).toBe("12:30");
+
+            release(up);
+            expect(model.value).toBe("12:30");
+        });
+
+        it("stops when the pointer leaves the button mid-press", async () => {
+            const { model } = await mount(TimePicker, { id: "d", value: "09:30" });
+            await openPanel();
+            const down = action("Decrement minute");
+
+            hold(down, DELAY + INTERVAL);
+            expect(model.value).toBe("09:28");
+
+            fireEvent.mouseLeave(down);
+            act(() => { vi.advanceTimersByTime(10_000); });
+            vi.useRealTimers();
+
+            expect(model.value).toBe("09:28");
+        });
+
+        // A timer that outlived its button would go on changing a value nobody is holding.
+        it("stops when the panel closes under a held button", async () => {
+            const { model } = await mount(TimePicker, { id: "d", value: "09:30" });
+            await openPanel();
+
+            hold(action("Increment minute"), DELAY + INTERVAL);
+            expect(model.value).toBe("09:32");
+
+            act(() => { model.popover.close(); });
+            act(() => { vi.advanceTimersByTime(10_000); });
+            vi.useRealTimers();
+
+            expect(model.value).toBe("09:32");
+        });
+
+        it("also repeats on the calendar's month arrows", async () => {
+            await mount(DateTimePicker, { id: "d", value: MONDAY });
+            await openPanel();
+            const next = action("Next month");
+
+            hold(next, DELAY + 2 * INTERVAL);
+            // One for the press, then two ticks.
+            expect(grid()).toHaveAttribute("aria-label", "December 2026");
+
+            release(next);
+        });
+
+        // A right-click is not a press-and-hold, and must not leave a timer running.
+        it("ignores a press that is not the primary button", async () => {
+            const { model } = await mount(TimePicker, { id: "d", value: "09:30" });
+            await openPanel();
+
+            fireEvent.mouseDown(action("Increment minute"), { button: 2 });
+            await settle();
+
+            expect(model.value).toBe("09:30");
         });
     });
 

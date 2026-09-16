@@ -6,10 +6,11 @@ import {
 } from "@components";
 import { asyncSafe } from "@core";
 import {
-    DAYS_IN_WEEK, DateTimeMode, addDays, addMonths, clampDateTime, dateTimePattern, dayLabel,
-    formatBy, formatDateTime, formatHasSeconds, formatIsTwelveHour, isDayInRange, isSameDay,
-    isSameMonth, isValidDate, monthLabel, monthWeeks, parseAnyDateTime, parseBy, parseDateTime,
-    startOfDay, startOfMonth, startOfWeek, weekdayInitials, withDatePart, withTimePart
+    DAYS_IN_WEEK, DateTimeMode, MONTH_NAMES, addDays, addMonths, clampDateTime, dateTimePattern,
+    dayLabel, daysInMonth, formatBy, formatDateTime, formatHasSeconds, formatIsTwelveHour,
+    isDayInRange, isSameDay, isSameMonth, isValidDate, monthLabel, monthWeeks, parseAnyDateTime,
+    parseBy, parseDateTime, startOfDay, startOfMonth, startOfWeek, weekdayInitials, withDatePart,
+    withTimePart
 } from "./dateTimeFormat";
 import "./dateTimePicker.css";
 
@@ -46,6 +47,24 @@ import "./dateTimePicker.css";
 // string and every default still behaves exactly as it did.
 
 type TimeUnit = "hour" | "minute" | "second";
+
+// The calendar's three grids. Each one steps its own unit through ‹ ›, and the heading is the way
+// from one up to the next.
+type CalendarLevel = "days" | "months" | "years";
+
+// The year grid is a DECADE, plus the year either side of it — so the page reads as "the 2020s"
+// rather than as an arbitrary run of twelve, and the two strays fill the 4×3 grid while showing
+// where the decade joins its neighbours. They are marked `outside`, exactly as the days from the
+// neighbouring months are.
+const YEARS_IN_DECADE = 10;
+const YEARS_IN_PAGE = YEARS_IN_DECADE + 2;
+const MONTH_COLUMNS = 3;
+const YEAR_COLUMNS = 4;
+
+// Press and hold. The wait before the first repeat is long enough that an ordinary click never
+// starts one; after that the rate is what a scroll of values should feel like.
+const REPEAT_DELAY_MS = 400;
+const REPEAT_INTERVAL_MS = 80;
 
 // Steps for the arrow keys inside the month grid: a week is seven days, so Up and Down are ±7.
 const DAY_STEPS: Record<string, number> = {
@@ -137,8 +156,14 @@ type DateTimePickerStruct = EditBaseStruct<{
         // Select's _activeIndex it only becomes the value on Enter or a click.
         _viewMonthAt: number;
         _focusedDayAt: number;
+        // Which of the calendar's three grids is showing. Always back to "days" when the panel
+        // opens: the drill-down is a way to travel, not a mode to be left in.
+        _level: CalendarLevel;
         __rootRef: React.RefObject<HTMLDivElement>;
         __toggleRef: React.RefObject<HTMLButtonElement>;
+        // Press-and-hold timers. A `__` prop because they are plain values that nothing renders —
+        // making them reactive would re-render the panel on every tick for no reason.
+        __repeat: { delay?: ReturnType<typeof setTimeout>; tick?: ReturnType<typeof setInterval> };
     };
 
     children: {
@@ -190,8 +215,10 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
             _text: "",
             _viewMonthAt: undefined,
             _focusedDayAt: undefined,
+            _level: "days",
             __rootRef: { current: null },
-            __toggleRef: { current: null }
+            __toggleRef: { current: null },
+            __repeat: {}
         },
 
         children: {
@@ -229,6 +256,7 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
                 // A mousedown on the toggle is not an outside click: without this the panel would
                 // close before the toggle's own click ran, and the button could never shut it.
                 onGetTrigger: () => model.__toggleRef.current,
+                onClose: () => _stopRepeat(),
                 contentView: () => <model._PanelView />
             })
         },
@@ -281,65 +309,55 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
                 </div>
             ),
 
+            // Three levels over one view month: days, the months of its year, and a page of
+            // years. The heading is the way up — stepping a year at a time through ‹ › is no way
+            // to reach a birth date — and picking at any level drops back to the one below it.
             _CalendarView: () => (
                 <div className="dtp-calendar">
                     <div className="dtp-month">
                         <button
                             type="button"
+                            tabIndex={-1}
                             className="dtp-month-step"
-                            aria-label="Previous month"
-                            onMouseDown={_keepFocus}
-                            onClick={() => _shiftMonth(-1)}
+                            aria-label={`Previous ${_levelUnit()}`}
+                            onMouseDown={(e) => _startRepeat(e, () => _stepLevel(-1))}
+                            onMouseUp={_stopRepeat}
+                            onMouseLeave={_stopRepeat}
                         >
                             <Icon name="chevronLeft" size="sm" />
                         </button>
-                        <span className="dtp-month-label" aria-live="polite">
-                            {monthLabel(_viewMonth())}
-                        </span>
+                        {model._level === "years" ? (
+                            <span className="dtp-month-label" aria-live="polite">{_levelLabel()}</span>
+                        ) : (
+                            <button
+                                type="button"
+                                tabIndex={-1}
+                                className="dtp-month-label dtp-month-label-action"
+                                aria-label={`${_levelLabel()}, choose ${model._level === "days" ? "a month" : "a year"}`}
+                                onMouseDown={_keepFocus}
+                                onClick={() => _drillUp()}
+                            >
+                                {_levelLabel()}
+                            </button>
+                        )}
                         <button
                             type="button"
+                            tabIndex={-1}
                             className="dtp-month-step"
-                            aria-label="Next month"
-                            onMouseDown={_keepFocus}
-                            onClick={() => _shiftMonth(1)}
+                            aria-label={`Next ${_levelUnit()}`}
+                            onMouseDown={(e) => _startRepeat(e, () => _stepLevel(1))}
+                            onMouseUp={_stopRepeat}
+                            onMouseLeave={_stopRepeat}
                         >
                             <Icon name="chevronRight" size="sm" />
                         </button>
                     </div>
-                    {/* One grid, not a grid of rows: a row is `display: contents`, so its days
-                        become direct grid children and every column lines up — the same mechanism
-                        Table uses for its rows. */}
-                    <div className="dtp-grid" role="grid" aria-label={monthLabel(_viewMonth())}>
-                        <div className="dtp-week" role="row">
-                            {weekdayInitials(model.firstDayOfWeek).map((day) => (
-                                <span key={day} role="columnheader" className="dtp-weekday">{day}</span>
-                            ))}
-                        </div>
-                        {monthWeeks(_viewMonth(), model.firstDayOfWeek).map((week) => (
-                            <div key={week[0].getTime()} className="dtp-week" role="row">
-                                {week.map((day) => (
-                                    <button
-                                        key={day.getTime()}
-                                        id={_dayId(day)}
-                                        type="button"
-                                        role="gridcell"
-                                        // Not a tab stop: the text box is the keyboard's way in,
-                                        // and the arrows are handled on the root. Forty-two tab
-                                        // stops would be a worse answer than the one that works.
-                                        tabIndex={-1}
-                                        className={_dayClass(day)}
-                                        aria-label={dayLabel(day)}
-                                        aria-selected={isSameDay(day, _valueDate())}
-                                        aria-current={isSameDay(day, new Date()) ? "date" : undefined}
-                                        disabled={!isDayInRange(day, _minDate(), _maxDate())}
-                                        onMouseDown={_keepFocus}
-                                        onClick={() => _clickDay(day)}
-                                    >
-                                        {day.getDate()}
-                                    </button>
-                                ))}
-                            </div>
-                        ))}
+                    {/* Every level fills the same box, so drilling in and out never resizes the
+                        panel under the pointer — the same reason the day grid is always six weeks. */}
+                    <div className="dtp-levels">
+                        {model._level === "days" && _DayGridView()}
+                        {model._level === "months" && _ChoiceGridView("months")}
+                        {model._level === "years" && _ChoiceGridView("years")}
                     </div>
                 </div>
             ),
@@ -408,6 +426,10 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
 
         init: () => {
             _recanonicalizeValue();
+        },
+
+        unmount: () => {
+            _stopRepeat();
         },
 
         // Reads NOTHING that changes while the panel is open — see the note in select.tsx: a main
@@ -622,8 +644,9 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
                     className="dtp-segment-step"
                     aria-label={`Increment ${unit}`}
                     disabled={!_isEditable()}
-                    onMouseDown={_keepFocus}
-                    onClick={() => _stepTime(unit, 1)}
+                    onMouseDown={(e) => _startRepeat(e, () => _stepTime(unit, 1))}
+                    onMouseUp={_stopRepeat}
+                    onMouseLeave={_stopRepeat}
                 >
                     <Icon name="chevronUp" size="xs" />
                 </button>
@@ -650,8 +673,9 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
                     className="dtp-segment-step"
                     aria-label={`Decrement ${unit}`}
                     disabled={!_isEditable()}
-                    onMouseDown={_keepFocus}
-                    onClick={() => _stepTime(unit, -1)}
+                    onMouseDown={(e) => _startRepeat(e, () => _stepTime(unit, -1))}
+                    onMouseUp={_stopRepeat}
+                    onMouseLeave={_stopRepeat}
                 >
                     <Icon name="chevronDown" size="xs" />
                 </button>
@@ -736,6 +760,7 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
         const base = _baseDate();
         _setViewMonth(base);
         _setFocusedDay(base);
+        model._level = "days";
         model.popover.open = true;
     }
 
@@ -745,6 +770,200 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
             return;
         }
         _open();
+    }
+
+    // What ‹ › moves at each level, and what the heading between them says.
+    function _levelUnit(): string {
+        switch (model._level) {
+            case "days":
+                return "month";
+            case "months":
+                return "year";
+            default:
+                return "years";
+        }
+    }
+
+    function _levelLabel(): string {
+        switch (model._level) {
+            case "days":
+                return monthLabel(_viewMonth());
+            case "months":
+                return String(_viewMonth().getFullYear());
+            default: {
+                // Names the DECADE, not the twelve cells: the strays either side are context.
+                const decade = _decadeStart();
+                return `${decade} – ${decade + YEARS_IN_DECADE - 1}`;
+            }
+        }
+    }
+
+    // All three steps are month arithmetic, which is what keeps the view a single date.
+    function _stepLevel(delta: number) {
+        switch (model._level) {
+            case "days":
+                _shiftMonth(delta);
+                break;
+            case "months":
+                _shiftMonth(delta * MONTHS_IN_YEAR);
+                break;
+            default:
+                _shiftMonth(delta * MONTHS_IN_YEAR * YEARS_IN_DECADE);
+                break;
+        }
+    }
+
+    function _drillUp() {
+        model._level = model._level === "days" ? "months" : "years";
+    }
+
+    // Pages are absolute rather than centred on the view, so ‹ › walks a fixed ladder of decades
+    // instead of shifting the ground under whichever year happens to be showing.
+    function _decadeStart(): number {
+        return Math.floor(_viewMonth().getFullYear() / YEARS_IN_DECADE) * YEARS_IN_DECADE;
+    }
+
+    // The grid opens one year BEFORE the decade, so the twelve cells straddle it.
+    function _yearPageStart(): number {
+        return _decadeStart() - 1;
+    }
+
+    function _isOutsideDecade(year: number): boolean {
+        return year < _decadeStart() || year >= _decadeStart() + YEARS_IN_DECADE;
+    }
+
+    // Months and years share a grid: the same cells, the same marking, a different count.
+    function _ChoiceGridView(level: "months" | "years"): React.JSX.Element {
+        const months = level === "months";
+        const cells = months
+            ? MONTH_NAMES.map((name, index) => ({ key: index, label: name.slice(0, 3), month: index, year: _viewMonth().getFullYear() }))
+            : Array.from({ length: YEARS_IN_PAGE }, (_, i) => {
+                const year = _yearPageStart() + i;
+                return { key: year, label: String(year), month: _viewMonth().getMonth(), year };
+            });
+
+        return (
+            <div
+                className={`dtp-choice-grid dtp-choice-grid-${level}`}
+                style={{ gridTemplateColumns: `repeat(${months ? MONTH_COLUMNS : YEAR_COLUMNS}, 1fr)` }}
+                role="grid"
+                aria-label={months ? "Choose a month" : "Choose a year"}
+            >
+                {cells.map((cell) => (
+                    <button
+                        key={cell.key}
+                        type="button"
+                        role="gridcell"
+                        tabIndex={-1}
+                        className={_choiceClass(level, cell.year, cell.month)}
+                        aria-label={months ? `${MONTH_NAMES[cell.month]} ${cell.year}` : cell.label}
+                        aria-selected={_marksValue(level, cell.year, cell.month)}
+                        onMouseDown={_keepFocus}
+                        onClick={() => _pickChoice(level, cell.year, cell.month)}
+                    >
+                        {cell.label}
+                    </button>
+                ))}
+            </div>
+        );
+    }
+
+    function _marksValue(level: "months" | "years", year: number, month: number): boolean {
+        const value = _valueDate();
+        if (!isValidDate(value)) {
+            return false;
+        }
+        return value.getFullYear() === year && (level === "years" || value.getMonth() === month);
+    }
+
+    function _marksToday(level: "months" | "years", year: number, month: number): boolean {
+        const today = new Date();
+        return today.getFullYear() === year && (level === "years" || today.getMonth() === month);
+    }
+
+    function _choiceClass(level: "months" | "years", year: number, month: number): string {
+        return "dtp-choice"
+            + (level === "years" && _isOutsideDecade(year) ? " outside" : "")
+            + (_marksToday(level, year, month) ? " today" : "")
+            + (_marksValue(level, year, month) ? " selected" : "");
+    }
+
+    // Picking never touches the VALUE — only where the calendar is looking. The value still waits
+    // for a day, which is what keeps a half-finished journey through the years harmless.
+    function _pickChoice(level: "months" | "years", year: number, month: number) {
+        const target = new Date(year, month, 1);
+        _setViewMonth(target);
+        // The focused day comes along, clamped to the new month's length, so Enter still means
+        // something the moment the day grid is back.
+        _setFocusedDay(new Date(year, month, Math.min(_focusedDay().getDate(), daysInMonth(year, month))));
+        model._level = level === "months" ? "days" : "months";
+    }
+
+    // Press and hold: one step now, then a repeat once the press has outlasted a click. Returning
+    // to a plain onClick would double-step, so the step lives here and the buttons have no click
+    // handler of their own.
+    function _startRepeat(e: React.MouseEvent, step: () => void) {
+        // Keeps focus in the text box, exactly as _keepFocus does for the panel's other controls.
+        e.preventDefault();
+        if (e.button !== 0) {
+            return;
+        }
+
+        _stopRepeat();
+        step();
+        model.__repeat.delay = setTimeout(() => {
+            model.__repeat.tick = setInterval(step, REPEAT_INTERVAL_MS);
+        }, REPEAT_DELAY_MS);
+    }
+
+    // Called from every way a press can end, the panel closing and unmount included — a timer that
+    // outlives its button would go on changing a value nobody is holding.
+    function _stopRepeat() {
+        clearTimeout(model.__repeat.delay);
+        clearInterval(model.__repeat.tick);
+        model.__repeat.delay = undefined;
+        model.__repeat.tick = undefined;
+    }
+
+    // The month itself. Extracted from _CalendarView because the heading now sits above one of
+    // three grids, and the day one is much the longest.
+    function _DayGridView(): React.JSX.Element {
+        // One grid, not a grid of rows: a row is `display: contents`, so its days become direct
+        // grid children and every column lines up — the mechanism Table uses for its rows.
+        return (
+            <div className="dtp-grid" role="grid" aria-label={monthLabel(_viewMonth())}>
+                <div className="dtp-week" role="row">
+                    {weekdayInitials(model.firstDayOfWeek).map((day) => (
+                        <span key={day} role="columnheader" className="dtp-weekday">{day}</span>
+                    ))}
+                </div>
+                {monthWeeks(_viewMonth(), model.firstDayOfWeek).map((week) => (
+                    <div key={week[0].getTime()} className="dtp-week" role="row">
+                        {week.map((day) => (
+                            <button
+                                key={day.getTime()}
+                                id={_dayId(day)}
+                                type="button"
+                                role="gridcell"
+                                // Not a tab stop: the text box is the keyboard's way in,
+                                // and the arrows are handled on the root. Forty-two tab
+                                // stops would be a worse answer than the one that works.
+                                tabIndex={-1}
+                                className={_dayClass(day)}
+                                aria-label={dayLabel(day)}
+                                aria-selected={isSameDay(day, _valueDate())}
+                                aria-current={isSameDay(day, new Date()) ? "date" : undefined}
+                                disabled={!isDayInRange(day, _minDate(), _maxDate())}
+                                onMouseDown={_keepFocus}
+                                onClick={() => _clickDay(day)}
+                            >
+                                {day.getDate()}
+                            </button>
+                        ))}
+                    </div>
+                ))}
+            </div>
+        );
     }
 
     function _shiftMonth(delta: number) {
@@ -924,6 +1143,11 @@ function useDateTimePicker(params?: DateTimePickerParams): DateTimePickerModel {
         if (!_showsCalendar()) {
             return;
         }
+
+        // The keyboard always works on DAYS. Drilling into months or years is a pointer journey,
+        // so a key pressed part-way through it lands back where the keys mean something rather
+        // than moving a day nobody can see.
+        model._level = "days";
 
         if (e.key in DAY_STEPS) {
             e.preventDefault();

@@ -87,10 +87,35 @@
    sideways from one month to the next. */
 .dtp-month-label {
     flex: 1;
+    padding: 2px var(--space-default);
     text-align: center;
     font-size: var(--text-sm);
     font-weight: var(--weight-semibold);
     color: var(--ink);
+}
+
+/* The heading is the way UP — to the months of this year, and from there to a page of years.
+   Styled as a quiet button rather than a loud one: it has to read as clickable without competing
+   with the day the user came here to pick. */
+.dtp-month-label-action {
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    outline: none;
+    font-family: inherit;
+    line-height: inherit;
+    cursor: pointer;
+    transition: background-color var(--motion-fast) var(--ease),
+        color var(--motion-fast) var(--ease);
+}
+
+.dtp-month-label-action:hover {
+    background-color: var(--hover);
+    color: var(--accent);
+}
+
+.dtp-month-label-action:focus-visible {
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
 }
 
 .dtp-month-step {
@@ -121,6 +146,18 @@
    numberField.css's spin buttons. */
 .dtp-month-step:focus-visible {
     box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}
+
+/* ---- The three grids ---- */
+
+/* Every level fills the same box, so drilling from days to months to years and back never resizes
+   the panel under the pointer. The height is the day grid's: a weekday row, six weeks, and the gap
+   between all seven — the same reason the month is always drawn as six weeks. */
+/* A fixed height, not a floor: with a floor the choosers' 1fr rows divide it and round, and the
+   panel changed by a couple of pixels between levels. */
+.dtp-levels {
+    display: grid;
+    height: calc(var(--control-h-xs) + 6 * var(--control-h-sm) + 6 * var(--space-tiny));
 }
 
 /* ---- The month grid ---- */
@@ -215,6 +252,60 @@
     color: var(--ink-disabled);
     opacity: .45;
     cursor: not-allowed;
+}
+
+/* ---- The month and year choosers ---- */
+
+/* Rows share the level's height rather than sizing to their text, which is what lets four rows of
+   months and three rows of years occupy exactly the box six rows of days do. The column count is
+   set inline, since it is the one thing that differs between the two. */
+.dtp-choice-grid {
+    display: grid;
+    grid-auto-rows: 1fr;
+    gap: var(--space-tiny);
+}
+
+.dtp-choice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: none;
+    border: var(--hairline) solid transparent;
+    border-radius: var(--radius-md);
+    outline: none;
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    cursor: pointer;
+    /* NAMED, never `all` — see the note in checkbox.css. */
+    transition: background-color var(--motion-fast) var(--ease),
+        border-color var(--motion-fast) var(--ease),
+        color var(--motion-fast) var(--ease);
+}
+
+.dtp-choice:hover {
+    background-color: var(--hover);
+}
+
+/* The same vocabulary the days use, for the same reasons: a ring for the one we are in now, a
+   fill for the one that is chosen, and the fill last so it wins. */
+.dtp-choice.today {
+    border-color: var(--marker);
+    font-weight: var(--weight-semibold);
+}
+
+.dtp-choice.selected {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--ink-on-accent);
+    font-weight: var(--weight-semibold);
+}
+
+.dtp-choice.selected:hover {
+    background-color: var(--accent-strong);
+    border-color: var(--accent-strong);
 }
 
 /* ---- The time row ---- */
