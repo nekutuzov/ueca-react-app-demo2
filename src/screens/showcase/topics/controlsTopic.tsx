@@ -1,7 +1,7 @@
 import * as UECA from "ueca-react";
 import {
-    AddNewButton, Block, Button, CancelButton, Checkbox, Col, DeleteButton, EditButton, Icon,
-    IconButton, NumberField, RadioGroup, RefreshButton, Row, SaveButton, Select, Switch, TextField,
+    AddNewButton, Block, Button, CancelButton, Checkbox, Col, DateTimePicker, DeleteButton, EditButton,
+    Icon, IconButton, NumberField, RadioGroup, RefreshButton, Row, SaveButton, Select, Switch, TextField,
     UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase
 } from "@components";
 import { ShowcaseSection, ShowcaseSpecimen } from "../showcaseSection";
@@ -25,6 +25,7 @@ type ControlsTopicStruct = UIBaseStruct<{
         _ButtonsView: () => React.JSX.Element;
         _PairingView: () => React.JSX.Element;
         _InputsView: () => React.JSX.Element;
+        _DateTimeView: () => React.JSX.Element;
         _ChoiceView: () => React.JSX.Element;
     };
 }>;
@@ -212,6 +213,54 @@ function useControlsTopic(params?: ControlsTopicParams): ControlsTopicModel {
                 </Col>
             ),
 
+            _DateTimeView: () => (
+                <Col spacing="medium">
+                    <ShowcaseSection
+                        title="DateTimePicker — mode"
+                        description="One control, three jobs. `mode` decides the format of the text, what the
+                                     panel holds, and whether clicking a day is the end of the interaction —
+                                     in datetime mode the panel stays up, because there is still a clock to
+                                     set. Type into the box or pick from the panel: both write the same value."
+                    >
+                        <Row spacing="medium" flexWrap="wrap" verticalAlign="top">
+                            <DateTimePicker id="dtp-date" labelView="Inspection date" mode="date"
+                                            value="2026-09-14" fullWidth={false} extent={{ width: 240 }} />
+                            <DateTimePicker id="dtp-time" labelView="Reading taken" mode="time"
+                                            value="09:30" fullWidth={false} extent={{ width: 240 }} />
+                            <DateTimePicker id="dtp-datetime" labelView="Next service" mode="datetime"
+                                            value="2026-09-14 09:30" fullWidth={false} extent={{ width: 240 }} />
+                        </Row>
+                    </ShowcaseSection>
+
+                    <ShowcaseSection
+                        title="DateTimePicker — bounds, seconds and states"
+                        description="min and max grey out the days outside the window and clamp a typed value
+                                     into it. The value is TEXT in the mode's own format, which is what makes
+                                     the box and the field agree: seconds are in both or in neither. Type
+                                     something that is not a date and leave the field — the text stays, and
+                                     the field says so rather than guessing."
+                    >
+                        <Row spacing="medium" flexWrap="wrap" verticalAlign="top">
+                            <DateTimePicker id="dtp-bounded" labelView="Within the window" mode="date"
+                                            value="2026-09-14" min="2026-09-10" max="2026-09-20"
+                                            helperTextView="10–20 September only"
+                                            fullWidth={false} extent={{ width: 240 }} />
+                            <DateTimePicker id="dtp-seconds" labelView="Timestamp" mode="datetime" secondsShown
+                                            value="2026-09-14 09:30:05"
+                                            fullWidth={false} extent={{ width: 240 }} />
+                            <DateTimePicker id="dtp-required" labelView="Due" mode="date" required
+                                            helperTextView="Empty, and required"
+                                            fullWidth={false} extent={{ width: 240 }} />
+                            <DateTimePicker id="dtp-readonly" labelView="Created" mode="datetime" readOnly
+                                            value="2026-08-31 14:02"
+                                            fullWidth={false} extent={{ width: 240 }} />
+                            <DateTimePicker id="dtp-disabled" labelView="Archived" mode="date" disabled
+                                            value="2026-01-04" fullWidth={false} extent={{ width: 240 }} />
+                        </Row>
+                    </ShowcaseSection>
+                </Col>
+            ),
+
             _ChoiceView: () => (
                 <ShowcaseSection
                     title="Checkbox, Switch and RadioGroup"
@@ -249,6 +298,7 @@ function useControlsTopic(params?: ControlsTopicParams): ControlsTopicModel {
                 <model._ButtonsView />
                 <model._PairingView />
                 <model._InputsView />
+                <model._DateTimeView />
                 <model._ChoiceView />
             </Col>
         )

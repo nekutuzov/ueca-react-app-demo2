@@ -74,8 +74,9 @@ Application
 - Select`<T>`: variants, sizes (small/medium), fullWidth, themed listbox, built-in validation
 - Checkbox: sizes, indeterminate, built-in `required` validation
 - Switch: sizes (small/medium/large), color palette, helper text. Always on or off, with no unset state to display, so it has no `required` validation
+- DateTimePicker: modes (date/time/datetime), typed entry **and** a calendar/clock panel, min/max, `secondsShown`, `firstDayOfWeek`, built-in validation; `TimePicker` is the time-mode factory. The **value is text** in the mode's own format (`dateTimePattern`), never a Date — see the Date rule under Critical Conventions; `valueAsDate()`/`setValueAsDate()` convert. Parsing and the month grid live in `dateTimeFormat.ts`
 
-**Note**: TextField, RadioGroup, Select, and Checkbox:
+**Note**: TextField, RadioGroup, Select, Checkbox and DateTimePicker:
 - TextField, RadioGroup, and Select accept generic type parameter `<T>` for type-safe values
 - All extend EditBase providing built-in validation via `onInternalValidate`
 - TextField validates based on `type` property (email, url, tel, number)
@@ -551,6 +552,8 @@ options: [{ value: "none", label: "None" }]
 **Lifecycle** (replace useEffect): `constr`, `init`, `mount`, `draw`, `erase`, `unmount`, `deinit` (see UECA docs)
 
 **State**: Direct assignment: `model.count++`, `model.user = newUser` (MobX reactive)
+
+**No `Date` (or any zero-own-key object) in a reactive prop**: ueca-react 3.0.2 decides whether a prop changed with a structural comparison that reads two non-null objects as equal when their own keys match. A `Date` has no own keys, so **any two Dates compare equal and the second assignment is silently dropped** — on every path: direct assignment, a binding, and a JSX prop. Store the instant as a primitive (text, as DateTimePicker does, or epoch ms) and convert at the edges. The same trap waits for any class instance without own enumerable properties.
 
 **Event Handlers**: Auto-generated `onChange<Prop>` (after), `onChanging<Prop>` (before, can transform/block)
 

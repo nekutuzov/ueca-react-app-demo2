@@ -135,6 +135,50 @@ describe("ControlsTopic", () => {
         });
     });
 
+    describe("date and time", () => {
+        it.each([
+            ["dtp-date", "Inspection date", "2026-09-14", "YYYY-MM-DD"],
+            ["dtp-time", "Reading taken", "09:30", "HH:MM"],
+            ["dtp-datetime", "Next service", "2026-09-14 09:30", "YYYY-MM-DD HH:MM"]
+        ])("shows %s in the mode's own format", async (id, label, text, pattern) => {
+            await mount(ControlsTopic, { id: TOPIC });
+
+            expect(byId(id)).toHaveTextContent(label);
+            expect(byId(id).querySelector("input")).toHaveValue(text);
+            expect(byId(id).querySelector("input")).toHaveAttribute("placeholder", pattern);
+        });
+
+        it("opens a calendar from the date field, bounded where the field is bounded", async () => {
+            await mount(ControlsTopic, { id: TOPIC });
+
+            await userEvent.click(byId("dtp-bounded").querySelector(".dtp-toggle"));
+            await settle();
+
+            expect(screen.getByRole("grid")).toHaveAttribute("aria-label", "September 2026");
+            expect(screen.getByRole("gridcell", { name: "Thursday, 10 September 2026" })).toBeEnabled();
+            expect(screen.getByRole("gridcell", { name: "Wednesday, 9 September 2026" })).toBeDisabled();
+        });
+
+        it("offers a clock and no calendar on the time field", async () => {
+            await mount(ControlsTopic, { id: TOPIC });
+
+            await userEvent.click(byId("dtp-time").querySelector(".dtp-toggle"));
+            await settle();
+
+            expect(screen.queryByRole("grid")).toBeNull();
+            expect(screen.getByRole("spinbutton", { name: "Hour" })).toHaveTextContent("09");
+        });
+
+        it("shows the required, read-only and disabled states", async () => {
+            await mount(ControlsTopic, { id: TOPIC });
+
+            expect(byId("dtp-required").querySelector(".textfield-required")).not.toBeNull();
+            expect(byId("dtp-readonly").querySelector("input")).toHaveAttribute("readonly");
+            expect(byId("dtp-disabled").querySelector("input")).toBeDisabled();
+            expect(byId("dtp-seconds").querySelector("input")).toHaveValue("2026-09-14 09:30:05");
+        });
+    });
+
     it("shows each choice control on, off and disabled", async () => {
         await mount(ControlsTopic, { id: TOPIC });
 

@@ -73,11 +73,12 @@ const SHOWCASE_TOPICS: ShowcaseTopic[] = [
         title: "Controls",
         path: "/showcase/controls",
         icon: "controls",
-        summary: "Buttons, text and number fields, selects, checkboxes and switches.",
+        summary: "Buttons, text, number and date fields, selects, checkboxes and switches.",
         lead: <>
             The shared inputs and buttons, rendered against the active theme. Every size, radius, duration
             and type step comes from a token — this page is where a change to one of them shows up, across
-            every control at once.
+            every control at once. The composites are here too: a <code>NumberField</code> that owns its
+            number, and a <code>DateTimePicker</code> that can be typed into or picked from a calendar.
         </>
     },
     {

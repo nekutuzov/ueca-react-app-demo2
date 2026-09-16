@@ -1,0 +1,343 @@
+/* DateTimePicker. The FIELD is an inner TextField and is styled there — everything below is the
+   toggle inside the field frame and the panel that drops out of it.
+
+   No hex anywhere: the panel reads as part of whichever theme is on, which is the point of showing
+   it beside the other controls. */
+
+.ueca-datetimepicker {
+    display: inline-flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 0;
+}
+
+.ueca-datetimepicker-fullwidth {
+    display: flex;
+    width: 100%;
+}
+
+/* ============================================================
+   The toggle, inside the field frame.
+
+   Deliberately the same shape as TextField's reveal eye: it sits in the same place, in the same
+   frame, and a second kind of adornment button would make the field read as two controls. */
+
+.dtp-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0 var(--space-default) 0 0;
+    cursor: pointer;
+    color: var(--ink-dim);
+    transition: color var(--motion-base) var(--ease);
+}
+
+.dtp-toggle:hover:not(:disabled),
+.dtp-toggle:focus-visible {
+    color: var(--ink);
+}
+
+/* The pair above is colour-only and identical to :hover, so focus would be indistinguishable from
+   a pointer resting on the icon — and this is a tab stop. Inset, because the button sits flush
+   inside the field frame and an outward ring would cross its border. Same rule as the reveal eye. */
+.dtp-toggle:focus-visible {
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+    border-radius: var(--radius-sm);
+}
+
+.dtp-toggle:disabled {
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   The panel.
+
+   The popover is a frame around it, not a card of its own: the panel owns the padding, and its
+   width comes from the constant the anchor is built from (see _open in dateTimePicker.tsx) rather
+   than from the popover's 180–420px range. */
+
+.ueca-popover.ueca-datetimepicker-popover {
+    padding: 0;
+    min-width: 0;
+    max-width: none;
+    overflow: hidden;
+}
+
+.dtp-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-default);
+    padding: var(--space-default);
+    font-family: var(--font-ui);
+    box-sizing: border-box;
+}
+
+/* ---- Month header ---- */
+
+.dtp-month {
+    display: flex;
+    align-items: center;
+    gap: var(--space-tiny);
+}
+
+/* Centred and filling the space between the arrows, so a long month name does not shuffle them
+   sideways from one month to the next. */
+.dtp-month-label {
+    flex: 1;
+    text-align: center;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--ink);
+}
+
+.dtp-month-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: var(--control-h-xs);
+    height: var(--control-h-xs);
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    outline: none;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: background-color var(--motion-fast) var(--ease),
+        color var(--motion-fast) var(--ease);
+}
+
+.dtp-month-step:hover {
+    background-color: var(--hover);
+    color: var(--ink);
+}
+
+/* Not a tab stop today — the month moves with PageUp/PageDown from the text box. Here so that the
+   day one of these becomes reachable it is not reachable-and-invisible, the same reasoning as
+   numberField.css's spin buttons. */
+.dtp-month-step:focus-visible {
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}
+
+/* ---- The month grid ---- */
+
+/* One grid for the whole month: each row is `display: contents`, so its cells become direct grid
+   children and the columns stay aligned — the mechanism Table uses for its rows. */
+.dtp-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--space-tiny) 0;
+}
+
+.dtp-week {
+    display: contents;
+}
+
+/* Amber, because the column headings are STRUCTURE and nothing here is clickable — the rule the
+   whole app follows for --marker. */
+.dtp-weekday {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--control-h-xs);
+    font-size: var(--text-2xs);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--marker);
+}
+
+.dtp-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--control-h-sm);
+    padding: 0;
+    background: none;
+    border: var(--hairline) solid transparent;
+    border-radius: var(--radius-md);
+    outline: none;
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    cursor: pointer;
+    /* NAMED, never `all` — see the note in checkbox.css. */
+    transition: background-color var(--motion-fast) var(--ease),
+        border-color var(--motion-fast) var(--ease),
+        color var(--motion-fast) var(--ease);
+}
+
+.dtp-day:hover:not(:disabled) {
+    background-color: var(--hover);
+}
+
+/* The neighbouring months' days. Still choosable — clicking one walks the calendar there — but
+   they must not read as part of the month on show. */
+.dtp-day.outside {
+    color: var(--ink-disabled);
+}
+
+/* Today is a RING, not a fill: it has to stay legible under the selected day's own colour, which
+   a second filled state could not do. */
+.dtp-day.today {
+    border-color: var(--marker);
+    font-weight: var(--weight-semibold);
+}
+
+/* Where the keyboard is, which is NOT the selection — the same distinction Select draws between
+   its active row and its chosen one. Inset, so it reads inside a day that is also selected. */
+.dtp-day.focused {
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}
+
+/* Last, so the chosen day wins over `today` and `outside`. */
+.dtp-day.selected {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--ink-on-accent);
+    font-weight: var(--weight-semibold);
+}
+
+.dtp-day.selected:hover:not(:disabled) {
+    background-color: var(--accent-strong);
+    border-color: var(--accent-strong);
+}
+
+.dtp-day:disabled {
+    color: var(--ink-disabled);
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+/* ---- The time row ---- */
+
+.dtp-time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-tiny);
+}
+
+/* The rule belongs to the JOIN, so a time-only panel — which has no calendar above it — does not
+   open with a stray line across its top. */
+.dtp-calendar + .dtp-time {
+    padding-top: var(--space-default);
+    border-top: var(--hairline) solid var(--border);
+}
+
+.dtp-segment {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dtp-segment-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--space-tiny);
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    outline: none;
+    color: var(--ink-dim);
+    line-height: 1;
+    cursor: pointer;
+    transition: color var(--motion-fast) var(--ease);
+}
+
+.dtp-segment-step:hover:not(:disabled) {
+    color: var(--ink);
+}
+
+/* tabIndex={-1} in the markup, for the same reason NumberField's spin buttons are: the segment
+   between them takes the arrows. Declared anyway — `outline: none` is always paired with its
+   replacement. */
+.dtp-segment-step:focus-visible {
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}
+
+.dtp-segment-step:disabled {
+    cursor: not-allowed;
+}
+
+/* Mono and tabular: the two digits must not change width as they count, or the row twitches
+   sideways every time an hour rolls over. */
+.dtp-segment-value {
+    min-width: 40px;
+    padding: 2px var(--space-tiny);
+    border-radius: var(--radius-sm);
+    outline: none;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    cursor: default;
+    user-select: none;
+}
+
+.dtp-segment-value:focus-visible {
+    background-color: var(--hover);
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}
+
+.dtp-time-separator {
+    font-family: var(--font-mono);
+    font-size: var(--text-md);
+    color: var(--ink-dim);
+}
+
+/* ---- Footer ---- */
+
+.dtp-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-default);
+    padding-top: var(--space-default);
+    border-top: var(--hairline) solid var(--border);
+}
+
+.dtp-action {
+    padding: var(--space-tiny) var(--space-default);
+    background: none;
+    border: none;
+    border-radius: var(--radius-sm);
+    outline: none;
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: background-color var(--motion-fast) var(--ease),
+        color var(--motion-fast) var(--ease);
+}
+
+.dtp-action:hover:not(:disabled) {
+    background-color: var(--hover);
+    color: var(--ink);
+}
+
+.dtp-action:focus-visible {
+    box-shadow: inset 0 0 0 var(--stroke-emphasis) var(--focus-ring);
+}
+
+.dtp-action:disabled {
+    color: var(--ink-disabled);
+    cursor: not-allowed;
+}
+
+/* Pushed to the right edge whether or not "Clear" is there to sit opposite it. */
+.dtp-action-accent {
+    margin-left: auto;
+    color: var(--accent);
+}
+
+.dtp-action-accent:hover:not(:disabled) {
+    color: var(--accent-strong);
+}

@@ -30,6 +30,8 @@ export * from "./buttons/toolButtons/toolButtons";
 export * from "./inputs/textField/textField";
 export * from "./inputs/numberField/numberField";
 export * from "./inputs/searchField/searchField";
+export * from "./inputs/dateTimePicker/dateTimeFormat";
+export * from "./inputs/dateTimePicker/dateTimePicker";
 export * from "./inputs/checkbox/checkbox";
 export * from "./inputs/switch/switch";
 export * from "./inputs/radioGroup/radioGroup";

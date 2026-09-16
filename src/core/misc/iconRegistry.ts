@@ -1,7 +1,7 @@
 import {
     AccountIcon, AddCircleIcon, AddIcon, AngleDownIcon, AngleUpIcon, ArrowLeftIcon, ArrowRightIcon,
     BoltIcon, ButtonsIcon, CalendarIcon, CancelIcon, ChartIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon,
-    ChevronRightIcon, ChevronUpIcon, ClipboardIcon, CloseIcon, CodeIcon, DashboardIcon, DatabaseIcon,
+    ChevronRightIcon, ChevronUpIcon, ClipboardIcon, ClockIcon, CloseIcon, CodeIcon, DashboardIcon, DatabaseIcon,
     DeleteIcon, DocumentIcon, DownloadIcon, EditIcon, EmailIcon, ErrorCircleIcon, ExportFileIcon,
     EyeIcon, EyeSlashIcon, FilterIcon, FolderIcon, GridIcon, HeartIcon, HelpIcon, HomeIcon, IconProps, InputsIcon,
     InfoCircleIcon, LayersIcon, LayoutIcon, ListIcon, LockIcon, LogoutIcon, MenuCollapseIcon, MenuIcon,
@@ -98,6 +98,9 @@ const ICONS = {
     database: { kind: "svg", component: DatabaseIcon },
     table: { kind: "svg", component: TableIcon },
     calendar: { kind: "svg", component: CalendarIcon },
+    // A role of its own beside `calendar`: a field that edits a clock says so with a clock, and
+    // the two are swapped between by the picker's `mode`.
+    clock: { kind: "svg", component: ClockIcon },
     chart: { kind: "svg", component: ChartIcon },
     email: { kind: "svg", component: EmailIcon },
     website: { kind: "svg", component: WebsiteIcon },
