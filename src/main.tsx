@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { initMocks } from "@api";
-import { AbortExecutionException, Application, appMessageBus, runApplication } from "@core";
+import { AbortExecutionException, Application, appMessageBus, runApplication, UECA_VERSION } from "@core";
 import "./tokens.css"; // non-colour design tokens (type, spacing, radii, motion, z-index) — theme-independent
 import "./themes.css"; // colour: one block per theme, switched at runtime by <html data-theme>
 import "./theme.css"; // page surface, focus, selection and the markdown article, built on the theme tokens
@@ -14,7 +14,7 @@ initMocks();
 
 // Application starting point
 runApplication(
-    () => <Application id={"app"} applicationName={"UECA-React Showcase"} appVersion={"3.0"} />,
+    () => <Application id={"app"} applicationName={"UECA-React Showcase"} appVersion={UECA_VERSION} />,
     "root",
     (e) => {
         if (e && !(e instanceof AbortExecutionException)) {

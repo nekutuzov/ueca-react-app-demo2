@@ -170,7 +170,7 @@ Every message is declared in `core/infrastructure/appMessage.ts`.
 
 ## Technologies
 
-- UECA-React 3.0
+- UECA-React 3.1
 - React 19
 - TypeScript 5.8
 - MobX 6 (through UECA-React)

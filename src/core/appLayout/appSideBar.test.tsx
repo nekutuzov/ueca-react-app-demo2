@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AppRoute, AppSideBar, AppSideBarModel, AppSideBarParams } from "@core";
+import { AppRoute, AppSideBar, AppSideBarModel, AppSideBarParams, UECA_VERSION } from "@core";
 import { mount, settle, stubMessages } from "@test";
 
 // jsdom's window is 1024px wide; the sidebar drops to its icon rail below 860px.
@@ -56,7 +56,7 @@ describe("AppSideBar", () => {
         expect(model.collapsed).toBe(false);
         expect(rail()).toHaveStyle({ width: "var(--sidebar-w)", minWidth: "var(--sidebar-w)", maxWidth: "var(--sidebar-w)" });
         expect(within(rail()).getByText("UECA-React")).toHaveClass("app-sidebar-wordmark");
-        expect(within(rail()).getByText("3.0")).toHaveClass("app-sidebar-version");
+        expect(within(rail()).getByText(UECA_VERSION)).toHaveClass("app-sidebar-version");
         expect(toggleButtons().map((b) => b.getAttribute("aria-label"))).toEqual(["Collapse the menu"]);
         expect(screen.getByText("Home")).toBeInTheDocument();
         expect(screen.getByText("Sign out")).toBeInTheDocument();

@@ -5,6 +5,7 @@ import {
 } from "@components";
 import { AppMenuModel, useAppMenu } from "./appMenu";
 import { MenuIcon, MenuCollapseIcon } from "../misc/icons";
+import { UECA_VERSION } from "../misc/uecaVersion";
 import "./appSideBar.css";
 
 // Below this the expanded rail would leave no usable column for the article, so the sidebar
@@ -126,7 +127,7 @@ function useAppSideBar(params?: AppSideBarParams): AppSideBarModel {
                     >
                         <model.logoLink.View />
                         <span className="app-sidebar-wordmark">UECA-React</span>
-                        <span className="app-sidebar-version">3.0</span>
+                        <span className="app-sidebar-version">{UECA_VERSION}</span>
                         {/* Centred like the brand beside it. Top-aligned, the button sat flush with
                             the rail's top edge, ten pixels above the wordmark, with the top of its
                             focus ring cut off by the layout's clip. */}

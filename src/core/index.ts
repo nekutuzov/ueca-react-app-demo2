@@ -31,6 +31,7 @@ export * from "./misc/overlayPosition";
 export * from "./misc/sectionScroll";
 export * from "./misc/overlayStack";
 export * from "./misc/routeURL";
+export * from "./misc/uecaVersion";
 export * from "./appComponents/uecaContacts/uecaContacts";
 export * from "./appComponents/themeToggle/themeToggle";
 export * from "./appComponents/codeSample/codeSample";
