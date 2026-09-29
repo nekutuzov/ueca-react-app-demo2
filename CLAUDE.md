@@ -3,7 +3,7 @@
 ## Quick Reference
 
 **UECA Documentation**: `node_modules/ueca-react/docs/raw/index.md` - Complete framework documentation (also https://nekutuzov.github.io/ueca-react-doc/)  
-**UECA Skills**: `.claude/skills/ueca-app-development`, `.claude/skills/ueca-app-architecture` - installed by `npx ueca-react-skills`, which the postinstall runs  
+**UECA Skills**: `.claude/skills/ueca-app-development`, `.claude/skills/ueca-app-architecture` - installed by `npx ueca-react-skills` (a plain `npm install` runs it; `npm install ueca-react@…` does not)  
 **Example Project**: `https://github.com/nekutuzov/ueca-react-app`
 
 **Core Principles**:
@@ -553,7 +553,9 @@ options: [{ value: "none", label: "None" }]
 
 **State**: Direct assignment: `model.count++`, `model.user = newUser` (MobX reactive)
 
-**No `Date` (or any zero-own-key object) in a reactive prop**: ueca-react 3.0.3 decides whether a prop changed with a structural comparison that reads two non-null objects as equal when their own keys match. A `Date` has no own keys, so **any two Dates compare equal and the second assignment is silently dropped** — on every path: direct assignment, a binding, and a JSX prop. Store the instant as a primitive (text, as DateTimePicker does, or epoch ms) and convert at the edges. The same trap waits for any class instance without own enumerable properties.
+**No `Date` (or any zero-own-key object) in a reactive prop**: ueca-react 3.1.0 decides whether a prop changed with a structural comparison that reads two non-null objects as equal when their own keys match. A `Date` has no own keys, so **any two Dates compare equal and the second assignment is silently dropped** — on every path: direct assignment, a binding, and a JSX prop. Store the instant as a primitive (text, as DateTimePicker does, or epoch ms) and convert at the edges. The same trap waits for any class instance without own enumerable properties.
+
+**A bound plain array is handed over once** (ueca-react 3.1.0): a binding or getter prop that keeps handing back *the same* plain array assigns it on the first run only — mutating that array in place after that never reaches the model. Assign a new one (`model.items = [...model.items, next]`), or keep the source in a model property, which is observable and still reacts to a push.
 
 **Event Handlers**: Auto-generated `onChange<Prop>` (after), `onChanging<Prop>` (before, can transform/block)
 
