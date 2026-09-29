@@ -37,7 +37,7 @@ Then open `http://localhost:5001/ueca-react-app-demo2/`.
 | `npm run test:watch` | Run the tests in watch mode |
 | `npm run coverage` | Run the tests with a coverage report in `coverage/` |
 | `npm run preview` | Serve the production build |
-| `npm run deploy` | Build and copy to the GitHub Pages checkout (`deploy.ps1`) |
+| `npm run deploy` | Build, then publish `dist/` to the `gh-pages` branch with the `gh-pages` package |
 
 The UECA agent skills shipped with `ueca-react` are installed by `npx ueca-react-skills`. A plain `npm install` runs it through the postinstall; a targeted `npm install ueca-react@…` does not, so run it yourself after an upgrade.
 
