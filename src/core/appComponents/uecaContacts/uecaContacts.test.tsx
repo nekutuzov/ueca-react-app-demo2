@@ -8,11 +8,12 @@ const CONTACTS = [
     { name: "Email", path: "mailto:cranesoft@protonmail.com", label: "Email", detail: "cranesoft@protonmail.com" },
     { name: "GitHub Repository", path: "https://github.com/nekutuzov/ueca-react-app-demo2", label: "GitHub repository", detail: "github.com · opens a new tab" },
     { name: "NPM Package", path: "https://www.npmjs.com/package/ueca-react", label: "npm package", detail: "npmjs.com · opens a new tab" },
+    { name: "Dev.to Articles", path: "https://dev.to/nekutuzov", label: "Dev.to articles", detail: "dev.to · opens a new tab" },
     { name: "YouTube Video", path: "https://youtu.be/SQl8f-qGxwU?si=-YTWPpPB7ExBZ6L0", label: "YouTube video", detail: "youtu.be · opens a new tab" }
 ];
 
 describe("UECAContacts", () => {
-    it("offers the website, email, GitHub, npm and YouTube contacts, in that order", async () => {
+    it("offers the website, email, GitHub, npm, Dev.to and YouTube contacts, in that order", async () => {
         await mount(UECAContacts, { id: "contacts" });
 
         expect(screen.getAllByRole("button").map((b) => b.getAttribute("aria-label"))).toEqual(CONTACTS.map((c) => c.name));

@@ -111,7 +111,7 @@ Application
 **Misc** (`misc/`): Icon, StatusLabel, ProgressBar, Spinner, SeverityIcon, MarkdownPreview, FileSelector, DropZone, FieldLabel, FieldHint, Notebook; **Panels** (`panels/`): Panel
 
 **App Components** (`src/core/appComponents/`):
-- UECAContacts: Five icon buttons (YouTube, GitHub, npm, website, email) for contact links, supports horizontal/vertical orientation
+- UECAContacts: Six icon buttons (YouTube, GitHub, npm, Dev.to, website, email) for contact links, supports horizontal/vertical orientation
 - ThemeToggle: top-bar light/dark switch (`App.Theme.*` messages)
 - CodeSample: a titled, syntax-highlighted listing with a copy button
 

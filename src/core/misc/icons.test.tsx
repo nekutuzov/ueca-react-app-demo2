@@ -9,7 +9,7 @@ type IconComponent = (props?: IconProps) => React.ReactNode;
 const ICONS = Object.entries(core).filter(([name, value]) => name.endsWith("Icon") && typeof value === "function") as [string, IconComponent][];
 
 // Drawn as the services draw them rather than in the outline family.
-const BRAND_MARKS = ["GitHubIcon", "YouTubeIcon", "NpmIcon"];
+const BRAND_MARKS = ["GitHubIcon", "YouTubeIcon", "NpmIcon", "DevToIcon"];
 
 function svgOf(node: React.ReactNode) {
     return render(<>{node}</>).container.querySelector("svg");

@@ -13,6 +13,7 @@ const CONTACTS = [
     ["Email", "mailto:cranesoft@protonmail.com"],
     ["GitHub Repository", "https://github.com/nekutuzov/ueca-react-app-demo2"],
     ["NPM Package", "https://www.npmjs.com/package/ueca-react"],
+    ["Dev.to Articles", "https://dev.to/nekutuzov"],
     ["YouTube Video", "https://youtu.be/SQl8f-qGxwU?si=-YTWPpPB7ExBZ6L0"]
 ] as const;
 

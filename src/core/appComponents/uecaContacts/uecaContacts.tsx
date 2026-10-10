@@ -1,6 +1,6 @@
 import * as UECA from "ueca-react";
 import { Row, Col, UIBaseModel, UIBaseParams, UIBaseStruct, useUIBase, IconButtonModel, useIconButton } from "@components";
-import { YouTubeIcon, GitHubIcon, NpmIcon, WebsiteIcon, EmailIcon } from "@core";
+import { YouTubeIcon, GitHubIcon, NpmIcon, DevToIcon, WebsiteIcon, EmailIcon } from "@core";
 
 type Orientation = "horizontal" | "vertical";
 
@@ -13,6 +13,7 @@ type UECAContactsStruct = UIBaseStruct<{
         youtubeIconButton: IconButtonModel;
         githubIconButton: IconButtonModel;
         npmIconButton: IconButtonModel;
+        devtoIconButton: IconButtonModel;
         websiteIconButton: IconButtonModel;
         emailIconButton: IconButtonModel;
     };
@@ -50,6 +51,13 @@ function useUECAContacts(params?: UECAContactsParams): UECAContactsModel {
                 tooltipView: _tip("npm package", "npmjs.com"),
                 onClick: async () => await model.openNewTab({ path: "https://www.npmjs.com/package/ueca-react" })
             }),
+            devtoIconButton: useIconButton({
+                iconView: <DevToIcon />,
+                color: "inherit",
+                title: "Dev.to Articles",
+                tooltipView: _tip("Dev.to articles", "dev.to"),
+                onClick: async () => await model.openNewTab({ path: "https://dev.to/nekutuzov" })
+            }),
             websiteIconButton: useIconButton({
                 iconView: <WebsiteIcon />,
                 color: "inherit",
@@ -75,6 +83,7 @@ function useUECAContacts(params?: UECAContactsParams): UECAContactsModel {
                     <model.emailIconButton.View />
                     <model.githubIconButton.View />
                     <model.npmIconButton.View />
+                    <model.devtoIconButton.View />
                     <model.youtubeIconButton.View />
                 </Container>
             );
