@@ -553,7 +553,7 @@ options: [{ value: "none", label: "None" }]
 
 **State**: Direct assignment: `model.count++`, `model.user = newUser` (MobX reactive)
 
-**No `Date` (or any zero-own-key object) in a reactive prop**: ueca-react 3.1.0 decides whether a prop changed with a structural comparison that reads two non-null objects as equal when their own keys match. A `Date` has no own keys, so **any two Dates compare equal and the second assignment is silently dropped** — on every path: direct assignment, a binding, and a JSX prop. Store the instant as a primitive (text, as DateTimePicker does, or epoch ms) and convert at the edges. The same trap waits for any class instance without own enumerable properties.
+**No zero-own-key object in a reactive prop**: ueca-react decides whether a prop changed with a structural comparison that reads two non-null objects as equal when their own keys match, and **the second assignment is then silently dropped** — on every path: direct assignment, a binding, and a JSX prop. 3.2.0 repealed this for the built-ins it used to catch: `Date`, `RegExp`, `Map` and `Set` compare by content now. It still bites a class of your own whose state lives in private fields or a closure, because that has no own keys either (checked against 3.2.0). Give such a class an own enumerable property, or keep the value as a primitive and convert at the edges, as DateTimePicker does by holding its value as text.
 
 **A bound plain array is handed over once** (ueca-react 3.1.0): a binding or getter prop that keeps handing back *the same* plain array assigns it on the first run only — mutating that array in place after that never reaches the model. Assign a new one (`model.items = [...model.items, next]`), or keep the source in a model property, which is observable and still reacts to a push.
 
@@ -565,7 +565,9 @@ options: [{ value: "none", label: "None" }]
 
 **Exports**: Always export `XxxModel`, `XxxParams`, `useXxx`, `Xxx`
 
-**IDs**: `id: useXxx.name` in props, `model.htmlId()` for root element
+**IDs**: `id: useXxx.name` in props, `model.htmlId()` for root element. A JSX child's `id` may not be the name of a prop, method or child of its owner — `name`, `title`, `value` and `label` collide most often. Since 3.2.0 that throws during the render that did it; before, it took the wrong model or overwrote the prop.
+
+**`render={false}`** on a component element draws nothing and builds no model — and does not take one from the cache. Turning it back on mounts the cached model with its state. It is a flag of the element, not a model prop.
 
 **React Key**: Use `reactKey` prop for dynamic lists (React's `key` is reserved):
 ```tsx
@@ -600,6 +602,6 @@ options: [{ value: "none", label: "None" }]
 - **Known bugs are pinned, not enshrined**: an `it.fails` test with a `// BUG:` comment asserts the correct behaviour. Fixing the bug makes it fail — then turn it into a plain `it`.
 - DOM ids are model paths (`app.ui.loginForm.userInput`); use `document.getElementById` where no accessible query fits.
 
-**No React.StrictMode**: Conflicts with UECA lifecycle
+**React.StrictMode**: supported since ueca-react 3.2.0, where it behaves exactly as no StrictMode. This app still renders without it (`main.tsx`), and React 18 and 19 are both tested upstream.
 
 When modifying: No React patterns, no UI libraries, use message bus for communication, follow UECA patterns in official docs.

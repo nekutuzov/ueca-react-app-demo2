@@ -31,13 +31,12 @@ import "./dateTimePicker.css";
 // date at all is KEPT in the box and reported through validation, rather than being replaced by a
 // guess at what the user meant. See dateTimeFormat.ts for what counts as a date.
 //
-// THE VALUE IS TEXT, not a Date, and that is not a stylistic choice — a Date CANNOT be a reactive
-// prop. ueca-react (3.1.0) decides whether a prop changed with a structural comparison that reads
-// two non-null objects as equal when their own keys match; a Date has NO own keys, so any two
-// Dates compare equal and the second assignment is silently dropped. It fails identically through
-// a direct assignment, a binding and a JSX prop, so no amount of care at this end would fix it.
-// Text is a primitive, so it simply works. `valueAsDate()` hands back a Date for anyone who wants
-// to compute with it.
+// THE VALUE IS TEXT, not a Date. Until ueca-react 3.2.0 that was forced: a Date could not be a
+// reactive prop at all, because two non-null objects were read as equal when their own keys match
+// and a Date has none, so the second assignment was silently dropped. 3.2.0 compares Dates by
+// content, so the choice is this component's own now, and it stands: text is what the box holds
+// anyway, and an entry that is not a date survives in it to be reported through validation rather
+// than replaced by a guess. `valueAsDate()` hands back a Date for anyone who wants to compute.
 //
 // The value is always CANONICAL — ISO order, the shape `dateTimePattern` names for the mode —
 // whatever the field displays. `format` decides only what the BOX shows and what it reads back, so
