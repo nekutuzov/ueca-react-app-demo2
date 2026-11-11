@@ -573,7 +573,7 @@ options: [{ value: "none", label: "None" }]
 ```tsx
 {items.map((item) => <Block key={item.id}>{item.name}</Block>)}
 ```
-A `key` is also what gives one JSX position a new model when what it shows changes: `<Screen id={"screen-" + path} />` keeps its React instance when `path` changes, and UECA then renames that one model instead of building or finding the next. Wrap it in `<Fragment key={id}>` when each id must get its own model.
+A new `id` at one JSX position is a new mount: since ueca-react 3.2.2 the `id` keys the element, so `<Screen id={"screen-" + path} />` mounts again when `path` changes — the old model waits in its owner's cache under its own `id`, and the new `id` finds its cached model or builds one. Before 3.2.2 UECA kept the one model and renamed it. A `key` is still what remounts a position whose `id` stays the same; the Router keys its view by `routeKey` for that.
 
 **Helper Functions**: Private helper functions (prefixed with `_`) should be defined after `return model` using function declarations for hoisting. Use them to:
 - Extract complex data/strings/logic from View methods (keep Views pure JSX only)
