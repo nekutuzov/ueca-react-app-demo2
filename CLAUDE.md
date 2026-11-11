@@ -4,7 +4,7 @@
 
 **UECA Documentation**: `node_modules/ueca-react/docs/raw/index.md` - Complete framework documentation (also https://nekutuzov.github.io/ueca-react-doc/)  
 **UECA Skills**: `.claude/skills/ueca-app-development`, `.claude/skills/ueca-app-architecture` - installed by `npx ueca-react-skills` (a plain `npm install` runs it; `npm install ueca-react@…` does not)  
-**Example Project**: `https://github.com/nekutuzov/ueca-react-app`
+**Barebone template**: the scaffold in `.claude/skills/ueca-app-architecture/reference/scaffold.md` — this app is the full-size reference it points to
 
 **Core Principles**:
 - UECA framework: Component model with props, children, methods, events, message bus
@@ -200,18 +200,18 @@ value={UECA.bind(() => model, "variant") as UECA.Bond<string | number>}
 ```tsx
 // In appMessage.ts
 type AppMessage = {
-    "Api.GetUsers": { out: User[] };
+    "Api.User.GetList": { out: User[] };   // "Api.<Area>.<Operation>", one entry per operation
     "Dialog.Warning": { in: { title?: string, message: string } };
 };
 
 // Usage
-await model.bus.unicast("Api.GetUsers");  // First subscriber
-await model.bus.broadcast("*.Input", "UI.Validate");  // Pattern match
+await model.bus.unicast("Api.User.GetList");  // exactly ONE subscriber: none resolves undefined, two or more throw
+await model.bus.broadcast("*.Input", "UI.Validate");  // Pattern match, every subscriber
 await model.bus.castTo("app.form.button", "Click");  // By fullId
 
 // Handler
 messages: {
-    "Api.GetUsers": async () => await apiClient.get<User[]>("/users")
+    "Api.User.GetList": async () => await apiClient.get<User[]>("/users")
 }
 ```
 
@@ -247,7 +247,7 @@ function useMyComponent(params?: MyParams): MyModel {
             _DemoView: () => (
                 <Block>
                     <pre>{_getCodeExample()}</pre>
-                    {_getItems().map((item, index) => <div reactKey={index}>{item}</div>)}
+                    {_getItems().map((item, index) => <div key={index}>{item}</div>)}
                 </Block>
             )
         },
@@ -549,7 +549,7 @@ options: [{ value: "none", label: "None" }]
 
 ## Critical Conventions
 
-**Lifecycle** (replace useEffect), in the order they run: `constr`, `init`, `draw`, `mount`, `erase`, `unmount`, `deinit` (see UECA docs)
+**Lifecycle** (replace useEffect), in the order they run: `constr`, `init`, `draw`, `mount`, `erase`, `unmount`, `deinit` (see UECA docs). `draw` and `erase` run around **every** render, not once — one-time DOM setup and teardown go in `mount` / `unmount`. Teardown hooks (`erase`, `unmount`, `deinit`) run a JSX-passed handler before the struct's; setup hooks run the struct's first.
 
 **State**: Direct assignment: `model.count++`, `model.user = newUser` (MobX reactive)
 
@@ -569,10 +569,11 @@ options: [{ value: "none", label: "None" }]
 
 **`render={false}`** on a component element draws nothing and builds no model — and does not take one from the cache. Turning it back on mounts the cached model with its state. It is a flag of the element, not a model prop.
 
-**React Key**: Use `reactKey` prop for dynamic lists (React's `key` is reserved):
+**React Key**: Use React's own `key` in mapped lists, on a plain element or a component element alike; React consumes it and the component never sees it. There is no `reactKey` prop:
 ```tsx
-{items.map((item, index) => <Block reactKey={index}>{item}</Block>)}
+{items.map((item) => <Block key={item.id}>{item.name}</Block>)}
 ```
+A `key` is also what gives one JSX position a new model when what it shows changes: `<Screen id={"screen-" + path} />` keeps its React instance when `path` changes, and UECA then renames that one model instead of building or finding the next. Wrap it in `<Fragment key={id}>` when each id must get its own model.
 
 **Helper Functions**: Private helper functions (prefixed with `_`) should be defined after `return model` using function declarations for hoisting. Use them to:
 - Extract complex data/strings/logic from View methods (keep Views pure JSX only)
